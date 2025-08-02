@@ -17,7 +17,7 @@ export default function Home() {
             <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
               src/app/page.tsx
             </code>
-            を編集して始めましょう。3
+            を編集して始めましょう。4
           </li>
           <li className="tracking-[-.01em]">
             保存すると、変更がすぐに反映されます。

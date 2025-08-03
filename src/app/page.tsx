@@ -1,102 +1,201 @@
-import Image from "next/image";
+'use client';
+
+import { useState, useEffect } from 'react';
+import {
+  Container,
+  Typography,
+  Box,
+  List,
+  Alert,
+  CircularProgress,
+  Divider,
+} from '@mui/material';
+import PostForm from '@/components/PostForm';
+import PostItem from '@/components/PostItem';
+import EditDialog from '@/components/EditDialog';
+
+interface Post {
+  _id: string;
+  title: string;
+  content: string;
+  author: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js ロゴ"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            を編集して始めましょう。5
-          </li>
-          <li className="tracking-[-.01em]">
-            保存すると、変更がすぐに反映されます。1
-          </li>
-        </ol>
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [editingPost, setEditingPost] = useState<Post | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel ロゴマーク"
-              width={20}
-              height={20}
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  const fetchPosts = async () => {
+    try {
+      const response = await fetch('/api/posts');
+      const data = await response.json();
+      if (data.success) {
+        setPosts(data.data);
+      } else {
+        setError('投稿の取得に失敗しました');
+      }
+    } catch (error) {
+      console.error('Failed to fetch posts:', error);
+      setError('投稿の取得に失敗しました');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (title: string, content: string, author: string) => {
+    setError('');
+    
+    try {
+      const response = await fetch('/api/posts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ title, content, author }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setPosts([data.data, ...posts]);
+      } else {
+        setError(data.error);
+      }
+    } catch (error) {
+      console.error('Failed to create post:', error);
+      setError('投稿の作成に失敗しました');
+    }
+  };
+
+  const handleEdit = (post: Post) => {
+    setEditingPost(post);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleUpdate = async (content: string) => {
+    if (!editingPost) return;
+    setError('');
+
+    try {
+      const response = await fetch(`/api/posts/${editingPost._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ content }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setPosts(posts.map(p => p._id === editingPost._id ? data.data : p));
+        setIsEditDialogOpen(false);
+        setEditingPost(null);
+      } else {
+        setError(data.error);
+      }
+    } catch (error) {
+      console.error('Failed to update post:', error);
+      setError('投稿の更新に失敗しました');
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('この投稿を削除しますか？')) return;
+    
+    try {
+      const response = await fetch(`/api/posts/${id}`, {
+        method: 'DELETE',
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setPosts(posts.filter(p => p._id !== id));
+      } else {
+        setError('投稿の削除に失敗しました');
+      }
+    } catch (error) {
+      console.error('Failed to delete post:', error);
+      setError('投稿の削除に失敗しました');
+    }
+  };
+
+  if (loading) {
+    return (
+      <Container 
+        maxWidth="md" 
+        sx={{ 
+          mt: { xs: 2, sm: 3, md: 4 },
+          display: 'flex', 
+          justifyContent: 'center',
+          minHeight: '100vh',
+          alignItems: 'center'
+        }}
+      >
+        <CircularProgress />
+      </Container>
+    );
+  }
+
+  return (
+    <Container 
+      maxWidth="md" 
+      sx={{ 
+        mt: { xs: 2, sm: 3, md: 4 },
+        px: { xs: 2, sm: 3 },
+        width: '100%',
+        maxWidth: { xs: '100%', sm: '600px', md: '900px' }
+      }}
+    >
+      <Typography 
+        variant="h4" 
+        component="h1" 
+        gutterBottom
+        sx={{ 
+          fontSize: { xs: '1.5rem', sm: '2rem', md: '2.125rem' },
+          textAlign: { xs: 'center', sm: 'left' }
+        }}
+      >
+        オープン掲示板
+      </Typography>
+      
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>
+          {error}
+        </Alert>
+      )}
+
+      <PostForm onSubmit={handleSubmit} />
+
+      <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
+        {posts.map((post, index) => (
+          <Box key={post._id}>
+            <PostItem
+              post={post}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
             />
-            今すぐデプロイ
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            ドキュメントを読む
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="ファイルアイコン"
-            width={16}
-            height={16}
-          />
-          学習
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="ウィンドウアイコン"
-            width={16}
-            height={16}
-          />
-          例
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="グローブアイコン"
-            width={16}
-            height={16}
-          />
-          nextjs.org へ →
-        </a>
-      </footer>
-    </div>
+            {index < posts.length - 1 && <Divider />}
+          </Box>
+        ))}
+      </List>
+
+      <EditDialog
+        open={isEditDialogOpen}
+        post={editingPost}
+        onClose={() => setIsEditDialogOpen(false)}
+        onUpdate={handleUpdate}
+      />
+    </Container>
   );
 }

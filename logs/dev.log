@@ -1,0 +1,310 @@
+
+> my-board-app@0.1.0 dev
+> next dev --turbopack
+
+   ▲ Next.js 15.4.5 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.50.253:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 981ms
+ ○ Compiling / ...
+ ✓ Compiled / in 2.2s
+ GET / 200 in 2502ms
+ ✓ Compiled /api/posts in 137ms
+MongoDB connected successfully
+ POST /api/posts 201 in 478ms
+ POST /api/posts 400 in 22ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/page/app-build-manifest.json'
+}
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 709ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/static/development/_buildManifest.js.tmp.g4xf37fi2oa'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/static/development/_buildManifest.js.tmp.g4xf37fi2oa'
+}
+[Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/static/development/_buildManifest.js.tmp.u8gdbyce03o'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/static/development/_buildManifest.js.tmp.u8gdbyce03o'
+}
+[Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/static/development/_buildManifest.js.tmp.6ho75q2wntf'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/static/development/_buildManifest.js.tmp.6ho75q2wntf'
+}
+ ✓ Compiled /favicon.ico in 132ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/static/development/_buildManifest.js.tmp.5su588e1ia'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/static/development/_buildManifest.js.tmp.5su588e1ia'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/static/development/_buildManifest.js.tmp.xsxwhaleq7'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/static/development/_buildManifest.js.tmp.xsxwhaleq7'
+}
+[Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/static/development/_buildManifest.js.tmp.xc1laznt0sg'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/static/development/_buildManifest.js.tmp.xc1laznt0sg'
+}
+[Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/static/development/_buildManifest.js.tmp.mc382mcaja'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/static/development/_buildManifest.js.tmp.mc382mcaja'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/static/development/_buildManifest.js.tmp.2cg0qmqkuvl'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/static/development/_buildManifest.js.tmp.2cg0qmqkuvl'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/static/development/_buildManifest.js.tmp.rfixvsykcu'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/static/development/_buildManifest.js.tmp.rfixvsykcu'
+}
+[Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/static/development/_buildManifest.js.tmp.81kpszedrvr'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/static/development/_buildManifest.js.tmp.81kpszedrvr'
+}
+[Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/static/development/_buildManifest.js.tmp.qq5dwax6ha'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/static/development/_buildManifest.js.tmp.qq5dwax6ha'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/static/development/_buildManifest.js.tmp.t8kms43ahbd'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/static/development/_buildManifest.js.tmp.t8kms43ahbd'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/favicon.ico/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/favicon.ico/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/favicon.ico/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/favicon.ico/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/favicon.ico/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/favicon.ico/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/favicon.ico/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/favicon.ico/[__metadata_id__]/route/app-paths-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/page/app-build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/favicon.ico/[__metadata_id__]/route/app-paths-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/app/favicon.ico/[__metadata_id__]/route/app-paths-manifest.json'
+}
+[?25h

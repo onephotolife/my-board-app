@@ -1,0 +1,95 @@
+'use client';
+
+import { Box, ListItem, ListItemText, IconButton, Typography } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+
+interface Post {
+  _id: string;
+  title: string;
+  content: string;
+  author: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface PostItemProps {
+  post: Post;
+  onEdit: (post: Post) => void;
+  onDelete: (id: string) => void;
+}
+
+export default function PostItem({ post, onEdit, onDelete }: PostItemProps) {
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleString('ja-JP');
+  };
+
+  return (
+    <ListItem
+      sx={{
+        alignItems: 'flex-start',
+        '&:hover': { bgcolor: 'action.hover' },
+        py: { xs: 1.5, sm: 2 },
+        px: { xs: 1, sm: 2 },
+        flexDirection: { xs: 'column', sm: 'row' },
+        width: '100%',
+        maxWidth: '100%',
+        overflow: 'hidden'
+      }}
+      secondaryAction={
+        <Box sx={{ display: 'flex', gap: { xs: 0, sm: 1 } }}>
+          <IconButton edge="end" aria-label="edit" onClick={() => onEdit(post)}>
+            <EditIcon />
+          </IconButton>
+          <IconButton edge="end" aria-label="delete" onClick={() => onDelete(post._id)}>
+            <DeleteIcon />
+          </IconButton>
+        </Box>
+      }
+    >
+      <ListItemText
+        primary={
+          <Box>
+            <Typography 
+              variant="h6" 
+              component="div" 
+              gutterBottom
+              sx={{ 
+                wordBreak: 'break-all',
+                overflowWrap: 'break-word'
+              }}
+            >
+              {post.title}
+            </Typography>
+            <Typography 
+              variant="body2" 
+              color="text.secondary" 
+              gutterBottom
+              sx={{ 
+                wordBreak: 'break-word',
+                overflowWrap: 'break-word'
+              }}
+            >
+              投稿者: {post.author} | {formatDate(post.createdAt)}
+            </Typography>
+          </Box>
+        }
+        secondary={
+          <Typography 
+            variant="body1" 
+            sx={{ 
+              mt: 1,
+              wordBreak: 'break-all',
+              overflowWrap: 'break-word',
+              whiteSpace: 'pre-wrap'
+            }}
+          >
+            {post.content}
+          </Typography>
+        }
+        sx={{ pr: 10 }}
+      />
+    </ListItem>
+  );
+}

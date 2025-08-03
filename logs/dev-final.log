@@ -1,0 +1,59 @@
+
+> my-board-app@0.1.0 dev
+> next dev --turbopack
+
+   ▲ Next.js 15.4.5 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.50.253:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 915ms
+ ○ Compiling /api/posts ...
+ ✓ Compiled /api/posts in 820ms
+MongoDB connected successfully
+ POST /api/posts 201 in 1156ms
+ POST /api/posts 201 in 23ms
+ POST /api/posts 400 in 23ms
+ POST /api/posts 201 in 22ms
+ POST /api/posts 201 in 21ms
+ POST /api/posts 400 in 19ms
+ POST /api/posts 400 in 17ms
+ POST /api/posts 400 in 21ms
+ POST /api/posts 400 in 20ms
+ POST /api/posts 400 in 19ms
+ POST /api/posts 201 in 20ms
+ POST /api/posts 400 in 21ms
+ ○ Compiling / ...
+ ✓ Compiled / in 1777ms
+ GET / 200 in 2042ms
+ GET /api/posts 200 in 107ms
+ ✓ Compiled /favicon.ico in 306ms
+ GET /favicon.ico?favicon.45db1c09.ico 200 in 548ms
+ GET /favicon.ico?favicon.45db1c09.ico 200 in 236ms
+ ✓ Compiled in 39ms
+ ✓ Compiled in 24ms
+ ✓ Compiled in 11ms
+ ✓ Compiled in 12ms
+ ✓ Compiled in 11ms
+ ✓ Compiled / in 21ms
+ ⚠ Unsupported metadata viewport is configured in metadata export in /. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ GET / 200 in 119ms
+ ✓ Compiled / in 15ms
+ GET / 200 in 78ms
+ ✓ Compiled in 8ms
+ GET / 200 in 212ms
+ ✓ Compiled in 8ms
+ GET / 200 in 193ms
+ GET /api/posts 200 in 42ms
+ GET /favicon.ico?favicon.45db1c09.ico 200 in 335ms
+ GET /favicon.ico?favicon.45db1c09.ico 200 in 256ms
+ ✓ Compiled in 32ms
+ ✓ Compiled in 23ms
+ ✓ Compiled in 20ms
+ GET / 200 in 174ms
+ POST /api/posts 201 in 38ms
+   Reload env: .env.local
+ GET / 200 in 82ms
+[?25h

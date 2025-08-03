@@ -46,3 +46,13 @@ MongoDB connected successfully
  GET /favicon.ico?favicon.45db1c09.ico 200 in 232ms
  ✓ Compiled in 32ms
  ✓ Compiled in 16ms
+ GET / 200 in 66ms
+ GET /api/posts 200 in 108ms
+ GET /favicon.ico?favicon.45db1c09.ico 200 in 414ms
+ GET /favicon.ico?favicon.45db1c09.ico 200 in 261ms
+ GET / 200 in 57ms
+ GET /api/posts 200 in 59ms
+ GET /favicon.ico?favicon.45db1c09.ico 200 in 251ms
+ GET /favicon.ico?favicon.45db1c09.ico 200 in 232ms
+ GET / 200 in 51ms
+ GET /api/posts 200 in 55ms

@@ -9,10 +9,20 @@ export async function GET() {
     return NextResponse.json({ success: true, data: posts });
   } catch (error) {
     console.error('Error in GET /api/posts:', error);
+    
+    // MongoDB接続エラーの詳細情報をログに出力
+    if (error instanceof Error) {
+      console.error('Error name:', error.name);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+    }
+    
     return NextResponse.json(
       { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Failed to fetch posts'
+        error: process.env.NODE_ENV === 'production' 
+          ? 'Failed to fetch posts' 
+          : (error instanceof Error ? error.message : 'Failed to fetch posts')
       },
       { status: 500 }
     );
@@ -30,6 +40,8 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
+    console.error('Error in POST /api/posts:', error);
+    
     if (error && typeof error === 'object' && 'name' in error && error.name === 'ValidationError' && 'errors' in error) {
       const validationError = error as {errors: Record<string, {message: string}>};
       const messages = Object.values(validationError.errors).map((err) => err.message);
@@ -38,6 +50,7 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+    
     return NextResponse.json(
       { success: false, error: 'Failed to create post' },
       { status: 500 }

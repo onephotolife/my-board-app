@@ -81,7 +81,7 @@ describe('PostItem', () => {
       content: 'a'.repeat(200), // 200文字の長い文字列
     };
     
-    const { container } = renderWithTheme(
+    renderWithTheme(
       <PostItem post={longPost} onEdit={mockOnEdit} onDelete={mockOnDelete} />
     );
     
@@ -89,8 +89,7 @@ describe('PostItem', () => {
     expect(contentElement).toBeInTheDocument();
     
     // スタイルの確認
-    const styles = window.getComputedStyle(contentElement);
-    expect(styles.wordBreak).toBe('break-all');
+    expect(window.getComputedStyle(contentElement).wordBreak).toBe('break-all');
   });
 
   it('renders special characters correctly', () => {
@@ -120,7 +119,6 @@ describe('PostItem', () => {
     
     // ホバー効果のスタイルが適用されているか確認
     if (listItem) {
-      const styles = window.getComputedStyle(listItem);
       // MUIのテーマに依存するため、クラスの存在を確認
       expect(listItem.className).toContain('MuiListItem');
     }

@@ -12,7 +12,7 @@ jest.mock('mongoose', () => ({
 describe('dbConnect', () => {
   beforeEach(() => {
     // グローバル変数をリセット
-    delete (global as any).mongoose;
+    delete (global as { mongoose?: unknown }).mongoose;
     jest.clearAllMocks();
     
     // 環境変数を設定
@@ -20,7 +20,7 @@ describe('dbConnect', () => {
   });
 
   afterEach(() => {
-    delete (global as any).mongoose;
+    delete (global as { mongoose?: unknown }).mongoose;
   });
 
   it('connects to MongoDB when not cached', async () => {
@@ -68,7 +68,7 @@ describe('dbConnect', () => {
     await expect(dbConnect()).rejects.toThrow('Connection failed');
     
     // グローバル変数をリセット
-    const cached = (global as any).mongoose;
+    const cached = (global as { mongoose?: { promise?: null } }).mongoose;
     if (cached) {
       cached.promise = null;
     }

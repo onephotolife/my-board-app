@@ -14,7 +14,7 @@ describe('POST /api/posts', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockDbConnect.mockResolvedValue(undefined as any);
+    mockDbConnect.mockResolvedValue(undefined as unknown as ReturnType<typeof dbConnect>);
   });
 
   describe('GET', () => {
@@ -121,7 +121,10 @@ describe('POST /api/posts', () => {
         author: 'Author',
       };
 
-      const validationError = new Error('Validation failed') as any;
+      const validationError = new Error('Validation failed') as Error & {
+        name: string;
+        errors: Record<string, { message: string }>;
+      };
       validationError.name = 'ValidationError';
       validationError.errors = {
         title: { message: 'タイトルは必須です' },
@@ -151,7 +154,10 @@ describe('POST /api/posts', () => {
         author: 'Author',
       };
 
-      const validationError = new Error('Validation failed') as any;
+      const validationError = new Error('Validation failed') as Error & {
+        name: string;
+        errors: Record<string, { message: string }>;
+      };
       validationError.name = 'ValidationError';
       validationError.errors = {
         content: { message: '投稿は200文字以内にしてください' },
@@ -202,7 +208,10 @@ describe('POST /api/posts', () => {
         author: '',
       };
 
-      const validationError = new Error('Validation failed') as any;
+      const validationError = new Error('Validation failed') as Error & {
+        name: string;
+        errors: Record<string, { message: string }>;
+      };
       validationError.name = 'ValidationError';
       validationError.errors = {
         title: { message: 'タイトルは必須です' },

@@ -1,13 +1,16 @@
 'use client';
 
-import { useState } from 'react';
-import { Paper, TextField, Button, Box } from '@mui/material';
+import { useState, memo } from 'react';
+import Paper from '@mui/material/Paper';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
 
 interface PostFormProps {
   onSubmit: (title: string, content: string, author: string) => Promise<void>;
 }
 
-export default function PostForm({ onSubmit }: PostFormProps) {
+const PostForm = memo(function PostForm({ onSubmit }: PostFormProps) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [author, setAuthor] = useState('');
@@ -96,4 +99,6 @@ export default function PostForm({ onSubmit }: PostFormProps) {
       </form>
     </Paper>
   );
-}
+});
+
+export default PostForm;

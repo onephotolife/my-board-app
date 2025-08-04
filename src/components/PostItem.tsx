@@ -1,6 +1,11 @@
 'use client';
 
-import { Box, ListItem, ListItemText, IconButton, Typography } from '@mui/material';
+import { memo } from 'react';
+import Box from '@mui/material/Box';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 
@@ -19,7 +24,7 @@ interface PostItemProps {
   onDelete: (id: string) => void;
 }
 
-export default function PostItem({ post, onEdit, onDelete }: PostItemProps) {
+const PostItem = memo(function PostItem({ post, onEdit, onDelete }: PostItemProps) {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleString('ja-JP');
@@ -92,4 +97,6 @@ export default function PostItem({ post, onEdit, onDelete }: PostItemProps) {
       />
     </ListItem>
   );
-}
+});
+
+export default PostItem;

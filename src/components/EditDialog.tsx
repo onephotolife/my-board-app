@@ -1,14 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  Button,
-} from '@mui/material';
+import { useState, useEffect, memo } from 'react';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
 
 interface Post {
   _id: string;
@@ -24,7 +22,7 @@ interface EditDialogProps {
   onUpdate: (content: string) => Promise<void>;
 }
 
-export default function EditDialog({ open, post, onClose, onUpdate }: EditDialogProps) {
+const EditDialog = memo(function EditDialog({ open, post, onClose, onUpdate }: EditDialogProps) {
   const [content, setContent] = useState('');
   const [updating, setUpdating] = useState(false);
 
@@ -86,4 +84,6 @@ export default function EditDialog({ open, post, onClose, onUpdate }: EditDialog
       </DialogActions>
     </Dialog>
   );
-}
+});
+
+export default EditDialog;

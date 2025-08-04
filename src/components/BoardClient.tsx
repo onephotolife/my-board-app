@@ -1,15 +1,18 @@
 'use client';
 
 import { useState, useCallback, memo } from 'react';
-import List from '@mui/material/List';
 import Alert from '@mui/material/Alert';
-import Box from '@mui/material/Box';
-import Divider from '@mui/material/Divider';
 import dynamic from 'next/dynamic';
 
 // 動的インポートでバンドルサイズを削減
-const PostForm = dynamic(() => import('./PostForm'), { ssr: false });
-const PostItem = dynamic(() => import('./PostItem'), { ssr: false });
+const PostForm = dynamic(() => import('./PostForm'), { 
+  ssr: false,
+  loading: () => <div style={{ height: 200 }} />
+});
+const VirtualizedPostList = dynamic(() => import('./VirtualizedPostList'), { 
+  ssr: false,
+  loading: () => <div style={{ height: 400 }} />
+});
 const EditDialog = dynamic(() => import('./EditDialog'), { ssr: false });
 
 interface Post {
@@ -128,18 +131,11 @@ const BoardClient = memo(function BoardClient({ initialPosts }: BoardClientProps
 
       <PostForm onSubmit={handleSubmit} />
 
-      <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-        {posts.map((post, index) => (
-          <Box key={post._id}>
-            <PostItem
-              post={post}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-            />
-            {index < posts.length - 1 && <Divider />}
-          </Box>
-        ))}
-      </List>
+      <VirtualizedPostList
+        posts={posts}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
 
       {isEditDialogOpen && (
         <EditDialog

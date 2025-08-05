@@ -1,0 +1,76 @@
+# Branch Protection Settings for my-board-app
+# This file documents our branch protection configuration
+
+main:
+  protection_rules:
+    # Pull Request Requirements
+    required_pull_request_reviews:
+      required_approving_review_count: 2
+      dismiss_stale_reviews: true
+      require_code_owner_reviews: true
+      restrict_dismissals: true
+      
+    # Status Checks
+    required_status_checks:
+      strict: true  # Require branches to be up to date
+      contexts:
+        - build
+        - test
+        - lint
+        - typecheck
+        - vercel
+    
+    # Additional Requirements
+    enforce_admins: true
+    required_conversation_resolution: true
+    required_signatures: false  # Set to true if using GPG
+    linear_history: false       # Set to true for rebase-only
+    
+    # Restrictions
+    restrictions:
+      users: []
+      teams: []
+      apps: []
+    
+    # Push Rules
+    allow_force_pushes: false
+    allow_deletions: false
+    
+develop:
+  protection_rules:
+    required_pull_request_reviews:
+      required_approving_review_count: 1
+      dismiss_stale_reviews: true
+      
+    required_status_checks:
+      strict: true
+      contexts:
+        - build
+        - test
+        - lint
+    
+    enforce_admins: false
+    required_conversation_resolution: true
+    
+    allow_force_pushes: false
+    allow_deletions: false
+
+release/*:
+  protection_rules:
+    required_pull_request_reviews:
+      required_approving_review_count: 1
+      
+    required_status_checks:
+      strict: true
+      contexts:
+        - build
+        - test
+        - e2e-test
+    
+    restrictions:
+      teams:
+        - release-managers
+    
+    enforce_admins: true
+    allow_force_pushes: false
+    allow_deletions: false

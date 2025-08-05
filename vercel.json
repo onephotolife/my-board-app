@@ -1,0 +1,30 @@
+{
+  "git": {
+    "deploymentEnabled": {
+      "main": true,
+      "develop": true,
+      "release/**": true,
+      "feature/**": true
+    }
+  },
+  "github": {
+    "enabled": true,
+    "autoAlias": true
+  },
+  "env": {
+    "NEXT_PUBLIC_ENV": {
+      "production": "production",
+      "preview": "staging",
+      "development": "development"
+    }
+  },
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_API_URL": {
+        "production": "https://api.my-board-app.com",
+        "preview": "https://staging-api.my-board-app.com",
+        "development": "https://dev-api.my-board-app.com"
+      }
+    }
+  }
+}

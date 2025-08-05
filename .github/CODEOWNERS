@@ -1,0 +1,43 @@
+# CODEOWNERS
+# このファイルは、各ディレクトリ/ファイルの責任者を定義します
+# 詳細: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# デフォルトのオーナー（すべてのファイル）
+* @onephotolife
+
+# ドキュメント
+/docs/ @onephotolife
+/README.md @onephotolife
+/.github/ @onephotolife
+
+# フロントエンド
+/src/components/ @frontend-team
+/src/app/ @frontend-team
+/src/styles/ @frontend-team @design-team
+
+# バックエンド
+/src/api/ @backend-team
+/src/lib/ @backend-team
+/src/models/ @backend-team
+
+# テスト
+/src/**/__tests__/ @qa-team
+/tests/ @qa-team
+/playwright/ @qa-team
+
+# 設定ファイル
+/package.json @tech-lead
+/tsconfig.json @tech-lead
+/next.config.ts @tech-lead
+/.env.example @tech-lead
+
+# CI/CD
+/.github/workflows/ @devops-team
+
+# セキュリティ関連
+/src/auth/ @security-team @backend-team
+/src/middleware/ @security-team
+
+# データベース
+/src/models/ @database-team @backend-team
+/migrations/ @database-team

@@ -1,29 +1,28 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import {
-  Container,
-  Paper,
-  TextField,
-  Button,
-  Typography,
-  Box,
-  Alert,
-  Link,
-  CircularProgress,
-} from '@mui/material';
+import Link from 'next/link';
+import { modern2025Styles } from '@/styles/modern-2025';
 
 function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [mounted, setMounted] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [hoveredField, setHoveredField] = useState<string | null>(null);
+  const [buttonHovered, setButtonHovered] = useState(false);
   
   const verified = searchParams.get('verified') === 'true';
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,82 +48,237 @@ function SignInForm() {
     }
   };
 
+  const containerStyle: React.CSSProperties = {
+    minHeight: '100vh',
+    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '20px',
+  };
+
+  const formContainerStyle: React.CSSProperties = {
+    maxWidth: '440px',
+    width: '100%',
+  };
+
+  const titleStyle: React.CSSProperties = {
+    fontSize: '32px',
+    fontWeight: '700',
+    textAlign: 'center',
+    marginBottom: '32px',
+    color: modern2025Styles.colors.text.primary,
+    letterSpacing: '-0.025em',
+  };
+
+  const subtitleStyle: React.CSSProperties = {
+    fontSize: '14px',
+    fontWeight: '400',
+    textAlign: 'center',
+    marginTop: '-24px',
+    marginBottom: '32px',
+    color: modern2025Styles.colors.text.secondary,
+  };
+
+  const formStyle: React.CSSProperties = {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '20px',
+  };
+
+  const getFieldStyle = (fieldName: string) => {
+    const isFocused = focusedField === fieldName;
+    const isHovered = hoveredField === fieldName;
+    
+    let style = { ...modern2025Styles.input.base };
+    
+    if (isFocused) {
+      style = { ...style, ...modern2025Styles.input.focus };
+    } else if (isHovered) {
+      style = { ...style, ...modern2025Styles.input.hover };
+    }
+    
+    return style;
+  };
+
+  const linkContainerStyle: React.CSSProperties = {
+    textAlign: 'center',
+    marginTop: '24px',
+    fontSize: '14px',
+  };
+
+  const linkStyle: React.CSSProperties = {
+    color: modern2025Styles.colors.primary,
+    textDecoration: 'none',
+    fontWeight: '600',
+    transition: 'color 0.2s',
+  };
+
+  if (!mounted) {
+    return (
+      <div style={containerStyle}>
+        <div style={{ ...modern2025Styles.card, ...formContainerStyle }}>
+          <h1 style={titleStyle}>ログイン</h1>
+          <p style={subtitleStyle}>アカウントにログインして続ける</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <Container component="main" maxWidth="xs">
-      <Box
-        sx={{
-          marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <Paper elevation={3} sx={{ padding: 4, width: '100%' }}>
-          <Typography component="h1" variant="h5" align="center">
-            ログイン
-          </Typography>
+    <>
+      <style jsx global>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideUp {
+          from { transform: translateY(20px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+        input::placeholder {
+          color: ${modern2025Styles.input.placeholder.color};
+          font-weight: ${modern2025Styles.input.placeholder.fontWeight};
+        }
+      `}</style>
+      
+      <div style={containerStyle}>
+        <div style={{ ...modern2025Styles.card, ...formContainerStyle, animation: 'fadeIn 0.5s ease-out' }}>
+          <h1 style={titleStyle}>おかえりなさい</h1>
+          <p style={subtitleStyle}>アカウントにログインして続ける</p>
           
           {verified && (
-            <Alert severity="success" sx={{ mt: 2 }}>
+            <div style={{ ...modern2025Styles.alert.success, animation: 'slideUp 0.3s ease-out', marginBottom: '20px' }}>
               メールアドレスが確認されました。ログインしてください。
-            </Alert>
+            </div>
           )}
           
           {error && (
-            <Alert severity="error" sx={{ mt: 2 }}>
+            <div style={{ ...modern2025Styles.alert.error, animation: 'slideUp 0.3s ease-out' }}>
               {error}
-            </Alert>
+            </div>
           )}
 
-          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="メールアドレス"
-              name="email"
-              autoComplete="email"
-              autoFocus
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="パスワード"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <Button
+          <form onSubmit={handleSubmit} style={formStyle}>
+            <div>
+              <label htmlFor="email" style={modern2025Styles.label}>
+                メールアドレス
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onFocus={() => setFocusedField('email')}
+                onBlur={() => setFocusedField(null)}
+                onMouseEnter={() => setHoveredField('email')}
+                onMouseLeave={() => setHoveredField(null)}
+                style={getFieldStyle('email')}
+                placeholder="example@gmail.com"
+                autoComplete="email"
+                autoFocus
+              />
+            </div>
+
+            <div>
+              <label htmlFor="password" style={modern2025Styles.label}>
+                パスワード
+              </label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onFocus={() => setFocusedField('password')}
+                onBlur={() => setFocusedField(null)}
+                onMouseEnter={() => setHoveredField('password')}
+                onMouseLeave={() => setHoveredField(null)}
+                style={getFieldStyle('password')}
+                placeholder="パスワードを入力"
+                autoComplete="current-password"
+              />
+            </div>
+
+            <button
               type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              style={{
+                ...modern2025Styles.button.primary,
+                ...(buttonHovered ? modern2025Styles.button.primaryHover : {}),
+                opacity: loading ? 0.7 : 1,
+                cursor: loading ? 'not-allowed' : 'pointer',
+                marginTop: '8px',
+              }}
+              onMouseEnter={() => !loading && setButtonHovered(true)}
+              onMouseLeave={() => setButtonHovered(false)}
               disabled={loading}
             >
-              {loading ? <CircularProgress size={24} /> : 'ログイン'}
-            </Button>
-            <Box sx={{ textAlign: 'center' }}>
-              <Link href="/auth/signup" underline="hover">
-                アカウントをお持ちでない方はこちら
+              {loading ? 'ログイン中...' : 'ログイン'}
+            </button>
+
+            <div style={linkContainerStyle}>
+              <span style={{ color: modern2025Styles.colors.text.secondary }}>
+                アカウントをお持ちでない方は{' '}
+              </span>
+              <Link 
+                href="/auth/signup" 
+                style={linkStyle}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = modern2025Styles.colors.primaryDark;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = modern2025Styles.colors.primary;
+                }}
+              >
+                新規登録
               </Link>
-            </Box>
-          </Box>
-        </Paper>
-      </Box>
-    </Container>
+            </div>
+            
+            <div style={{ textAlign: 'center', marginTop: '16px' }}>
+              <Link
+                href="/auth/reset-password"
+                style={{
+                  color: modern2025Styles.colors.primary,
+                  textDecoration: 'none',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  transition: 'opacity 0.2s',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.opacity = '0.8';
+                  e.currentTarget.style.textDecoration = 'underline';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.opacity = '1';
+                  e.currentTarget.style.textDecoration = 'none';
+                }}
+              >
+                パスワードを忘れた方はこちら
+              </Link>
+            </div>
+          </form>
+        </div>
+      </div>
+    </>
   );
 }
 
 export default function SignInPage() {
   return (
-    <Suspense fallback={<CircularProgress />}>
+    <Suspense fallback={
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center',
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      }}>
+        <div style={{ color: 'white', fontSize: '18px' }}>Loading...</div>
+      </div>
+    }>
       <SignInForm />
     </Suspense>
   );

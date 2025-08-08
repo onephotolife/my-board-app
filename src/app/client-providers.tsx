@@ -3,6 +3,7 @@
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { SessionProvider } from "next-auth/react";
+import { useState, useEffect } from 'react';
 
 const theme = createTheme({
   palette: {
@@ -13,12 +14,20 @@ const theme = createTheme({
   },
 });
 
-export function Providers({ children }: { children: React.ReactNode }) {
+export function ClientProviders({ children }: { children: React.ReactNode }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <SessionProvider>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        {children}
+        <div style={{ opacity: mounted ? 1 : 0.99 }}>
+          {children}
+        </div>
       </ThemeProvider>
     </SessionProvider>
   );

@@ -1,0 +1,3 @@
+# my-board-app aliases
+alias board="cd /Users/yoshitaka.yamagishi/Documents/projects/my-board-app && npm run dev"
+alias board3000="cd /Users/yoshitaka.yamagishi/Documents/projects/my-board-app && lsof -ti:3000 | xargs kill -9 2>/dev/null && npm run dev"

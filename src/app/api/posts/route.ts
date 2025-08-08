@@ -1,58 +1,94 @@
 import { NextRequest, NextResponse } from 'next/server';
-import dbConnect from '@/lib/mongodb';
-import Post from '@/models/Post';
+import { auth } from '@/lib/auth';
+import { connectDB } from '@/lib/db/mongodb';
+import Post from '@/lib/models/Post';
 
-export async function GET() {
+// GET: 投稿一覧を取得
+export async function GET(request: NextRequest) {
   try {
-    await dbConnect();
-    const posts = await Post.find({}).sort({ createdAt: -1 });
-    return NextResponse.json({ success: true, data: posts });
-  } catch (error) {
-    console.error('Error in GET /api/posts:', error);
+    const session = await auth();
     
-    // MongoDB接続エラーの詳細情報をログに出力
-    if (error instanceof Error) {
-      console.error('Error name:', error.name);
-      console.error('Error message:', error.message);
-      console.error('Error stack:', error.stack);
+    if (!session) {
+      return NextResponse.json(
+        { error: '認証が必要です' },
+        { status: 401 }
+      );
     }
-    
-    return NextResponse.json(
-      { 
-        success: false, 
-        error: process.env.NODE_ENV === 'production' 
-          ? 'Failed to fetch posts' 
-          : (error instanceof Error ? error.message : 'Failed to fetch posts')
+
+    const searchParams = request.nextUrl.searchParams;
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '10');
+    const skip = (page - 1) * limit;
+
+    await connectDB();
+
+    const [posts, total] = await Promise.all([
+      Post.find()
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      Post.countDocuments(),
+    ]);
+
+    return NextResponse.json({
+      posts,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
       },
+    });
+  } catch (error) {
+    console.error('Get posts error:', error);
+    return NextResponse.json(
+      { error: '投稿の取得に失敗しました' },
       { status: 500 }
     );
   }
 }
 
+// POST: 新規投稿を作成
 export async function POST(request: NextRequest) {
   try {
-    await dbConnect();
-    const body = await request.json();
+    const session = await auth();
     
-    const post = await Post.create(body);
-    return NextResponse.json(
-      { success: true, data: post },
-      { status: 201 }
-    );
-  } catch (error) {
-    console.error('Error in POST /api/posts:', error);
-    
-    if (error && typeof error === 'object' && 'name' in error && error.name === 'ValidationError' && 'errors' in error) {
-      const validationError = error as {errors: Record<string, {message: string}>};
-      const messages = Object.values(validationError.errors).map((err) => err.message);
+    if (!session) {
       return NextResponse.json(
-        { success: false, error: messages.join(', ') },
+        { error: '認証が必要です' },
+        { status: 401 }
+      );
+    }
+
+    const { title, content } = await request.json();
+
+    if (!title || !content) {
+      return NextResponse.json(
+        { error: 'タイトルと内容は必須です' },
         { status: 400 }
       );
     }
-    
+
+    await connectDB();
+
+    const post = new Post({
+      title,
+      content,
+      author: session.user.id,
+      authorName: session.user.name || 'Anonymous',
+    });
+
+    await post.save();
+
     return NextResponse.json(
-      { success: false, error: 'Failed to create post' },
+      { message: '投稿が作成されました', post },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error('Create post error:', error);
+    return NextResponse.json(
+      { error: '投稿の作成に失敗しました' },
       { status: 500 }
     );
   }

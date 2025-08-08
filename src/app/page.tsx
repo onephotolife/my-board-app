@@ -1,49 +1,11 @@
-import { Suspense } from 'react';
-import { unstable_cache } from 'next/cache';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import CircularProgress from '@mui/material/CircularProgress';
-import BoardClient from '@/components/BoardClient';
-import dbConnect from '@/lib/mongodb';
-import Post from '@/models/Post';
+import Button from '@mui/material/Button';
+import Paper from '@mui/material/Paper';
+import Link from 'next/link';
 
-// ISR: Revalidate every 60 seconds
-export const revalidate = 60;
-
-// サーバーサイドでデータベースから直接取得（キャッシュ付き）
-const getPosts = unstable_cache(
-  async () => {
-    try {
-      await dbConnect();
-      const posts = await Post.find({})
-        .sort({ createdAt: -1 })
-        .limit(20) // 初期表示は20件まで
-        .lean() // パフォーマンス向上のためlean()を使用
-        .exec();
-      
-      // シリアライズ可能な形式に変換
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return (posts as any[]).map((post) => ({
-        _id: post._id.toString(),
-        title: post.title || '',
-        content: post.content || '',
-        author: post.author || '',
-        createdAt: post.createdAt.toISOString(),
-        updatedAt: post.updatedAt.toISOString(),
-      }));
-    } catch (error) {
-      console.error('Error fetching posts:', error);
-      return [];
-    }
-  },
-  ['posts'],
-  { revalidate: 60, tags: ['posts'] }
-);
-
-export default async function Home() {
-  const initialPosts = await getPosts();
-
+export default function Home() {
   return (
     <Container 
       maxWidth="md" 
@@ -54,25 +16,56 @@ export default async function Home() {
         maxWidth: { xs: '100%', sm: '600px', md: '900px' }
       }}
     >
-      <Typography 
-        variant="h4" 
-        component="h1" 
-        gutterBottom
-        sx={{ 
-          fontSize: { xs: '1.5rem', sm: '2rem', md: '2.125rem' },
-          textAlign: { xs: 'center', sm: 'left' }
-        }}
-      >
-        オープン掲示板
-      </Typography>
-      
-      <Suspense fallback={
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-          <CircularProgress />
+      <Paper elevation={3} sx={{ p: 4, textAlign: 'center' }}>
+        <Typography 
+          variant="h3" 
+          component="h1" 
+          gutterBottom
+          sx={{ 
+            fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
+            fontWeight: 'bold',
+            mb: 3
+          }}
+        >
+          会員制掲示板へようこそ
+        </Typography>
+        
+        <Typography variant="h6" color="text.secondary" sx={{ mb: 4 }}>
+          会員限定の安全なコミュニティで情報を共有しましょう
+        </Typography>
+        
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="body1" sx={{ mb: 2 }}>
+            この掲示板は会員限定です。利用するには登録とログインが必要です。
+          </Typography>
         </Box>
-      }>
-        <BoardClient initialPosts={initialPosts} />
-      </Suspense>
+        
+        <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
+          <Link href="/auth/signin" passHref style={{ textDecoration: 'none' }}>
+            <Button variant="contained" size="large" sx={{ minWidth: 150 }}>
+              ログイン
+            </Button>
+          </Link>
+          <Link href="/auth/signup" passHref style={{ textDecoration: 'none' }}>
+            <Button variant="outlined" size="large" sx={{ minWidth: 150 }}>
+              新規登録
+            </Button>
+          </Link>
+        </Box>
+        
+        <Box sx={{ mt: 4, p: 2, bgcolor: 'grey.100', borderRadius: 1 }}>
+          <Typography variant="h6" gutterBottom>
+            機能紹介
+          </Typography>
+          <Typography variant="body2" sx={{ textAlign: 'left' }}>
+            • メールアドレス認証による安全な会員登録<br />
+            • 会員のみが投稿・閲覧可能な掲示板<br />
+            • 自分の投稿の編集・削除機能<br />
+            • パスワードリセット機能<br />
+            • セキュアなセッション管理
+          </Typography>
+        </Box>
+      </Paper>
     </Container>
   );
 }

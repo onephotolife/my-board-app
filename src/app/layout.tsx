@@ -2,14 +2,15 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import "./globals.css";
 import { Providers } from "./providers";
+import Header from "@/components/Header";
 
 export const metadata: Metadata = {
-  title: "オープン掲示板",
-  description: "誰でも自由に投稿できる掲示板",
-  keywords: "掲示板,オープン,コミュニティ",
+  title: "会員制掲示板",
+  description: "会員限定の掲示板システム",
+  keywords: "掲示板,会員制,コミュニティ",
   openGraph: {
-    title: "オープン掲示板",
-    description: "誰でも自由に投稿できる掲示板",
+    title: "会員制掲示板",
+    description: "会員限定の掲示板システム",
     type: "website",
   },
 };
@@ -59,7 +60,10 @@ export default function RootLayout({
         }} />
       </head>
       <body className="antialiased">
-        <Providers>{children}</Providers>
+        <Providers>
+          <Header />
+          {children}
+        </Providers>
         
         {/* Service Worker登録 */}
         <Script

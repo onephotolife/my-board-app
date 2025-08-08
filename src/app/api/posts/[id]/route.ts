@@ -1,95 +1,113 @@
 import { NextRequest, NextResponse } from 'next/server';
-import dbConnect from '@/lib/mongodb';
-import Post from '@/models/Post';
+import { auth } from '@/lib/auth';
+import { connectDB } from '@/lib/db/mongodb';
+import Post from '@/lib/models/Post';
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    await dbConnect();
-    const { id } = await params;
-    const post = await Post.findById(id);
-    
-    if (!post) {
-      return NextResponse.json(
-        { success: false, error: 'Post not found' },
-        { status: 404 }
-      );
-    }
-    
-    return NextResponse.json({ success: true, data: post });
-  } catch (error) {
-    console.error('Error in GET /api/posts/[id]:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch post' },
-      { status: 500 }
-    );
-  }
-}
-
+// PUT: 投稿を更新
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await dbConnect();
-    const body = await request.json();
+    const session = await auth();
     
-    const { id } = await params;
-    const post = await Post.findByIdAndUpdate(
-      id,
-      body,
-      { new: true, runValidators: true }
-    );
-    
-    if (!post) {
+    if (!session) {
       return NextResponse.json(
-        { success: false, error: 'Post not found' },
-        { status: 404 }
+        { error: '認証が必要です' },
+        { status: 401 }
       );
     }
-    
-    return NextResponse.json({ success: true, data: post });
-  } catch (error) {
-    console.error('Error in PUT /api/posts/[id]:', error);
-    if (error && typeof error === 'object' && 'name' in error && error.name === 'ValidationError' && 'errors' in error) {
-      const validationError = error as {errors: Record<string, {message: string}>};
-      const messages = Object.values(validationError.errors).map((err) => err.message);
+
+    const { title, content } = await request.json();
+
+    if (!title || !content) {
       return NextResponse.json(
-        { success: false, error: messages.join(', ') },
+        { error: 'タイトルと内容は必須です' },
         { status: 400 }
       );
     }
+
+    await connectDB();
+    
+    const { id } = await params;
+    const post = await Post.findById(id);
+
+    if (!post) {
+      return NextResponse.json(
+        { error: '投稿が見つかりません' },
+        { status: 404 }
+      );
+    }
+
+    // 投稿者のみ編集可能
+    if (post.author.toString() !== session.user.id) {
+      return NextResponse.json(
+        { error: 'この投稿を編集する権限がありません' },
+        { status: 403 }
+      );
+    }
+
+    post.title = title;
+    post.content = content;
+    await post.save();
+
+    return NextResponse.json({
+      message: '投稿が更新されました',
+      post,
+    });
+  } catch (error) {
+    console.error('Update post error:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to update post' },
+      { error: '投稿の更新に失敗しました' },
       { status: 500 }
     );
   }
 }
 
+// DELETE: 投稿を削除
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await dbConnect();
+    const session = await auth();
+    
+    if (!session) {
+      return NextResponse.json(
+        { error: '認証が必要です' },
+        { status: 401 }
+      );
+    }
+
+    await connectDB();
     
     const { id } = await params;
-    const post = await Post.findByIdAndDelete(id);
-    
+    const post = await Post.findById(id);
+
     if (!post) {
       return NextResponse.json(
-        { success: false, error: 'Post not found' },
+        { error: '投稿が見つかりません' },
         { status: 404 }
       );
     }
-    
-    return NextResponse.json({ success: true, data: {} });
+
+    // 投稿者のみ削除可能
+    if (post.author.toString() !== session.user.id) {
+      return NextResponse.json(
+        { error: 'この投稿を削除する権限がありません' },
+        { status: 403 }
+      );
+    }
+
+    await post.deleteOne();
+
+    return NextResponse.json({
+      message: '投稿が削除されました',
+    });
   } catch (error) {
-    console.error('Error in DELETE /api/posts/[id]:', error);
+    console.error('Delete post error:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to delete post' },
+      { error: '投稿の削除に失敗しました' },
       { status: 500 }
     );
   }

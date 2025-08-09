@@ -36,22 +36,14 @@ function PasswordResetRequestForm() {
 
       if (response.ok) {
         setSuccess(true);
-        setEmail(''); // Clear form for security
+        setEmail('');
       } else {
-        // Error Handling Expert: Handle different error types
-        switch (data.type) {
-          case 'RATE_LIMIT_EXCEEDED':
-            setError(data.error);
-            break;
-          case 'VALIDATION_ERROR':
-            setError(data.error);
-            break;
-          default:
-            setError(data.error || 'エラーが発生しました。もう一度お試しください。');
-        }
+        // シンプルなエラー表示
+        setError(data.error || 'エラーが発生しました。もう一度お試しください。');
       }
     } catch {
-      setError('ネットワークエラーが発生しました。しばらく時間をおいて再試行してください。');
+      // ネットワークエラー
+      setError('サーバーとの通信に失敗しました。インターネット接続を確認してください。');
     } finally {
       setLoading(false);
     }
@@ -72,10 +64,10 @@ function PasswordResetRequestForm() {
   };
 
   const titleStyle: React.CSSProperties = {
-    fontSize: '28px',
+    fontSize: '32px',
     fontWeight: '700',
     textAlign: 'center',
-    marginBottom: '16px',
+    marginBottom: '32px',
     color: modern2025Styles.colors.text.primary,
     letterSpacing: '-0.025em',
   };
@@ -117,132 +109,36 @@ function PasswordResetRequestForm() {
     transition: 'color 0.2s',
   };
 
+  const alertStyle: React.CSSProperties = {
+    padding: '12px 16px',
+    borderRadius: '8px',
+    marginBottom: '20px',
+    fontSize: '14px',
+    fontWeight: '500',
+    animation: 'slideUp 0.3s ease-out',
+  };
+
+  const errorAlertStyle: React.CSSProperties = {
+    ...alertStyle,
+    backgroundColor: '#fee2e2',
+    color: '#991b1b',
+    border: '1px solid #fecaca',
+  };
+
+  const successAlertStyle: React.CSSProperties = {
+    ...alertStyle,
+    backgroundColor: '#dcfce7',
+    color: '#166534',
+    border: '1px solid #bbf7d0',
+  };
+
   if (!mounted) {
     return (
       <div style={containerStyle}>
         <div style={{ ...modern2025Styles.card, ...formContainerStyle }}>
           <h1 style={titleStyle}>パスワードリセット</h1>
-          <p style={subtitleStyle}>読み込み中...</p>
         </div>
       </div>
-    );
-  }
-
-  if (success) {
-    return (
-      <>
-        <style jsx global>{`
-          @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-          @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-          }
-        `}</style>
-        
-        <div style={containerStyle}>
-          <div style={{ 
-            ...modern2025Styles.card, 
-            ...formContainerStyle, 
-            animation: 'fadeIn 0.5s ease-out',
-            textAlign: 'center'
-          }}>
-            {/* Success Icon */}
-            <div style={{
-              width: '64px',
-              height: '64px',
-              backgroundColor: '#10b981',
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              margin: '0 auto 24px',
-              animation: 'pulse 2s infinite'
-            }}>
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" style={{ color: 'white' }}>
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  strokeWidth={3}
-                  stroke="currentColor"
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-            </div>
-
-            <h1 style={{
-              ...titleStyle,
-              color: modern2025Styles.colors.success,
-              marginBottom: '16px'
-            }}>
-              メールを送信しました
-            </h1>
-            
-            <p style={{
-              ...subtitleStyle,
-              marginBottom: '24px',
-              color: modern2025Styles.colors.text.primary
-            }}>
-              パスワードリセットの手順を記載したメールを送信しました。
-              <br />
-              メールボックスをご確認ください。
-            </p>
-
-            <div style={{
-              ...modern2025Styles.alert.success,
-              marginBottom: '24px',
-              textAlign: 'left'
-            }}>
-              <strong>ご確認ください：</strong>
-              <ul style={{ margin: '8px 0 0 16px', padding: 0 }}>
-                <li>メールが届かない場合は、迷惑メールフォルダもご確認ください</li>
-                <li>リセットリンクは1時間で有効期限が切れます</li>
-                <li>リンクは1回のみ使用可能です</li>
-              </ul>
-            </div>
-
-            <Link
-              href="/auth/signin"
-              style={{
-                ...modern2025Styles.button.primary,
-                ...(buttonHovered ? modern2025Styles.button.primaryHover : {}),
-                display: 'inline-block',
-                textDecoration: 'none',
-                marginBottom: '16px'
-              }}
-              onMouseEnter={() => setButtonHovered(true)}
-              onMouseLeave={() => setButtonHovered(false)}
-            >
-              ログインページに戻る
-            </Link>
-
-            <div style={linkContainerStyle}>
-              <button
-                onClick={() => {
-                  setSuccess(false);
-                  setEmail('');
-                }}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  ...linkStyle,
-                  cursor: 'pointer'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = modern2025Styles.colors.primaryDark;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = modern2025Styles.colors.primary;
-                }}
-              >
-                別のメールアドレスでリセット
-              </button>
-            </div>
-          </div>
-        </div>
-      </>
     );
   }
 
@@ -262,150 +158,163 @@ function PasswordResetRequestForm() {
           font-weight: ${modern2025Styles.input.placeholder.fontWeight};
         }
       `}</style>
-      
-      <div style={containerStyle}>
-        <div style={{ 
-          ...modern2025Styles.card, 
-          ...formContainerStyle, 
-          animation: 'fadeIn 0.5s ease-out' 
-        }}>
-          {/* Security Icon */}
-          <div style={{
-            width: '48px',
-            height: '48px',
-            backgroundColor: modern2025Styles.colors.primary,
-            borderRadius: '12px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            margin: '0 auto 24px'
-          }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style={{ color: 'white' }}>
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth={2}
-                stroke="currentColor"
-                d="M12 15v2m0 0v2m0-2h2m-2 0H10m2-5a2 2 0 100-4 2 2 0 000 4zm-7 9V8a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H7a2 2 0 01-2-2z"
-              />
-            </svg>
-          </div>
 
-          <h1 style={titleStyle}>パスワードリセット</h1>
-          <p style={subtitleStyle}>
-            パスワードをお忘れですか？
-            <br />
-            メールアドレスを入力して、リセット手順をお受け取りください。
-          </p>
+      <div style={containerStyle}>
+        <div style={{ ...modern2025Styles.card, ...formContainerStyle, animation: 'fadeIn 0.5s ease-out' }}>
+          <h1 style={titleStyle}>🔐 パスワードリセット</h1>
           
-          {error && (
-            <div style={{ 
-              ...modern2025Styles.alert.error, 
-              animation: 'slideUp 0.3s ease-out',
-              marginBottom: '20px'
-            }}>
-              {error}
+          {!success ? (
+            <>
+              <p style={subtitleStyle}>
+                パスワードをお忘れですか？<br />
+                メールアドレスを入力して、リセット手順をお受け取りください。
+              </p>
+
+              {error && (
+                <div style={errorAlertStyle}>
+                  {error}
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div>
+                  <label htmlFor="email" style={modern2025Styles.label}>
+                    メールアドレス
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    onFocus={() => setFocusedField('email')}
+                    onBlur={() => setFocusedField(null)}
+                    onMouseEnter={() => setHoveredField('email')}
+                    onMouseLeave={() => setHoveredField(null)}
+                    style={getFieldStyle('email')}
+                    placeholder="登録されたメールアドレスを入力"
+                    autoComplete="email"
+                    disabled={loading}
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  style={{
+                    ...modern2025Styles.button.primary,
+                    ...(buttonHovered ? modern2025Styles.button.primaryHover : {}),
+                    opacity: loading ? 0.7 : 1,
+                    cursor: loading ? 'not-allowed' : 'pointer',
+                    marginTop: '8px',
+                  }}
+                  onMouseEnter={() => !loading && setButtonHovered(true)}
+                  onMouseLeave={() => setButtonHovered(false)}
+                  disabled={loading}
+                >
+                  {loading ? 'メール送信中...' : 'リセットメールを送信'}
+                </button>
+
+                <div style={linkContainerStyle}>
+                  <span style={{ color: modern2025Styles.colors.text.secondary }}>
+                    パスワードを思い出しましたか？{' '}
+                  </span>
+                  <Link 
+                    href="/auth/signin" 
+                    style={linkStyle}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = modern2025Styles.colors.primaryDark;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = modern2025Styles.colors.primary;
+                    }}
+                  >
+                    ログイン
+                  </Link>
+                </div>
+
+                <div style={{ textAlign: 'center' }}>
+                  <Link 
+                    href="/" 
+                    style={{ ...linkStyle, fontSize: '13px', color: modern2025Styles.colors.text.secondary }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.textDecoration = 'underline';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.textDecoration = 'none';
+                    }}
+                  >
+                    ← ホームに戻る
+                  </Link>
+                </div>
+              </form>
+            </>
+          ) : (
+            <div style={{ textAlign: 'center', animation: 'fadeIn 0.5s ease-out' }}>
+              <div style={{ fontSize: '48px', marginBottom: '24px' }}>📧</div>
+              
+              <h2 style={{ 
+                fontSize: '24px', 
+                fontWeight: '600', 
+                marginBottom: '16px',
+                color: modern2025Styles.colors.text.primary 
+              }}>
+                メールを送信しました
+              </h2>
+              
+              <div style={successAlertStyle}>
+                パスワードリセットの手順をメールで送信しました。<br />
+                メールボックスをご確認ください。
+              </div>
+              
+              <p style={{ 
+                color: modern2025Styles.colors.text.secondary, 
+                fontSize: '14px',
+                marginTop: '24px',
+                lineHeight: '1.6'
+              }}>
+                メールが届かない場合は、迷惑メールフォルダをご確認ください。<br />
+                それでも見つからない場合は、数分後に再度お試しください。
+              </p>
+              
+              <div style={{ marginTop: '32px' }}>
+                <Link 
+                  href="/auth/signin" 
+                  style={{
+                    ...modern2025Styles.button.primary,
+                    textDecoration: 'none',
+                    display: 'inline-block',
+                    minWidth: '160px',
+                  }}
+                >
+                  ログインページへ
+                </Link>
+              </div>
+              
+              <div style={{ marginTop: '16px' }}>
+                <button
+                  onClick={() => {
+                    setSuccess(false);
+                    setError('');
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: modern2025Styles.colors.primary,
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    textDecoration: 'underline',
+                    padding: '8px',
+                  }}
+                >
+                  別のメールアドレスで試す
+                </button>
+              </div>
             </div>
           )}
-
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <div>
-              <label htmlFor="email" style={modern2025Styles.label}>
-                メールアドレス
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                onFocus={() => setFocusedField('email')}
-                onBlur={() => setFocusedField(null)}
-                onMouseEnter={() => setHoveredField('email')}
-                onMouseLeave={() => setHoveredField(null)}
-                style={getFieldStyle('email')}
-                placeholder="登録されたメールアドレスを入力"
-                autoComplete="email"
-                autoFocus
-                disabled={loading}
-              />
-            </div>
-
-            <button
-              type="submit"
-              style={{
-                ...modern2025Styles.button.primary,
-                ...(buttonHovered ? modern2025Styles.button.primaryHover : {}),
-                opacity: loading ? 0.7 : 1,
-                cursor: loading ? 'not-allowed' : 'pointer',
-                marginTop: '8px',
-              }}
-              onMouseEnter={() => !loading && setButtonHovered(true)}
-              onMouseLeave={() => setButtonHovered(false)}
-              disabled={loading || !email}
-            >
-              {loading ? (
-                <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ animation: 'spin 1s linear infinite' }}>
-                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" strokeOpacity="0.3"/>
-                    <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
-                  </svg>
-                  送信中...
-                </span>
-              ) : (
-                'リセットメールを送信'
-              )}
-            </button>
-
-            <div style={linkContainerStyle}>
-              <span style={{ color: modern2025Styles.colors.text.secondary }}>
-                パスワードを思い出しましたか？{' '}
-              </span>
-              <Link 
-                href="/auth/signin" 
-                style={linkStyle}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = modern2025Styles.colors.primaryDark;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = modern2025Styles.colors.primary;
-                }}
-              >
-                ログイン
-              </Link>
-            </div>
-
-            <div style={{ textAlign: 'center', marginTop: '16px' }}>
-              <Link 
-                href="/auth/signup" 
-                style={{
-                  color: modern2025Styles.colors.text.secondary,
-                  textDecoration: 'none',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  transition: 'color 0.2s',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = modern2025Styles.colors.primary;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = modern2025Styles.colors.text.secondary;
-                }}
-              >
-                アカウントをお持ちでない方はこちら
-              </Link>
-            </div>
-          </form>
         </div>
       </div>
-
-      <style jsx global>{`
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
     </>
   );
 }

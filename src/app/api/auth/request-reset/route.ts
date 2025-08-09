@@ -2,10 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import User from '@/lib/models/User';
 import PasswordReset from '@/models/PasswordReset';
-import { sendEmail, getPasswordResetEmailHtml } from '@/lib/mail/sendMail';
+import { getPasswordResetEmailHtml } from '@/lib/mail/sendMail';
+import { sendEmailEnhanced } from '@/lib/mail/sendMailEnhanced';
 import { z } from 'zod';
 
-// Validation Expert: Strong input validation schema
+// メールアドレスの検証スキーマ
 const requestResetSchema = z.object({
   email: z
     .string()
@@ -15,10 +16,10 @@ const requestResetSchema = z.object({
     .transform(email => email.toLowerCase().trim()),
 });
 
-// Security Expert: Rate limiting implementation (in-memory for demo, use Redis in production)
+// レート制限（シンプルなインメモリ実装）
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
-const RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
-const RATE_LIMIT_MAX_ATTEMPTS = 3; // Max 3 requests per 15 minutes per IP
+const RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15分
+const RATE_LIMIT_MAX_ATTEMPTS = 3; // 最大3回
 
 function checkRateLimit(clientIp: string): { allowed: boolean; resetTime?: number } {
   const now = Date.now();
@@ -30,7 +31,6 @@ function checkRateLimit(clientIp: string): { allowed: boolean; resetTime?: numbe
   }
 
   if (now > clientData.resetTime) {
-    // Reset the rate limit window
     rateLimitMap.set(clientIp, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
     return { allowed: true };
   }
@@ -43,48 +43,27 @@ function checkRateLimit(clientIp: string): { allowed: boolean; resetTime?: numbe
   return { allowed: true };
 }
 
-// DevOps Expert: Environment validation
-function validateEnvironment() {
-  const requiredVars = [
-    'EMAIL_SERVER_HOST',
-    'EMAIL_SERVER_PORT',
-    'EMAIL_SERVER_USER',
-    'EMAIL_SERVER_PASSWORD',
-    'EMAIL_FROM',
-    'NEXTAUTH_URL',
-  ];
-
-  const missing = requiredVars.filter(envVar => !process.env[envVar]);
-  
-  if (missing.length > 0) {
-    throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
-  }
-}
-
 export async function POST(request: NextRequest) {
   try {
-    // Performance Expert: Early validation before DB connection
-    validateEnvironment();
-
-    // Security Expert: Get client IP for rate limiting
+    // IPアドレス取得（レート制限用）
     const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0] || 
                     request.headers.get('x-real-ip') || 
                     'unknown';
 
-    // Check rate limiting
+    // レート制限チェック
     const rateLimitCheck = checkRateLimit(clientIp);
     if (!rateLimitCheck.allowed) {
       const remainingTime = Math.ceil((rateLimitCheck.resetTime! - Date.now()) / 60000);
       return NextResponse.json(
         { 
-          error: `リクエストが多すぎます。${remainingTime}分後に再試行してください`,
-          type: 'RATE_LIMIT_EXCEEDED'
+          error: `リクエストが多すぎます。${remainingTime}分後に再試行してください。`,
+          type: 'RATE_LIMIT',
         },
         { status: 429 }
       );
     }
 
-    // Validation Expert: Parse and validate request body
+    // リクエストボディの検証
     const body = await request.json();
     const parseResult = requestResetSchema.safeParse(body);
     
@@ -92,7 +71,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: parseResult.error.issues[0].message,
-          type: 'VALIDATION_ERROR'
+          type: 'VALIDATION',
         },
         { status: 400 }
       );
@@ -100,21 +79,41 @@ export async function POST(request: NextRequest) {
 
     const { email } = parseResult.data;
 
-    // Database Expert: Connect to database
-    await dbConnect();
+    // MongoDB接続
+    try {
+      await dbConnect();
+      console.log('✅ パスワードリセット: MongoDB接続成功');
+    } catch (dbError) {
+      console.error('❌ MongoDB接続エラー:', dbError);
+      // 開発環境では詳細なエラーを返す
+      if (process.env.NODE_ENV === 'development') {
+        return NextResponse.json(
+          { 
+            error: 'データベース接続エラー',
+            details: dbError instanceof Error ? dbError.message : 'Unknown database error',
+            type: 'DATABASE_CONNECTION',
+          },
+          { status: 500 }
+        );
+      }
+      // 本番環境では一般的なエラーメッセージ
+      return NextResponse.json(
+        { 
+          error: 'サーバーエラーが発生しました。時間をおいて再試行してください。',
+          type: 'INTERNAL_ERROR',
+        },
+        { status: 500 }
+      );
+    }
 
-    // Security Expert: Prevent timing attacks by always performing the same operations
-    // regardless of whether the email exists or not
+    // タイミング攻撃防止のための最小応答時間
     const startTime = Date.now();
 
-    // Check if user exists
+    // ユーザー検索
     const user = await User.findOne({ email }).select('name email emailVerified');
     
-    let resetToken = null;
-    let emailSent = false;
-
     if (user && user.emailVerified) {
-      // Database Expert: Clean up old reset tokens for this email
+      // 古いトークンを削除
       await PasswordReset.deleteMany({ 
         email, 
         $or: [
@@ -123,54 +122,68 @@ export async function POST(request: NextRequest) {
         ]
       });
 
-      // Check if user has recent unused token (prevent spam)
+      // 最近のトークンがあるか確認（スパム防止）
       const recentToken = await PasswordReset.findOne({
         email,
         used: false,
         expiresAt: { $gt: new Date() },
-        createdAt: { $gt: new Date(Date.now() - 5 * 60 * 1000) } // 5 minutes ago
+        createdAt: { $gt: new Date(Date.now() - 5 * 60 * 1000) } // 5分以内
       });
 
+      let resetToken;
       if (recentToken) {
-        // Don't create new token, but still pretend we sent email (prevent enumeration)
         resetToken = recentToken;
       } else {
-        // Create new password reset token
-        resetToken = new PasswordReset({ email });
+        // 新しいトークンを作成
+        const crypto = require('crypto');
+        const token = crypto.randomBytes(32).toString('hex');
+        const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1時間後
+        
+        resetToken = new PasswordReset({ 
+          email,
+          token,
+          expiresAt,
+          used: false
+        });
         await resetToken.save();
       }
 
-      // Email Expert: Send reset email
+      // リセットURLの生成
+      const host = request.headers.get('host');
+      const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
+      const baseUrl = host ? `${protocol}://${host}` : (process.env.NEXTAUTH_URL || 'http://localhost:3000');
+      const resetUrl = `${baseUrl}/auth/reset-password/${resetToken.token}`;
+
+      // メール送信（開発環境ではコンソール出力）
       try {
-        const resetUrl = `${process.env.NEXTAUTH_URL}/auth/reset-password/${resetToken.token}`;
-        const emailHtml = getPasswordResetEmailHtml(user.name, resetUrl);
-        
-        const emailResult = await sendEmail({
+        const emailHtml = getPasswordResetEmailHtml(user.name || 'ユーザー', resetUrl);
+        const emailResult = await sendEmailEnhanced({
           to: email,
           subject: 'パスワードリセットのご案内',
           html: emailHtml,
         });
 
-        emailSent = emailResult.success;
-        
-        if (!emailSent) {
-          console.error('Failed to send password reset email:', emailResult.error);
+        if (!emailResult.success) {
+          console.error('メール送信失敗:', emailResult.error);
+        } else {
+          console.log('✅ パスワードリセットメール送信成功:', email);
         }
-      } catch (error) {
-        console.error('Email sending error:', error);
+      } catch (emailError) {
+        console.error('メール送信エラー:', emailError);
+        // メール送信エラーでも成功レスポンスを返す（セキュリティのため）
       }
+    } else {
+      console.log('ℹ️ ユーザーが存在しないか、メール未確認:', email);
     }
 
-    // Security Expert: Implement timing attack prevention
-    // Ensure consistent response time regardless of user existence
+    // タイミング攻撃防止（最小500ms応答時間）
     const elapsedTime = Date.now() - startTime;
-    const minResponseTime = 500; // Minimum 500ms response time
-    
+    const minResponseTime = 500;
     if (elapsedTime < minResponseTime) {
       await new Promise(resolve => setTimeout(resolve, minResponseTime - elapsedTime));
     }
 
-    // UX Designer: Always return success message to prevent email enumeration
+    // 常に成功レスポンスを返す（メールアドレスの存在確認を防ぐため）
     return NextResponse.json(
       {
         message: 'パスワードリセットのメールを送信しました。メールボックスをご確認ください。',
@@ -180,37 +193,50 @@ export async function POST(request: NextRequest) {
     );
 
   } catch (error) {
-    console.error('Password reset request error:', error);
+    console.error('❌ パスワードリセットAPIエラー:', error);
     
-    // Error Handling Expert: User-friendly error message
+    // 開発環境では詳細なエラー情報を返す
+    if (process.env.NODE_ENV === 'development') {
+      return NextResponse.json(
+        { 
+          error: 'サーバーエラーが発生しました',
+          details: error instanceof Error ? error.message : 'Unknown error',
+          stack: error instanceof Error ? error.stack : undefined,
+          type: 'INTERNAL_ERROR',
+        },
+        { status: 500 }
+      );
+    }
+    
+    // 本番環境では一般的なエラーメッセージ
     return NextResponse.json(
       { 
-        error: 'サーバーエラーが発生しました。しばらく時間をおいて再試行してください。',
-        type: 'INTERNAL_ERROR'
+        error: 'サーバーエラーが発生しました。時間をおいて再試行してください。',
+        type: 'INTERNAL_ERROR',
       },
       { status: 500 }
     );
   }
 }
 
-// Security Expert: Only allow POST method
+// その他のHTTPメソッドは許可しない
 export async function GET() {
   return NextResponse.json(
-    { error: 'Method not allowed' },
+    { error: 'メソッドが許可されていません', type: 'METHOD_NOT_ALLOWED' },
     { status: 405 }
   );
 }
 
 export async function PUT() {
   return NextResponse.json(
-    { error: 'Method not allowed' },
+    { error: 'メソッドが許可されていません', type: 'METHOD_NOT_ALLOWED' },
     { status: 405 }
   );
 }
 
 export async function DELETE() {
   return NextResponse.json(
-    { error: 'Method not allowed' },
+    { error: 'メソッドが許可されていません', type: 'METHOD_NOT_ALLOWED' },
     { status: 405 }
   );
 }

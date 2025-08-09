@@ -30,7 +30,9 @@ export const modern2025Styles = {
       fontWeight: '500',
       color: '#000000', // 黒色で可読性向上
       backgroundColor: '#ffffff',
-      border: '2px solid transparent',
+      borderWidth: '2px',
+      borderStyle: 'solid',
+      borderColor: 'transparent',
       borderRadius: '12px',
       outline: 'none',
       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',

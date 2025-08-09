@@ -55,17 +55,11 @@ export default function Header() {
               <Button color="inherit" href="/board">
                 掲示板
               </Button>
-              <Button color="inherit" onClick={handleSignOut}>
-                ログアウト
-              </Button>
             </>
           ) : (
             <>
               <Button color="inherit" href="/auth/signin">
                 ログイン
-              </Button>
-              <Button color="inherit" href="/auth/signup">
-                新規登録
               </Button>
             </>
           )}

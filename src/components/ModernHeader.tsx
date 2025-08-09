@@ -373,21 +373,12 @@ export default function ModernHeader() {
               <div style={{ fontSize: '14px', color: '#475569', marginBottom: '8px' }}>
                 {session.user?.name || session.user?.email}
               </div>
-              <button
-                style={{ ...outlineButtonStyle, width: '100%' }}
-                onClick={handleSignOut}
-              >
-                ログアウト
-              </button>
             </div>
           </>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '12px 0' }}>
             <Link href="/auth/signin" style={{ ...outlineButtonStyle, textAlign: 'center' }}>
               ログイン
-            </Link>
-            <Link href="/auth/signup" style={{ ...buttonStyle, textAlign: 'center' }}>
-              新規登録
             </Link>
           </div>
         )}

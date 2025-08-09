@@ -249,7 +249,6 @@ export class EmailService {
     data: {
       userName: string;
       verificationUrl: string;
-      verificationCode?: string;
     }
   ): Promise<EmailSendResult> {
     const emailData: EmailTemplateData = {
@@ -278,7 +277,6 @@ export class EmailService {
     data: {
       userName: string;
       resetUrl: string;
-      resetCode?: string;
       expiresIn?: string;
     }
   ): Promise<EmailSendResult> {
@@ -348,8 +346,6 @@ ${appName}へのご登録ありがとうございます。
 メールアドレスを確認するには、以下のリンクをクリックしてください：
 ${data.verificationUrl}
 
-${data.verificationCode ? `確認コード: ${data.verificationCode}` : ''}
-
 このリンクは24時間有効です。
 
 このメールに心当たりがない場合は、無視してください。
@@ -367,8 +363,6 @@ ${appName}アカウントのパスワードリセットリクエストを受け�
 
 新しいパスワードを設定するには、以下のリンクをクリックしてください：
 ${data.resetUrl}
-
-${data.resetCode ? `リセットコード: ${data.resetCode}` : ''}
 
 このリンクは${data.expiresIn || '1時間'}のみ有効です。
 

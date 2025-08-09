@@ -72,18 +72,6 @@ export default function PureHeader() {
         ) : session ? (
           <>
             <span>{session.user?.name || session.user?.email}</span>
-            <button 
-              style={buttonStyle}
-              onClick={handleSignOut}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'transparent';
-              }}
-            >
-              ログアウト
-            </button>
           </>
         ) : (
           <button 

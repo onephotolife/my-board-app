@@ -14,14 +14,12 @@ import { EmailTemplateData } from '@/types/email';
 interface PasswordResetEmailProps extends EmailTemplateData {
   userName: string;
   resetUrl: string;
-  resetCode?: string;
   expiresIn?: string;
 }
 
 export const PasswordResetEmail: React.FC<PasswordResetEmailProps> = ({
   userName,
   resetUrl,
-  resetCode,
   expiresIn = '1時間',
   appName = 'Board App',
 }) => {
@@ -47,13 +45,6 @@ export const PasswordResetEmail: React.FC<PasswordResetEmailProps> = ({
           パスワードをリセット
         </Button>
       </Section>
-
-      {resetCode && (
-        <Section style={codeContainer}>
-          <Text style={codeLabel}>リセットコード</Text>
-          <Text style={codeText}>{resetCode}</Text>
-        </Section>
-      )}
 
       <Section style={warningContainer}>
         <Text style={warningTitle}>⚠️ 重要なお知らせ</Text>
@@ -96,7 +87,6 @@ export function PasswordResetEmailPreview() {
     <PasswordResetEmail
       userName="田中太郎"
       resetUrl="https://example.com/reset-password?token=xyz789"
-      resetCode="987654"
       expiresIn="1時間"
       appName="Board App"
     />

@@ -140,7 +140,6 @@ export async function POST(request: NextRequest) {
       const emailResult = await emailService.sendVerificationEmail(email, {
         userName: name,
         verificationUrl: verificationUrl,
-        verificationCode: emailVerificationToken.substring(0, 6).toUpperCase(), // 確認コードの短縮版
       });
 
       if (!emailResult.success) {

@@ -16,13 +16,11 @@ import { EmailTemplateData } from '@/types/email';
 interface VerificationEmailProps extends EmailTemplateData {
   userName: string;
   verificationUrl: string;
-  verificationCode?: string;
 }
 
 export const VerificationEmail: React.FC<VerificationEmailProps> = ({
   userName,
   verificationUrl,
-  verificationCode,
   appName = 'Board App',
 }) => {
   const previewText = `${userName}様、メールアドレスを確認してください`;
@@ -43,13 +41,6 @@ export const VerificationEmail: React.FC<VerificationEmailProps> = ({
           メールアドレスを確認
         </Button>
       </Section>
-
-      {verificationCode && (
-        <Section style={codeContainer}>
-          <Text style={codeLabel}>確認コード</Text>
-          <Text style={codeText}>{verificationCode}</Text>
-        </Section>
-      )}
 
       <Text style={paragraph}>
         このリンクは24時間有効です。期限が切れた場合は、
@@ -81,7 +72,6 @@ export function VerificationEmailPreview() {
     <VerificationEmail
       userName="田中太郎"
       verificationUrl="https://example.com/verify?token=abc123"
-      verificationCode="123456"
       appName="Board App"
     />
   );

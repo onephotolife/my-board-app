@@ -22,11 +22,9 @@ export default function TestEmailPage() {
       switch (template) {
         case 'verification':
           data.verificationUrl = 'http://localhost:3000/verify?token=test123';
-          data.verificationCode = '123456';
           break;
         case 'password-reset':
           data.resetUrl = 'http://localhost:3000/reset?token=test123';
-          data.resetCode = '987654';
           data.expiresIn = '1時間';
           break;
         case 'welcome':

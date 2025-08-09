@@ -159,7 +159,6 @@ export async function POST(request: NextRequest) {
         const emailResult = await emailService.sendPasswordResetEmail(email, {
           userName: user.name || 'ユーザー',
           resetUrl: resetUrl,
-          resetCode: resetToken.token.substring(0, 6).toUpperCase(), // リセットコードの短縮版
           expiresIn: '1時間',
         });
 

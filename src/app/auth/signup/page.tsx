@@ -4,32 +4,182 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { modern2025Styles } from '@/styles/modern-2025';
+import PasswordStrengthIndicator from '@/components/PasswordStrengthIndicator';
+import { PasswordStrengthResult, PasswordStrength } from '@/lib/utils/password-validation';
+
+interface FormData {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
+interface FormErrors {
+  name?: string;
+  email?: string;
+  password?: string;
+  confirmPassword?: string;
+}
 
 export default function SignUpPage() {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
     password: '',
     confirmPassword: '',
   });
+  const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [hoveredField, setHoveredField] = useState<string | null>(null);
   const [buttonHovered, setButtonHovered] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState<PasswordStrengthResult | null>(null);
+  const [emailChecking, setEmailChecking] = useState(false);
+  const [emailAvailable, setEmailAvailable] = useState<boolean | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  // メールアドレスの重複チェック（デバウンス付き）
+  useEffect(() => {
+    if (!formData.email || !isValidEmail(formData.email)) {
+      setEmailAvailable(null);
+      return;
+    }
+
+    const checkEmail = async () => {
+      setEmailChecking(true);
+      try {
+        const response = await fetch('/api/auth/check-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: formData.email }),
+        });
+        const data = await response.json();
+        setEmailAvailable(data.available);
+        if (!data.available) {
+          setFormErrors(prev => ({
+            ...prev,
+            email: 'このメールアドレスは既に登録されています',
+          }));
+        } else {
+          setFormErrors(prev => {
+            const { email, ...rest } = prev;
+            return rest;
+          });
+        }
+      } catch (error) {
+        console.error('Email check error:', error);
+      } finally {
+        setEmailChecking(false);
+      }
+    };
+
+    const timer = setTimeout(checkEmail, 500);
+    return () => clearTimeout(timer);
+  }, [formData.email]);
+
+  const isValidEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validateField = (name: keyof FormData, value: string): string | undefined => {
+    switch (name) {
+      case 'name':
+        if (!value.trim()) return '名前を入力してください';
+        if (value.length < 2) return '名前は2文字以上で入力してください';
+        if (value.length > 50) return '名前は50文字以内で入力してください';
+        return undefined;
+
+      case 'email':
+        if (!value) return 'メールアドレスを入力してください';
+        if (!isValidEmail(value)) return '有効なメールアドレスを入力してください';
+        return undefined;
+
+      case 'password':
+        if (!value) return 'パスワードを入力してください';
+        if (passwordStrength && !passwordStrength.isValid) {
+          return passwordStrength.errors[0] || 'パスワードが要件を満たしていません';
+        }
+        return undefined;
+
+      case 'confirmPassword':
+        if (!value) return 'パスワード（確認）を入力してください';
+        if (value !== formData.password) return 'パスワードが一致しません';
+        return undefined;
+
+      default:
+        return undefined;
+    }
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    // リアルタイムバリデーション
+    if (focusedField === name) {
+      const error = validateField(name as keyof FormData, value);
+      setFormErrors(prev => ({
+        ...prev,
+        [name]: error,
+      }));
+    }
+
+    // パスワード確認フィールドの再検証
+    if (name === 'password' && formData.confirmPassword) {
+      const confirmError = validateField('confirmPassword', formData.confirmPassword);
+      setFormErrors(prev => ({
+        ...prev,
+        confirmPassword: confirmError,
+      }));
+    }
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    const error = validateField(name as keyof FormData, value);
+    setFormErrors(prev => ({
+      ...prev,
+      [name]: error,
+    }));
+    setFocusedField(null);
+  };
+
+  const validateForm = (): boolean => {
+    const errors: FormErrors = {};
+    
+    // 各フィールドのバリデーション
+    (Object.keys(formData) as Array<keyof FormData>).forEach(key => {
+      const error = validateField(key, formData[key]);
+      if (error) {
+        errors[key] = error;
+      }
     });
+
+    // パスワード強度チェック
+    if (passwordStrength && passwordStrength.score < PasswordStrength.FAIR) {
+      errors.password = 'パスワードが弱すぎます。より強力なパスワードを設定してください';
+    }
+
+    // メール重複チェック
+    if (emailAvailable === false) {
+      errors.email = 'このメールアドレスは既に登録されています';
+    }
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -37,29 +187,8 @@ export default function SignUpPage() {
     setError('');
     setSuccess('');
 
-    // Validate passwords match
-    if (formData.password !== formData.confirmPassword) {
-      setError('パスワードが一致しません');
-      return;
-    }
-
-    if (formData.password.length < 8) {
-      setError('パスワードは8文字以上である必要があります');
-      return;
-    }
-
-    if (!/[A-Z]/.test(formData.password)) {
-      setError('パスワードには大文字を含める必要があります');
-      return;
-    }
-
-    if (!/[a-z]/.test(formData.password)) {
-      setError('パスワードには小文字を含める必要があります');
-      return;
-    }
-
-    if (!/[0-9]/.test(formData.password)) {
-      setError('パスワードには数字を含める必要があります');
+    if (!validateForm()) {
+      setError('入力内容を確認してください');
       return;
     }
 
@@ -72,8 +201,8 @@ export default function SignUpPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
+          name: formData.name.trim(),
+          email: formData.email.toLowerCase().trim(),
           password: formData.password,
         }),
       });
@@ -81,15 +210,28 @@ export default function SignUpPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || '登録に失敗しました');
+        if (data.suggestion) {
+          setError(`${data.error}\n${data.suggestion}`);
+        } else {
+          setError(data.error || '登録に失敗しました');
+        }
       } else {
-        setSuccess(data.message || '登録が完了しました！');
+        setSuccess(data.message || '登録が完了しました！確認メールをご確認ください。');
+        // フォームをクリア
+        setFormData({
+          name: '',
+          email: '',
+          password: '',
+          confirmPassword: '',
+        });
+        // 3秒後にサインインページへリダイレクト
         setTimeout(() => {
           router.push('/auth/signin');
         }, 3000);
       }
-    } catch {
-      setError('登録中にエラーが発生しました');
+    } catch (error) {
+      console.error('Registration error:', error);
+      setError('登録中にエラーが発生しました。もう一度お試しください。');
     } finally {
       setLoading(false);
     }
@@ -105,26 +247,28 @@ export default function SignUpPage() {
   };
 
   const formContainerStyle: React.CSSProperties = {
-    maxWidth: '440px',
+    background: 'white',
+    borderRadius: '20px',
+    boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
     width: '100%',
+    maxWidth: '480px',
+    padding: '40px',
+    animation: mounted ? 'slideUp 0.5s ease-out' : 'none',
   };
 
   const titleStyle: React.CSSProperties = {
     fontSize: '32px',
-    fontWeight: '700',
-    textAlign: 'center',
-    marginBottom: '32px',
+    fontWeight: 'bold',
     color: modern2025Styles.colors.text.primary,
-    letterSpacing: '-0.025em',
+    marginBottom: '10px',
+    textAlign: 'center',
   };
 
   const subtitleStyle: React.CSSProperties = {
-    fontSize: '14px',
-    fontWeight: '400',
-    textAlign: 'center',
-    marginTop: '-24px',
-    marginBottom: '32px',
+    fontSize: '16px',
     color: modern2025Styles.colors.text.secondary,
+    marginBottom: '30px',
+    textAlign: 'center',
   };
 
   const formStyle: React.CSSProperties = {
@@ -136,10 +280,17 @@ export default function SignUpPage() {
   const getFieldStyle = (fieldName: string) => {
     const isFocused = focusedField === fieldName;
     const isHovered = hoveredField === fieldName;
+    const hasError = formErrors[fieldName as keyof FormErrors];
     
     let style = { ...modern2025Styles.input.base };
     
-    if (isFocused) {
+    if (hasError) {
+      style = {
+        ...style,
+        borderColor: '#ef4444',
+        backgroundColor: '#fef2f2',
+      };
+    } else if (isFocused) {
       style = { ...style, ...modern2025Styles.input.focus };
     } else if (isHovered) {
       style = { ...style, ...modern2025Styles.input.hover };
@@ -157,174 +308,332 @@ export default function SignUpPage() {
   const linkStyle: React.CSSProperties = {
     color: modern2025Styles.colors.primary,
     textDecoration: 'none',
-    fontWeight: '600',
+    fontWeight: '500',
     transition: 'color 0.2s',
   };
 
+  const getButtonStyle = () => {
+    let style = { ...modern2025Styles.button.primary };
+    if (buttonHovered) {
+      style = { ...style, ...modern2025Styles.button.hover };
+    }
+    if (loading) {
+      style = { ...style, opacity: 0.7, cursor: 'not-allowed' };
+    }
+    return style;
+  };
+
   if (!mounted) {
-    return (
-      <div style={containerStyle}>
-        <div style={{ ...modern2025Styles.card, ...formContainerStyle }}>
-          <h1 style={titleStyle}>アカウント作成</h1>
-          <p style={subtitleStyle}>新しいアカウントを作成して始めましょう</p>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (
     <>
       <style jsx global>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
         @keyframes slideUp {
-          from { transform: translateY(20px); opacity: 0; }
-          to { transform: translateY(0); opacity: 1; }
-        }
-        input::placeholder {
-          color: ${modern2025Styles.input.placeholder.color};
-          font-weight: ${modern2025Styles.input.placeholder.fontWeight};
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
       `}</style>
-      
+
       <div style={containerStyle}>
-        <div style={{ ...modern2025Styles.card, ...formContainerStyle, animation: 'fadeIn 0.5s ease-out' }}>
-          <h1 style={titleStyle}>アカウント作成</h1>
-          <p style={subtitleStyle}>新しいアカウントを作成して始めましょう</p>
+        <div style={formContainerStyle}>
+          <div>
+            <h1 style={titleStyle}>新規登録</h1>
+            <p style={subtitleStyle}>アカウントを作成して始めましょう</p>
+          </div>
 
           {error && (
-            <div style={{ ...modern2025Styles.alert.error, animation: 'slideUp 0.3s ease-out' }}>
+            <div style={{
+              backgroundColor: '#fef2f2',
+              border: '1px solid #fecaca',
+              borderRadius: '8px',
+              padding: '12px',
+              color: '#dc2626',
+              fontSize: '14px',
+              whiteSpace: 'pre-line',
+            }}>
               {error}
             </div>
           )}
 
           {success && (
-            <div style={{ ...modern2025Styles.alert.success, animation: 'slideUp 0.3s ease-out' }}>
+            <div style={{
+              backgroundColor: '#f0fdf4',
+              border: '1px solid #86efac',
+              borderRadius: '8px',
+              padding: '12px',
+              color: '#16a34a',
+              fontSize: '14px',
+            }}>
               {success}
             </div>
           )}
 
           <form onSubmit={handleSubmit} style={formStyle}>
+            {/* 名前フィールド */}
             <div>
-              <label htmlFor="name" style={modern2025Styles.label}>
-                お名前
+              <label htmlFor="name" style={{ 
+                display: 'block', 
+                marginBottom: '8px',
+                fontSize: '14px',
+                fontWeight: '500',
+                color: modern2025Styles.colors.text.primary,
+              }}>
+                お名前 <span style={{ color: '#ef4444' }}>*</span>
               </label>
               <input
-                type="text"
                 id="name"
                 name="name"
+                type="text"
                 required
                 value={formData.name}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 onFocus={() => setFocusedField('name')}
-                onBlur={() => setFocusedField(null)}
                 onMouseEnter={() => setHoveredField('name')}
                 onMouseLeave={() => setHoveredField(null)}
                 style={getFieldStyle('name')}
                 placeholder="山田 太郎"
-                autoComplete="name"
-                autoFocus
+                disabled={loading}
               />
+              {formErrors.name && (
+                <div style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>
+                  {formErrors.name}
+                </div>
+              )}
             </div>
 
+            {/* メールアドレスフィールド */}
             <div>
-              <label htmlFor="email" style={modern2025Styles.label}>
-                メールアドレス
+              <label htmlFor="email" style={{ 
+                display: 'block', 
+                marginBottom: '8px',
+                fontSize: '14px',
+                fontWeight: '500',
+                color: modern2025Styles.colors.text.primary,
+              }}>
+                メールアドレス <span style={{ color: '#ef4444' }}>*</span>
               </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                required
-                value={formData.email}
-                onChange={handleChange}
-                onFocus={() => setFocusedField('email')}
-                onBlur={() => setFocusedField(null)}
-                onMouseEnter={() => setHoveredField('email')}
-                onMouseLeave={() => setHoveredField(null)}
-                style={getFieldStyle('email')}
-                placeholder="example@gmail.com"
-                autoComplete="email"
-              />
+              <div style={{ position: 'relative' }}>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  value={formData.email}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  onFocus={() => setFocusedField('email')}
+                  onMouseEnter={() => setHoveredField('email')}
+                  onMouseLeave={() => setHoveredField(null)}
+                  style={getFieldStyle('email')}
+                  placeholder="example@email.com"
+                  disabled={loading}
+                />
+                {emailChecking && (
+                  <div style={{
+                    position: 'absolute',
+                    right: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    fontSize: '12px',
+                    color: '#94a3b8',
+                  }}>
+                    確認中...
+                  </div>
+                )}
+                {!emailChecking && emailAvailable === true && formData.email && (
+                  <div style={{
+                    position: 'absolute',
+                    right: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    fontSize: '16px',
+                  }}>
+                    ✅
+                  </div>
+                )}
+              </div>
+              {formErrors.email && (
+                <div style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>
+                  {formErrors.email}
+                </div>
+              )}
             </div>
 
+            {/* パスワードフィールド */}
             <div>
-              <label htmlFor="password" style={modern2025Styles.label}>
-                パスワード
+              <label htmlFor="password" style={{ 
+                display: 'block', 
+                marginBottom: '8px',
+                fontSize: '14px',
+                fontWeight: '500',
+                color: modern2025Styles.colors.text.primary,
+              }}>
+                パスワード <span style={{ color: '#ef4444' }}>*</span>
               </label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                required
-                value={formData.password}
-                onChange={handleChange}
-                onFocus={() => setFocusedField('password')}
-                onBlur={() => setFocusedField(null)}
-                onMouseEnter={() => setHoveredField('password')}
-                onMouseLeave={() => setHoveredField(null)}
-                style={getFieldStyle('password')}
-                placeholder="8文字以上（大文字・小文字・数字を含む）"
-                autoComplete="new-password"
+              <div style={{ position: 'relative' }}>
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  value={formData.password}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  onFocus={() => setFocusedField('password')}
+                  onMouseEnter={() => setHoveredField('password')}
+                  onMouseLeave={() => setHoveredField(null)}
+                  style={{
+                    ...getFieldStyle('password'),
+                    paddingRight: '40px',
+                  }}
+                  placeholder="8文字以上の安全なパスワード"
+                  disabled={loading}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: 'absolute',
+                    right: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '16px',
+                    padding: '4px',
+                  }}
+                >
+                  {showPassword ? '👁️' : '👁️‍🗨️'}
+                </button>
+              </div>
+              {formErrors.password && (
+                <div style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>
+                  {formErrors.password}
+                </div>
+              )}
+              <PasswordStrengthIndicator
+                password={formData.password}
+                userInputs={[formData.name, formData.email]}
+                onStrengthChange={setPasswordStrength}
               />
             </div>
 
+            {/* パスワード確認フィールド */}
             <div>
-              <label htmlFor="confirmPassword" style={modern2025Styles.label}>
-                パスワード（確認）
+              <label htmlFor="confirmPassword" style={{ 
+                display: 'block', 
+                marginBottom: '8px',
+                fontSize: '14px',
+                fontWeight: '500',
+                color: modern2025Styles.colors.text.primary,
+              }}>
+                パスワード（確認） <span style={{ color: '#ef4444' }}>*</span>
               </label>
-              <input
-                type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                required
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                onFocus={() => setFocusedField('confirmPassword')}
-                onBlur={() => setFocusedField(null)}
-                onMouseEnter={() => setHoveredField('confirmPassword')}
-                onMouseLeave={() => setHoveredField(null)}
-                style={getFieldStyle('confirmPassword')}
-                placeholder="パスワードを再入力"
-              />
+              <div style={{ position: 'relative' }}>
+                <input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  required
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  onFocus={() => setFocusedField('confirmPassword')}
+                  onMouseEnter={() => setHoveredField('confirmPassword')}
+                  onMouseLeave={() => setHoveredField(null)}
+                  style={{
+                    ...getFieldStyle('confirmPassword'),
+                    paddingRight: '40px',
+                  }}
+                  placeholder="パスワードを再入力"
+                  disabled={loading}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  style={{
+                    position: 'absolute',
+                    right: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '16px',
+                    padding: '4px',
+                  }}
+                >
+                  {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
+                </button>
+              </div>
+              {formErrors.confirmPassword && (
+                <div style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>
+                  {formErrors.confirmPassword}
+                </div>
+              )}
+              {!formErrors.confirmPassword && formData.confirmPassword && formData.password === formData.confirmPassword && (
+                <div style={{ color: '#16a34a', fontSize: '12px', marginTop: '4px' }}>
+                  ✅ パスワードが一致しています
+                </div>
+              )}
             </div>
 
+            {/* 利用規約 */}
+            <div style={{
+              fontSize: '12px',
+              color: modern2025Styles.colors.text.secondary,
+              lineHeight: '1.5',
+            }}>
+              登録することで、
+              <Link href="/terms" style={{ ...linkStyle, fontSize: '12px' }}>
+                利用規約
+              </Link>
+              と
+              <Link href="/privacy" style={{ ...linkStyle, fontSize: '12px' }}>
+                プライバシーポリシー
+              </Link>
+              に同意したものとみなされます。
+            </div>
+
+            {/* 送信ボタン */}
             <button
               type="submit"
-              style={{
-                ...modern2025Styles.button.primary,
-                ...(buttonHovered ? modern2025Styles.button.primaryHover : {}),
-                opacity: loading || !!success ? 0.7 : 1,
-                cursor: loading || !!success ? 'not-allowed' : 'pointer',
-                marginTop: '8px',
-              }}
-              onMouseEnter={() => !loading && !success && setButtonHovered(true)}
+              disabled={loading || emailChecking}
+              style={getButtonStyle()}
+              onMouseEnter={() => setButtonHovered(true)}
               onMouseLeave={() => setButtonHovered(false)}
-              disabled={loading || !!success}
             >
-              {loading ? '登録中...' : '登録する'}
+              {loading ? '登録中...' : '新規登録'}
             </button>
-
-            <div style={linkContainerStyle}>
-              <span style={{ color: modern2025Styles.colors.text.secondary }}>
-                既にアカウントをお持ちですか？{' '}
-              </span>
-              <Link 
-                href="/auth/signin" 
-                style={linkStyle}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = modern2025Styles.colors.primaryDark;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = modern2025Styles.colors.primary;
-                }}
-              >
-                ログイン
-              </Link>
-            </div>
           </form>
+
+          <div style={linkContainerStyle}>
+            <span style={{ color: modern2025Styles.colors.text.secondary }}>
+              既にアカウントをお持ちですか？{' '}
+            </span>
+            <Link 
+              href="/auth/signin" 
+              style={linkStyle}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = modern2025Styles.colors.primary + 'dd';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = modern2025Styles.colors.primary;
+              }}
+            >
+              ログイン
+            </Link>
+          </div>
         </div>
       </div>
     </>

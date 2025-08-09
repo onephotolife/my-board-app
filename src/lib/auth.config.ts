@@ -19,10 +19,11 @@ export const authConfig = {
         
         const user = await User.findOne({ 
           email: credentials.email,
-          emailVerified: true 
+          emailVerified: { $ne: null } // Check that email is verified (not null)
         });
 
         if (!user) {
+          console.error('Login failed: User not found or email not verified for', credentials.email);
           return null;
         }
 

@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import User from '@/lib/models/User';
 import PasswordReset from '@/models/PasswordReset';
-import { getPasswordResetEmailHtml } from '@/lib/mail/sendMail';
-import { sendEmailEnhanced } from '@/lib/mail/sendMailEnhanced';
+import { getEmailService } from '@/lib/email/mailer-fixed';
 import { z } from 'zod';
 
 // メールアドレスの検証スキーマ
@@ -156,15 +155,16 @@ export async function POST(request: NextRequest) {
 
       // メール送信（開発環境ではコンソール出力）
       try {
-        const emailHtml = getPasswordResetEmailHtml(user.name || 'ユーザー', resetUrl);
-        const emailResult = await sendEmailEnhanced({
-          to: email,
-          subject: 'パスワードリセットのご案内',
-          html: emailHtml,
+        const emailService = getEmailService();
+        const emailResult = await emailService.sendPasswordResetEmail(email, {
+          userName: user.name || 'ユーザー',
+          resetUrl: resetUrl,
+          resetCode: resetToken.token.substring(0, 6).toUpperCase(), // リセットコードの短縮版
+          expiresIn: '1時間',
         });
 
         if (!emailResult.success) {
-          console.error('メール送信失敗:', emailResult.error);
+          console.error('メール送信失敗:', emailResult);
         } else {
           console.log('✅ パスワードリセットメール送信成功:', email);
         }

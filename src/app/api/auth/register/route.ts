@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db/mongodb-local';
 import User from '@/lib/models/User';
-import { sendEmail, getVerificationEmailHtml } from '@/lib/mail/sendMail';
+import { getEmailService } from '@/lib/email/mailer-fixed';
 import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
 
@@ -84,6 +84,12 @@ export async function POST(request: NextRequest) {
     const emailVerificationToken = uuidv4();
     const tokenExpiry = new Date();
     tokenExpiry.setHours(tokenExpiry.getHours() + 24); // 24時間有効
+    
+    console.log('📝 トークン生成:', {
+      token: emailVerificationToken,
+      expiry: tokenExpiry.toISOString(),
+      now: new Date().toISOString()
+    });
 
     // 新規ユーザーの作成
     let user;
@@ -128,17 +134,18 @@ export async function POST(request: NextRequest) {
       const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
       const baseUrl = host ? `${protocol}://${host}` : (process.env.NEXTAUTH_URL || 'http://localhost:3000');
       const verificationUrl = `${baseUrl}/auth/verify-email?token=${emailVerificationToken}`;
-      const emailHtml = getVerificationEmailHtml(name, verificationUrl);
       
-      const emailResult = await sendEmail({
-        to: email,
-        subject: '【会員制掲示板】メールアドレスの確認',
-        html: emailHtml,
+      // 新しいメールサービスを使用
+      const emailService = getEmailService();
+      const emailResult = await emailService.sendVerificationEmail(email, {
+        userName: name,
+        verificationUrl: verificationUrl,
+        verificationCode: emailVerificationToken.substring(0, 6).toUpperCase(), // 確認コードの短縮版
       });
 
       if (!emailResult.success) {
         // メール送信失敗時、ユーザーは作成されているが通知
-        console.error('Email send failed:', emailResult.error);
+        console.error('Email send failed:', emailResult);
         
         // ユーザーを削除するか、フラグを立てる
         await User.findByIdAndUpdate(user._id, {
@@ -153,6 +160,8 @@ export async function POST(request: NextRequest) {
           { status: 201 }
         );
       }
+
+      console.log('✅ 確認メール送信成功:', emailResult.messageId);
     } catch (emailError) {
       console.error('Email sending error:', emailError);
       

@@ -21,6 +21,8 @@
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^7.2.0",
     "@mui/material": "^7.2.0",
+    "@react-email/components": "^0.5.0",
+    "@react-email/render": "^1.2.0",
     "bcryptjs": "^3.0.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.17.0",
@@ -29,6 +31,7 @@
     "nodemailer": "^6.10.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "react-email": "^4.2.8",
     "resend": "^6.0.1",
     "styled-jsx": "^5.1.7",
     "uuid": "^11.1.0",
@@ -56,6 +59,7 @@
     "jest-environment-jsdom": "^30.0.5",
     "mongodb": "^6.18.0",
     "mongodb-memory-server": "^10.2.0",
+    "node-fetch": "^2.7.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

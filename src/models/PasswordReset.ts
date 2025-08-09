@@ -58,11 +58,15 @@ PasswordResetSchema.methods.isExpired = function(): boolean {
 // Pre-save middleware to generate token and set expiration
 PasswordResetSchema.pre('save', async function (next) {
   if (this.isNew) {
-    // Generate secure token
-    this.token = this.generateSecureToken();
+    // Generate secure token if not already set
+    if (!this.token) {
+      this.token = this.generateSecureToken();
+    }
     
-    // Set expiration to 1 hour from now (security best practice for 2025)
-    this.expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+    // Set expiration to 1 hour from now if not already set
+    if (!this.expiresAt) {
+      this.expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+    }
   }
   next();
 });

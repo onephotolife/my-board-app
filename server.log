@@ -1,0 +1,1705 @@
+
+> my-board-app@0.1.0 dev
+> next dev --turbopack
+
+   ▲ Next.js 15.4.5 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.50.253:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Compiled middleware in 84ms
+ ✓ Ready in 957ms
+ ⚠ Webpack is configured while Turbopack is not, which may cause problems.
+ ⚠ See instructions if you need to configure Turbopack:
+  https://nextjs.org/docs/app/api-reference/next-config-js/turbopack
+
+ ○ Compiling /api/email/send ...
+ ✓ Compiled /api/email/send in 1084ms
+🔧 Initializing email service with config: {
+  host: 'smtp.gmail.com',
+  port: 587,
+  user: 'one.photolife@gmail.com',
+  from: 'Board App <noreply@boardapp.com>'
+}
+[2025-08-09 12:50:17] DEBUG Creating transport: nodemailer (6.10.1; +https://nodemailer.com/; SMTP (pool)/6.10.1[client:6.10.1])
+[2025-08-09 12:50:17] DEBUG [9s0dxQp1S1Q] Resolved smtp.gmail.com as 64.233.188.108 [cache miss]
+[2025-08-09 12:50:17] INFO  [9s0dxQp1S1Q] Secure connection established to 64.233.188.108:465
+[2025-08-09 12:50:17] DEBUG [9s0dxQp1S1Q] S: 220 smtp.gmail.com ESMTP d9443c01a7336-241e899aa1asm229487485ad.122 - gsmtp
+[2025-08-09 12:50:17] DEBUG [9s0dxQp1S1Q] C: EHLO [127.0.0.1]
+[2025-08-09 12:50:17] DEBUG [9s0dxQp1S1Q] S: 250-smtp.gmail.com at your service, [114.168.230.82]
+[2025-08-09 12:50:17] DEBUG [9s0dxQp1S1Q] S: 250-SIZE 35882577
+[2025-08-09 12:50:17] DEBUG [9s0dxQp1S1Q] S: 250-8BITMIME
+[2025-08-09 12:50:17] DEBUG [9s0dxQp1S1Q] S: 250-AUTH LOGIN PLAIN XOAUTH2 PLAIN-CLIENTTOKEN OAUTHBEARER XOAUTH
+[2025-08-09 12:50:17] DEBUG [9s0dxQp1S1Q] S: 250-ENHANCEDSTATUSCODES
+[2025-08-09 12:50:17] DEBUG [9s0dxQp1S1Q] S: 250-PIPELINING
+[2025-08-09 12:50:17] DEBUG [9s0dxQp1S1Q] S: 250-CHUNKING
+[2025-08-09 12:50:17] DEBUG [9s0dxQp1S1Q] S: 250 SMTPUTF8
+[2025-08-09 12:50:17] DEBUG [9s0dxQp1S1Q] SMTP handshake finished
+[2025-08-09 12:50:17] DEBUG [9s0dxQp1S1Q] C: AUTH PLAIN AG9uZS5waG90b2xpZmVAZ21haWwuY29tAC8qIHNlY3JldCAqLw==
+[2025-08-09 12:50:18] DEBUG [9s0dxQp1S1Q] S: 235 2.7.0 Accepted
+[2025-08-09 12:50:18] INFO  [9s0dxQp1S1Q] User "one.photolife@gmail.com" authenticated
+[2025-08-09 12:50:18] DEBUG [9s0dxQp1S1Q] C: QUIT
+✅ Email service connected and verified successfully
+📤 Sending email (attempt 1/3)...
+[2025-08-09 12:50:18] DEBUG Sending mail using SMTP (pool)/6.10.1[client:6.10.1]
+[2025-08-09 12:50:18] INFO  [#1] Created new pool resource #1
+[2025-08-09 12:50:18] DEBUG [#1] Assigned message <719ff9cb-b243-4b97-37f7-a8ef93497c76@boardapp.com> to #1 (1)
+[2025-08-09 12:50:18] DEBUG [0AXcE4JMnZ4] Resolved smtp.gmail.com as 64.233.188.108 [cache hit]
+[2025-08-09 12:50:18] INFO  [0AXcE4JMnZ4] Secure connection established to 64.233.188.108:465
+[2025-08-09 12:50:18] DEBUG [9s0dxQp1S1Q] S: 221 2.0.0 closing connection d9443c01a7336-241e899aa1asm229487485ad.122 - gsmtp
+[2025-08-09 12:50:18] DEBUG [9s0dxQp1S1Q] Closing connection to the server using "end"
+[2025-08-09 12:50:18] INFO  [9s0dxQp1S1Q] Connection closed
+[2025-08-09 12:50:18] DEBUG [0AXcE4JMnZ4] S: 220 smtp.gmail.com ESMTP d9443c01a7336-241e8976cb1sm230840925ad.89 - gsmtp
+[2025-08-09 12:50:18] DEBUG [0AXcE4JMnZ4] C: EHLO [127.0.0.1]
+[2025-08-09 12:50:18] DEBUG [0AXcE4JMnZ4] S: 250-smtp.gmail.com at your service, [114.168.230.82]
+[2025-08-09 12:50:18] DEBUG [0AXcE4JMnZ4] S: 250-SIZE 35882577
+[2025-08-09 12:50:18] DEBUG [0AXcE4JMnZ4] S: 250-8BITMIME
+[2025-08-09 12:50:18] DEBUG [0AXcE4JMnZ4] S: 250-AUTH LOGIN PLAIN XOAUTH2 PLAIN-CLIENTTOKEN OAUTHBEARER XOAUTH
+[2025-08-09 12:50:18] DEBUG [0AXcE4JMnZ4] S: 250-ENHANCEDSTATUSCODES
+[2025-08-09 12:50:18] DEBUG [0AXcE4JMnZ4] S: 250-PIPELINING
+[2025-08-09 12:50:18] DEBUG [0AXcE4JMnZ4] S: 250-CHUNKING
+[2025-08-09 12:50:18] DEBUG [0AXcE4JMnZ4] S: 250 SMTPUTF8
+[2025-08-09 12:50:18] DEBUG [0AXcE4JMnZ4] SMTP handshake finished
+[2025-08-09 12:50:18] DEBUG [0AXcE4JMnZ4] C: AUTH PLAIN AG9uZS5waG90b2xpZmVAZ21haWwuY29tAC8qIHNlY3JldCAqLw==
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] S: 235 2.7.0 Accepted
+[2025-08-09 12:50:19] INFO  [0AXcE4JMnZ4] User "one.photolife@gmail.com" authenticated
+[2025-08-09 12:50:19] INFO  [#1] Sending message <719ff9cb-b243-4b97-37f7-a8ef93497c76@boardapp.com> using #1 to <one.photolife@gmail.com>
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] C: MAIL FROM:<noreply@boardapp.com>
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] S: 250 2.1.0 OK d9443c01a7336-241e8976cb1sm230840925ad.89 - gsmtp
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] C: RCPT TO:<one.photolife@gmail.com>
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] S: 250 2.1.5 OK d9443c01a7336-241e8976cb1sm230840925ad.89 - gsmtp
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] C: DATA
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] S: 354 Go ahead d9443c01a7336-241e8976cb1sm230840925ad.89 - gsmtp
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] From: Board App <noreply@boardapp.com>
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] To: one.photolife@gmail.com
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] Subject: =?UTF-8?Q?Board_App=E3=81=B8=E3=82=88=E3=81=86?=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4]  =?UTF-8?Q?=E3=81=93=E3=81=9D=EF=BC=81?=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] Message-ID: <719ff9cb-b243-4b97-37f7-a8ef93497c76@boardapp.com>
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] Date: Sat, 09 Aug 2025 12:50:18 +0000
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] MIME-Version: 1.0
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] Content-Type: multipart/alternative;
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4]  boundary="--_NmP-6ae421412bd71302-Part_1"
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] 
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] ----_NmP-6ae421412bd71302-Part_1
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] Content-Type: text/plain; charset=utf-8
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] Content-Transfer-Encoding: base64
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] 
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] Qm9hcmQgQXBw44G444KI44GG44GT44Gd77yBCgrjgZPjgpPjgavjgaHjga/jgIHjg4bjgrnjg4jj
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] g6bjg7zjgrbjg7zmp5gKCkJvYXJkIEFwcOOBuOOBrueZu+mMsuOBjOWujOS6huOBl+OBvuOBl+OB
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] n++8gQoK5LuK44GZ44GQ5aeL44KB44KL77yaCmh0dHA6Ly9sb2NhbGhvc3Q6MzAwMC9sb2dpbgoK
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] 44GU5LiN5piO44Gq54K544GM44GU44GW44GE44G+44GX44Gf44KJ44CB44GK5rCX6Lu944Gr44K1
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] 44Od44O844OI44OB44O844Og44G+44Gn44GK5ZWP44GE5ZCI44KP44Gb44GP44Gg44GV44GE44CC
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] CnN1cHBvcnRAYm9hcmRhcHAuY29tCgrntKDmmbTjgonjgZfjgYTkvZPpqJPjgpLjgYrlsYrjgZHj
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] gafjgY3jgovjgZPjgajjgpLmpb3jgZfjgb/jgavjgZfjgabjgYTjgb7jgZnvvIEKCkJvYXJkIEFw
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] cOODgeODvOODoA==
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] ----_NmP-6ae421412bd71302-Part_1
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] Content-Type: text/html; charset=utf-8
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] Content-Transfer-Encoding: quoted-printable
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] 
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html dir=3D"ltr" =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] lang=3D"en"><head><meta content=3D"text/html; charset=3DUTF-8" =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] http-equiv=3D"Content-Type"/><meta name=3D"x-apple-disable-message-reformat=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] ting"/></head><body style=3D"background-color:#f7fafc"><!--$--><!--html--><=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] !--head--><div style=3D"display:none;overflow:hidden;line-height:1px;opacit=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] y:0;max-height:0;max-width:0" data-skip-in-text=3D"true">=E3=83=86=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E3=82=B9=E3=83=88=E3=83=A6=E3=83=BC=E3=82=B6=E3=83=BC=E6=A7=98=E3=80=81Boa=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] rd App=E3=81=B8=E3=82=88=E3=81=86=E3=81=93=E3=81=9D=EF=BC=81<div>=C2=A0=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =EF=BB=BF</div></div><!--body--><table border=3D"0" width=3D"100%" =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] cellPadding=3D"0" cellSpacing=3D"0" role=3D"presentation" =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] align=3D"center"><tbody><tr><td style=3D"background-color:#f7fafc;font-fami=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] ly:-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] &quot;Helvetica Neue&quot;, Arial, sans-serif"><table align=3D"center" =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] width=3D"100%" border=3D"0" cellPadding=3D"0" cellSpacing=3D"0" =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] role=3D"presentation" style=3D"max-width:600px;background-color:#ffffff;mar=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] gin:0 auto;padding:20px 0 48px;margin-bottom:64px"><tbody><tr =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] style=3D"width:100%"><td><table align=3D"center" width=3D"100%" =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] border=3D"0" cellPadding=3D"0" cellSpacing=3D"0" role=3D"presentation" =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] style=3D"padding:32px 40px;text-align:center;border-bottom:1px solid =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] #e2e8f0"><tbody><tr><td><p style=3D"font-size:24px;line-height:24px;font-we=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] ight:bold;color:#667eea;margin:0;letter-spacing:-0.025em;margin-top:0;margi=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] n-bottom:0;margin-left:0;margin-right:0">Board App</p><p =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] style=3D"font-size:14px;line-height:24px;color:#718096;margin-top:8px;margi=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] n:8px 0 0 0;margin-right:0;margin-bottom:0;margin-left:0">Welcome!=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] </p></td></tr></tbody></table><table align=3D"center" width=3D"100%" =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] border=3D"0" cellPadding=3D"0" cellSpacing=3D"0" role=3D"presentation" =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] style=3D"padding:40px"><tbody><tr><td><table align=3D"center" =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] width=3D"100%" border=3D"0" cellPadding=3D"0" cellSpacing=3D"0" =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] role=3D"presentation" style=3D"text-align:center;padding:32px =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] 0;background-color:linear-gradient(135deg, #667eea 0%, #764ba2 =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] 100%);border-radius:8px;margin:0 0 32px"><tbody><tr><td><p =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] style=3D"font-size:48px;line-height:24px;margin:0 0 =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] 16px;margin-top:0;margin-right:0;margin-bottom:16px;margin-left:0">=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =F0=9F=8E=89</p><h1 style=3D"font-size:32px;font-weight:bold;color:#1a202c;=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] margin:0;letter-spacing:-0.025em">Board App<!-- -->=E3=81=B8=E3=82=88=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E3=81=86=E3=81=93=E3=81=9D=EF=BC=81</h1></td></tr></tbody></table><p =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] style=3D"font-size:16px;line-height:24px;color:#1a202c;margin:16px =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] 0;margin-top:16px;margin-right:0;margin-bottom:16px;margin-left:0">=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E3=81=93=E3=82=93=E3=81=AB=E3=81=A1=E3=81=AF=E3=80=81<!-- =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] -->=E3=83=86=E3=82=B9=E3=83=88=E3=83=A6=E3=83=BC=E3=82=B6=E3=83=BC<!-- =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] -->=E6=A7=98</p><p style=3D"font-size:16px;line-height:24px;color:#1a202c;m=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] argin:16px 0;margin-top:16px;margin-right:0;margin-bottom:16px;margin-left:=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] 0">Board App<!-- -->=E3=81=B8=E3=81=AE=E7=99=BB=E9=8C=B2=E3=81=8C=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E5=AE=8C=E4=BA=86=E3=81=97=E3=81=BE=E3=81=97=E3=81=9F=EF=BC=81 =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E7=A7=81=E3=81=9F=E3=81=A1=E3=81=AE=E3=82=B3=E3=83=9F=E3=83=A5=E3=83=8B=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E3=83=86=E3=82=A3=E3=81=AE=E4=B8=80=E5=93=A1=E3=81=A8=E3=81=AA=E3=81=A3=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E3=81=A6=E3=81=84=E3=81=9F=E3=81=A0=E3=81=8D=E3=80=81=E5=BF=83=E3=82=88=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E3=82=8A=E6=84=9F=E8=AC=9D=E7=94=B3=E3=81=97=E4=B8=8A=E3=81=92=E3=81=BE=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E3=81=99=E3=80=82</p><table align=3D"center" width=3D"100%" border=3D"0" =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] cellPadding=3D"0" cellSpacing=3D"0" role=3D"presentation" =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] style=3D"background-color:#f7fafc;border-radius:8px;padding:24px;margin:24p=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] x 0"><tbody><tr><td><p style=3D"font-size:18px;line-height:24px;font-weight=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] :bold;color:#1a202c;margin:0 0 16px;margin-top:0;margin-right:0;margin-bott=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] om:16px;margin-left:0">=E2=9C=A8 <!-- -->Board App<!-- =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] -->=E3=81=A7=E3=81=A7=E3=81=8D=E3=82=8B=E3=81=93=E3=81=A8</p><p =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] style=3D"font-size:15px;line-height:20px;color:#1a202c;margin:12px =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] 0;padding-left:8px;margin-top:12px;margin-right:0;margin-bottom:12px;margin=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] -left:0">=F0=9F=92=AC =E3=83=AA=E3=82=A2=E3=83=AB=E3=82=BF=E3=82=A4=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E3=83=A0=E3=83=87=E3=82=A3=E3=82=B9=E3=82=AB=E3=83=83=E3=82=B7=E3=83=A7=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E3=83=B3</p><p style=3D"font-size:15px;line-height:20px;color:#1a202c;marg=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] in:12px 0;padding-left:8px;margin-top:12px;margin-right:0;margin-bottom:12p=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] x;margin-left:0">=F0=9F=93=9D =E7=B0=A1=E5=8D=98=E3=81=AA=E6=8A=95=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E7=A8=BF=E4=BD=9C=E6=88=90=E3=81=A8=E7=B7=A8=E9=9B=86</p><p =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] style=3D"font-size:15px;line-height:20px;color:#1a202c;margin:12px =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] 0;padding-left:8px;margin-top:12px;margin-right:0;margin-bottom:12px;margin=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] -left:0">=F0=9F=91=A5 =E3=83=A1=E3=83=B3=E3=83=90=E3=83=BC=E9=99=90=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E5=AE=9A=E3=82=B3=E3=83=9F=E3=83=A5=E3=83=8B=E3=83=86=E3=82=A3</p><p =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] style=3D"font-size:15px;line-height:20px;color:#1a202c;margin:12px =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] 0;padding-left:8px;margin-top:12px;margin-right:0;margin-bottom:12px;margin=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] -left:0">=F0=9F=94=94 =E9=80=9A=E7=9F=A5=E6=A9=9F=E8=83=BD</p><p =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] style=3D"font-size:15px;line-height:20px;color:#1a202c;margin:12px =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] 0;padding-left:8px;margin-top:12px;margin-right:0;margin-bottom:12px;margin=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] -left:0">=F0=9F=94=92 =E3=82=BB=E3=82=AD=E3=83=A5=E3=82=A2=E3=81=AA=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E7=92=B0=E5=A2=83</p></td></tr></tbody></table><table align=3D"center" =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] width=3D"100%" border=3D"0" cellPadding=3D"0" cellSpacing=3D"0" =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] role=3D"presentation" style=3D"text-align:center;margin:32px =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] 0"><tbody><tr><td><a href=3D"http://localhost:3000/login" =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] style=3D"line-height:100%;text-decoration:none;display:inline-block;max-wid=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] th:100%;mso-padding-alt:0px;background:linear-gradient(135deg, #667eea 0%, =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] #764ba2 100%);border-radius:8px;color:#ffffff;font-size:16px;font-weight:bo=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] ld;text-align:center;padding:14px 32px;min-width:200px;box-shadow:0 4px 6px=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4]  rgba(0, 0, 0, 0.1);padding-top:14px;padding-right:32px;padding-bottom:14px=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] ;padding-left:32px" target=3D"_blank"><span><!--[if mso]><i =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] style=3D"mso-font-width:400%;mso-text-raise:21" hidden>&#8202;&#8202;&#8202=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] ;&#8202;</i><![endif]--></span><span style=3D"max-width:100%;display:inline=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] -block;line-height:120%;mso-padding-alt:0px;mso-text-raise:10.=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] 5px">=E4=BB=8A=E3=81=99=E3=81=90=E5=A7=8B=E3=82=81=E3=82=8B</span><span><!=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] --[if mso]><i style=3D"mso-font-width:400%" hidden>&#8202;&#8202;&#8202;&#8=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] 202;&#8203;</i><![endif]--></span></a></td></tr></tbody></table><table =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] align=3D"center" width=3D"100%" border=3D"0" cellPadding=3D"0" =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] cellSpacing=3D"0" role=3D"presentation" style=3D"margin:32px =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] 0;padding:24px;background-color:#faf5ff;border-radius:8px"><tbody><tr><td><=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] p style=3D"font-size:18px;line-height:24px;font-weight:bold;color:#1a202c;m=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] argin:0 0 24px;text-align:center;margin-top:0;margin-right:0;margin-bottom:=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] 24px;margin-left:0">=F0=9F=9A=80 =E3=81=AF=E3=81=98=E3=82=81=E6=96=B9=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E3=82=AC=E3=82=A4=E3=83=89</p><table align=3D"center" width=3D"100%" =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] border=3D"0" cellPadding=3D"0" cellSpacing=3D"0" role=3D"presentation"><tbo=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] dy style=3D"width:100%"><tr style=3D"width:100%"><td =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] data-id=3D"__react-email-column" style=3D"text-align:center;padding:0 =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] 16px"><p style=3D"font-size:24px;line-height:48px;font-weight:bold;color:#6=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] 67eea;background-color:#f7fafc;width:48px;height:48px;border-radius:50%;dis=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] play:inline-block;margin:0 auto 8px;margin-top:0;margin-right:auto;margin-b=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] ottom:8px;margin-left:auto">1</p><p style=3D"font-size:14px;line-height:24p=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] x;color:#1a202c;margin:0;margin-top:0;margin-bottom:0;margin-left:0;margin-=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] right:0">=E3=83=97=E3=83=AD=E3=83=95=E3=82=A3=E3=83=BC=E3=83=AB=E3=82=92=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E8=A8=AD=E5=AE=9A</p></td><td data-id=3D"__react-email-column" =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] style=3D"text-align:center;padding:0 16px"><p style=3D"font-size:24px;line-=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] height:48px;font-weight:bold;color:#667eea;background-color:#f7fafc;width:4=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] 8px;height:48px;border-radius:50%;display:inline-block;margin:0 auto =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] 8px;margin-top:0;margin-right:auto;margin-bottom:8px;margin-left:auto">2</p=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] ><p style=3D"font-size:14px;line-height:24px;color:#1a202c;margin:0;margin-=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] top:0;margin-bottom:0;margin-left:0;margin-right:0">=E6=9C=80=E5=88=9D=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E3=81=AE=E6=8A=95=E7=A8=BF=E3=82=92=E4=BD=9C=E6=88=90</p></td><td =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] data-id=3D"__react-email-column" style=3D"text-align:center;padding:0 =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] 16px"><p style=3D"font-size:24px;line-height:48px;font-weight:bold;color:#6=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] 67eea;background-color:#f7fafc;width:48px;height:48px;border-radius:50%;dis=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] play:inline-block;margin:0 auto 8px;margin-top:0;margin-right:auto;margin-b=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] ottom:8px;margin-left:auto">3</p><p style=3D"font-size:14px;line-height:24p=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] x;color:#1a202c;margin:0;margin-top:0;margin-bottom:0;margin-left:0;margin-=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] right:0">=E4=BB=96=E3=81=AE=E3=83=A1=E3=83=B3=E3=83=90=E3=83=BC=E3=81=A8=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E4=BA=A4=E6=B5=81</p></td></tr></tbody></table></td></tr></tbody></table><=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] table align=3D"center" width=3D"100%" border=3D"0" cellPadding=3D"0" =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] cellSpacing=3D"0" role=3D"presentation" style=3D"text-align:center;margin:2=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] 4px 0;padding:16px;background-color:#e6fffa;border-radius:8px"><tbody><tr><=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] td><p style=3D"font-size:15px;line-height:22px;color:#1a202c;margin:0;margi=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] n-top:0;margin-bottom:0;margin-left:0;margin-right:0">=E3=81=94=E4=B8=8D=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E6=98=8E=E3=81=AA=E7=82=B9=E3=81=8C=E3=81=94=E3=81=96=E3=81=84=E3=81=BE=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E3=81=97=E3=81=9F=E3=82=89=E3=80=81=E3=81=8A=E6=B0=97=E8=BB=BD=E3=81=AB<a =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] href=3D"mailto:support@boardapp.com" style=3D"color:#667eea;text-decoration=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] -line:none;text-decoration:underline;font-weight:600" =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] target=3D"_blank">=E3=82=B5=E3=83=9D=E3=83=BC=E3=83=88=E3=83=81=E3=83=BC=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E3=83=A0</a>=E3=81=BE=E3=81=A7=E3=81=8A=E5=95=8F=E3=81=84=E5=90=88=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E3=82=8F=E3=81=9B=E3=81=8F=E3=81=A0=E3=81=95=E3=81=84=E3=80=82</p></td></t=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] r></tbody></table><hr style=3D"border:none;border-top:1px solid =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] #e2e8f0;border-color:#e2e8f0;margin:32px 0"/><table align=3D"center" =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] width=3D"100%" border=3D"0" cellPadding=3D"0" cellSpacing=3D"0" =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] role=3D"presentation" style=3D"text-align:center;margin:24px =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] 0"><tbody><tr><td><p style=3D"font-size:14px;line-height:24px;color:#718096=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] ;margin:0 0 16px;text-transform:uppercase;letter-spacing:0.=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] 05em;margin-top:0;margin-right:0;margin-bottom:16px;margin-left:0">=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E3=83=95=E3=82=A9=E3=83=AD=E3=83=BC=E3=81=97=E3=81=A6=E6=9C=80=E6=96=B0=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E6=83=85=E5=A0=B1=E3=82=92=E3=82=B2=E3=83=83=E3=83=88</p><table =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] align=3D"center" width=3D"100%" border=3D"0" cellPadding=3D"0" =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] cellSpacing=3D"0" role=3D"presentation" style=3D"margin:0 =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] auto;max-width:300px"><tbody style=3D"width:100%"><tr =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] style=3D"width:100%"><td data-id=3D"__react-email-column" =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] style=3D"padding:0 12px"><a href=3D"#" style=3D"color:#667eea;text-decorati=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] on-line:none;font-size:14px;font-weight:600;text-decoration:none" =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] target=3D"_blank">Twitter</a></td><td data-id=3D"__react-email-column" =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] style=3D"padding:0 12px"><a href=3D"#" style=3D"color:#667eea;text-decorati=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] on-line:none;font-size:14px;font-weight:600;text-decoration:none" =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] target=3D"_blank">Facebook</a></td><td data-id=3D"__react-email-column" =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] style=3D"padding:0 12px"><a href=3D"#" style=3D"color:#667eea;text-decorati=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] on-line:none;font-size:14px;font-weight:600;text-decoration:none" =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] target=3D"_blank">LinkedIn</a></td></tr></tbody></table></td></tr></tbody><=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] /table><p style=3D"font-size:14px;line-height:24px;color:#718096;text-align=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] :center;margin:16px 0 0;font-style:italic;margin-top:16px;margin-right:0;ma=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] rgin-bottom:0;margin-left:0">=E7=B4=A0=E6=99=B4=E3=82=89=E3=81=97=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E3=81=84=E4=BD=93=E9=A8=93=E3=82=92=E3=81=8A=E5=B1=8A=E3=81=91=E3=81=A7=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E3=81=8D=E3=82=8B=E3=81=93=E3=81=A8=E3=82=92=E6=A5=BD=E3=81=97=E3=81=BF=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E3=81=AB=E3=81=97=E3=81=A6=E3=81=84=E3=81=BE=E3=81=99=EF=BC=81</p></td></t=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] r></tbody></table><hr style=3D"width:100%;border:none;border-top:1px solid =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] #eaeaea;border-color:#e2e8f0;margin:32px 40px"/><table align=3D"center" =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] width=3D"100%" border=3D"0" cellPadding=3D"0" cellSpacing=3D"0" =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] role=3D"presentation" style=3D"padding:0 40px 32px;text-align:center"><tbod=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] y><tr><td><p style=3D"font-size:12px;line-height:16px;color:#718096;margin:=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] 4px 0;margin-top:4px;margin-right:0;margin-bottom:4px;margin-left:0">=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E3=81=93=E3=81=AE=E3=83=A1=E3=83=BC=E3=83=AB=E3=81=AF <!-- -->Board App<!=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] -- --> =E3=81=8B=E3=82=89=E9=80=81=E4=BF=A1=E3=81=95=E3=82=8C=E3=81=BE=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =E3=81=97=E3=81=9F=E3=80=82</p><p style=3D"font-size:12px;line-height:16px;=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] color:#718096;margin:4px 0;margin-top:4px;margin-right:0;margin-bottom:4px;=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] margin-left:0">=E3=81=8A=E5=95=8F=E3=81=84=E5=90=88=E3=82=8F=E3=81=9B:<!-- =
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] --> <a href=3D"mailto:support@boardapp.com" style=3D"color:#667eea;text-dec=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] oration-line:none;text-decoration:underline" target=3D"_blank">support@boar=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] dapp.com</a></p><p style=3D"font-size:12px;line-height:16px;color:#718096;m=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] argin:4px 0;margin-top:4px;margin-right:0;margin-bottom:4px;margin-left:0">=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] =C2=A9 <!-- -->2025<!-- --> <!-- -->Board App<!-- -->. All rights reserved.=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] </p></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody><=
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] /table><!--/$--></body></html>
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] ----_NmP-6ae421412bd71302-Part_1--
+[2025-08-09 12:50:19] DEBUG [0AXcE4JMnZ4] .
+[2025-08-09 12:50:19] INFO  [0AXcE4JMnZ4] <22157 bytes encoded mime message (source size 22154 bytes)>
+[2025-08-09 12:50:21] DEBUG [0AXcE4JMnZ4] S: 250 2.0.0 OK  1754743821 d9443c01a7336-241e8976cb1sm230840925ad.89 - gsmtp
+✅ Email sent successfully: <719ff9cb-b243-4b97-37f7-a8ef93497c76@boardapp.com>
+ POST /api/email/send 200 in 5032ms
+[2025-08-09 12:50:21] DEBUG [#1] Connection #1 became available
+[2025-08-09 12:50:51] ERROR [0AXcE4JMnZ4] Timeout
+[2025-08-09 12:50:51] ERROR [#1] Pool Error for #1: Timeout
+[2025-08-09 12:50:51] DEBUG [0AXcE4JMnZ4] Closing connection to the server using "end"
+[2025-08-09 12:50:51] INFO  [#1] Connection #1 was closed
+[2025-08-09 12:50:51] INFO  [0AXcE4JMnZ4] Connection closed
+ ○ Compiling /test-email ...
+ ✓ Compiled /test-email in 1266ms
+ GET /test-email 200 in 1495ms
+ ✓ Compiled /api/auth/[...nextauth] in 251ms
+ GET /api/auth/session 200 in 1162ms
+ GET /api/auth/session 200 in 30ms
+ GET /api/auth/session 200 in 30ms
+ GET /api/auth/session 200 in 32ms
+📤 Sending email (attempt 1/3)...
+[2025-08-09 12:52:14] DEBUG Sending mail using SMTP (pool)/6.10.1[client:6.10.1]
+[2025-08-09 12:52:14] INFO  [#2] Created new pool resource #2
+[2025-08-09 12:52:14] DEBUG [#2] Assigned message <0444f497-adaa-1ea2-350e-92caa8cf13ba@boardapp.com> to #2 (1)
+[2025-08-09 12:52:14] DEBUG [bXtrMLOrYzU] Resolved smtp.gmail.com as 64.233.188.108 [cache hit]
+[2025-08-09 12:52:14] INFO  [bXtrMLOrYzU] Secure connection established to 64.233.188.108:465
+[2025-08-09 12:52:15] DEBUG [bXtrMLOrYzU] S: 220 smtp.gmail.com ESMTP 98e67ed59e1d1-32161227032sm10345901a91.12 - gsmtp
+[2025-08-09 12:52:15] DEBUG [bXtrMLOrYzU] C: EHLO [127.0.0.1]
+[2025-08-09 12:52:15] DEBUG [bXtrMLOrYzU] S: 250-smtp.gmail.com at your service, [114.168.230.82]
+[2025-08-09 12:52:15] DEBUG [bXtrMLOrYzU] S: 250-SIZE 35882577
+[2025-08-09 12:52:15] DEBUG [bXtrMLOrYzU] S: 250-8BITMIME
+[2025-08-09 12:52:15] DEBUG [bXtrMLOrYzU] S: 250-AUTH LOGIN PLAIN XOAUTH2 PLAIN-CLIENTTOKEN OAUTHBEARER XOAUTH
+[2025-08-09 12:52:15] DEBUG [bXtrMLOrYzU] S: 250-ENHANCEDSTATUSCODES
+[2025-08-09 12:52:15] DEBUG [bXtrMLOrYzU] S: 250-PIPELINING
+[2025-08-09 12:52:15] DEBUG [bXtrMLOrYzU] S: 250-CHUNKING
+[2025-08-09 12:52:15] DEBUG [bXtrMLOrYzU] S: 250 SMTPUTF8
+[2025-08-09 12:52:15] DEBUG [bXtrMLOrYzU] SMTP handshake finished
+[2025-08-09 12:52:15] DEBUG [bXtrMLOrYzU] C: AUTH PLAIN AG9uZS5waG90b2xpZmVAZ21haWwuY29tAC8qIHNlY3JldCAqLw==
+[2025-08-09 12:52:15] DEBUG [bXtrMLOrYzU] S: 235 2.7.0 Accepted
+[2025-08-09 12:52:15] INFO  [bXtrMLOrYzU] User "one.photolife@gmail.com" authenticated
+[2025-08-09 12:52:15] INFO  [#2] Sending message <0444f497-adaa-1ea2-350e-92caa8cf13ba@boardapp.com> using #2 to <one.photolife@gmail.com>
+[2025-08-09 12:52:15] DEBUG [bXtrMLOrYzU] C: MAIL FROM:<noreply@boardapp.com>
+[2025-08-09 12:52:15] DEBUG [bXtrMLOrYzU] S: 250 2.1.0 OK 98e67ed59e1d1-32161227032sm10345901a91.12 - gsmtp
+[2025-08-09 12:52:15] DEBUG [bXtrMLOrYzU] C: RCPT TO:<one.photolife@gmail.com>
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] S: 250 2.1.5 OK 98e67ed59e1d1-32161227032sm10345901a91.12 - gsmtp
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] C: DATA
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] S: 354 Go ahead 98e67ed59e1d1-32161227032sm10345901a91.12 - gsmtp
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] From: Board App <noreply@boardapp.com>
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] To: one.photolife@gmail.com
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] Subject: =?UTF-8?Q?Board_App=E3=81=B8=E3=82=88=E3=81=86?=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU]  =?UTF-8?Q?=E3=81=93=E3=81=9D=EF=BC=81?=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] Message-ID: <0444f497-adaa-1ea2-350e-92caa8cf13ba@boardapp.com>
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] Date: Sat, 09 Aug 2025 12:52:14 +0000
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] MIME-Version: 1.0
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] Content-Type: multipart/alternative;
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU]  boundary="--_NmP-440a4b2ab70ebd05-Part_1"
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] 
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] ----_NmP-440a4b2ab70ebd05-Part_1
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] Content-Type: text/plain; charset=utf-8
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] Content-Transfer-Encoding: base64
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] 
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] Qm9hcmQgQXBw44G444KI44GG44GT44Gd77yBCgrjgZPjgpPjgavjgaHjga/jgIHjg4bjgrnjg4jj
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] g6bjg7zjgrbjg7zmp5gKCkJvYXJkIEFwcOOBuOOBrueZu+mMsuOBjOWujOS6huOBl+OBvuOBl+OB
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] n++8gQoK5LuK44GZ44GQ5aeL44KB44KL77yaCmh0dHA6Ly9sb2NhbGhvc3Q6MzAwMC9sb2dpbgoK
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] 44GU5LiN5piO44Gq54K544GM44GU44GW44GE44G+44GX44Gf44KJ44CB44GK5rCX6Lu944Gr44K1
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] 44Od44O844OI44OB44O844Og44G+44Gn44GK5ZWP44GE5ZCI44KP44Gb44GP44Gg44GV44GE44CC
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] CnN1cHBvcnRAYm9hcmRhcHAuY29tCgrntKDmmbTjgonjgZfjgYTkvZPpqJPjgpLjgYrlsYrjgZHj
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] gafjgY3jgovjgZPjgajjgpLmpb3jgZfjgb/jgavjgZfjgabjgYTjgb7jgZnvvIEKCkJvYXJkIEFw
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] cOODgeODvOODoA==
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] ----_NmP-440a4b2ab70ebd05-Part_1
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] Content-Type: text/html; charset=utf-8
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] Content-Transfer-Encoding: quoted-printable
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] 
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html dir=3D"ltr" =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] lang=3D"en"><head><meta content=3D"text/html; charset=3DUTF-8" =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] http-equiv=3D"Content-Type"/><meta name=3D"x-apple-disable-message-reformat=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] ting"/></head><body style=3D"background-color:#f7fafc"><!--$--><!--html--><=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] !--head--><div style=3D"display:none;overflow:hidden;line-height:1px;opacit=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] y:0;max-height:0;max-width:0" data-skip-in-text=3D"true">=E3=83=86=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E3=82=B9=E3=83=88=E3=83=A6=E3=83=BC=E3=82=B6=E3=83=BC=E6=A7=98=E3=80=81Boa=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] rd App=E3=81=B8=E3=82=88=E3=81=86=E3=81=93=E3=81=9D=EF=BC=81<div>=C2=A0=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =EF=BB=BF</div></div><!--body--><table border=3D"0" width=3D"100%" =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] cellPadding=3D"0" cellSpacing=3D"0" role=3D"presentation" =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] align=3D"center"><tbody><tr><td style=3D"background-color:#f7fafc;font-fami=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] ly:-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] &quot;Helvetica Neue&quot;, Arial, sans-serif"><table align=3D"center" =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] width=3D"100%" border=3D"0" cellPadding=3D"0" cellSpacing=3D"0" =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] role=3D"presentation" style=3D"max-width:600px;background-color:#ffffff;mar=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] gin:0 auto;padding:20px 0 48px;margin-bottom:64px"><tbody><tr =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] style=3D"width:100%"><td><table align=3D"center" width=3D"100%" =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] border=3D"0" cellPadding=3D"0" cellSpacing=3D"0" role=3D"presentation" =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] style=3D"padding:32px 40px;text-align:center;border-bottom:1px solid =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] #e2e8f0"><tbody><tr><td><p style=3D"font-size:24px;line-height:24px;font-we=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] ight:bold;color:#667eea;margin:0;letter-spacing:-0.025em;margin-top:0;margi=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] n-bottom:0;margin-left:0;margin-right:0">Board App</p><p =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] style=3D"font-size:14px;line-height:24px;color:#718096;margin-top:8px;margi=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] n:8px 0 0 0;margin-right:0;margin-bottom:0;margin-left:0">Welcome!=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] </p></td></tr></tbody></table><table align=3D"center" width=3D"100%" =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] border=3D"0" cellPadding=3D"0" cellSpacing=3D"0" role=3D"presentation" =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] style=3D"padding:40px"><tbody><tr><td><table align=3D"center" =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] width=3D"100%" border=3D"0" cellPadding=3D"0" cellSpacing=3D"0" =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] role=3D"presentation" style=3D"text-align:center;padding:32px =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] 0;background-color:linear-gradient(135deg, #667eea 0%, #764ba2 =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] 100%);border-radius:8px;margin:0 0 32px"><tbody><tr><td><p =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] style=3D"font-size:48px;line-height:24px;margin:0 0 =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] 16px;margin-top:0;margin-right:0;margin-bottom:16px;margin-left:0">=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =F0=9F=8E=89</p><h1 style=3D"font-size:32px;font-weight:bold;color:#1a202c;=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] margin:0;letter-spacing:-0.025em">Board App<!-- -->=E3=81=B8=E3=82=88=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E3=81=86=E3=81=93=E3=81=9D=EF=BC=81</h1></td></tr></tbody></table><p =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] style=3D"font-size:16px;line-height:24px;color:#1a202c;margin:16px =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] 0;margin-top:16px;margin-right:0;margin-bottom:16px;margin-left:0">=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E3=81=93=E3=82=93=E3=81=AB=E3=81=A1=E3=81=AF=E3=80=81<!-- =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] -->=E3=83=86=E3=82=B9=E3=83=88=E3=83=A6=E3=83=BC=E3=82=B6=E3=83=BC<!-- =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] -->=E6=A7=98</p><p style=3D"font-size:16px;line-height:24px;color:#1a202c;m=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] argin:16px 0;margin-top:16px;margin-right:0;margin-bottom:16px;margin-left:=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] 0">Board App<!-- -->=E3=81=B8=E3=81=AE=E7=99=BB=E9=8C=B2=E3=81=8C=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E5=AE=8C=E4=BA=86=E3=81=97=E3=81=BE=E3=81=97=E3=81=9F=EF=BC=81 =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E7=A7=81=E3=81=9F=E3=81=A1=E3=81=AE=E3=82=B3=E3=83=9F=E3=83=A5=E3=83=8B=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E3=83=86=E3=82=A3=E3=81=AE=E4=B8=80=E5=93=A1=E3=81=A8=E3=81=AA=E3=81=A3=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E3=81=A6=E3=81=84=E3=81=9F=E3=81=A0=E3=81=8D=E3=80=81=E5=BF=83=E3=82=88=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E3=82=8A=E6=84=9F=E8=AC=9D=E7=94=B3=E3=81=97=E4=B8=8A=E3=81=92=E3=81=BE=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E3=81=99=E3=80=82</p><table align=3D"center" width=3D"100%" border=3D"0" =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] cellPadding=3D"0" cellSpacing=3D"0" role=3D"presentation" =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] style=3D"background-color:#f7fafc;border-radius:8px;padding:24px;margin:24p=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] x 0"><tbody><tr><td><p style=3D"font-size:18px;line-height:24px;font-weight=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] :bold;color:#1a202c;margin:0 0 16px;margin-top:0;margin-right:0;margin-bott=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] om:16px;margin-left:0">=E2=9C=A8 <!-- -->Board App<!-- =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] -->=E3=81=A7=E3=81=A7=E3=81=8D=E3=82=8B=E3=81=93=E3=81=A8</p><p =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] style=3D"font-size:15px;line-height:20px;color:#1a202c;margin:12px =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] 0;padding-left:8px;margin-top:12px;margin-right:0;margin-bottom:12px;margin=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] -left:0">=E2=9C=A8 =E3=83=AA=E3=82=A2=E3=83=AB=E3=82=BF=E3=82=A4=E3=83=A0=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E3=83=81=E3=83=A3=E3=83=83=E3=83=88</p><p style=3D"font-size:15px;line-hei=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] ght:20px;color:#1a202c;margin:12px 0;padding-left:8px;margin-top:12px;margi=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] n-right:0;margin-bottom:12px;margin-left:0">=F0=9F=93=8A =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E5=88=86=E6=9E=90=E3=83=80=E3=83=83=E3=82=B7=E3=83=A5=E3=83=9C=E3=83=BC=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E3=83=89</p><p style=3D"font-size:15px;line-height:20px;color:#1a202c;marg=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] in:12px 0;padding-left:8px;margin-top:12px;margin-right:0;margin-bottom:12p=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] x;margin-left:0">=F0=9F=94=92 =E3=82=BB=E3=82=AD=E3=83=A5=E3=82=A2=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E3=81=AA=E7=92=B0=E5=A2=83</p></td></tr></tbody></table><table =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] align=3D"center" width=3D"100%" border=3D"0" cellPadding=3D"0" =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] cellSpacing=3D"0" role=3D"presentation" style=3D"text-align:center;margin:3=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] 2px 0"><tbody><tr><td><a href=3D"http://localhost:3000/login" =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] style=3D"line-height:100%;text-decoration:none;display:inline-block;max-wid=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] th:100%;mso-padding-alt:0px;background:linear-gradient(135deg, #667eea 0%, =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] #764ba2 100%);border-radius:8px;color:#ffffff;font-size:16px;font-weight:bo=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] ld;text-align:center;padding:14px 32px;min-width:200px;box-shadow:0 4px 6px=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU]  rgba(0, 0, 0, 0.1);padding-top:14px;padding-right:32px;padding-bottom:14px=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] ;padding-left:32px" target=3D"_blank"><span><!--[if mso]><i =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] style=3D"mso-font-width:400%;mso-text-raise:21" hidden>&#8202;&#8202;&#8202=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] ;&#8202;</i><![endif]--></span><span style=3D"max-width:100%;display:inline=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] -block;line-height:120%;mso-padding-alt:0px;mso-text-raise:10.=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] 5px">=E4=BB=8A=E3=81=99=E3=81=90=E5=A7=8B=E3=82=81=E3=82=8B</span><span><!=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] --[if mso]><i style=3D"mso-font-width:400%" hidden>&#8202;&#8202;&#8202;&#8=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] 202;&#8203;</i><![endif]--></span></a></td></tr></tbody></table><table =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] align=3D"center" width=3D"100%" border=3D"0" cellPadding=3D"0" =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] cellSpacing=3D"0" role=3D"presentation" style=3D"margin:32px =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] 0;padding:24px;background-color:#faf5ff;border-radius:8px"><tbody><tr><td><=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] p style=3D"font-size:18px;line-height:24px;font-weight:bold;color:#1a202c;m=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] argin:0 0 24px;text-align:center;margin-top:0;margin-right:0;margin-bottom:=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] 24px;margin-left:0">=F0=9F=9A=80 =E3=81=AF=E3=81=98=E3=82=81=E6=96=B9=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E3=82=AC=E3=82=A4=E3=83=89</p><table align=3D"center" width=3D"100%" =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] border=3D"0" cellPadding=3D"0" cellSpacing=3D"0" role=3D"presentation"><tbo=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] dy style=3D"width:100%"><tr style=3D"width:100%"><td =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] data-id=3D"__react-email-column" style=3D"text-align:center;padding:0 =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] 16px"><p style=3D"font-size:24px;line-height:48px;font-weight:bold;color:#6=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] 67eea;background-color:#f7fafc;width:48px;height:48px;border-radius:50%;dis=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] play:inline-block;margin:0 auto 8px;margin-top:0;margin-right:auto;margin-b=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] ottom:8px;margin-left:auto">1</p><p style=3D"font-size:14px;line-height:24p=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] x;color:#1a202c;margin:0;margin-top:0;margin-bottom:0;margin-left:0;margin-=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] right:0">=E3=83=97=E3=83=AD=E3=83=95=E3=82=A3=E3=83=BC=E3=83=AB=E3=82=92=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E8=A8=AD=E5=AE=9A</p></td><td data-id=3D"__react-email-column" =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] style=3D"text-align:center;padding:0 16px"><p style=3D"font-size:24px;line-=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] height:48px;font-weight:bold;color:#667eea;background-color:#f7fafc;width:4=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] 8px;height:48px;border-radius:50%;display:inline-block;margin:0 auto =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] 8px;margin-top:0;margin-right:auto;margin-bottom:8px;margin-left:auto">2</p=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] ><p style=3D"font-size:14px;line-height:24px;color:#1a202c;margin:0;margin-=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] top:0;margin-bottom:0;margin-left:0;margin-right:0">=E6=9C=80=E5=88=9D=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E3=81=AE=E6=8A=95=E7=A8=BF=E3=82=92=E4=BD=9C=E6=88=90</p></td><td =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] data-id=3D"__react-email-column" style=3D"text-align:center;padding:0 =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] 16px"><p style=3D"font-size:24px;line-height:48px;font-weight:bold;color:#6=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] 67eea;background-color:#f7fafc;width:48px;height:48px;border-radius:50%;dis=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] play:inline-block;margin:0 auto 8px;margin-top:0;margin-right:auto;margin-b=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] ottom:8px;margin-left:auto">3</p><p style=3D"font-size:14px;line-height:24p=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] x;color:#1a202c;margin:0;margin-top:0;margin-bottom:0;margin-left:0;margin-=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] right:0">=E4=BB=96=E3=81=AE=E3=83=A1=E3=83=B3=E3=83=90=E3=83=BC=E3=81=A8=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E4=BA=A4=E6=B5=81</p></td></tr></tbody></table></td></tr></tbody></table><=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] table align=3D"center" width=3D"100%" border=3D"0" cellPadding=3D"0" =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] cellSpacing=3D"0" role=3D"presentation" style=3D"text-align:center;margin:2=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] 4px 0;padding:16px;background-color:#e6fffa;border-radius:8px"><tbody><tr><=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] td><p style=3D"font-size:15px;line-height:22px;color:#1a202c;margin:0;margi=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] n-top:0;margin-bottom:0;margin-left:0;margin-right:0">=E3=81=94=E4=B8=8D=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E6=98=8E=E3=81=AA=E7=82=B9=E3=81=8C=E3=81=94=E3=81=96=E3=81=84=E3=81=BE=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E3=81=97=E3=81=9F=E3=82=89=E3=80=81=E3=81=8A=E6=B0=97=E8=BB=BD=E3=81=AB<a =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] href=3D"mailto:support@boardapp.com" style=3D"color:#667eea;text-decoration=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] -line:none;text-decoration:underline;font-weight:600" =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] target=3D"_blank">=E3=82=B5=E3=83=9D=E3=83=BC=E3=83=88=E3=83=81=E3=83=BC=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E3=83=A0</a>=E3=81=BE=E3=81=A7=E3=81=8A=E5=95=8F=E3=81=84=E5=90=88=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E3=82=8F=E3=81=9B=E3=81=8F=E3=81=A0=E3=81=95=E3=81=84=E3=80=82</p></td></t=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] r></tbody></table><hr style=3D"border:none;border-top:1px solid =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] #e2e8f0;border-color:#e2e8f0;margin:32px 0"/><table align=3D"center" =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] width=3D"100%" border=3D"0" cellPadding=3D"0" cellSpacing=3D"0" =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] role=3D"presentation" style=3D"text-align:center;margin:24px =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] 0"><tbody><tr><td><p style=3D"font-size:14px;line-height:24px;color:#718096=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] ;margin:0 0 16px;text-transform:uppercase;letter-spacing:0.=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] 05em;margin-top:0;margin-right:0;margin-bottom:16px;margin-left:0">=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E3=83=95=E3=82=A9=E3=83=AD=E3=83=BC=E3=81=97=E3=81=A6=E6=9C=80=E6=96=B0=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E6=83=85=E5=A0=B1=E3=82=92=E3=82=B2=E3=83=83=E3=83=88</p><table =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] align=3D"center" width=3D"100%" border=3D"0" cellPadding=3D"0" =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] cellSpacing=3D"0" role=3D"presentation" style=3D"margin:0 =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] auto;max-width:300px"><tbody style=3D"width:100%"><tr =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] style=3D"width:100%"><td data-id=3D"__react-email-column" =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] style=3D"padding:0 12px"><a href=3D"#" style=3D"color:#667eea;text-decorati=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] on-line:none;font-size:14px;font-weight:600;text-decoration:none" =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] target=3D"_blank">Twitter</a></td><td data-id=3D"__react-email-column" =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] style=3D"padding:0 12px"><a href=3D"#" style=3D"color:#667eea;text-decorati=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] on-line:none;font-size:14px;font-weight:600;text-decoration:none" =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] target=3D"_blank">Facebook</a></td><td data-id=3D"__react-email-column" =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] style=3D"padding:0 12px"><a href=3D"#" style=3D"color:#667eea;text-decorati=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] on-line:none;font-size:14px;font-weight:600;text-decoration:none" =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] target=3D"_blank">LinkedIn</a></td></tr></tbody></table></td></tr></tbody><=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] /table><p style=3D"font-size:14px;line-height:24px;color:#718096;text-align=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] :center;margin:16px 0 0;font-style:italic;margin-top:16px;margin-right:0;ma=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] rgin-bottom:0;margin-left:0">=E7=B4=A0=E6=99=B4=E3=82=89=E3=81=97=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E3=81=84=E4=BD=93=E9=A8=93=E3=82=92=E3=81=8A=E5=B1=8A=E3=81=91=E3=81=A7=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E3=81=8D=E3=82=8B=E3=81=93=E3=81=A8=E3=82=92=E6=A5=BD=E3=81=97=E3=81=BF=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E3=81=AB=E3=81=97=E3=81=A6=E3=81=84=E3=81=BE=E3=81=99=EF=BC=81</p></td></t=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] r></tbody></table><hr style=3D"width:100%;border:none;border-top:1px solid =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] #eaeaea;border-color:#e2e8f0;margin:32px 40px"/><table align=3D"center" =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] width=3D"100%" border=3D"0" cellPadding=3D"0" cellSpacing=3D"0" =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] role=3D"presentation" style=3D"padding:0 40px 32px;text-align:center"><tbod=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] y><tr><td><p style=3D"font-size:12px;line-height:16px;color:#718096;margin:=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] 4px 0;margin-top:4px;margin-right:0;margin-bottom:4px;margin-left:0">=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E3=81=93=E3=81=AE=E3=83=A1=E3=83=BC=E3=83=AB=E3=81=AF <!-- -->Board App<!=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] -- --> =E3=81=8B=E3=82=89=E9=80=81=E4=BF=A1=E3=81=95=E3=82=8C=E3=81=BE=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =E3=81=97=E3=81=9F=E3=80=82</p><p style=3D"font-size:12px;line-height:16px;=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] color:#718096;margin:4px 0;margin-top:4px;margin-right:0;margin-bottom:4px;=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] margin-left:0">=E3=81=8A=E5=95=8F=E3=81=84=E5=90=88=E3=82=8F=E3=81=9B:<!-- =
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] --> <a href=3D"mailto:support@boardapp.com" style=3D"color:#667eea;text-dec=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] oration-line:none;text-decoration:underline" target=3D"_blank">support@boar=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] dapp.com</a></p><p style=3D"font-size:12px;line-height:16px;color:#718096;m=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] argin:4px 0;margin-top:4px;margin-right:0;margin-bottom:4px;margin-left:0">=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] =C2=A9 <!-- -->2025<!-- --> <!-- -->Board App<!-- -->. All rights reserved.=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] </p></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody><=
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] /table><!--/$--></body></html>
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] ----_NmP-440a4b2ab70ebd05-Part_1--
+[2025-08-09 12:52:16] DEBUG [bXtrMLOrYzU] .
+[2025-08-09 12:52:16] INFO  [bXtrMLOrYzU] <21599 bytes encoded mime message (source size 21596 bytes)>
+[2025-08-09 12:52:17] DEBUG [bXtrMLOrYzU] S: 250 2.0.0 OK  1754743937 98e67ed59e1d1-32161227032sm10345901a91.12 - gsmtp
+✅ Email sent successfully: <0444f497-adaa-1ea2-350e-92caa8cf13ba@boardapp.com>
+ POST /api/email/send 200 in 2927ms
+[2025-08-09 12:52:17] DEBUG [#2] Connection #2 became available
+📤 Sending email (attempt 1/3)...
+[2025-08-09 12:52:23] DEBUG Sending mail using SMTP (pool)/6.10.1[client:6.10.1]
+[2025-08-09 12:52:23] DEBUG [#2] Assigned message <ab23fa16-5c11-8dcc-2a44-e3bae1622b86@boardapp.com> to #2 (2)
+[2025-08-09 12:52:23] INFO  [#2] Sending message <ab23fa16-5c11-8dcc-2a44-e3bae1622b86@boardapp.com> using #2 to <one.photolife@gmail.com>
+[2025-08-09 12:52:23] DEBUG [bXtrMLOrYzU] C: MAIL FROM:<noreply@boardapp.com>
+[2025-08-09 12:52:23] DEBUG [bXtrMLOrYzU] S: 250 2.1.0 OK 98e67ed59e1d1-32161227032sm10345901a91.12 - gsmtp
+[2025-08-09 12:52:23] DEBUG [bXtrMLOrYzU] C: RCPT TO:<one.photolife@gmail.com>
+[2025-08-09 12:52:23] DEBUG [bXtrMLOrYzU] S: 250 2.1.5 OK 98e67ed59e1d1-32161227032sm10345901a91.12 - gsmtp
+[2025-08-09 12:52:23] DEBUG [bXtrMLOrYzU] C: DATA
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] S: 354 Go ahead 98e67ed59e1d1-32161227032sm10345901a91.12 - gsmtp
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] From: Board App <noreply@boardapp.com>
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] To: one.photolife@gmail.com
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] Subject: =?UTF-8?B?Qm9hcmQgQXBwIC0g44Oh44O844Or44Ki44OJ44Os?=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU]  =?UTF-8?B?44K544KS56K66KqN44GX44Gm44GP44Gg44GV44GE?=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] Message-ID: <ab23fa16-5c11-8dcc-2a44-e3bae1622b86@boardapp.com>
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] Date: Sat, 09 Aug 2025 12:52:23 +0000
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] MIME-Version: 1.0
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] Content-Type: multipart/alternative;
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU]  boundary="--_NmP-509e9d741de434e6-Part_1"
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] 
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] ----_NmP-509e9d741de434e6-Part_1
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] Content-Type: text/plain; charset=utf-8
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] Content-Transfer-Encoding: base64
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] 
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] 44GT44KT44Gr44Gh44Gv44CB44OG44K544OI44Om44O844K244O85qeYCgpCb2FyZCBBcHDjgbjj
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] ga7jgZTnmbvpjLLjgYLjgorjgYzjgajjgYbjgZTjgZbjgYTjgb7jgZnjgIIKCuODoeODvOODq+OC
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] ouODieODrOOCueOCkueiuuiqjeOBmeOCi+OBq+OBr+OAgeS7peS4i+OBruODquODs+OCr+OCkuOC
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] r+ODquODg+OCr+OBl+OBpuOBj+OBoOOBleOBhO+8mgpodHRwOi8vbG9jYWxob3N0OjMwMDAvdmVy
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] aWZ5P3Rva2VuPXRlc3QxMjMKCueiuuiqjeOCs+ODvOODiTogMTIzNDU2CgrjgZPjga7jg6rjg7Pj
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] gq/jga8yNOaZgumWk+acieWKueOBp+OBmeOAggoK44GT44Gu44Oh44O844Or44Gr5b+D5b2T44Gf
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] 44KK44GM44Gq44GE5aC05ZCI44Gv44CB54Sh6KaW44GX44Gm44GP44Gg44GV44GE44CCCgpCb2Fy
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] ZCBBcHDjgrXjg53jg7zjg4jjg4Hjg7zjg6A=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] ----_NmP-509e9d741de434e6-Part_1
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] Content-Type: text/html; charset=utf-8
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] Content-Transfer-Encoding: quoted-printable
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] 
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html dir=3D"ltr" =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] lang=3D"en"><head><meta content=3D"text/html; charset=3DUTF-8" =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] http-equiv=3D"Content-Type"/><meta name=3D"x-apple-disable-message-reformat=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] ting"/></head><body style=3D"background-color:#f7fafc"><!--$--><!--html--><=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] !--head--><div style=3D"display:none;overflow:hidden;line-height:1px;opacit=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] y:0;max-height:0;max-width:0" data-skip-in-text=3D"true">=E3=83=86=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E3=82=B9=E3=83=88=E3=83=A6=E3=83=BC=E3=82=B6=E3=83=BC=E6=A7=98=E3=80=81=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E3=83=A1=E3=83=BC=E3=83=AB=E3=82=A2=E3=83=89=E3=83=AC=E3=82=B9=E3=82=92=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E7=A2=BA=E8=AA=8D=E3=81=97=E3=81=A6=E3=81=8F=E3=81=A0=E3=81=95=E3=81=84<di=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] v>=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF</div></div><!--body--><table border=3D"0" =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] width=3D"100%" cellPadding=3D"0" cellSpacing=3D"0" role=3D"presentation" =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] align=3D"center"><tbody><tr><td style=3D"background-color:#f7fafc;font-fami=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] ly:-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] &quot;Helvetica Neue&quot;, Arial, sans-serif"><table align=3D"center" =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] width=3D"100%" border=3D"0" cellPadding=3D"0" cellSpacing=3D"0" =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] role=3D"presentation" style=3D"max-width:600px;background-color:#ffffff;mar=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] gin:0 auto;padding:20px 0 48px;margin-bottom:64px"><tbody><tr =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] style=3D"width:100%"><td><table align=3D"center" width=3D"100%" =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] border=3D"0" cellPadding=3D"0" cellSpacing=3D"0" role=3D"presentation" =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] style=3D"padding:32px 40px;text-align:center;border-bottom:1px solid =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] #e2e8f0"><tbody><tr><td><p style=3D"font-size:24px;line-height:24px;font-we=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] ight:bold;color:#667eea;margin:0;letter-spacing:-0.025em;margin-top:0;margi=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] n-bottom:0;margin-left:0;margin-right:0">Board App</p><p =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] style=3D"font-size:14px;line-height:24px;color:#718096;margin-top:8px;margi=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] n:8px 0 0 0;margin-right:0;margin-bottom:0;margin-left:0">=E3=83=A1=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E3=83=BC=E3=83=AB=E3=82=A2=E3=83=89=E3=83=AC=E3=82=B9=E3=81=AE=E7=A2=BA=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E8=AA=8D</p></td></tr></tbody></table><table align=3D"center" =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] width=3D"100%" border=3D"0" cellPadding=3D"0" cellSpacing=3D"0" =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] role=3D"presentation" style=3D"padding:40px"><tbody><tr><td><h1 =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] style=3D"font-size:24px;font-weight:bold;color:#1a202c;margin:0 0 =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] 24px">=E3=81=93=E3=82=93=E3=81=AB=E3=81=A1=E3=81=AF=E3=80=81<!-- =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] -->=E3=83=86=E3=82=B9=E3=83=88=E3=83=A6=E3=83=BC=E3=82=B6=E3=83=BC<!-- =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] -->=E6=A7=98</h1><p style=3D"font-size:16px;line-height:24px;color:#1a202c;=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] margin:16px 0;margin-top:16px;margin-right:0;margin-bottom:16px;margin-left=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] :0">Board App<!-- -->=E3=81=B8=E3=81=AE=E3=81=94=E7=99=BB=E9=8C=B2=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E3=81=82=E3=82=8A=E3=81=8C=E3=81=A8=E3=81=86=E3=81=94=E3=81=96=E3=81=84=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E3=81=BE=E3=81=99=E3=80=82 =E4=BB=A5=E4=B8=8B=E3=81=AE=E3=83=9C=E3=82=BF=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E3=83=B3=E3=82=92=E3=82=AF=E3=83=AA=E3=83=83=E3=82=AF=E3=81=97=E3=81=A6=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E3=80=81=E3=83=A1=E3=83=BC=E3=83=AB=E3=82=A2=E3=83=89=E3=83=AC=E3=82=B9=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E3=82=92=E7=A2=BA=E8=AA=8D=E3=81=97=E3=81=A6=E3=81=8F=E3=81=A0=E3=81=95=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E3=81=84=E3=80=82</p><table align=3D"center" width=3D"100%" border=3D"0" =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] cellPadding=3D"0" cellSpacing=3D"0" role=3D"presentation" =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] style=3D"text-align:center;margin:32px 0"><tbody><tr><td><a =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] href=3D"http://localhost:3000/verify?token=3Dtest123" =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] style=3D"line-height:100%;text-decoration:none;display:inline-block;max-wid=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] th:100%;mso-padding-alt:0px;background-color:#667eea;border-radius:8px;colo=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] r:#ffffff;font-size:16px;font-weight:bold;text-align:center;padding:12px =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] 24px;min-width:200px;padding-top:12px;padding-right:24px;padding-bottom:12p=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] x;padding-left:24px" target=3D"_blank"><span><!--[if mso]><i =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] style=3D"mso-font-width:400%;mso-text-raise:18" hidden>&#8202;&#8202;&#8202=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] ;</i><![endif]--></span><span style=3D"max-width:100%;display:inline-block;=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] line-height:120%;mso-padding-alt:0px;mso-text-raise:9px">=E3=83=A1=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E3=83=BC=E3=83=AB=E3=82=A2=E3=83=89=E3=83=AC=E3=82=B9=E3=82=92=E7=A2=BA=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E8=AA=8D</span><span><!--[if mso]><i style=3D"mso-font-width:400%" =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] hidden>&#8202;&#8202;&#8202;&#8203;</i><![endif]--></span></a></td></tr></t=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] body></table><table align=3D"center" width=3D"100%" border=3D"0" =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] cellPadding=3D"0" cellSpacing=3D"0" role=3D"presentation" =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] style=3D"background-color:#f7fafc;border-radius:8px;padding:24px;text-align=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] :center;margin:24px 0"><tbody><tr><td><p style=3D"font-size:12px;line-heigh=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] t:24px;color:#718096;margin:0 0 8px;text-transform:uppercase;letter-spacing=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] :0.05em;margin-top:0;margin-right:0;margin-bottom:8px;margin-left:0">=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E7=A2=BA=E8=AA=8D=E3=82=B3=E3=83=BC=E3=83=89</p><p =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] style=3D"font-size:32px;line-height:24px;font-weight:bold;color:#667eea;let=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] ter-spacing:0.1em;margin:0;font-family:monospace;margin-top:0;margin-bottom=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] :0;margin-left:0;margin-right:0">123456</p></td></tr></tbody></table><p =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] style=3D"font-size:16px;line-height:24px;color:#1a202c;margin:16px =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] 0;margin-top:16px;margin-right:0;margin-bottom:16px;margin-left:0">=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E3=81=93=E3=81=AE=E3=83=AA=E3=83=B3=E3=82=AF=E3=81=AF24=E6=99=82=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E9=96=93=E6=9C=89=E5=8A=B9=E3=81=A7=E3=81=99=E3=80=82=E6=9C=9F=E9=99=90=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E3=81=8C=E5=88=87=E3=82=8C=E3=81=9F=E5=A0=B4=E5=90=88=E3=81=AF=E3=80=81 =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E5=86=8D=E5=BA=A6=E3=82=B5=E3=82=A4=E3=83=B3=E3=82=A2=E3=83=83=E3=83=97=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E3=81=97=E3=81=A6=E3=81=8F=E3=81=A0=E3=81=95=E3=81=84=E3=80=82</p><table =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] align=3D"center" width=3D"100%" border=3D"0" cellPadding=3D"0" =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] cellSpacing=3D"0" role=3D"presentation" style=3D"background-color:#f7fafc;b=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] order-radius:8px;padding:16px;margin:24px 0"><tbody><tr><td><p =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] style=3D"font-size:14px;line-height:24px;color:#718096;margin:0 0 =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] 8px;margin-top:0;margin-right:0;margin-bottom:8px;margin-left:0">=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E3=83=9C=E3=82=BF=E3=83=B3=E3=81=8C=E6=A9=9F=E8=83=BD=E3=81=97=E3=81=AA=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E3=81=84=E5=A0=B4=E5=90=88=E3=81=AF=E3=80=81=E4=BB=A5=E4=B8=8B=E3=81=AEURL=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E3=82=92=E3=83=96=E3=83=A9=E3=82=A6=E3=82=B6=E3=81=AB=E3=82=B3=E3=83=94=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E3=83=BC=EF=BC=86=E3=83=9A=E3=83=BC=E3=82=B9=E3=83=88=E3=81=97=E3=81=A6=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E3=81=8F=E3=81=A0=E3=81=95=E3=81=84=EF=BC=9A</p><a =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] href=3D"http://localhost:3000/verify?token=3Dtest123" =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] style=3D"color:#667eea;text-decoration-line:none;font-size:14px;word-break:=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] break-all" target=3D"_blank">http://localhost:3000/verify?=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] token=3Dtest123</a></td></tr></tbody></table><hr style=3D"border:none;borde=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] r-top:1px solid #e2e8f0;border-color:#e2e8f0;margin:32px 0"/><p =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] style=3D"font-size:14px;line-height:24px;color:#718096;text-align:center;ma=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] rgin:16px 0 0;margin-top:16px;margin-right:0;margin-bottom:0;margin-left:0"=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] >=E3=81=93=E3=81=AE=E3=83=A1=E3=83=BC=E3=83=AB=E3=81=AB=E5=BF=83=E5=BD=93=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E3=81=9F=E3=82=8A=E3=81=8C=E3=81=AA=E3=81=84=E5=A0=B4=E5=90=88=E3=81=AF=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E3=80=81=E7=84=A1=E8=A6=96=E3=81=97=E3=81=A6=E3=81=8F=E3=81=A0=E3=81=95=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E3=81=84=E3=80=82 =E3=81=82=E3=81=AA=E3=81=9F=E3=81=AE=E3=82=A2=E3=82=AB=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E3=82=A6=E3=83=B3=E3=83=88=E3=81=AF=E4=BD=9C=E6=88=90=E3=81=95=E3=82=8C=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E3=81=BE=E3=81=9B=E3=82=93=E3=80=82</p></td></tr></tbody></table><hr =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] style=3D"width:100%;border:none;border-top:1px solid =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] #eaeaea;border-color:#e2e8f0;margin:32px 40px"/><table align=3D"center" =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] width=3D"100%" border=3D"0" cellPadding=3D"0" cellSpacing=3D"0" =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] role=3D"presentation" style=3D"padding:0 40px 32px;text-align:center"><tbod=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] y><tr><td><p style=3D"font-size:12px;line-height:16px;color:#718096;margin:=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] 4px 0;margin-top:4px;margin-right:0;margin-bottom:4px;margin-left:0">=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E3=81=93=E3=81=AE=E3=83=A1=E3=83=BC=E3=83=AB=E3=81=AF <!-- -->Board App<!=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] -- --> =E3=81=8B=E3=82=89=E9=80=81=E4=BF=A1=E3=81=95=E3=82=8C=E3=81=BE=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =E3=81=97=E3=81=9F=E3=80=82</p><p style=3D"font-size:12px;line-height:16px;=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] color:#718096;margin:4px 0;margin-top:4px;margin-right:0;margin-bottom:4px;=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] margin-left:0">=E3=81=8A=E5=95=8F=E3=81=84=E5=90=88=E3=82=8F=E3=81=9B:<!-- =
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] --> <a href=3D"mailto:support@boardapp.com" style=3D"color:#667eea;text-dec=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] oration-line:none;text-decoration:underline" target=3D"_blank">support@boar=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] dapp.com</a></p><p style=3D"font-size:12px;line-height:16px;color:#718096;m=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] argin:4px 0;margin-top:4px;margin-right:0;margin-bottom:4px;margin-left:0">=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] =C2=A9 <!-- -->2025<!-- --> <!-- -->Board App<!-- -->. All rights reserved.=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] </p></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody><=
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] /table><!--/$--></body></html>
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] ----_NmP-509e9d741de434e6-Part_1--
+[2025-08-09 12:52:24] DEBUG [bXtrMLOrYzU] .
+[2025-08-09 12:52:24] INFO  [bXtrMLOrYzU] <17315 bytes encoded mime message (source size 17312 bytes)>
+[2025-08-09 12:52:26] DEBUG [bXtrMLOrYzU] S: 250 2.0.0 OK  1754743946 98e67ed59e1d1-32161227032sm10345901a91.12 - gsmtp
+✅ Email sent successfully: <ab23fa16-5c11-8dcc-2a44-e3bae1622b86@boardapp.com>
+ POST /api/email/send 200 in 2918ms
+[2025-08-09 12:52:26] DEBUG [#2] Connection #2 became available
+📤 Sending email (attempt 1/3)...
+[2025-08-09 12:52:30] DEBUG Sending mail using SMTP (pool)/6.10.1[client:6.10.1]
+[2025-08-09 12:52:30] DEBUG [#2] Assigned message <1e764179-ad94-110d-7d3c-e26538959489@boardapp.com> to #2 (3)
+[2025-08-09 12:52:30] INFO  [#2] Sending message <1e764179-ad94-110d-7d3c-e26538959489@boardapp.com> using #2 to <one.photolife@gmail.com>
+[2025-08-09 12:52:30] DEBUG [bXtrMLOrYzU] C: MAIL FROM:<noreply@boardapp.com>
+[2025-08-09 12:52:30] DEBUG [bXtrMLOrYzU] S: 250 2.1.0 OK 98e67ed59e1d1-32161227032sm10345901a91.12 - gsmtp
+[2025-08-09 12:52:30] DEBUG [bXtrMLOrYzU] C: RCPT TO:<one.photolife@gmail.com>
+[2025-08-09 12:52:30] DEBUG [bXtrMLOrYzU] S: 250 2.1.5 OK 98e67ed59e1d1-32161227032sm10345901a91.12 - gsmtp
+[2025-08-09 12:52:30] DEBUG [bXtrMLOrYzU] C: DATA
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] S: 354 Go ahead 98e67ed59e1d1-32161227032sm10345901a91.12 - gsmtp
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] From: Board App <noreply@boardapp.com>
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] To: one.photolife@gmail.com
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] Subject: =?UTF-8?B?Qm9hcmQgQXBwIC0g44OR44K544Ov44O844OJ44Oq?=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU]  =?UTF-8?B?44K744OD44OI44Gu44GU5qGI5YaF?=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] Message-ID: <1e764179-ad94-110d-7d3c-e26538959489@boardapp.com>
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] Date: Sat, 09 Aug 2025 12:52:30 +0000
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] MIME-Version: 1.0
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] Content-Type: multipart/alternative;
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU]  boundary="--_NmP-041d9fc5fa097f6d-Part_1"
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] 
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] ----_NmP-041d9fc5fa097f6d-Part_1
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] Content-Type: text/plain; charset=utf-8
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] Content-Transfer-Encoding: base64
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] 
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] 44OR44K544Ov44O844OJ44Oq44K744OD44OI44Gu44GU5qGI5YaFCgrjgZPjgpPjgavjgaHjga/j
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] gIHjg4bjgrnjg4jjg6bjg7zjgrbjg7zmp5gKCkJvYXJkIEFwcOOCouOCq+OCpuODs+ODiOOBruOD
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] keOCueODr+ODvOODieODquOCu+ODg+ODiOODquOCr+OCqOOCueODiOOCkuWPl+OBkeS7mOOBkeOB
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] vuOBl+OBn+OAggoK5paw44GX44GE44OR44K544Ov44O844OJ44KS6Kit5a6a44GZ44KL44Gr44Gv
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] 44CB5Lul5LiL44Gu44Oq44Oz44Kv44KS44Kv44Oq44OD44Kv44GX44Gm44GP44Gg44GV44GE77ya
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] Cmh0dHA6Ly9sb2NhbGhvc3Q6MzAwMC9yZXNldD90b2tlbj10ZXN0MTIzCgrjg6rjgrvjg4Pjg4jj
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] grPjg7zjg4k6IDk4NzY1NAoK44GT44Gu44Oq44Oz44Kv44GvMeaZgumWk+OBruOBv+acieWKueOB
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] p+OBmeOAggoK44GT44Gu44Oq44Kv44Ko44K544OI44Gr5b+D5b2T44Gf44KK44GM44Gq44GE5aC0
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] 5ZCI44Gv44CB44GT44Gu44Oh44O844Or44KS54Sh6KaW44GX44Gm44GP44Gg44GV44GE44CCCgpC
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] b2FyZCBBcHDjgrXjg53jg7zjg4jjg4Hjg7zjg6A=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] ----_NmP-041d9fc5fa097f6d-Part_1
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] Content-Type: text/html; charset=utf-8
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] Content-Transfer-Encoding: quoted-printable
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] 
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html dir=3D"ltr" =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] lang=3D"en"><head><meta content=3D"text/html; charset=3DUTF-8" =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] http-equiv=3D"Content-Type"/><meta name=3D"x-apple-disable-message-reformat=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] ting"/></head><body style=3D"background-color:#f7fafc"><!--$--><!--html--><=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] !--head--><div style=3D"display:none;overflow:hidden;line-height:1px;opacit=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] y:0;max-height:0;max-width:0" data-skip-in-text=3D"true">=E3=83=86=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=82=B9=E3=83=88=E3=83=A6=E3=83=BC=E3=82=B6=E3=83=BC=E6=A7=98=E3=80=81=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=83=91=E3=82=B9=E3=83=AF=E3=83=BC=E3=83=89=E3=83=AA=E3=82=BB=E3=83=83=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=83=88=E3=81=AE=E3=83=AA=E3=82=AF=E3=82=A8=E3=82=B9=E3=83=88=E3=82=92=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E5=8F=97=E3=81=91=E4=BB=98=E3=81=91=E3=81=BE=E3=81=97=E3=81=9F<div>=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=80=8F=EF=BB=BF</div></div><!--body--><table border=3D"0" width=3D"100%"=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU]  cellPadding=3D"0" cellSpacing=3D"0" role=3D"presentation" =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] align=3D"center"><tbody><tr><td style=3D"background-color:#f7fafc;font-fami=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] ly:-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] &quot;Helvetica Neue&quot;, Arial, sans-serif"><table align=3D"center" =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] width=3D"100%" border=3D"0" cellPadding=3D"0" cellSpacing=3D"0" =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] role=3D"presentation" style=3D"max-width:600px;background-color:#ffffff;mar=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] gin:0 auto;padding:20px 0 48px;margin-bottom:64px"><tbody><tr =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] style=3D"width:100%"><td><table align=3D"center" width=3D"100%" =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] border=3D"0" cellPadding=3D"0" cellSpacing=3D"0" role=3D"presentation" =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] style=3D"padding:32px 40px;text-align:center;border-bottom:1px solid =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] #e2e8f0"><tbody><tr><td><p style=3D"font-size:24px;line-height:24px;font-we=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] ight:bold;color:#667eea;margin:0;letter-spacing:-0.025em;margin-top:0;margi=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] n-bottom:0;margin-left:0;margin-right:0">Board App</p><p =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] style=3D"font-size:14px;line-height:24px;color:#718096;margin-top:8px;margi=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] n:8px 0 0 0;margin-right:0;margin-bottom:0;margin-left:0">=E3=83=91=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=82=B9=E3=83=AF=E3=83=BC=E3=83=89=E3=83=AA=E3=82=BB=E3=83=83=E3=83=88</p=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] ></td></tr></tbody></table><table align=3D"center" width=3D"100%" =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] border=3D"0" cellPadding=3D"0" cellSpacing=3D"0" role=3D"presentation" =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] style=3D"padding:40px"><tbody><tr><td><h1 style=3D"font-size:24px;font-weig=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] ht:bold;color:#1a202c;margin:0 0 24px;text-align:center">=E3=83=91=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=82=B9=E3=83=AF=E3=83=BC=E3=83=89=E3=83=AA=E3=82=BB=E3=83=83=E3=83=88=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=81=AE=E3=81=94=E6=A1=88=E5=86=85</h1><p style=3D"font-size:16px;line-he=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] ight:24px;color:#1a202c;margin:16px 0;margin-top:16px;margin-right:0;margin=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] -bottom:16px;margin-left:0">=E3=81=93=E3=82=93=E3=81=AB=E3=81=A1=E3=81=AF=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=80=81<!-- -->=E3=83=86=E3=82=B9=E3=83=88=E3=83=A6=E3=83=BC=E3=82=B6=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=83=BC<!-- -->=E6=A7=98</p><p style=3D"font-size:16px;line-height:24px;c=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] olor:#1a202c;margin:16px 0;margin-top:16px;margin-right:0;margin-bottom:16p=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] x;margin-left:0">Board App<!-- -->=E3=82=A2=E3=82=AB=E3=82=A6=E3=83=B3=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=83=88=E3=81=AE=E3=83=91=E3=82=B9=E3=83=AF=E3=83=BC=E3=83=89=E3=83=AA=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=82=BB=E3=83=83=E3=83=88=E3=83=AA=E3=82=AF=E3=82=A8=E3=82=B9=E3=83=88=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=82=92=E5=8F=97=E3=81=91=E4=BB=98=E3=81=91=E3=81=BE=E3=81=97=E3=81=9F=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=80=82 =E4=BB=A5=E4=B8=8B=E3=81=AE=E3=83=9C=E3=82=BF=E3=83=B3=E3=82=92=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=82=AF=E3=83=AA=E3=83=83=E3=82=AF=E3=81=97=E3=81=A6=E3=80=81=E6=96=B0=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=81=97=E3=81=84=E3=83=91=E3=82=B9=E3=83=AF=E3=83=BC=E3=83=89=E3=82=92=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E8=A8=AD=E5=AE=9A=E3=81=97=E3=81=A6=E3=81=8F=E3=81=A0=E3=81=95=E3=81=84=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=80=82</p><table align=3D"center" width=3D"100%" border=3D"0" =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] cellPadding=3D"0" cellSpacing=3D"0" role=3D"presentation" =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] style=3D"text-align:center;margin:32px 0"><tbody><tr><td><a =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] href=3D"http://localhost:3000/reset?token=3Dtest123" =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] style=3D"line-height:100%;text-decoration:none;display:inline-block;max-wid=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] th:100%;mso-padding-alt:0px;background-color:#f56565;border-radius:8px;colo=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] r:#ffffff;font-size:16px;font-weight:bold;text-align:center;padding:12px =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] 24px;min-width:200px;padding-top:12px;padding-right:24px;padding-bottom:12p=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] x;padding-left:24px" target=3D"_blank"><span><!--[if mso]><i =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] style=3D"mso-font-width:400%;mso-text-raise:18" hidden>&#8202;&#8202;&#8202=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] ;</i><![endif]--></span><span style=3D"max-width:100%;display:inline-block;=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] line-height:120%;mso-padding-alt:0px;mso-text-raise:9px">=E3=83=91=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=82=B9=E3=83=AF=E3=83=BC=E3=83=89=E3=82=92=E3=83=AA=E3=82=BB=E3=83=83=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=83=88</span><span><!--[if mso]><i style=3D"mso-font-width:400%" =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] hidden>&#8202;&#8202;&#8202;&#8203;</i><![endif]--></span></a></td></tr></t=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] body></table><table align=3D"center" width=3D"100%" border=3D"0" =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] cellPadding=3D"0" cellSpacing=3D"0" role=3D"presentation" =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] style=3D"background-color:#f7fafc;border-radius:8px;padding:24px;text-align=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] :center;margin:24px 0;border:2px dashed #e2e8f0"><tbody><tr><td><p =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] style=3D"font-size:12px;line-height:24px;color:#718096;margin:0 0 =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] 8px;text-transform:uppercase;letter-spacing:0.05em;margin-top:0;margin-righ=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] t:0;margin-bottom:8px;margin-left:0">=E3=83=AA=E3=82=BB=E3=83=83=E3=83=88=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=82=B3=E3=83=BC=E3=83=89</p><p style=3D"font-size:32px;line-height:24px;=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] font-weight:bold;color:#f56565;letter-spacing:0.1em;margin:0;font-family:mo=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] nospace;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0">987654</=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] p></td></tr></tbody></table><table align=3D"center" width=3D"100%" =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] border=3D"0" cellPadding=3D"0" cellSpacing=3D"0" role=3D"presentation" =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] style=3D"background-color:#fff5f5;border-left:4px solid =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] #f56565;border-radius:8px;padding:16px;margin:24px 0"><tbody><tr><td><p =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] style=3D"font-size:14px;line-height:24px;font-weight:bold;color:#f56565;mar=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] gin:0 0 8px;margin-top:0;margin-right:0;margin-bottom:8px;margin-left:0">=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E2=9A=A0=EF=B8=8F =E9=87=8D=E8=A6=81=E3=81=AA=E3=81=8A=E7=9F=A5=E3=82=89=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=81=9B</p><p style=3D"font-size:14px;line-height:20px;color:#1a202c;marg=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] in:0;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0">=E3=81=93=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=81=AE=E3=83=AA=E3=83=B3=E3=82=AF=E3=81=AF<!-- -->1=E6=99=82=E9=96=93<!=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] -- -->=E3=81=AE=E3=81=BF=E6=9C=89=E5=8A=B9=E3=81=A7=E3=81=99=E3=80=82 =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E6=9C=9F=E9=99=90=E3=81=8C=E5=88=87=E3=82=8C=E3=81=9F=E5=A0=B4=E5=90=88=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=81=AF=E3=80=81=E5=86=8D=E5=BA=A6=E3=83=91=E3=82=B9=E3=83=AF=E3=83=BC=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=83=89=E3=83=AA=E3=82=BB=E3=83=83=E3=83=88=E3=82=92=E3=83=AA=E3=82=AF=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=82=A8=E3=82=B9=E3=83=88=E3=81=97=E3=81=A6=E3=81=8F=E3=81=A0=E3=81=95=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=81=84=E3=80=82</p></td></tr></tbody></table><p style=3D"font-size:16px;=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] line-height:24px;color:#1a202c;margin:16px 0;margin-top:16px;margin-right:0=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] ;margin-bottom:16px;margin-left:0">=E3=82=BB=E3=82=AD=E3=83=A5=E3=83=AA=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=83=86=E3=82=A3=E4=B8=8A=E3=81=AE=E7=90=86=E7=94=B1=E3=81=8B=E3=82=89=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=80=81=E3=81=93=E3=81=AE=E3=83=A1=E3=83=BC=E3=83=AB=E3=81=AB=E3=81=AF=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E7=8F=BE=E5=9C=A8=E3=81=AE=E3=83=91=E3=82=B9=E3=83=AF=E3=83=BC=E3=83=89=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=81=AF=E8=A8=98=E8=BC=89=E3=81=95=E3=82=8C=E3=81=A6=E3=81=84=E3=81=BE=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=81=9B=E3=82=93=E3=80=82</p><table align=3D"center" width=3D"100%" =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] border=3D"0" cellPadding=3D"0" cellSpacing=3D"0" role=3D"presentation" =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] style=3D"background-color:#f7fafc;border-radius:8px;padding:16px;margin:24p=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] x 0"><tbody><tr><td><p style=3D"font-size:14px;line-height:24px;color:#7180=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] 96;margin:0 0 8px;margin-top:0;margin-right:0;margin-bottom:8px;margin-left=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] :0">=E3=83=9C=E3=82=BF=E3=83=B3=E3=81=8C=E6=A9=9F=E8=83=BD=E3=81=97=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=81=AA=E3=81=84=E5=A0=B4=E5=90=88=E3=81=AF=E3=80=81=E4=BB=A5=E4=B8=8B=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=81=AEURL=E3=82=92=E3=83=96=E3=83=A9=E3=82=A6=E3=82=B6=E3=81=AB=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=82=B3=E3=83=94=E3=83=BC=EF=BC=86=E3=83=9A=E3=83=BC=E3=82=B9=E3=83=88=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=81=97=E3=81=A6=E3=81=8F=E3=81=A0=E3=81=95=E3=81=84=EF=BC=9A</p><a =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] href=3D"http://localhost:3000/reset?token=3Dtest123" =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] style=3D"color:#667eea;text-decoration-line:none;font-size:14px;word-break:=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] break-all" target=3D"_blank">http://localhost:3000/reset?=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] token=3Dtest123</a></td></tr></tbody></table><hr style=3D"border:none;borde=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] r-top:1px solid #e2e8f0;border-color:#e2e8f0;margin:32px 0"/><table =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] align=3D"center" width=3D"100%" border=3D"0" cellPadding=3D"0" =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] cellSpacing=3D"0" role=3D"presentation" style=3D"background-color:#f0f9ff;b=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] order-radius:8px;padding:16px;margin:16px 0"><tbody><tr><td><p =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] style=3D"font-size:14px;line-height:24px;font-weight:bold;color:#667eea;mar=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] gin:0 0 8px;margin-top:0;margin-right:0;margin-bottom:8px;margin-left:0">=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =F0=9F=94=92 =E3=82=BB=E3=82=AD=E3=83=A5=E3=83=AA=E3=83=86=E3=82=A3=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=81=AB=E9=96=A2=E3=81=99=E3=82=8B=E6=B3=A8=E6=84=8F</p><p =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] style=3D"font-size:14px;line-height:20px;color:#718096;margin:0;margin-top:=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] 0;margin-bottom:0;margin-left:0;margin-right:0">=E3=81=93=E3=81=AE=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=83=91=E3=82=B9=E3=83=AF=E3=83=BC=E3=83=89=E3=83=AA=E3=82=BB=E3=83=83=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=83=88=E3=82=92=E3=83=AA=E3=82=AF=E3=82=A8=E3=82=B9=E3=83=88=E3=81=97=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=81=A6=E3=81=84=E3=81=AA=E3=81=84=E5=A0=B4=E5=90=88=E3=81=AF=E3=80=81 =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E8=AA=B0=E3=81=8B=E3=81=8C=E3=81=82=E3=81=AA=E3=81=9F=E3=81=AE=E3=83=A1=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=83=BC=E3=83=AB=E3=82=A2=E3=83=89=E3=83=AC=E3=82=B9=E3=82=92=E5=85=A5=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E5=8A=9B=E3=81=97=E3=81=9F=E5=8F=AF=E8=83=BD=E6=80=A7=E3=81=8C=E3=81=82=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=82=8A=E3=81=BE=E3=81=99=E3=80=82 =E3=82=A2=E3=82=AB=E3=82=A6=E3=83=B3=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=83=88=E3=81=AF=E5=AE=89=E5=85=A8=E3=81=A7=E3=81=99=E3=81=8C=E3=80=81=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E5=BF=83=E9=85=8D=E3=81=AA=E5=A0=B4=E5=90=88=E3=81=AF=E3=82=B5=E3=83=9D=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=83=BC=E3=83=88=E3=81=BE=E3=81=A7=E3=81=94=E9=80=A3=E7=B5=A1=E3=81=8F=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=81=A0=E3=81=95=E3=81=84=E3=80=82</p></td></tr></tbody></table></td></tr=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] ></tbody></table><hr style=3D"width:100%;border:none;border-top:1px solid =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] #eaeaea;border-color:#e2e8f0;margin:32px 40px"/><table align=3D"center" =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] width=3D"100%" border=3D"0" cellPadding=3D"0" cellSpacing=3D"0" =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] role=3D"presentation" style=3D"padding:0 40px 32px;text-align:center"><tbod=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] y><tr><td><p style=3D"font-size:12px;line-height:16px;color:#718096;margin:=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] 4px 0;margin-top:4px;margin-right:0;margin-bottom:4px;margin-left:0">=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=81=93=E3=81=AE=E3=83=A1=E3=83=BC=E3=83=AB=E3=81=AF <!-- -->Board App<!=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] -- --> =E3=81=8B=E3=82=89=E9=80=81=E4=BF=A1=E3=81=95=E3=82=8C=E3=81=BE=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =E3=81=97=E3=81=9F=E3=80=82</p><p style=3D"font-size:12px;line-height:16px;=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] color:#718096;margin:4px 0;margin-top:4px;margin-right:0;margin-bottom:4px;=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] margin-left:0">=E3=81=8A=E5=95=8F=E3=81=84=E5=90=88=E3=82=8F=E3=81=9B:<!-- =
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] --> <a href=3D"mailto:support@boardapp.com" style=3D"color:#667eea;text-dec=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] oration-line:none;text-decoration:underline" target=3D"_blank">support@boar=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] dapp.com</a></p><p style=3D"font-size:12px;line-height:16px;color:#718096;m=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] argin:4px 0;margin-top:4px;margin-right:0;margin-bottom:4px;margin-left:0">=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] =C2=A9 <!-- -->2025<!-- --> <!-- -->Board App<!-- -->. All rights reserved.=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] </p></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody><=
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] /table><!--/$--></body></html>
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] ----_NmP-041d9fc5fa097f6d-Part_1--
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] .
+[2025-08-09 12:52:31] INFO  [bXtrMLOrYzU] <19572 bytes encoded mime message (source size 19569 bytes)>
+[2025-08-09 12:52:31] DEBUG [bXtrMLOrYzU] S: 250 2.0.0 OK  1754743951 98e67ed59e1d1-32161227032sm10345901a91.12 - gsmtp
+✅ Email sent successfully: <1e764179-ad94-110d-7d3c-e26538959489@boardapp.com>
+ POST /api/email/send 200 in 1615ms
+[2025-08-09 12:52:31] DEBUG [#2] Connection #2 became available
+[2025-08-09 12:53:01] ERROR [bXtrMLOrYzU] Timeout
+[2025-08-09 12:53:01] ERROR [#2] Pool Error for #2: Timeout
+[2025-08-09 12:53:01] DEBUG [bXtrMLOrYzU] Closing connection to the server using "end"
+[2025-08-09 12:53:01] INFO  [#2] Connection #2 was closed
+[2025-08-09 12:53:02] INFO  [bXtrMLOrYzU] Connection closed
+ ✓ Compiled / in 203ms
+ GET / 200 in 233ms
+ GET / 200 in 55ms
+ GET /api/auth/session 200 in 49ms
+ GET /api/auth/session 200 in 35ms
+ GET /api/auth/session 200 in 26ms
+ GET /api/auth/session 200 in 27ms
+ ✓ Compiled /auth/signup in 202ms
+ GET /auth/signup 200 in 235ms
+ ✓ Compiled /api/auth/register in 102ms
+📧 Email Configuration:
+  - Environment: development
+  - Email Enabled: true
+  - SMTP Host: Not configured
+  - SMTP User: Not configured
+📌 ローカルMongoDBに接続を試みています...
+✅ MongoDB接続成功
+
+📧 Email Request:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+To: one.photolife+15@gmail.com
+Subject: 【会員制掲示板】メールアドレスの確認
+From: Board App <noreply@boardapp.com>
+🔗 Reset URL: http://localhost:3000/auth/verify-email?token=f08960ec-9cbe-451c-b1a7-503d01e4f304
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚠️ Email sending is disabled (EMAIL_ENABLED=false or missing SMTP config)
+To enable email sending, set EMAIL_ENABLED=true in .env.local
+ POST /api/auth/register 201 in 278ms
+ ✓ Compiled /auth/signin in 190ms
+ GET /auth/signin 200 in 225ms
+ GET /api/auth/providers 200 in 26ms
+ GET /api/auth/csrf 200 in 23ms
+Login failed: User not found or email not verified for one.photolife+15@gmail.com
+[31m[auth][error][0m CredentialsSignin: Read more at https://errors.authjs.dev#credentialssignin
+    at Module.callback (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/chunks/node_modules_@auth_core_2758d36b._.js:4308:30)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async AuthInternal (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/chunks/node_modules_@auth_core_2758d36b._.js:5145:24)
+    at async Auth (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/chunks/node_modules_@auth_core_2758d36b._.js:5378:34)
+    at async AppRouteRouteModule.do (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:38782)
+    at async AppRouteRouteModule.handle (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:45984)
+    at async responseGenerator (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/chunks/node_modules_next_e3ed18bc._.js:14988:38)
+    at async AppRouteRouteModule.handleResponse (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:1:183770)
+    at async handleResponse (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/chunks/node_modules_next_e3ed18bc._.js:15050:32)
+    at async handler (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.next/server/chunks/node_modules_next_e3ed18bc._.js:15102:13)
+    at async doRender (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/next/dist/server/base-server.js:1587:34)
+    at async DevServer.renderToResponseWithComponentsImpl (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/next/dist/server/base-server.js:1929:13)
+    at async DevServer.renderPageComponent (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/next/dist/server/base-server.js:2395:24)
+    at async DevServer.renderToResponseImpl (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/next/dist/server/base-server.js:2435:32)
+    at async DevServer.pipeImpl (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/next/dist/server/base-server.js:1035:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/next/dist/server/next-server.js:393:17)
+    at async DevServer.handleRequestImpl (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/next/dist/server/base-server.js:925:17)
+    at async /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/next/dist/server/dev/next-dev-server.js:398:20
+    at async Span.traceAsyncFn (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/next/dist/trace/trace.js:157:20)
+    at async DevServer.handleRequest (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/next/dist/server/dev/next-dev-server.js:394:24)
+    at async invokeRender (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/next/dist/server/lib/router-server.js:239:21)
+    at async handleRequest (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/next/dist/server/lib/router-server.js:436:24)
+    at async requestHandlerImpl (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/next/dist/server/lib/router-server.js:464:13)
+    at async Server.requestListener (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/next/dist/server/lib/start-server.js:218:13)
+ POST /api/auth/callback/credentials? 200 in 33ms
+ GET /api/auth/session 200 in 25ms
+🔧 Initializing email service with config: {
+  host: 'smtp.gmail.com',
+  port: 587,
+  user: 'one.photolife@gmail.com',
+  from: 'Board App <noreply@boardapp.com>'
+}
+[2025-08-09 13:00:36] DEBUG Creating transport: nodemailer (6.10.1; +https://nodemailer.com/; SMTP (pool)/6.10.1[client:6.10.1])
+[2025-08-09 13:00:36] DEBUG [WjNFvtlc4j4] Resolved smtp.gmail.com as 108.177.97.108 [cache miss]
+[2025-08-09 13:00:36] INFO  [WjNFvtlc4j4] Secure connection established to 108.177.97.108:465
+[2025-08-09 13:00:37] DEBUG [WjNFvtlc4j4] S: 220 smtp.gmail.com ESMTP 98e67ed59e1d1-31f63da602asm26949479a91.2 - gsmtp
+[2025-08-09 13:00:37] DEBUG [WjNFvtlc4j4] C: EHLO [127.0.0.1]
+[2025-08-09 13:00:38] DEBUG [WjNFvtlc4j4] S: 250-smtp.gmail.com at your service, [114.168.230.82]
+[2025-08-09 13:00:38] DEBUG [WjNFvtlc4j4] S: 250-SIZE 35882577
+[2025-08-09 13:00:38] DEBUG [WjNFvtlc4j4] S: 250-8BITMIME
+[2025-08-09 13:00:38] DEBUG [WjNFvtlc4j4] S: 250-AUTH LOGIN PLAIN XOAUTH2 PLAIN-CLIENTTOKEN OAUTHBEARER XOAUTH
+[2025-08-09 13:00:38] DEBUG [WjNFvtlc4j4] S: 250-ENHANCEDSTATUSCODES
+[2025-08-09 13:00:38] DEBUG [WjNFvtlc4j4] S: 250-PIPELINING
+[2025-08-09 13:00:38] DEBUG [WjNFvtlc4j4] S: 250-CHUNKING
+[2025-08-09 13:00:38] DEBUG [WjNFvtlc4j4] S: 250 SMTPUTF8
+[2025-08-09 13:00:38] DEBUG [WjNFvtlc4j4] SMTP handshake finished
+[2025-08-09 13:00:38] DEBUG [WjNFvtlc4j4] C: AUTH PLAIN AG9uZS5waG90b2xpZmVAZ21haWwuY29tAC8qIHNlY3JldCAqLw==
+[2025-08-09 13:00:38] DEBUG [WjNFvtlc4j4] S: 235 2.7.0 Accepted
+[2025-08-09 13:00:38] INFO  [WjNFvtlc4j4] User "one.photolife@gmail.com" authenticated
+[2025-08-09 13:00:38] DEBUG [WjNFvtlc4j4] C: QUIT
+✅ Email service connected and verified successfully
+📤 Sending email (attempt 1/3)...
+[2025-08-09 13:00:38] DEBUG Sending mail using SMTP (pool)/6.10.1[client:6.10.1]
+[2025-08-09 13:00:38] INFO  [#1] Created new pool resource #1
+[2025-08-09 13:00:38] DEBUG [#1] Assigned message <1673db1e-75d9-141a-51b7-e84de0eb6a89@boardapp.com> to #1 (1)
+[2025-08-09 13:00:38] DEBUG [h6HQvFDdj4k] Resolved smtp.gmail.com as 108.177.97.108 [cache hit]
+[2025-08-09 13:00:38] INFO  [h6HQvFDdj4k] Secure connection established to 108.177.97.108:465
+[2025-08-09 13:00:38] DEBUG [WjNFvtlc4j4] S: 221 2.0.0 closing connection 98e67ed59e1d1-31f63da602asm26949479a91.2 - gsmtp
+[2025-08-09 13:00:38] DEBUG [WjNFvtlc4j4] Closing connection to the server using "end"
+[2025-08-09 13:00:38] INFO  [WjNFvtlc4j4] Connection closed
+[2025-08-09 13:00:38] DEBUG [h6HQvFDdj4k] S: 220 smtp.gmail.com ESMTP d9443c01a7336-241d1ef6825sm231464075ad.30 - gsmtp
+[2025-08-09 13:00:38] DEBUG [h6HQvFDdj4k] C: EHLO [127.0.0.1]
+[2025-08-09 13:00:39] DEBUG [h6HQvFDdj4k] S: 250-smtp.gmail.com at your service, [114.168.230.82]
+[2025-08-09 13:00:39] DEBUG [h6HQvFDdj4k] S: 250-SIZE 35882577
+[2025-08-09 13:00:39] DEBUG [h6HQvFDdj4k] S: 250-8BITMIME
+[2025-08-09 13:00:39] DEBUG [h6HQvFDdj4k] S: 250-AUTH LOGIN PLAIN XOAUTH2 PLAIN-CLIENTTOKEN OAUTHBEARER XOAUTH
+[2025-08-09 13:00:39] DEBUG [h6HQvFDdj4k] S: 250-ENHANCEDSTATUSCODES
+[2025-08-09 13:00:39] DEBUG [h6HQvFDdj4k] S: 250-PIPELINING
+[2025-08-09 13:00:39] DEBUG [h6HQvFDdj4k] S: 250-CHUNKING
+[2025-08-09 13:00:39] DEBUG [h6HQvFDdj4k] S: 250 SMTPUTF8
+[2025-08-09 13:00:39] DEBUG [h6HQvFDdj4k] SMTP handshake finished
+[2025-08-09 13:00:39] DEBUG [h6HQvFDdj4k] C: AUTH PLAIN AG9uZS5waG90b2xpZmVAZ21haWwuY29tAC8qIHNlY3JldCAqLw==
+[2025-08-09 13:00:39] DEBUG [h6HQvFDdj4k] S: 235 2.7.0 Accepted
+[2025-08-09 13:00:39] INFO  [h6HQvFDdj4k] User "one.photolife@gmail.com" authenticated
+[2025-08-09 13:00:39] INFO  [#1] Sending message <1673db1e-75d9-141a-51b7-e84de0eb6a89@boardapp.com> using #1 to <test_1754744436373_u2b9oh@example.com>
+[2025-08-09 13:00:39] DEBUG [h6HQvFDdj4k] C: MAIL FROM:<noreply@boardapp.com>
+[2025-08-09 13:00:39] DEBUG [h6HQvFDdj4k] S: 250 2.1.0 OK d9443c01a7336-241d1ef6825sm231464075ad.30 - gsmtp
+[2025-08-09 13:00:39] DEBUG [h6HQvFDdj4k] C: RCPT TO:<test_1754744436373_u2b9oh@example.com>
+[2025-08-09 13:00:39] DEBUG [h6HQvFDdj4k] S: 250 2.1.5 OK d9443c01a7336-241d1ef6825sm231464075ad.30 - gsmtp
+[2025-08-09 13:00:39] DEBUG [h6HQvFDdj4k] C: DATA
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] S: 354 Go ahead d9443c01a7336-241d1ef6825sm231464075ad.30 - gsmtp
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] From: Board App <noreply@boardapp.com>
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] To: test_1754744436373_u2b9oh@example.com
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] Subject: =?UTF-8?B?Qm9hcmQgQXBwIC0g44Oh44O844Or44Ki44OJ44Os?=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k]  =?UTF-8?B?44K544KS56K66KqN44GX44Gm44GP44Gg44GV44GE?=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] Message-ID: <1673db1e-75d9-141a-51b7-e84de0eb6a89@boardapp.com>
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] Date: Sat, 09 Aug 2025 13:00:38 +0000
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] MIME-Version: 1.0
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] Content-Type: multipart/alternative;
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k]  boundary="--_NmP-d80b6ce2dd14e28b-Part_1"
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] 
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] ----_NmP-d80b6ce2dd14e28b-Part_1
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] Content-Type: text/plain; charset=utf-8
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] Content-Transfer-Encoding: base64
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] 
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] 44GT44KT44Gr44Gh44Gv44CB55Sw5LitIOS4gOmDjuanmAoKQm9hcmQgQXBw44G444Gu44GU55m7
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] 6Yyy44GC44KK44GM44Go44GG44GU44GW44GE44G+44GZ44CCCgrjg6Hjg7zjg6vjgqLjg4njg6zj
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] grnjgpLnorroqo3jgZnjgovjgavjga/jgIHku6XkuIvjga7jg6rjg7Pjgq/jgpLjgq/jg6rjg4Pj
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] gq/jgZfjgabjgY/jgaDjgZXjgYTvvJoKaHR0cDovL2xvY2FsaG9zdDozMDAwL2F1dGgvdmVyaWZ5
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] LWVtYWlsP3Rva2VuPWI0ZWE4NDUyLWUxMGItNDdlMy1iZTI5LWIyZWE1NmYyN2YxZAoK56K66KqN
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] 44Kz44O844OJOiBCNEVBODQKCuOBk+OBruODquODs+OCr+OBrzI05pmC6ZaT5pyJ5Yq544Gn44GZ
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] 44CCCgrjgZPjga7jg6Hjg7zjg6vjgavlv4PlvZPjgZ/jgorjgYzjgarjgYTloLTlkIjjga/jgIHn
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] hKHoppbjgZfjgabjgY/jgaDjgZXjgYTjgIIKCkJvYXJkIEFwcOOCteODneODvOODiOODgeODvOOD
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] oA==
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] ----_NmP-d80b6ce2dd14e28b-Part_1
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] Content-Type: text/html; charset=utf-8
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] Content-Transfer-Encoding: quoted-printable
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] 
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html dir=3D"ltr" =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] lang=3D"en"><head><meta content=3D"text/html; charset=3DUTF-8" =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] http-equiv=3D"Content-Type"/><meta name=3D"x-apple-disable-message-reformat=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] ting"/></head><body style=3D"background-color:#f7fafc"><!--$--><!--html--><=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] !--head--><div style=3D"display:none;overflow:hidden;line-height:1px;opacit=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] y:0;max-height:0;max-width:0" data-skip-in-text=3D"true">=E7=94=B0=E4=B8=AD=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k]  =E4=B8=80=E9=83=8E=E6=A7=98=E3=80=81=E3=83=A1=E3=83=BC=E3=83=AB=E3=82=A2=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E3=83=89=E3=83=AC=E3=82=B9=E3=82=92=E7=A2=BA=E8=AA=8D=E3=81=97=E3=81=A6=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E3=81=8F=E3=81=A0=E3=81=95=E3=81=84<div>=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8F=EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =EF=BB=BF=C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =C2=A0=E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF=C2=A0=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E2=80=8C=E2=80=8B=E2=80=8D=E2=80=8E=E2=80=8F=EF=BB=BF</div></div><!=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] --body--><table border=3D"0" width=3D"100%" cellPadding=3D"0" =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] cellSpacing=3D"0" role=3D"presentation" align=3D"center"><tbody><tr><td =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] style=3D"background-color:#f7fafc;font-family:-apple-system, =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] Neue&quot;, Arial, sans-serif"><table align=3D"center" width=3D"100%" =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] border=3D"0" cellPadding=3D"0" cellSpacing=3D"0" role=3D"presentation" =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] style=3D"max-width:600px;background-color:#ffffff;margin:0 =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] auto;padding:20px 0 48px;margin-bottom:64px"><tbody><tr =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] style=3D"width:100%"><td><table align=3D"center" width=3D"100%" =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] border=3D"0" cellPadding=3D"0" cellSpacing=3D"0" role=3D"presentation" =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] style=3D"padding:32px 40px;text-align:center;border-bottom:1px solid =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] #e2e8f0"><tbody><tr><td><p style=3D"font-size:24px;line-height:24px;font-we=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] ight:bold;color:#667eea;margin:0;letter-spacing:-0.025em;margin-top:0;margi=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] n-bottom:0;margin-left:0;margin-right:0">Board App</p><p =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] style=3D"font-size:14px;line-height:24px;color:#718096;margin-top:8px;margi=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] n:8px 0 0 0;margin-right:0;margin-bottom:0;margin-left:0">=E3=83=A1=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E3=83=BC=E3=83=AB=E3=82=A2=E3=83=89=E3=83=AC=E3=82=B9=E3=81=AE=E7=A2=BA=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E8=AA=8D</p></td></tr></tbody></table><table align=3D"center" =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] width=3D"100%" border=3D"0" cellPadding=3D"0" cellSpacing=3D"0" =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] role=3D"presentation" style=3D"padding:40px"><tbody><tr><td><h1 =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] style=3D"font-size:24px;font-weight:bold;color:#1a202c;margin:0 0 =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] 24px">=E3=81=93=E3=82=93=E3=81=AB=E3=81=A1=E3=81=AF=E3=80=81<!-- =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] -->=E7=94=B0=E4=B8=AD =E4=B8=80=E9=83=8E<!-- -->=E6=A7=98</h1><p =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] style=3D"font-size:16px;line-height:24px;color:#1a202c;margin:16px =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] 0;margin-top:16px;margin-right:0;margin-bottom:16px;margin-left:0">Board =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] App<!-- -->=E3=81=B8=E3=81=AE=E3=81=94=E7=99=BB=E9=8C=B2=E3=81=82=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E3=82=8A=E3=81=8C=E3=81=A8=E3=81=86=E3=81=94=E3=81=96=E3=81=84=E3=81=BE=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E3=81=99=E3=80=82 =E4=BB=A5=E4=B8=8B=E3=81=AE=E3=83=9C=E3=82=BF=E3=83=B3=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E3=82=92=E3=82=AF=E3=83=AA=E3=83=83=E3=82=AF=E3=81=97=E3=81=A6=E3=80=81=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E3=83=A1=E3=83=BC=E3=83=AB=E3=82=A2=E3=83=89=E3=83=AC=E3=82=B9=E3=82=92=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E7=A2=BA=E8=AA=8D=E3=81=97=E3=81=A6=E3=81=8F=E3=81=A0=E3=81=95=E3=81=84=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E3=80=82</p><table align=3D"center" width=3D"100%" border=3D"0" =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] cellPadding=3D"0" cellSpacing=3D"0" role=3D"presentation" =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] style=3D"text-align:center;margin:32px 0"><tbody><tr><td><a =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] href=3D"http://localhost:3000/auth/verify-email?token=3Db4ea8452-e10b-47e3-=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] be29-b2ea56f27f1d" style=3D"line-height:100%;text-decoration:none;display:i=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] nline-block;max-width:100%;mso-padding-alt:0px;background-color:#667eea;bor=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] der-radius:8px;color:#ffffff;font-size:16px;font-weight:bold;text-align:cen=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] ter;padding:12px 24px;min-width:200px;padding-top:12px;padding-right:24px;p=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] adding-bottom:12px;padding-left:24px" target=3D"_blank"><span><!--[if =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] mso]><i style=3D"mso-font-width:400%;mso-text-raise:18" =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] hidden>&#8202;&#8202;&#8202;</i><![endif]--></span><span =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] style=3D"max-width:100%;display:inline-block;line-height:120%;mso-padding-a=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] lt:0px;mso-text-raise:9px">=E3=83=A1=E3=83=BC=E3=83=AB=E3=82=A2=E3=83=89=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E3=83=AC=E3=82=B9=E3=82=92=E7=A2=BA=E8=AA=8D</span><span><!--[if mso]><i =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] style=3D"mso-font-width:400%" hidden>&#8202;&#8202;&#8202;&#8203;</i><!=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] [endif]--></span></a></td></tr></tbody></table><table align=3D"center" =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] width=3D"100%" border=3D"0" cellPadding=3D"0" cellSpacing=3D"0" =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] role=3D"presentation" style=3D"background-color:#f7fafc;border-radius:8px;p=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] adding:24px;text-align:center;margin:24px 0"><tbody><tr><td><p =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] style=3D"font-size:12px;line-height:24px;color:#718096;margin:0 0 =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] 8px;text-transform:uppercase;letter-spacing:0.05em;margin-top:0;margin-righ=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] t:0;margin-bottom:8px;margin-left:0">=E7=A2=BA=E8=AA=8D=E3=82=B3=E3=83=BC=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E3=83=89</p><p style=3D"font-size:32px;line-height:24px;font-weight:bold;c=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] olor:#667eea;letter-spacing:0.1em;margin:0;font-family:monospace;margin-top=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] :0;margin-bottom:0;margin-left:0;margin-right:0">B4EA84</p></td></tr></tbod=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] y></table><p style=3D"font-size:16px;line-height:24px;color:#1a202c;margin:=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] 16px 0;margin-top:16px;margin-right:0;margin-bottom:16px;margin-left:0">=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E3=81=93=E3=81=AE=E3=83=AA=E3=83=B3=E3=82=AF=E3=81=AF24=E6=99=82=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E9=96=93=E6=9C=89=E5=8A=B9=E3=81=A7=E3=81=99=E3=80=82=E6=9C=9F=E9=99=90=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E3=81=8C=E5=88=87=E3=82=8C=E3=81=9F=E5=A0=B4=E5=90=88=E3=81=AF=E3=80=81 =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E5=86=8D=E5=BA=A6=E3=82=B5=E3=82=A4=E3=83=B3=E3=82=A2=E3=83=83=E3=83=97=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E3=81=97=E3=81=A6=E3=81=8F=E3=81=A0=E3=81=95=E3=81=84=E3=80=82</p><table =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] align=3D"center" width=3D"100%" border=3D"0" cellPadding=3D"0" =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] cellSpacing=3D"0" role=3D"presentation" style=3D"background-color:#f7fafc;b=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] order-radius:8px;padding:16px;margin:24px 0"><tbody><tr><td><p =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] style=3D"font-size:14px;line-height:24px;color:#718096;margin:0 0 =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] 8px;margin-top:0;margin-right:0;margin-bottom:8px;margin-left:0">=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E3=83=9C=E3=82=BF=E3=83=B3=E3=81=8C=E6=A9=9F=E8=83=BD=E3=81=97=E3=81=AA=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E3=81=84=E5=A0=B4=E5=90=88=E3=81=AF=E3=80=81=E4=BB=A5=E4=B8=8B=E3=81=AEURL=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E3=82=92=E3=83=96=E3=83=A9=E3=82=A6=E3=82=B6=E3=81=AB=E3=82=B3=E3=83=94=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E3=83=BC=EF=BC=86=E3=83=9A=E3=83=BC=E3=82=B9=E3=83=88=E3=81=97=E3=81=A6=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E3=81=8F=E3=81=A0=E3=81=95=E3=81=84=EF=BC=9A</p><a =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] href=3D"http://localhost:3000/auth/verify-email?token=3Db4ea8452-e10b-47e3-=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] be29-b2ea56f27f1d" style=3D"color:#667eea;text-decoration-line:none;font-si=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] ze:14px;word-break:break-all" target=3D"_blank">http://localhost:3000/auth/=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] verify-email?token=3Db4ea8452-e10b-47e3-be29-b2ea56f27f1d</a></td></tr></tb=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] ody></table><hr style=3D"border:none;border-top:1px solid =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] #e2e8f0;border-color:#e2e8f0;margin:32px 0"/><p style=3D"font-size:14px;lin=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] e-height:24px;color:#718096;text-align:center;margin:16px 0 =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] 0;margin-top:16px;margin-right:0;margin-bottom:0;margin-left:0">=E3=81=93=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E3=81=AE=E3=83=A1=E3=83=BC=E3=83=AB=E3=81=AB=E5=BF=83=E5=BD=93=E3=81=9F=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E3=82=8A=E3=81=8C=E3=81=AA=E3=81=84=E5=A0=B4=E5=90=88=E3=81=AF=E3=80=81=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E7=84=A1=E8=A6=96=E3=81=97=E3=81=A6=E3=81=8F=E3=81=A0=E3=81=95=E3=81=84=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E3=80=82 =E3=81=82=E3=81=AA=E3=81=9F=E3=81=AE=E3=82=A2=E3=82=AB=E3=82=A6=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E3=83=B3=E3=83=88=E3=81=AF=E4=BD=9C=E6=88=90=E3=81=95=E3=82=8C=E3=81=BE=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E3=81=9B=E3=82=93=E3=80=82</p></td></tr></tbody></table><hr =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] style=3D"width:100%;border:none;border-top:1px solid =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] #eaeaea;border-color:#e2e8f0;margin:32px 40px"/><table align=3D"center" =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] width=3D"100%" border=3D"0" cellPadding=3D"0" cellSpacing=3D"0" =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] role=3D"presentation" style=3D"padding:0 40px 32px;text-align:center"><tbod=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] y><tr><td><p style=3D"font-size:12px;line-height:16px;color:#718096;margin:=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] 4px 0;margin-top:4px;margin-right:0;margin-bottom:4px;margin-left:0">=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E3=81=93=E3=81=AE=E3=83=A1=E3=83=BC=E3=83=AB=E3=81=AF <!-- -->Board App<!=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] -- --> =E3=81=8B=E3=82=89=E9=80=81=E4=BF=A1=E3=81=95=E3=82=8C=E3=81=BE=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =E3=81=97=E3=81=9F=E3=80=82</p><p style=3D"font-size:12px;line-height:16px;=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] color:#718096;margin:4px 0;margin-top:4px;margin-right:0;margin-bottom:4px;=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] margin-left:0">=E3=81=8A=E5=95=8F=E3=81=84=E5=90=88=E3=82=8F=E3=81=9B:<!-- =
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] --> <a href=3D"mailto:support@boardapp.com" style=3D"color:#667eea;text-dec=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] oration-line:none;text-decoration:underline" target=3D"_blank">support@boar=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] dapp.com</a></p><p style=3D"font-size:12px;line-height:16px;color:#718096;m=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] argin:4px 0;margin-top:4px;margin-right:0;margin-bottom:4px;margin-left:0">=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] =C2=A9 <!-- -->2025<!-- --> <!-- -->Board App<!-- -->. All rights reserved.=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] </p></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody><=
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] /table><!--/$--></body></html>
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] ----_NmP-d80b6ce2dd14e28b-Part_1--
+[2025-08-09 13:00:40] DEBUG [h6HQvFDdj4k] .
+[2025-08-09 13:00:40] INFO  [h6HQvFDdj4k] <17572 bytes encoded mime message (source size 17569 bytes)>
+[2025-08-09 13:00:41] DEBUG [h6HQvFDdj4k] S: 250 2.0.0 OK  1754744441 d9443c01a7336-241d1ef6825sm231464075ad.30 - gsmtp
+✅ Email sent successfully: <1673db1e-75d9-141a-51b7-e84de0eb6a89@boardapp.com>
+✅ 確認メール送信成功: <1673db1e-75d9-141a-51b7-e84de0eb6a89@boardapp.com>
+ POST /api/auth/register 201 in 5094ms
+[2025-08-09 13:00:41] DEBUG [#1] Connection #1 became available
+[2025-08-09 13:01:11] ERROR [h6HQvFDdj4k] Timeout
+[2025-08-09 13:01:11] ERROR [#1] Pool Error for #1: Timeout
+[2025-08-09 13:01:11] DEBUG [h6HQvFDdj4k] Closing connection to the server using "end"
+[2025-08-09 13:01:11] INFO  [#1] Connection #1 was closed
+[2025-08-09 13:01:11] INFO  [h6HQvFDdj4k] Connection closed
+ POST /api/auth/register 400 in 42ms
+ ✓ Compiled /api/auth/request-reset in 127ms
+✅ パスワードリセット: MongoDB接続成功
+ℹ️ ユーザーが存在しないか、メール未確認: one.photolife@gmail.com
+ POST /api/auth/request-reset 200 in 676ms
+   Reload env: .env.local

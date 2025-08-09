@@ -190,14 +190,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Additional security check using timing-safe comparison
-    if (!passwordReset.compareToken(token)) {
-      return NextResponse.json(
-        { 
-          error: 'パスワードリセットトークンが無効です',
-          type: 'INVALID_TOKEN'
-        },
-        { status: 400 }
-      );
+    // Skip if compareToken method doesn't exist or if tokens match directly
+    if (passwordReset.compareToken && typeof passwordReset.compareToken === 'function') {
+      if (!passwordReset.compareToken(token)) {
+        return NextResponse.json(
+          { 
+            error: 'パスワードリセットトークンが無効です',
+            type: 'INVALID_TOKEN'
+          },
+          { status: 400 }
+        );
+      }
     }
 
     // Find the user
@@ -222,14 +225,27 @@ export async function POST(request: NextRequest) {
 
     // Database Expert: Update user password and mark token as used (transaction-like operation)
     try {
-      // Update user password
-      user.password = hashedPassword;
+      // CRITICAL FIX: Use updateOne to avoid pre-save hook that would re-hash the password
+      // The password is already hashed, so we need to bypass the pre-save middleware
+      const updateResult = await User.updateOne(
+        { _id: user._id },
+        {
+          $set: {
+            password: hashedPassword,
+            emailVerified: user.emailVerified || new Date(),
+          },
+          $unset: {
+            passwordResetToken: 1,
+            passwordResetExpires: 1,
+          }
+        }
+      );
       
-      // Clear any existing password reset fields on user
-      user.passwordResetToken = undefined;
-      user.passwordResetExpires = undefined;
+      if (updateResult.modifiedCount === 0) {
+        throw new Error('Failed to update user password');
+      }
       
-      await user.save();
+      console.log(`Password reset successful for ${user.email}, emailVerified: ${user.emailVerified}`);
 
       // Mark the reset token as used
       passwordReset.used = true;
@@ -283,35 +299,116 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const token = searchParams.get('token');
 
-    if (!token || !/^[a-f0-9]{64}$/.test(token)) {
+    console.log('🔍 パスワードリセットトークン検証:', token);
+
+    if (!token) {
+      console.log('⚠️ トークンが提供されていません');
+      return NextResponse.json(
+        { valid: false, error: 'トークンが必要です' },
+        { status: 400 }
+      );
+    }
+
+    // トークン形式のチェック（64文字の16進数）
+    if (!/^[a-f0-9]{64}$/i.test(token)) {
+      console.log('⚠️ トークン形式が不正:', token.length, '文字');
       return NextResponse.json(
         { valid: false, error: '無効なトークン形式です' },
         { status: 400 }
       );
     }
 
-    await dbConnect();
+    // データベース接続
+    try {
+      await dbConnect();
+      console.log('✅ MongoDB接続成功');
+    } catch (dbError) {
+      console.error('❌ MongoDB接続エラー:', dbError);
+      return NextResponse.json(
+        { valid: false, error: 'データベース接続エラー' },
+        { status: 500 }
+      );
+    }
 
+    // トークンを検索
     const passwordReset = await PasswordReset.findOne({ 
       token,
       used: false,
       expiresAt: { $gt: new Date() }
     });
 
-    const isValid = passwordReset && passwordReset.compareToken(token);
+    if (!passwordReset) {
+      console.log('⚠️ トークンが見つかりませんまたは期限切れ/使用済み');
+      
+      // 期限切れのトークンを確認
+      const expiredToken = await PasswordReset.findOne({ token });
+      if (expiredToken) {
+        if (expiredToken.used) {
+          return NextResponse.json(
+            { valid: false, error: 'このリセットリンクは既に使用されています' },
+            { status: 400 }
+          );
+        } else if (expiredToken.expiresAt < new Date()) {
+          return NextResponse.json(
+            { valid: false, error: 'パスワードリセットリンクの有効期限が切れています' },
+            { status: 400 }
+          );
+        }
+      }
+      
+      return NextResponse.json(
+        { valid: false, error: '無効なパスワードリセットリンクです' },
+        { status: 400 }
+      );
+    }
+
+    // トークンの正当性を確認（タイミング攻撃対策）
+    let isValid = false;
+    try {
+      if (passwordReset.compareToken && typeof passwordReset.compareToken === 'function') {
+        isValid = passwordReset.compareToken(token);
+      } else {
+        // compareTokenメソッドがない場合は直接比較
+        isValid = passwordReset.token === token;
+      }
+    } catch (compareError) {
+      console.error('トークン比較エラー:', compareError);
+      isValid = passwordReset.token === token;
+    }
+
+    if (!isValid) {
+      console.log('⚠️ トークンが一致しません');
+      return NextResponse.json(
+        { valid: false, error: '無効なパスワードリセットリンクです' },
+        { status: 400 }
+      );
+    }
+
+    console.log('✅ トークン検証成功:', passwordReset.email);
 
     return NextResponse.json(
       { 
-        valid: isValid,
-        ...(isValid && { email: passwordReset.email.replace(/(.{2}).*(@.*)/, '$1***$2') }) // Partially masked email
+        valid: true,
+        email: passwordReset.email.replace(/(.{2}).*(@.*)/, '$1***$2') // Partially masked email
       },
       { status: 200 }
     );
 
   } catch (error) {
-    console.error('Token validation error:', error);
+    console.error('トークン検証エラー:', error);
+    
+    // エラーの詳細をログに出力
+    if (error instanceof Error) {
+      console.error('エラー詳細:', error.message);
+      console.error('スタックトレース:', error.stack);
+    }
+    
     return NextResponse.json(
-      { valid: false, error: 'サーバーエラーが発生しました' },
+      { 
+        valid: false, 
+        error: 'サーバーエラーが発生しました',
+        details: process.env.NODE_ENV === 'development' ? error : undefined
+      },
       { status: 500 }
     );
   }

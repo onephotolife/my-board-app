@@ -8,9 +8,14 @@ export async function POST(request: NextRequest) {
   try {
     const { email } = await request.json();
     
+    console.log('Test endpoint - Request for email:', email);
+    console.log('MONGODB_URI:', process.env.MONGODB_URI);
+    
     await dbConnect();
     
     const user = await User.findOne({ email }).select('name email emailVerified');
+    
+    console.log('Found user:', user ? { email: user.email, emailVerified: user.emailVerified } : 'null');
     
     if (!user || !user.emailVerified) {
       return NextResponse.json({
@@ -27,7 +32,7 @@ export async function POST(request: NextRequest) {
       ]
     });
     
-    // Create new token
+    // Create new token with required fields
     const crypto = require('crypto');
     const token = crypto.randomBytes(32).toString('hex');
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
@@ -43,7 +48,7 @@ export async function POST(request: NextRequest) {
     // Generate reset URL
     const host = request.headers.get('host');
     const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
-    const baseUrl = host ? `${protocol}://${host}` : 'http://localhost:3003';
+    const baseUrl = host ? `${protocol}://${host}` : 'http://localhost:3000';
     const resetUrl = `${baseUrl}/auth/reset-password/${token}`;
     
     // Return URL directly for testing

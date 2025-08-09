@@ -41,21 +41,36 @@ self.addEventListener('fetch', (event) => {
 
   // APIリクエストの処理
   if (url.pathname.startsWith('/api/')) {
+    // POSTリクエストはキャッシュしない
+    if (request.method !== 'GET') {
+      event.respondWith(fetch(request));
+      return;
+    }
+    
     event.respondWith(
       fetch(request)
         .then((response) => {
-          // 成功したAPIレスポンスをキャッシュ
-          if (response.status === 200) {
+          // GETリクエストで成功したAPIレスポンスのみキャッシュ
+          if (request.method === 'GET' && response.status === 200) {
             const responseClone = response.clone();
             caches.open(RUNTIME_CACHE).then((cache) => {
               cache.put(request, responseClone);
+            }).catch(err => {
+              console.log('Cache put failed for API:', err);
             });
           }
           return response;
         })
         .catch(() => {
-          // オフライン時はキャッシュから返す
-          return caches.match(request);
+          // オフライン時はキャッシュから返す（GETリクエストのみ）
+          if (request.method === 'GET') {
+            return caches.match(request);
+          }
+          // POSTリクエストなどはエラーを返す
+          return new Response('Network error', {
+            status: 503,
+            statusText: 'Service Unavailable'
+          });
         })
     );
     return;
@@ -90,25 +105,41 @@ self.addEventListener('fetch', (event) => {
 
   // HTMLページの処理 - ネットワークファースト
   if (request.mode === 'navigate') {
+    // POSTリクエストはキャッシュしない
+    if (request.method !== 'GET') {
+      event.respondWith(fetch(request));
+      return;
+    }
+    
     event.respondWith(
       fetch(request)
         .then((response) => {
-          if (response.status === 200) {
+          // GETリクエストで成功した場合のみキャッシュ
+          if (request.method === 'GET' && response.status === 200) {
             const responseClone = response.clone();
             caches.open(RUNTIME_CACHE).then((cache) => {
               cache.put(request, responseClone);
+            }).catch(err => {
+              console.log('Cache put failed for HTML:', err);
             });
           }
           return response;
         })
         .catch(() => {
-          // オフライン時はキャッシュから
-          return caches.match(request).then((response) => {
-            if (response) {
-              return response;
-            }
-            // キャッシュにない場合はオフラインページ
-            return caches.match('/offline.html');
+          // オフライン時はキャッシュから（GETリクエストのみ）
+          if (request.method === 'GET') {
+            return caches.match(request).then((response) => {
+              if (response) {
+                return response;
+              }
+              // キャッシュにない場合はオフラインページ
+              return caches.match('/offline.html');
+            });
+          }
+          // POSTリクエストはエラーを返す
+          return new Response('Network error', {
+            status: 503,
+            statusText: 'Service Unavailable'
           });
         })
     );

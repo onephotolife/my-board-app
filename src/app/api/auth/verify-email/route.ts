@@ -14,35 +14,100 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    await connectDB();
+    console.log('🔍 メール確認トークン:', token);
 
-    const user = await User.findOne({ emailVerificationToken: token });
-
-    if (!user) {
+    // データベース接続
+    try {
+      await connectDB();
+      console.log('✅ データベース接続成功');
+    } catch (dbError) {
+      console.error('❌ データベース接続エラー:', dbError);
       return NextResponse.json(
-        { error: 'トークンが無効または期限切れです' },
-        { status: 400 }
+        { error: 'データベース接続エラーが発生しました' },
+        { status: 500 }
       );
     }
 
-    // Update user
+    // ユーザー検索（まず期限を考慮せずに検索）
+    const userWithToken = await User.findOne({ emailVerificationToken: token });
+    
+    if (!userWithToken) {
+      console.log('⚠️ トークンに一致するユーザーが見つかりません');
+      return NextResponse.json(
+        { error: 'トークンが無効です' },
+        { status: 400 }
+      );
+    }
+    
+    // 期限チェック
+    const now = new Date();
+    console.log('🕐 期限チェック:', {
+      now: now.toISOString(),
+      expiry: userWithToken.emailVerificationTokenExpiry?.toISOString(),
+      isExpired: userWithToken.emailVerificationTokenExpiry ? userWithToken.emailVerificationTokenExpiry < now : 'no expiry set'
+    });
+    
+    // 期限が設定されていて、期限切れの場合
+    if (userWithToken.emailVerificationTokenExpiry && userWithToken.emailVerificationTokenExpiry < now) {
+      console.log('⚠️ トークンが期限切れです');
+      return NextResponse.json(
+        { error: '確認リンクの有効期限が切れています。新規登録からやり直してください。' },
+        { status: 400 }
+      );
+    }
+    
+    const user = userWithToken;
+
+    // 既に確認済みの場合
+    if (user.emailVerified) {
+      console.log('ℹ️ 既にメール確認済み');
+      return NextResponse.json(
+        { 
+          message: 'メールアドレスは既に確認済みです',
+          alreadyVerified: true 
+        },
+        { status: 200 }
+      );
+    }
+
+    // ユーザー情報を更新
     user.emailVerified = true;
     user.emailVerificationToken = undefined;
+    user.emailVerificationTokenExpiry = undefined;
     await user.save();
 
-    // Redirect to login page with success message
-    const host = request.headers.get('host');
-    const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
-    const baseUrl = host ? `${protocol}://${host}` : (process.env.NEXTAUTH_URL || 'http://localhost:3000');
-    
-    return NextResponse.redirect(
-      new URL('/auth/signin?verified=true', baseUrl)
-    );
-  } catch (error) {
-    console.error('Email verification error:', error);
+    console.log('✅ メール確認完了:', user.email);
+
+    // JSONレスポンスを返す（リダイレクトではなく）
     return NextResponse.json(
-      { error: 'メール確認中にエラーが発生しました' },
+      { 
+        message: 'メールアドレスの確認が完了しました',
+        success: true,
+        email: user.email
+      },
+      { status: 200 }
+    );
+    
+  } catch (error) {
+    console.error('メール確認エラー:', error);
+    
+    // エラーの詳細をログに出力
+    if (error instanceof Error) {
+      console.error('エラー詳細:', error.message);
+      console.error('スタックトレース:', error.stack);
+    }
+    
+    return NextResponse.json(
+      { 
+        error: 'メール確認中にエラーが発生しました',
+        details: process.env.NODE_ENV === 'development' ? error : undefined
+      },
       { status: 500 }
     );
   }
+}
+
+// POSTメソッドも追加（クライアントからのリクエスト用）
+export async function POST(request: NextRequest) {
+  return GET(request);
 }

@@ -78,4 +78,10 @@ UserSchema.methods.comparePassword = async function (candidatePassword: string):
   return bcrypt.compare(candidatePassword, this.password);
 };
 
+// 開発環境でスキーマキャッシュをクリア
+if (process.env.NODE_ENV === 'development') {
+  delete mongoose.models.User;
+  delete mongoose.connection.models.User;
+}
+
 export default mongoose.models.User || mongoose.model<IUser>('User', UserSchema);

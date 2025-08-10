@@ -65,27 +65,46 @@ export async function POST(request: NextRequest) {
                     request.headers.get('x-real-ip') || 
                     'unknown';
 
-    // レート制限チェック
-    const rateLimitCheck = checkRateLimit(clientIp);
-    if (!rateLimitCheck.allowed) {
-      const remainingTime = Math.ceil((rateLimitCheck.resetTime! - Date.now()) / 60000);
-      return NextResponse.json(
-        { 
-          error: `登録の試行回数が多すぎます。${remainingTime}分後に再試行してください。`,
-          type: 'RATE_LIMIT',
-        },
-        { status: 429 }
-      );
+    // テストモードチェック（開発環境のみ）
+    const isTestMode = process.env.NODE_ENV === 'development' && 
+                      request.headers.get('x-test-mode') === 'true';
+
+    // レート制限チェック（テストモードの場合はスキップ）
+    if (!isTestMode) {
+      const rateLimitCheck = checkRateLimit(clientIp);
+      if (!rateLimitCheck.allowed) {
+        const remainingTime = Math.ceil((rateLimitCheck.resetTime! - Date.now()) / 60000);
+        return NextResponse.json(
+          { 
+            error: `登録の試行回数が多すぎます。${remainingTime}分後に再試行してください。`,
+            type: 'RATE_LIMIT',
+          },
+          { status: 429 }
+        );
+      }
     }
 
     // リクエストボディの取得
-    const body = await request.json().catch(() => null);
-    
-    if (!body) {
+    let body;
+    try {
+      body = await request.json();
+    } catch (error) {
+      console.error('JSON parse error:', error);
       return NextResponse.json(
         { 
           error: '無効なリクエストです',
           type: 'INVALID_REQUEST',
+          details: process.env.NODE_ENV === 'development' ? error.message : undefined,
+        },
+        { status: 400 }
+      );
+    }
+    
+    if (!body) {
+      return NextResponse.json(
+        { 
+          error: '空のリクエストです',
+          type: 'EMPTY_REQUEST',
         },
         { status: 400 }
       );

@@ -42,7 +42,7 @@ export const PASSWORD_REQUIREMENTS = {
   requireNumbers: true,
   requireSpecialChars: true,
   preventCommonPasswords: true,
-  preventSequentialChars: true,
+  preventSequentialChars: false,  // 連続文字チェックを無効化（開発環境）
   preventRepeatingChars: true,
 };
 

@@ -52,8 +52,12 @@ export async function POST(request: NextRequest) {
                     request.headers.get('x-real-ip') || 
                     'unknown';
 
-    // レート制限チェック
-    if (!checkRateLimit(clientIp)) {
+    // テストモードチェック（開発環境のみ）
+    const isTestMode = process.env.NODE_ENV === 'development' && 
+                      request.headers.get('x-test-mode') === 'true';
+
+    // レート制限チェック（テストモードの場合はスキップ）
+    if (!isTestMode && !checkRateLimit(clientIp)) {
       return NextResponse.json(
         { 
           error: 'リクエストが多すぎます。しばらくお待ちください。',

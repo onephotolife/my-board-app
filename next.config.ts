@@ -63,8 +63,19 @@ const nextConfig: NextConfig = {
     ];
   },
 
+  // WebSocket設定（開発環境）
+  webSocketServer: false,
+  
   // Webpack設定の最適化
   webpack: (config, { isServer, dev }) => {
+    // WebSocket/HMR設定の修正
+    if (dev && !isServer) {
+      config.watchOptions = {
+        ...config.watchOptions,
+        poll: 1000,
+        aggregateTimeout: 300,
+      };
+    }
     if (!isServer && !dev) {
       // 本番環境でのみ最適化
       config.optimization = {

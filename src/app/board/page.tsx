@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import {
   Container,
   Paper,
@@ -44,7 +45,14 @@ interface PaginationData {
 }
 
 export default function BoardPage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  
+  // ログアウト処理
+  const handleLogout = async () => {
+    await signOut({ redirect: false });
+    router.push('/auth/signin');
+  };
   const [posts, setPosts] = useState<Post[]>([]);
   const [pagination, setPagination] = useState<PaginationData>({
     page: 1,
@@ -104,7 +112,7 @@ export default function BoardPage() {
     setFormData({ title: '', content: '' });
   };
 
-  // 投稿を保存
+  // 投稿を保存（リアルタイム更新対応）
   const handleSave = async () => {
     try {
       const url = editingPost
@@ -119,15 +127,30 @@ export default function BoardPage() {
       });
 
       if (!response.ok) throw new Error('保存に失敗しました');
+      
+      const savedPost = await response.json();
+      
+      // リアルタイム更新
+      if (editingPost) {
+        // 編集の場合
+        setPosts(prevPosts => 
+          prevPosts.map(post => 
+            post._id === savedPost._id ? savedPost : post
+          )
+        );
+      } else {
+        // 新規投稿の場合（先頭に追加）
+        setPosts(prevPosts => [savedPost, ...prevPosts]);
+        setPagination(prev => ({ ...prev, total: prev.total + 1 }));
+      }
 
       handleCloseDialog();
-      fetchPosts(pagination.page);
     } catch {
       setError('保存に失敗しました');
     }
   };
 
-  // 投稿を削除
+  // 投稿を削除（リアルタイム更新対応）
   const handleDelete = async (id: string) => {
     if (!confirm('本当に削除しますか？')) return;
 
@@ -138,7 +161,9 @@ export default function BoardPage() {
 
       if (!response.ok) throw new Error('削除に失敗しました');
       
-      fetchPosts(pagination.page);
+      // リアルタイム削除
+      setPosts(prevPosts => prevPosts.filter(post => post._id !== id));
+      setPagination(prev => ({ ...prev, total: prev.total - 1 }));
     } catch {
       setError('削除に失敗しました');
     }
@@ -163,13 +188,24 @@ export default function BoardPage() {
         <Typography variant="h4" component="h1">
           掲示板
         </Typography>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => handleOpenDialog()}
-        >
-          新規投稿
-        </Button>
+        <Box display="flex" gap={2}>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => handleOpenDialog()}
+          >
+            新規投稿
+          </Button>
+          {session && (
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={handleLogout}
+            >
+              ログアウト
+            </Button>
+          )}
+        </Box>
       </Box>
 
       {error && (
@@ -213,7 +249,7 @@ export default function BoardPage() {
                     </Typography>
                   }
                   secondary={
-                    <>
+                    <Box component="span">
                       <Typography
                         sx={{ display: 'inline' }}
                         component="span"
@@ -223,15 +259,22 @@ export default function BoardPage() {
                         {post.authorName}
                       </Typography>
                       {' — '}
-                      {new Date(post.createdAt).toLocaleString('ja-JP')}
                       <Typography
+                        component="span"
+                        variant="body2"
+                        color="text.secondary"
+                      >
+                        {new Date(post.createdAt).toLocaleString('ja-JP')}
+                      </Typography>
+                      <Box
                         component="div"
-                        variant="body1"
                         sx={{ mt: 1, whiteSpace: 'pre-wrap' }}
                       >
-                        {post.content}
-                      </Typography>
-                    </>
+                        <Typography variant="body1">
+                          {post.content}
+                        </Typography>
+                      </Box>
+                    </Box>
                   }
                 />
               </ListItem>

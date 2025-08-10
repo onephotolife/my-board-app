@@ -77,6 +77,18 @@ export async function GET(request: NextRequest) {
     await user.save();
 
     console.log('✅ メール確認完了:', user.email);
+    console.log('📄 更新後のユーザー情報:', {
+      email: user.email,
+      emailVerified: user.emailVerified,
+      _id: user._id
+    });
+    
+    // MongoDB Atlasでの更新を確認
+    const updatedUser = await User.findById(user._id);
+    console.log('🔍 MongoDB Atlas確認:', {
+      emailVerified: updatedUser?.emailVerified,
+      tokenCleared: !updatedUser?.emailVerificationToken
+    });
 
     // JSONレスポンスを返す（リダイレクトではなく）
     return NextResponse.json(

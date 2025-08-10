@@ -27,8 +27,10 @@ export async function connectDB() {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
-      serverSelectionTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 10000,
       socketTimeoutMS: 45000,
+      maxPoolSize: 10,
+      minPoolSize: 2,
     };
 
     try {
@@ -44,14 +46,54 @@ export async function connectDB() {
           console.error('mongod --dbpath /usr/local/var/mongodb');
           throw error;
         });
-      } else if (MONGODB_URI.includes('xxxxx')) {
+      } else if (MONGODB_URI.includes('xxxxx') || MONGODB_URI.includes('cluster0.xxxxx')) {
         // プレースホルダーが含まれている場合
-        console.error('❌ MongoDB URIが正しく設定されていません');
-        console.error('.env.localファイルを確認し、正しいMongoDB接続情報を設定してください');
-        throw new Error('Invalid MongoDB URI - contains placeholder values');
+        console.error('\n❌ MongoDB Atlas URIにプレースホルダーが含まれています');
+        console.error('--------------------------------------------------');
+        console.error('🔧 修正方法:');
+        console.error('1. MongoDB Atlasダッシュボードにログイン');
+        console.error('2. Database > Connect をクリック');
+        console.error('3. "Connect your application"を選択');
+        console.error('4. 接続文字列をコピー（例: cluster0.abcde.mongodb.net）');
+        console.error('5. .env.localのMONGODB_URI_PRODUCTIONを更新:');
+        console.error('   mongodb+srv://username:password@cluster0.[実際の値].mongodb.net/boardDB');
+        console.error('\n📝 現在の設定:');
+        console.error(`   ${MONGODB_URI.substring(0, 60)}...`);
+        console.error('\n💡 一時的な解決策:');
+        console.error('   ローカルMongoDBを使用するには、.env.localから');
+        console.error('   MONGODB_URI_PRODUCTIONの行をコメントアウトしてください');
+        console.error('--------------------------------------------------\n');
+        throw new Error('MongoDB Atlas URI contains placeholder values - please replace "xxxxx" with your actual cluster identifier');
       } else {
         // MongoDB Atlas等の外部データベース
-        cached.promise = mongoose.connect(MONGODB_URI, opts);
+        console.log('\n╔════════════════════════════════════════════════════════════╗');
+        console.log('║ 🌐 MongoDB Atlas接続開始                              ║');
+        console.log('╚════════════════════════════════════════════════════════════╝');
+        const maskedUri = MONGODB_URI.replace(/\/\/[^@]+@/, '//***@');
+        console.log(`📍 クラスター: ${maskedUri.match(/cluster0\.[a-z0-9]+\.mongodb\.net/)?.[0] || 'unknown'}`);
+        console.log(`📁 データベース: boardDB`);
+        console.log(`⏱️  タイムアウト: 10秒`);
+        console.log('\n🔄 接続中...');
+        
+        cached.promise = mongoose.connect(MONGODB_URI, opts).then((connection) => {
+          console.log('\n✅ MongoDB Atlas接続成功！');
+          console.log('╔════════════════════════════════════════════════════════════╗');
+          console.log('║ ✅ MongoDB Atlas (cluster0.ej6jq5c) 接続確立            ║');
+          console.log('╚════════════════════════════════════════════════════════════╝\n');
+          return connection;
+        }).catch((error) => {
+          console.error('\n❌ MongoDB Atlasへの接続に失敗しました');
+          console.error('--------------------------------------------------');
+          console.error('🔍 エラー詳細:', error.message);
+          console.error('\n📝 確認事項:');
+          console.error('1. MongoDB Atlasダッシュボードでクラスター状態確認');
+          console.error('2. Network Access → 0.0.0.0/0 が許可されているか');
+          console.error('3. Database Access → boarduser ユーザーが存在するか');
+          console.error('4. パスワード: thc1234567890THC が正しいか');
+          console.error('5. クラスターID: ej6jq5c が正しいか');
+          console.error('--------------------------------------------------\n');
+          throw error;
+        });
       }
     } catch (e) {
       cached.promise = null;
@@ -61,7 +103,7 @@ export async function connectDB() {
 
   try {
     cached.conn = await cached.promise;
-    console.log('✅ MongoDB接続成功');
+    // 接続成功ログはmongoose.connect内で出力済み
   } catch (e) {
     cached.promise = null;
     throw e;

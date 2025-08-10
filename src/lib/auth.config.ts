@@ -11,33 +11,73 @@ export const authConfig = {
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
+        try {
+          if (!credentials?.email || !credentials?.password) {
+            // 認証情報が不足
+            return null;
+          }
+
+          await connectDB();
+          
+          console.log('🔐 認証試行:', credentials.email);
+          
+          // まずユーザーの存在を確認
+          const user = await User.findOne({ 
+            email: credentials.email
+          });
+          
+          if (user) {
+            console.log('👤 ユーザー情報:', {
+              email: user.email,
+              emailVerified: user.emailVerified,
+              hasPassword: !!user.password
+            });
+          }
+
+          if (!user) {
+            // ユーザーが存在しない（セキュリティのため詳細は隠す）
+            return null;
+          }
+
+          // メール確認状態を厳格にチェック
+          // MongoDBから最新データを再取得
+          const latestUser = await User.findById(user._id);
+          console.log('🔄 最新ユーザーデータ:', {
+            emailVerified: latestUser?.emailVerified,
+            emailVerifiedType: typeof latestUser?.emailVerified
+          });
+          
+          if (latestUser?.emailVerified !== true) {
+            console.log('⛔ メール未確認のためログイン拒否');
+            // メール未確認の場合、特別なユーザーオブジェクトを返す
+            return {
+              id: "email-not-verified",
+              email: user.email,
+              name: user.name,
+              emailVerified: false
+            };
+          }
+
+          const isPasswordValid = await latestUser.comparePassword(credentials.password as string);
+          console.log('🔑 パスワード検証:', isPasswordValid ? '✅ 成功' : '❌ 失敗');
+
+          if (!isPasswordValid) {
+            // パスワードが間違っている（セキュリティのため詳細は隠す）
+            return null;
+          }
+
+          console.log('✅ 認証成功:', latestUser.email);
+          return {
+            id: latestUser._id.toString(),
+            email: latestUser.email,
+            name: latestUser.name,
+            emailVerified: true
+          };
+        } catch (error) {
+          console.error('Auth error:', error);
+          // エラーはnullを返す
           return null;
         }
-
-        await connectDB();
-        
-        const user = await User.findOne({ 
-          email: credentials.email,
-          emailVerified: { $ne: null } // Check that email is verified (not null)
-        });
-
-        if (!user) {
-          console.error('Login failed: User not found or email not verified for', credentials.email);
-          return null;
-        }
-
-        const isPasswordValid = await user.comparePassword(credentials.password as string);
-
-        if (!isPasswordValid) {
-          return null;
-        }
-
-        return {
-          id: user._id.toString(),
-          email: user.email,
-          name: user.name,
-        };
       }
     })
   ],
@@ -46,6 +86,22 @@ export const authConfig = {
     error: "/auth/error",
   },
   callbacks: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async signIn({ user, account }: any) {
+      // Credentialsプロバイダーの場合、カスタムエラーを処理
+      if (account?.provider === 'credentials') {
+        // ユーザーオブジェクトがない場合は、認証失敗
+        if (!user) {
+          return false;
+        }
+        // メール未確認チェック
+        if (user.id === "email-not-verified") {
+          // メール未確認エラーとして特別なURLにリダイレクト
+          return "/auth/signin?error=EmailNotVerified";
+        }
+      }
+      return true;
+    },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async jwt({ token, user }: { token: any; user?: any }) {
       if (user) {

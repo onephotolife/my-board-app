@@ -5,25 +5,18 @@ import { Container, Paper, Typography, Button, Box, Alert } from '@mui/material'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import Link from 'next/link';
 import { Suspense } from 'react';
+import { getAuthErrorMessage } from '@/lib/auth-errors';
 
 function AuthErrorContent() {
   const searchParams = useSearchParams();
   const error = searchParams.get('error');
 
-  const getErrorMessage = () => {
-    switch (error) {
-      case 'Configuration':
-        return '認証システムの設定エラーです。管理者にお問い合わせください。';
-      case 'AccessDenied':
-        return 'アクセスが拒否されました。';
-      case 'Verification':
-        return 'トークンの検証に失敗しました。リンクの有効期限が切れている可能性があります。';
-      case 'Default':
-        return '認証中にエラーが発生しました。';
-      default:
-        return '予期しないエラーが発生しました。時間をおいて再度お試しください。';
-    }
+  const getErrorInfo = () => {
+    const errorInfo = getAuthErrorMessage(error);
+    return errorInfo;
   };
+  
+  const errorInfo = getErrorInfo();
 
   return (
     <Container component="main" maxWidth="xs">
@@ -39,12 +32,18 @@ function AuthErrorContent() {
           <ErrorOutlineIcon sx={{ fontSize: 60, color: 'error.main', mb: 2 }} />
           
           <Typography component="h1" variant="h5" gutterBottom>
-            認証エラー
+            {errorInfo.title}
           </Typography>
           
-          <Alert severity="error" sx={{ mt: 2, mb: 3 }}>
-            {getErrorMessage()}
+          <Alert severity="error" sx={{ mt: 2, mb: 1 }}>
+            {errorInfo.message}
           </Alert>
+          
+          {errorInfo.action && (
+            <Alert severity="info" sx={{ mb: 3 }}>
+              💡 {errorInfo.action}
+            </Alert>
+          )}
           
           <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
             エラーコード: {error || 'UNKNOWN'}

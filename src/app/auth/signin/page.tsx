@@ -5,6 +5,7 @@ import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { modern2025Styles } from '@/styles/modern-2025';
+import { getAuthErrorMessage } from '@/lib/auth-errors';
 
 function SignInForm() {
   const router = useRouter();
@@ -13,20 +14,33 @@ function SignInForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [errorDetail, setErrorDetail] = useState('');
+  const [errorAction, setErrorAction] = useState('');
   const [loading, setLoading] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [hoveredField, setHoveredField] = useState<string | null>(null);
   const [buttonHovered, setButtonHovered] = useState(false);
   
   const verified = searchParams.get('verified') === 'true';
+  const urlError = searchParams.get('error');
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    
+    // URLパラメータからのエラー処理
+    if (urlError) {
+      const errorInfo = getAuthErrorMessage(urlError);
+      setError(errorInfo.title);
+      setErrorDetail(errorInfo.message);
+      setErrorAction(errorInfo.action || '');
+    }
+  }, [urlError]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setErrorDetail('');
+    setErrorAction('');
     setLoading(true);
 
     try {
@@ -37,12 +51,17 @@ function SignInForm() {
       });
 
       if (result?.error) {
-        setError('メールアドレスまたはパスワードが正しくありません');
+        // エラータイプに応じたメッセージを表示
+        const errorInfo = getAuthErrorMessage(result.error);
+        setError(errorInfo.title);
+        setErrorDetail(errorInfo.message);
+        setErrorAction(errorInfo.action || '');
       } else {
         router.push('/board');
       }
     } catch {
       setError('ログイン中にエラーが発生しました');
+      setErrorDetail('しばらく時間をおいて再度お試しください。');
     } finally {
       setLoading(false);
     }
@@ -154,8 +173,25 @@ function SignInForm() {
           )}
           
           {error && (
-            <div style={{ ...modern2025Styles.alert.error, animation: 'slideUp 0.3s ease-out' }}>
-              {error}
+            <div style={{ 
+              ...modern2025Styles.alert.error, 
+              animation: 'slideUp 0.3s ease-out',
+              marginBottom: '20px',
+              textAlign: 'left'
+            }}>
+              <div style={{ fontWeight: '600', marginBottom: errorDetail ? '8px' : '0' }}>
+                {error}
+              </div>
+              {errorDetail && (
+                <div style={{ fontSize: '14px', opacity: 0.9, marginBottom: errorAction ? '8px' : '0' }}>
+                  {errorDetail}
+                </div>
+              )}
+              {errorAction && (
+                <div style={{ fontSize: '13px', fontStyle: 'italic', opacity: 0.8 }}>
+                  💡 {errorAction}
+                </div>
+              )}
             </div>
           )}
 

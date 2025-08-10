@@ -2,12 +2,22 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useSession, signOut } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { modern2025Styles } from '@/styles/modern-2025';
 
 export default function Home() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [primaryButtonHovered, setPrimaryButtonHovered] = useState(false);
   const [secondaryButtonHovered, setSecondaryButtonHovered] = useState(false);
+  const [logoutHovered, setLogoutHovered] = useState(false);
+  
+  const handleLogout = async () => {
+    await signOut({ redirect: false });
+    router.push('/auth/signin');
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -146,58 +156,95 @@ export default function Home() {
             </p>
 
             <div style={buttonContainerStyle}>
-              <Link
-                href="/auth/signin"
-                style={{
-                  ...modern2025Styles.button.primary,
-                  ...(primaryButtonHovered ? modern2025Styles.button.primaryHover : {}),
-                  minWidth: '160px',
-                  textDecoration: 'none',
-                  display: 'inline-block',
-                }}
-                onMouseEnter={() => setPrimaryButtonHovered(true)}
-                onMouseLeave={() => setPrimaryButtonHovered(false)}
-              >
-                ログイン
-              </Link>
-              <Link
-                href="/auth/signup"
-                style={{
-                  ...modern2025Styles.button.secondary,
-                  ...(secondaryButtonHovered ? modern2025Styles.button.secondaryHover : {}),
-                  minWidth: '160px',
-                  textDecoration: 'none',
-                  display: 'inline-block',
-                }}
-                onMouseEnter={() => setSecondaryButtonHovered(true)}
-                onMouseLeave={() => setSecondaryButtonHovered(false)}
-              >
-                新規登録
-              </Link>
+              {status === 'authenticated' ? (
+                <>
+                  <Link
+                    href="/board"
+                    style={{
+                      ...modern2025Styles.button.primary,
+                      ...(primaryButtonHovered ? modern2025Styles.button.primaryHover : {}),
+                      minWidth: '160px',
+                      textDecoration: 'none',
+                      display: 'inline-block',
+                    }}
+                    onMouseEnter={() => setPrimaryButtonHovered(true)}
+                    onMouseLeave={() => setPrimaryButtonHovered(false)}
+                  >
+                    掲示板へ
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    style={{
+                      ...modern2025Styles.button.secondary,
+                      ...(logoutHovered ? modern2025Styles.button.secondaryHover : {}),
+                      minWidth: '160px',
+                      cursor: 'pointer',
+                      border: 'none',
+                    }}
+                    onMouseEnter={() => setLogoutHovered(true)}
+                    onMouseLeave={() => setLogoutHovered(false)}
+                  >
+                    ログアウト
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/auth/signin"
+                    style={{
+                      ...modern2025Styles.button.primary,
+                      ...(primaryButtonHovered ? modern2025Styles.button.primaryHover : {}),
+                      minWidth: '160px',
+                      textDecoration: 'none',
+                      display: 'inline-block',
+                    }}
+                    onMouseEnter={() => setPrimaryButtonHovered(true)}
+                    onMouseLeave={() => setPrimaryButtonHovered(false)}
+                  >
+                    ログイン
+                  </Link>
+                  <Link
+                    href="/auth/signup"
+                    style={{
+                      ...modern2025Styles.button.secondary,
+                      ...(secondaryButtonHovered ? modern2025Styles.button.secondaryHover : {}),
+                      minWidth: '160px',
+                      textDecoration: 'none',
+                      display: 'inline-block',
+                    }}
+                    onMouseEnter={() => setSecondaryButtonHovered(true)}
+                    onMouseLeave={() => setSecondaryButtonHovered(false)}
+                  >
+                    新規登録
+                  </Link>
+                </>
+              )}
             </div>
             
-            <div style={{ textAlign: 'center', marginTop: '20px' }}>
-              <Link
-                href="/auth/reset-password"
-                style={{
-                  color: modern2025Styles.colors.primary,
-                  textDecoration: 'none',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  transition: 'opacity 0.2s',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.opacity = '0.8';
-                  e.currentTarget.style.textDecoration = 'underline';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.opacity = '1';
-                  e.currentTarget.style.textDecoration = 'none';
-                }}
-              >
-                パスワードを忘れた方はこちら
-              </Link>
-            </div>
+            {status !== 'authenticated' && (
+              <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                <Link
+                  href="/auth/reset-password"
+                  style={{
+                    color: modern2025Styles.colors.primary,
+                    textDecoration: 'none',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    transition: 'opacity 0.2s',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.opacity = '0.8';
+                    e.currentTarget.style.textDecoration = 'underline';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.opacity = '1';
+                    e.currentTarget.style.textDecoration = 'none';
+                  }}
+                >
+                  パスワードを忘れた方はこちら
+                </Link>
+              </div>
+            )}
 
             <div style={featureGridStyle}>
               {features.map((feature, index) => (

@@ -102,6 +102,14 @@ export class EmailService {
    */
   async sendMail(options: EmailOptions): Promise<EmailSendResult> {
     try {
+      // 受信者チェック
+      if (!options.to) {
+        throw new EmailError(
+          EmailErrorType.INVALID_CONFIG,
+          'No recipient email address provided'
+        );
+      }
+
       await this.initialize();
 
       if (!this.transporter) {
@@ -120,18 +128,10 @@ export class EmailService {
         );
       }
 
-      // In development, log email instead of sending
+      // In development, use DevEmailService for better logging
       if (process.env.NODE_ENV === 'development' && process.env.SEND_EMAILS !== 'true') {
-        console.log('📧 Email Preview (Development Mode):');
-        console.log('To:', options.to);
-        console.log('Subject:', options.subject);
-        console.log('Preview:', options.text?.substring(0, 100) || 'HTML email');
-        
-        return {
-          success: true,
-          messageId: `dev-${Date.now()}`,
-          details: { preview: true },
-        };
+        const { DevEmailService } = await import('./dev-mailer');
+        return DevEmailService.logEmail(options);
       }
 
       // Send email
@@ -175,6 +175,14 @@ export class EmailService {
       verificationCode?: string;
     }
   ): Promise<EmailSendResult> {
+    // toパラメータの検証
+    if (!to || typeof to !== 'string') {
+      throw new EmailError(
+        EmailErrorType.INVALID_CONFIG,
+        'Valid email address is required'
+      );
+    }
+
     const emailData: EmailTemplateData = {
       ...data,
       appName: emailAppConfig.appName,
@@ -184,6 +192,13 @@ export class EmailService {
 
     const html = render(VerificationEmail(emailData as any));
     const text = this.generateTextVersion('verification', emailData);
+
+    // 開発環境での詳細ログ（非同期処理を適切に処理）
+    if (process.env.NODE_ENV === 'development') {
+      import('./dev-mailer').then(({ DevEmailService }) => {
+        DevEmailService.logVerificationEmail(to, data);
+      }).catch(console.error);
+    }
 
     return this.sendMail({
       to,

@@ -258,12 +258,15 @@ export async function POST(request: NextRequest) {
       const baseUrl = host ? `${protocol}://${host}` : (process.env.NEXTAUTH_URL || 'http://localhost:3000');
       const verificationUrl = `${baseUrl}/auth/verify-email?token=${emailVerificationToken}`;
       
-      // メール送信
+      // メール送信（正しい引数の順序で）
       const emailService = getEmailService();
-      const emailResult = await emailService.sendVerificationEmail(email, {
-        userName: name,
-        verificationUrl: verificationUrl,
-      });
+      const emailResult = await emailService.sendVerificationEmail(
+        email,  // 第1引数: 宛先メールアドレス
+        {
+          userName: name,
+          verificationUrl: verificationUrl,
+        }
+      );
 
       if (!emailResult.success) {
         console.error('Email send failed:', emailResult);

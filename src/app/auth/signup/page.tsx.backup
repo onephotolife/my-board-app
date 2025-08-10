@@ -43,46 +43,10 @@ export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
-  const [submitAttempted, setSubmitAttempted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  // フォームエラーを監視し、HTML5バリデーションAPIを使用
-  useEffect(() => {
-    if (!submitAttempted) return;
-    
-    Object.entries(formErrors).forEach(([fieldName, errorMessage]) => {
-      const input = document.querySelector(`input[name="${fieldName}"]`) as HTMLInputElement;
-      if (input) {
-        if (errorMessage) {
-          input.setCustomValidity(errorMessage);
-          input.setAttribute('aria-invalid', 'true');
-          input.setAttribute('aria-describedby', `${fieldName}-helper-text`);
-          
-          // カスタムエラー要素を強制的に追加
-          const existingError = document.getElementById(`${fieldName}-helper-text`);
-          if (!existingError) {
-            const errorDiv = document.createElement('div');
-            errorDiv.id = `${fieldName}-helper-text`;
-            errorDiv.className = 'field-error MuiFormHelperText-root Mui-error';
-            errorDiv.setAttribute('role', 'alert');
-            errorDiv.textContent = errorMessage;
-            errorDiv.style.cssText = 'font-size: 12px; color: #dc2626; margin-top: 4px;';
-            input.parentElement?.appendChild(errorDiv);
-          } else {
-            existingError.textContent = errorMessage;
-          }
-        } else {
-          input.setCustomValidity('');
-          input.setAttribute('aria-invalid', 'false');
-          const errorElement = document.getElementById(`${fieldName}-helper-text`);
-          errorElement?.remove();
-        }
-      }
-    });
-  }, [formErrors, submitAttempted]);
 
   // メールアドレスの重複チェック（デバウンス付き）
   useEffect(() => {
@@ -235,67 +199,47 @@ export default function SignUpPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    e.stopPropagation();
     setError('');
     setSuccess('');
-    setSubmitAttempted(true);
 
+    // すべてのフィールドを即座にバリデーション
     const form = e.currentTarget;
-    const formDataObj = new FormData(form);
-    const errors: FormErrors = {};
-    let hasErrors = false;
+    const inputs = form.querySelectorAll('input[required]');
+    const newErrors: FormErrors = {};
+    const newTouchedFields = new Set<string>();
     
-    // 同期的にバリデーションを実行しDOMを直接操作
-    ['name', 'email', 'password', 'confirmPassword'].forEach(fieldName => {
-      const value = formDataObj.get(fieldName) as string || '';
-      const error = validateField(fieldName as keyof FormData, value);
+    // 各入力フィールドのバリデーション実行
+    inputs.forEach((input: Element) => {
+      const htmlInput = input as HTMLInputElement;
+      const { name, value } = htmlInput;
+      newTouchedFields.add(name);
+      const fieldError = validateField(name as keyof FormData, value);
       
-      if (error) {
-        errors[fieldName as keyof FormErrors] = error;
-        hasErrors = true;
-        
-        // DOMを直接操作して即座にエラーを表示
-        const input = form.querySelector(`input[name="${fieldName}"]`) as HTMLInputElement;
-        if (input) {
-          // 強制的にクラスを追加
-          input.classList.add('Mui-error');
-          input.setAttribute('aria-invalid', 'true');
-          input.setAttribute('aria-describedby', `${fieldName}-helper-text`);
-          
-          // エラーメッセージを即座に挿入
-          let errorElement = input.parentElement?.querySelector('.field-error') as HTMLElement;
-          if (!errorElement) {
-            errorElement = document.createElement('div');
-            errorElement.id = `${fieldName}-helper-text`;
-            errorElement.className = 'field-error MuiFormHelperText-root Mui-error';
-            errorElement.setAttribute('role', 'alert');
-            errorElement.style.cssText = 'font-size: 12px; color: #dc2626; margin-top: 4px;';
-            input.parentElement?.appendChild(errorElement);
-          }
-          errorElement.textContent = error;
-        }
+      if (fieldError) {
+        newErrors[name as keyof FormErrors] = fieldError;
+        // aria-invalid属性を即座に設定
+        htmlInput.setAttribute('aria-invalid', 'true');
+        htmlInput.setAttribute('aria-describedby', `${name}-helper-text`);
       } else {
-        const input = form.querySelector(`input[name="${fieldName}"]`) as HTMLInputElement;
-        if (input) {
-          input.classList.remove('Mui-error');
-          input.setAttribute('aria-invalid', 'false');
-          const errorElement = input.parentElement?.querySelector('.field-error');
-          errorElement?.remove();
-        }
+        htmlInput.setAttribute('aria-invalid', 'false');
+        htmlInput.removeAttribute('aria-describedby');
       }
     });
     
-    // Reactの状態も更新（バックアップ）
-    setFormErrors(errors);
-    setTouchedFields(new Set(['name', 'email', 'password', 'confirmPassword']));
+    // タッチ済みフィールドとエラーステートを更新
+    setTouchedFields(newTouchedFields);
+    setFormErrors(newErrors);
     
-    if (hasErrors) {
+    // エラーがある場合は処理を中断
+    if (Object.keys(newErrors).length > 0) {
       setError('入力内容を確認してください');
       
       // 最初のエラーフィールドにフォーカス
-      const firstErrorField = Object.keys(errors)[0];
-      const firstInput = form.querySelector(`input[name="${firstErrorField}"]`) as HTMLInputElement;
-      firstInput?.focus();
+      const firstErrorField = Object.keys(newErrors)[0];
+      const firstErrorInput = form.querySelector(`input[name="${firstErrorField}"]`);
+      if (firstErrorInput) {
+        (firstErrorInput as HTMLInputElement).focus();
+      }
       
       return;
     }
@@ -492,10 +436,7 @@ export default function SignUpPage() {
 
           <form onSubmit={handleSubmit} style={formStyle}>
             {/* 名前フィールド */}
-            <div 
-              className="input-wrapper" 
-              data-has-error={(!!formErrors.name && (touchedFields.has('name') || submitAttempted)) ? 'true' : 'false'}
-            >
+            <div>
               <label htmlFor="name" style={{ 
                 display: 'block', 
                 marginBottom: '8px',
@@ -521,31 +462,16 @@ export default function SignUpPage() {
                 disabled={loading}
                 aria-invalid={!!formErrors.name}
                 aria-describedby={formErrors.name ? 'name-helper-text' : undefined}
-                data-error={formErrors.name || ''}
-                data-touched={touchedFields.has('name') ? 'true' : 'false'}
               />
-              {(formErrors.name && (touchedFields.has('name') || submitAttempted)) && (
-                <div 
-                  id="name-helper-text" 
-                  className="field-error" 
-                  data-testid="name-error"
-                  style={{ 
-                    color: '#ef4444', 
-                    fontSize: '12px', 
-                    marginTop: '4px',
-                    display: 'block !important' 
-                  }}
-                >
+              {formErrors.name && (
+                <div id="name-helper-text" className="field-error" style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>
                   {formErrors.name}
                 </div>
               )}
             </div>
 
             {/* メールアドレスフィールド */}
-            <div 
-              className="input-wrapper" 
-              data-has-error={(!!formErrors.email && (touchedFields.has('email') || submitAttempted)) ? 'true' : 'false'}
-            >
+            <div>
               <label htmlFor="email" style={{ 
                 display: 'block', 
                 marginBottom: '8px',
@@ -605,10 +531,7 @@ export default function SignUpPage() {
             </div>
 
             {/* パスワードフィールド */}
-            <div 
-              className="input-wrapper" 
-              data-has-error={(!!formErrors.password && (touchedFields.has('password') || submitAttempted)) ? 'true' : 'false'}
-            >
+            <div>
               <label htmlFor="password" style={{ 
                 display: 'block', 
                 marginBottom: '8px',
@@ -670,10 +593,7 @@ export default function SignUpPage() {
             </div>
 
             {/* パスワード確認フィールド */}
-            <div 
-              className="input-wrapper" 
-              data-has-error={(!!formErrors.confirmPassword && (touchedFields.has('confirmPassword') || submitAttempted)) ? 'true' : 'false'}
-            >
+            <div>
               <label htmlFor="confirmPassword" style={{ 
                 display: 'block', 
                 marginBottom: '8px',

@@ -32,7 +32,9 @@ export async function waitForAuthPage(page: Page, type: 'signup' | 'signin' | 'v
 
 export async function getErrorMessage(page: Page): Promise<string | null> {
   const element = await page.$(AuthSelectors.errorMessage);
-  return element ? await element.textContent() : null;
+  if (!element) return null;
+  const text = await element.textContent();
+  return text && text.trim() ? text.trim() : null;
 }
 
 export async function getSuccessMessage(page: Page): Promise<string | null> {
@@ -43,7 +45,9 @@ export async function getSuccessMessage(page: Page): Promise<string | null> {
 export async function getFieldError(page: Page, fieldName: string): Promise<string | null> {
   const selector = AuthSelectors.fieldError(fieldName);
   const element = await page.$(selector);
-  return element ? await element.textContent() : null;
+  if (!element) return null;
+  const text = await element.textContent();
+  return text && text.trim() ? text.trim() : null;
 }
 
 export async function fillSignupForm(

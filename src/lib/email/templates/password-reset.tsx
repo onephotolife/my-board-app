@@ -41,9 +41,9 @@ export const PasswordResetEmail: React.FC<PasswordResetEmailProps> = ({
       </Text>
 
       <Section style={buttonContainer}>
-        <Button style={button} href={resetUrl}>
+        <a href={resetUrl} style={buttonLink}>
           パスワードをリセット
-        </Button>
+        </a>
       </Section>
 
       <Section style={warningContainer}>
@@ -112,6 +112,20 @@ const paragraph: React.CSSProperties = {
 const buttonContainer: React.CSSProperties = {
   textAlign: 'center' as const,
   margin: '32px 0',
+};
+
+const buttonLink: React.CSSProperties = {
+  backgroundColor: templateConfig.colors.primary,
+  borderRadius: templateConfig.sizes.borderRadius,
+  color: templateConfig.colors.white,
+  fontSize: '16px',
+  fontWeight: 'bold',
+  textDecoration: 'none',
+  textAlign: 'center' as const,
+  display: 'inline-block',
+  padding: templateConfig.sizes.buttonPadding,
+  minWidth: '200px',
+  cursor: 'pointer',
 };
 
 const button: React.CSSProperties = {

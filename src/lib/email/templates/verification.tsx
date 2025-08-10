@@ -37,9 +37,9 @@ export const VerificationEmail: React.FC<VerificationEmailProps> = ({
       </Text>
 
       <Section style={buttonContainer}>
-        <Button style={button} href={verificationUrl}>
+        <a href={verificationUrl} style={buttonLink}>
           メールアドレスを確認
-        </Button>
+        </a>
       </Section>
 
       <Text style={paragraph}>
@@ -108,6 +108,20 @@ const button: React.CSSProperties = {
   display: 'inline-block',
   padding: templateConfig.sizes.buttonPadding,
   minWidth: '200px',
+};
+
+const buttonLink: React.CSSProperties = {
+  backgroundColor: templateConfig.colors.primary,
+  borderRadius: templateConfig.sizes.borderRadius,
+  color: templateConfig.colors.white,
+  fontSize: '16px',
+  fontWeight: 'bold',
+  textDecoration: 'none',
+  textAlign: 'center' as const,
+  display: 'inline-block',
+  padding: templateConfig.sizes.buttonPadding,
+  minWidth: '200px',
+  cursor: 'pointer',
 };
 
 const codeContainer: React.CSSProperties = {

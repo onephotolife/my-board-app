@@ -5,44 +5,68 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { modern2025Styles } from '@/styles/modern-2025';
 
+// メイン検証コンポーネント
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('');
-  const token = searchParams.get('token');
+  const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!token) {
+    // URLパラメータからトークンを取得
+    const tokenParam = searchParams.get('token');
+    setToken(tokenParam);
+
+    if (!tokenParam) {
       setStatus('error');
-      setMessage('無効なリンクです');
+      setMessage('無効なリンクです。メール内のリンクを正しくクリックしたか確認してください。');
       return;
     }
 
+    // メール確認処理
     const verifyEmail = async () => {
       try {
-        const response = await fetch(`/api/auth/verify-email?token=${token}`);
+        console.log('🔍 メール確認開始:', { token: tokenParam });
+        
+        const response = await fetch(`/api/auth/verify-email?token=${encodeURIComponent(tokenParam)}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        console.log('📡 レスポンスステータス:', response.status);
+        
+        const data = await response.json();
+        console.log('📦 レスポンスデータ:', data);
         
         if (response.ok) {
-          setStatus('success');
-          setMessage('メールアドレスの確認が完了しました');
+          if (data.alreadyVerified) {
+            setStatus('success');
+            setMessage('メールアドレスは既に確認済みです。ログインページへ移動します。');
+          } else {
+            setStatus('success');
+            setMessage('メールアドレスの確認が完了しました！');
+          }
+          
+          // 3秒後にログインページへリダイレクト
           setTimeout(() => {
             router.push('/auth/signin?verified=true');
           }, 3000);
         } else {
-          const data = await response.json();
           setStatus('error');
           setMessage(data.error || 'メール確認に失敗しました');
         }
       } catch (error) {
+        console.error('❌ Verification error:', error);
         setStatus('error');
-        setMessage('ネットワークエラーが発生しました');
-        console.error('Verification error:', error);
+        setMessage('ネットワークエラーが発生しました。インターネット接続を確認してください。');
       }
     };
 
     verifyEmail();
-  }, [token, router]);
+  }, [searchParams, router]);
 
   const containerStyle: React.CSSProperties = {
     minHeight: '100vh',
@@ -54,11 +78,13 @@ function VerifyEmailContent() {
   };
 
   const cardStyle: React.CSSProperties = {
-    ...modern2025Styles.card,
+    backgroundColor: 'white',
+    borderRadius: '20px',
+    padding: '60px 40px',
+    boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
     maxWidth: '500px',
     width: '100%',
     textAlign: 'center',
-    padding: '60px 40px',
   };
 
   const iconContainerStyle: React.CSSProperties = {
@@ -70,6 +96,7 @@ function VerifyEmailContent() {
     alignItems: 'center',
     justifyContent: 'center',
     fontSize: '60px',
+    color: 'white',
     background: status === 'success' 
       ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
       : status === 'error'
@@ -83,7 +110,7 @@ function VerifyEmailContent() {
     fontSize: '28px',
     fontWeight: '700',
     marginBottom: '16px',
-    color: modern2025Styles.colors.text.primary,
+    color: '#0f172a',
     letterSpacing: '-0.02em',
   };
 
@@ -91,7 +118,7 @@ function VerifyEmailContent() {
     fontSize: '16px',
     lineHeight: '1.6',
     marginBottom: '32px',
-    color: modern2025Styles.colors.text.secondary,
+    color: '#475569',
   };
 
   const loadingSpinnerStyle: React.CSSProperties = {
@@ -104,20 +131,29 @@ function VerifyEmailContent() {
   };
 
   const buttonStyle: React.CSSProperties = {
-    ...modern2025Styles.button.primary,
-    minWidth: '200px',
-    fontSize: '16px',
+    backgroundColor: '#6366f1',
+    color: 'white',
+    border: 'none',
+    borderRadius: '12px',
     padding: '14px 28px',
+    fontSize: '16px',
+    fontWeight: '600',
+    cursor: 'pointer',
+    textDecoration: 'none',
+    display: 'inline-block',
+    minWidth: '200px',
+    transition: 'all 0.2s ease',
   };
 
   const suggestionStyle: React.CSSProperties = {
     fontSize: '14px',
-    color: modern2025Styles.colors.text.secondary,
+    color: '#475569',
     marginTop: '24px',
     padding: '20px',
     backgroundColor: 'rgba(99, 102, 241, 0.05)',
     borderRadius: '12px',
     border: '1px solid rgba(99, 102, 241, 0.1)',
+    textAlign: 'left',
   };
 
   const progressBarStyle: React.CSSProperties = {
@@ -195,46 +231,51 @@ function VerifyEmailContent() {
           {status === 'error' && (
             <>
               <div style={suggestionStyle}>
-                <strong>次のステップ：</strong><br />
+                <strong>🔍 トラブルシューティング：</strong><br /><br />
                 {!token ? (
                   <>
-                    メール内のリンクを正しくクリックしたか確認してください。<br />
-                    リンクが切れている場合は、コピー&ペーストしてお試しください。
+                    ✅ メール内のリンクを正しくクリックしたか確認してください<br />
+                    ✅ リンクが切れている場合は、URL全体をコピー&ペーストしてください<br />
+                    ✅ ブラウザのアドレスバーにトークンパラメータが含まれているか確認してください
                   </>
                 ) : message.includes('期限切れ') || message.includes('無効') ? (
                   <>
-                    確認リンクが無効または期限切れの可能性があります。<br />
-                    新規登録からやり直してください。<br />
-                    ※メール確認リンクは24時間有効です。
+                    ⏰ 確認リンクが無効または期限切れの可能性があります<br />
+                    ✅ メール確認リンクは24時間有効です<br />
+                    ✅ 新規登録からやり直してください
                   </>
                 ) : message.includes('ネットワーク') ? (
                   <>
-                    ネットワーク接続を確認してください。<br />
-                    問題が続く場合は、しばらく待ってから再度お試しください。
+                    🌐 ネットワーク接続を確認してください<br />
+                    ✅ インターネットに接続されているか確認<br />
+                    ✅ ファイアウォールやプロキシの設定を確認<br />
+                    ✅ しばらく待ってから再度お試しください
                   </>
                 ) : (
                   <>
-                    問題が解決しない場合は、新規登録からやり直すか、<br />
-                    既にアカウントをお持ちの場合はログインしてください。
+                    ⚠️ 予期しないエラーが発生しました<br />
+                    ✅ ブラウザを更新してみてください<br />
+                    ✅ 別のブラウザでお試しください<br />
+                    ✅ 問題が解決しない場合は、新規登録からやり直してください
                   </>
                 )}
               </div>
               
-              <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', marginTop: '32px' }}>
+              <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', marginTop: '32px', flexWrap: 'wrap' }}>
                 <Link href="/auth/signup" style={{ textDecoration: 'none' }}>
-                  <button style={buttonStyle}>
+                  <span style={buttonStyle}>
                     新規登録へ
-                  </button>
+                  </span>
                 </Link>
                 <Link href="/auth/signin" style={{ textDecoration: 'none' }}>
-                  <button style={{
+                  <span style={{
                     ...buttonStyle,
                     background: 'transparent',
-                    color: modern2025Styles.colors.primary,
-                    border: `2px solid ${modern2025Styles.colors.primary}`,
+                    color: '#6366f1',
+                    border: '2px solid #6366f1',
                   }}>
                     ログインへ
-                  </button>
+                  </span>
                 </Link>
               </div>
             </>
@@ -245,19 +286,48 @@ function VerifyEmailContent() {
   );
 }
 
+// ローディングコンポーネント
+function LoadingFallback() {
+  return (
+    <div style={{ 
+      display: 'flex', 
+      justifyContent: 'center', 
+      alignItems: 'center',
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    }}>
+      <div style={{ 
+        background: 'white',
+        padding: '40px',
+        borderRadius: '20px',
+        boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
+        textAlign: 'center',
+      }}>
+        <div style={{
+          width: '60px',
+          height: '60px',
+          border: '4px solid rgba(99, 102, 241, 0.3)',
+          borderTop: '4px solid #6366f1',
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite',
+          margin: '0 auto 20px',
+        }}></div>
+        <div style={{ color: '#475569', fontSize: '18px' }}>読み込み中...</div>
+      </div>
+      <style jsx>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+// メインエクスポート（Suspenseで囲む）
 export default function VerifyEmailPage() {
   return (
-    <Suspense fallback={
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center',
-        minHeight: '100vh',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      }}>
-        <div style={{ color: 'white', fontSize: '18px' }}>Loading...</div>
-      </div>
-    }>
+    <Suspense fallback={<LoadingFallback />}>
       <VerifyEmailContent />
     </Suspense>
   );

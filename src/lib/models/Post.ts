@@ -3,8 +3,9 @@ import mongoose, { Schema, Document, Types } from 'mongoose';
 export interface IPost extends Document {
   title: string;
   content: string;
-  author: Types.ObjectId;
+  author: string;  // ユーザーIDを文字列として保存
   authorName: string;
+  authorEmail?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -23,13 +24,16 @@ const PostSchema = new Schema<IPost>(
       maxlength: 10000,
     },
     author: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
+      type: String,  // ユーザーIDを文字列として保存
       required: true,
     },
     authorName: {
       type: String,
       required: true,
+    },
+    authorEmail: {
+      type: String,
+      required: false,
     },
   },
   {

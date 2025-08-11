@@ -26,6 +26,8 @@ import AddIcon from '@mui/icons-material/Add';
 import LogoutIcon from '@mui/icons-material/Logout';
 import PersonIcon from '@mui/icons-material/Person';
 import EnhancedPostCard from '@/components/EnhancedPostCard';
+import QuickPostCard from '@/components/QuickPostCard';
+import CreateIcon from '@mui/icons-material/Create';
 
 interface Post {
   _id: string;
@@ -69,26 +71,98 @@ export default function BoardPage() {
     content: '',
   });
 
-  // 投稿一覧を取得
+  // 投稿一覧を取得（認証必須）
   const fetchPosts = async (page: number = 1) => {
     setLoading(true);
+    setError('');
+    
     try {
-      const response = await fetch(`/api/posts?page=${page}&limit=10`);
-      if (!response.ok) throw new Error('投稿の取得に失敗しました');
-      
+      // キャッシュを無効化してリアルタイムデータを取得
+      const timestamp = Date.now();
+      const response = await fetch(`/api/posts?page=${page}&limit=10&t=${timestamp}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache',
+        },
+      });
       const data = await response.json();
-      setPosts(data.posts);
-      setPagination(data.pagination);
-    } catch {
+      
+      if (data.requireAuth) {
+        // 認証が必要な場合
+        console.log('認証が必要です');
+        setError('この掲示板は会員限定です。ログインしてください。');
+        setPosts([]);
+        return;
+      }
+      
+      if (data.error && response.status === 500) {
+        throw new Error(data.error);
+      }
+      
+      console.log(`投稿取得成功: ${data.posts?.length || 0}件`);
+      setPosts(data.posts || []);
+      setPagination(data.pagination || {
+        page: 1,
+        limit: 10,
+        total: 0,
+        totalPages: 0,
+      });
+    } catch (err) {
+      console.error('投稿取得エラー:', err);
       setError('投稿の読み込みに失敗しました');
+      setPosts([]);
     } finally {
       setLoading(false);
     }
   };
 
+  // セッションストレージにデータを保存
   useEffect(() => {
-    fetchPosts();
+    if (posts.length > 0) {
+      sessionStorage.setItem('boardPosts', JSON.stringify({
+        posts,
+        timestamp: Date.now(),
+        pagination,
+      }));
+    }
+  }, [posts, pagination]);
+
+  // 初回ロード時にセッションストレージから復元
+  useEffect(() => {
+    const cached = sessionStorage.getItem('boardPosts');
+    if (cached) {
+      const { posts: cachedPosts, timestamp, pagination: cachedPagination } = JSON.parse(cached);
+      const age = Date.now() - timestamp;
+      
+      // 5分以内のキャッシュは使用
+      if (age < 5 * 60 * 1000) {
+        setPosts(cachedPosts);
+        setPagination(cachedPagination);
+        setLoading(false);
+      }
+    }
   }, []);
+
+  useEffect(() => {
+    // 認証状態が確定してから投稿を取得
+    if (status === 'loading') {
+      console.log('認証状態を確認中...');
+      return;
+    }
+    
+    if (status === 'unauthenticated') {
+      console.log('未認証状態');
+      setError('ログインが必要です');
+      setLoading(false);
+      return;
+    }
+    
+    if (status === 'authenticated') {
+      console.log('認証済み、投稿を取得します');
+      fetchPosts();
+    }
+  }, [status]);
 
   // 新規投稿/編集ダイアログを開く
   const handleOpenDialog = (post?: Post) => {
@@ -124,6 +198,7 @@ export default function BoardPage() {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
+        cache: 'no-store',
       });
 
       if (!response.ok) throw new Error('保存に失敗しました');
@@ -142,6 +217,11 @@ export default function BoardPage() {
         // 新規投稿の場合（先頭に追加）
         setPosts(prevPosts => [savedPost, ...prevPosts]);
         setPagination(prev => ({ ...prev, total: prev.total + 1 }));
+        
+        // 確実にするため、少し遅れて再取得
+        setTimeout(() => {
+          fetchPosts(1);
+        }, 500);
       }
 
       handleCloseDialog();
@@ -174,11 +254,35 @@ export default function BoardPage() {
     fetchPosts(value);
   };
 
-  if (loading) {
+  // ローディング中
+  if (status === 'loading' || loading) {
     return (
-      <Box display="flex" justifyContent="center" mt={4}>
-        <CircularProgress />
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
+        <CircularProgress size={60} />
       </Box>
+    );
+  }
+  
+  // 未認証時のリダイレクト
+  if (status === 'unauthenticated') {
+    return (
+      <Container maxWidth="md" sx={{ mt: 4 }}>
+        <Paper sx={{ p: 4, textAlign: 'center' }}>
+          <Typography variant="h5" gutterBottom>
+            会員限定掲示板
+          </Typography>
+          <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+            この掲示板は会員限定です。ログインしてご利用ください。
+          </Typography>
+          <Button
+            variant="contained"
+            size="large"
+            onClick={() => router.push('/auth/signin')}
+          >
+            ログインページへ
+          </Button>
+        </Paper>
+      </Container>
     );
   }
 
@@ -191,6 +295,18 @@ export default function BoardPage() {
           </Typography>
           {session && (
             <Box display="flex" alignItems="center" gap={2}>
+              <Button
+                variant="contained"
+                color="secondary"
+                startIcon={<CreateIcon />}
+                onClick={() => handleOpenDialog()}
+                sx={{
+                  fontWeight: 'bold',
+                  px: 3,
+                }}
+              >
+                新規投稿
+              </Button>
               <Box display="flex" alignItems="center" gap={1}>
                 <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.dark' }}>
                   <PersonIcon fontSize="small" />
@@ -214,12 +330,14 @@ export default function BoardPage() {
       </AppBar>
       
       <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-
-      {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
-        </Alert>
-      )}
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
+        
+        {/* クイック投稿カード - 認証済みのみ表示 */}
+        {session && <QuickPostCard onOpen={() => handleOpenDialog()} />}
 
       {posts.length === 0 ? (
         <Paper elevation={1} sx={{ p: 4, textAlign: 'center' }}>
@@ -276,14 +394,18 @@ export default function BoardPage() {
         onClose={handleCloseDialog} 
         maxWidth="sm" 
         fullWidth
+        disableRestoreFocus
         PaperProps={{
-          sx: { borderRadius: 2 }
+          sx: { borderRadius: 2 },
+          role: 'dialog',
+          'aria-labelledby': 'post-dialog-title',
+          'aria-describedby': 'post-dialog-description',
         }}
       >
-        <DialogTitle>
+        <DialogTitle id="post-dialog-title">
           {editingPost ? '投稿を編集' : '新規投稿'}
         </DialogTitle>
-        <DialogContent>
+        <DialogContent id="post-dialog-description">
           <TextField
             autoFocus
             margin="dense"
@@ -293,6 +415,9 @@ export default function BoardPage() {
             value={formData.title}
             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
             sx={{ mb: 2 }}
+            inputProps={{
+              'aria-label': 'タイトル',
+            }}
           />
           <TextField
             margin="dense"
@@ -303,7 +428,10 @@ export default function BoardPage() {
             variant="outlined"
             value={formData.content}
             onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-            inputProps={{ maxLength: 500 }}
+            inputProps={{ 
+              maxLength: 500,
+              'aria-label': '内容',
+            }}
             helperText={`${formData.content.length}/500文字`}
           />
         </DialogContent>

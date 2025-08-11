@@ -11,6 +11,12 @@ export interface IUser extends Document {
   emailSendFailed?: boolean;
   passwordResetToken?: string;
   passwordResetExpires?: Date;
+  passwordHistory?: Array<{
+    hash: string;
+    changedAt: Date;
+  }>;
+  lastPasswordChange?: Date;
+  passwordResetCount?: number;
   createdAt: Date;
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
@@ -53,6 +59,24 @@ const UserSchema = new Schema<IUser>(
     },
     passwordResetExpires: {
       type: Date,
+    },
+    passwordHistory: [{
+      hash: {
+        type: String,
+        required: true,
+      },
+      changedAt: {
+        type: Date,
+        required: true,
+      },
+    }],
+    lastPasswordChange: {
+      type: Date,
+      default: Date.now,
+    },
+    passwordResetCount: {
+      type: Number,
+      default: 0,
     },
   },
   {

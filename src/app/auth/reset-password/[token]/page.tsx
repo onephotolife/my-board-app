@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense, useCallback } from 'react';
+import { useState, useEffect, Suspense, useCallback, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { modern2025Styles } from '@/styles/modern-2025';
@@ -10,6 +10,8 @@ import {
   getPasswordStrengthConfig,
   type PasswordStrengthResult 
 } from '@/lib/utils/passwordValidation';
+import { generateSecurePassword, generatePasswordSuggestions } from '@/lib/utils/passwordGenerator';
+import { PasswordEducation } from '@/components/PasswordEducation';
 
 interface TokenValidation {
   valid: boolean;
@@ -42,6 +44,13 @@ function PasswordResetForm() {
   // Password strength state
   const [passwordStrength, setPasswordStrength] = useState<PasswordStrengthResult | null>(null);
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
+  
+  // リアルタイムバリデーション用の状態
+  const [previousAttempts, setPreviousAttempts] = useState<string[]>([]);
+  const [reuseWarning, setReuseWarning] = useState<string | null>(null);
+  const [showPasswordGenerator, setShowPasswordGenerator] = useState(false);
+  const [passwordSuggestions, setPasswordSuggestions] = useState<{ memorable: string[], strong: string[] } | null>(null);
+  const debounceTimer = useRef<NodeJS.Timeout>();
 
   // Validate token on component mount
   useEffect(() => {
@@ -79,10 +88,18 @@ function PasswordResetForm() {
     if (password) {
       const strength = validatePasswordStrength(password);
       setPasswordStrength(strength);
+      
+      // 過去の失敗試行との比較（クライアント側のみ）
+      if (previousAttempts.includes(password)) {
+        setReuseWarning('⚠️ このパスワードは先ほど拒否されました。別のパスワードを入力してください。');
+      } else {
+        setReuseWarning(null);
+      }
     } else {
       setPasswordStrength(null);
+      setReuseWarning(null);
     }
-  }, [password]);
+  }, [password, previousAttempts]);
 
   // Real-time password confirmation validation
   useEffect(() => {
@@ -147,6 +164,45 @@ function PasswordResetForm() {
             break;
           case 'WEAK_PASSWORD':
             setError(`パスワードの強度が不十分です: ${data.error}`);
+            break;
+          case 'PASSWORD_REUSED':
+            // 失敗したパスワードを記憶（次回の入力時に警告表示用）
+            if (!previousAttempts.includes(password)) {
+              setPreviousAttempts(prev => [...prev, password]);
+            }
+            setError(
+              <div style={{ marginTop: '10px' }}>
+                <strong>⚠️ このパスワードは使用できません</strong>
+                <p style={{ margin: '10px 0', fontSize: '14px' }}>
+                  {data.message}
+                </p>
+                {data.details && (
+                  <details style={{ marginTop: '10px', fontSize: '13px', color: '#666' }}>
+                    <summary style={{ cursor: 'pointer', marginBottom: '5px' }}>詳細情報</summary>
+                    <p style={{ marginTop: '5px' }}>{data.details.reason}</p>
+                    <p style={{ marginTop: '5px' }}>{data.details.suggestion}</p>
+                  </details>
+                )}
+                <button
+                  onClick={() => {
+                    setShowPasswordGenerator(true);
+                    setPasswordSuggestions(generatePasswordSuggestions(3));
+                  }}
+                  style={{
+                    marginTop: '10px',
+                    padding: '8px 16px',
+                    backgroundColor: '#4CAF50',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontSize: '14px'
+                  }}
+                >
+                  パスワード生成ツールを使用
+                </button>
+              </div>
+            );
             break;
           case 'USER_NOT_FOUND':
             setError('ユーザーが見つかりません。サポートにお問い合わせください。');
@@ -548,6 +604,166 @@ function PasswordResetForm() {
                 </div>
               )}
             </div>
+
+            {/* リアルタイム警告メッセージ */}
+            {reuseWarning && (
+              <div style={{
+                padding: '12px',
+                backgroundColor: '#FFF3CD',
+                border: '1px solid #FFC107',
+                borderRadius: '8px',
+                marginTop: '12px',
+                animation: 'slideUp 0.3s ease-out'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                  <span style={{ fontSize: '18px' }}>⚠️</span>
+                  <div style={{ flex: 1 }}>
+                    <p style={{ margin: 0, fontSize: '14px', color: '#856404' }}>{reuseWarning}</p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowPasswordGenerator(true);
+                        setPasswordSuggestions(generatePasswordSuggestions(3));
+                      }}
+                      style={{
+                        marginTop: '8px',
+                        padding: '6px 12px',
+                        backgroundColor: '#FFC107',
+                        color: '#000',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontSize: '13px',
+                        fontWeight: '500'
+                      }}
+                    >
+                      パスワード生成ツールを使用
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* パスワード生成ツール */}
+            {showPasswordGenerator && passwordSuggestions && (
+              <div style={{
+                padding: '16px',
+                backgroundColor: '#F0F9FF',
+                border: '1px solid #3B82F6',
+                borderRadius: '8px',
+                marginTop: '12px',
+                animation: 'slideUp 0.3s ease-out'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                  <h4 style={{ margin: 0, fontSize: '16px', color: '#1E40AF' }}>🔐 パスワード候補</h4>
+                  <button
+                    type="button"
+                    onClick={() => setShowPasswordGenerator(false)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: '20px',
+                      color: '#6B7280'
+                    }}
+                  >
+                    ×
+                  </button>
+                </div>
+                
+                <div style={{ marginBottom: '12px' }}>
+                  <p style={{ fontSize: '13px', color: '#4B5563', marginBottom: '8px' }}>覚えやすいパスワード:</p>
+                  {passwordSuggestions.memorable.map((pwd, idx) => (
+                    <div key={`memorable-${idx}`} style={{ marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <code style={{
+                        flex: 1,
+                        padding: '8px',
+                        backgroundColor: 'white',
+                        border: '1px solid #D1D5DB',
+                        borderRadius: '4px',
+                        fontSize: '13px',
+                        fontFamily: 'monospace'
+                      }}>{pwd}</code>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setPassword(pwd);
+                          setShowPasswordGenerator(false);
+                        }}
+                        style={{
+                          padding: '6px 10px',
+                          backgroundColor: '#3B82F6',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          fontSize: '12px'
+                        }}
+                      >
+                        使用
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                
+                <div>
+                  <p style={{ fontSize: '13px', color: '#4B5563', marginBottom: '8px' }}>強力なランダムパスワード:</p>
+                  {passwordSuggestions.strong.map((pwd, idx) => (
+                    <div key={`strong-${idx}`} style={{ marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <code style={{
+                        flex: 1,
+                        padding: '8px',
+                        backgroundColor: 'white',
+                        border: '1px solid #D1D5DB',
+                        borderRadius: '4px',
+                        fontSize: '13px',
+                        fontFamily: 'monospace'
+                      }}>{pwd}</code>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setPassword(pwd);
+                          setShowPasswordGenerator(false);
+                        }}
+                        style={{
+                          padding: '6px 10px',
+                          backgroundColor: '#3B82F6',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          fontSize: '12px'
+                        }}
+                      >
+                        使用
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                
+                <button
+                  type="button"
+                  onClick={() => setPasswordSuggestions(generatePasswordSuggestions(3))}
+                  style={{
+                    marginTop: '12px',
+                    width: '100%',
+                    padding: '8px',
+                    backgroundColor: 'white',
+                    color: '#3B82F6',
+                    border: '1px solid #3B82F6',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontSize: '13px',
+                    fontWeight: '500'
+                  }}
+                >
+                  🔄 他の候補を生成
+                </button>
+              </div>
+            )}
+
+            {/* ユーザー教育コンポーネント */}
+            <PasswordEducation />
 
             {/* Confirm Password Field */}
             <div>

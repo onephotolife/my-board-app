@@ -4,6 +4,8 @@ import User from '@/lib/models/User';
 import PasswordReset from '@/models/PasswordReset';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
+import { isPasswordReused, getPasswordReuseError, updatePasswordHistory, PASSWORD_HISTORY_LIMIT } from '@/lib/auth/password-validator';
+import { logPasswordReuseAttempt, logPasswordResetSuccess } from '@/lib/security/audit-log';
 
 // Validation Expert: Password strength validation schema for 2025 standards
 const passwordSchema = z
@@ -219,12 +221,50 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // パスワード再利用チェック
+    const isReused = await isPasswordReused(
+      password,
+      user.password,
+      user.passwordHistory || []
+    );
+    
+    if (isReused) {
+      // セキュリティログ記録
+      const userAgent = request.headers.get('user-agent') || 'unknown';
+      await logPasswordReuseAttempt(
+        user._id.toString(),
+        user.email,
+        clientIp,
+        userAgent
+      );
+      
+      return NextResponse.json(
+        { 
+          error: 'パスワードの再利用は禁止されています',
+          message: '以前使用したパスワードは設定できません。セキュリティ向上のため、新しいパスワードを作成してください。',
+          type: 'PASSWORD_REUSED',
+          details: {
+            reason: 'セキュリティポリシーにより、過去5回分のパスワードとは異なるものを設定する必要があります',
+            suggestion: '大文字・小文字・数字・記号を組み合わせた、推測されにくいパスワードをお勧めします'
+          }
+        },
+        { status: 400 }
+      );
+    }
+
     // Security Expert: Hash the new password with high-strength settings
     const saltRounds = 12; // Higher than default for better security in 2025
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     // Database Expert: Update user password and mark token as used (transaction-like operation)
     try {
+      // パスワード履歴を更新
+      const updatedHistory = updatePasswordHistory(
+        user.password,
+        user.passwordHistory || [],
+        user.lastPasswordChange
+      );
+      
       // CRITICAL FIX: Use updateOne to avoid pre-save hook that would re-hash the password
       // The password is already hashed, so we need to bypass the pre-save middleware
       const updateResult = await User.updateOne(
@@ -232,6 +272,9 @@ export async function POST(request: NextRequest) {
         {
           $set: {
             password: hashedPassword,
+            passwordHistory: updatedHistory,
+            lastPasswordChange: new Date(),
+            passwordResetCount: (user.passwordResetCount || 0) + 1,
             emailVerified: user.emailVerified || new Date(),
           },
           $unset: {
@@ -259,6 +302,15 @@ export async function POST(request: NextRequest) {
 
       // Performance Expert: Log successful password reset for monitoring
       console.log(`Password successfully reset for user: ${user.email} at ${new Date().toISOString()}`);
+      
+      // セキュリティ監査ログ
+      const userAgent = request.headers.get('user-agent') || 'unknown';
+      await logPasswordResetSuccess(
+        user._id.toString(),
+        user.email,
+        clientIp,
+        userAgent
+      );
 
       return NextResponse.json(
         {

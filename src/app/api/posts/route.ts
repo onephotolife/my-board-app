@@ -76,13 +76,14 @@ export async function POST(request: NextRequest) {
       title,
       content,
       author: session.user.id,
-      authorName: session.user.name || 'Anonymous',
+      authorName: session.user.name || session.user.email?.split('@')[0] || '匿名',
+      authorEmail: session.user.email,
     });
 
     await post.save();
 
     return NextResponse.json(
-      { message: '投稿が作成されました', post },
+      post,
       { status: 201 }
     );
   } catch (error) {

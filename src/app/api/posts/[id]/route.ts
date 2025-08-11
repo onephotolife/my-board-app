@@ -51,10 +51,7 @@ export async function PUT(
     post.content = content;
     await post.save();
 
-    return NextResponse.json({
-      message: '投稿が更新されました',
-      post,
-    });
+    return NextResponse.json(post);
   } catch (error) {
     console.error('Update post error:', error);
     return NextResponse.json(

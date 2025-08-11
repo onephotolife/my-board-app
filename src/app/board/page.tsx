@@ -14,18 +14,18 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  List,
-  ListItem,
-  ListItemText,
-  IconButton,
   Pagination,
   CircularProgress,
   Alert,
-  Divider,
+  Fab,
+  AppBar,
+  Toolbar,
+  Avatar,
 } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
+import LogoutIcon from '@mui/icons-material/Logout';
+import PersonIcon from '@mui/icons-material/Person';
+import EnhancedPostCard from '@/components/EnhancedPostCard';
 
 interface Post {
   _id: string;
@@ -183,30 +183,37 @@ export default function BoardPage() {
   }
 
   return (
-    <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h4" component="h1">
-          掲示板
-        </Typography>
-        <Box display="flex" gap={2}>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => handleOpenDialog()}
-          >
-            新規投稿
-          </Button>
+    <>
+      <AppBar position="sticky" elevation={1}>
+        <Toolbar>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            会員制掲示板
+          </Typography>
           {session && (
-            <Button
-              variant="outlined"
-              color="secondary"
-              onClick={handleLogout}
-            >
-              ログアウト
-            </Button>
+            <Box display="flex" alignItems="center" gap={2}>
+              <Box display="flex" alignItems="center" gap={1}>
+                <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.dark' }}>
+                  <PersonIcon fontSize="small" />
+                </Avatar>
+                <Typography variant="body2">
+                  {session.user?.name || session.user?.email?.split('@')[0] || 'ユーザー'}
+                </Typography>
+              </Box>
+              <Button
+                variant="outlined"
+                color="inherit"
+                startIcon={<LogoutIcon />}
+                onClick={handleLogout}
+                size="small"
+              >
+                ログアウト
+              </Button>
+            </Box>
           )}
-        </Box>
-      </Box>
+        </Toolbar>
+      </AppBar>
+      
+      <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
 
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
@@ -214,88 +221,65 @@ export default function BoardPage() {
         </Alert>
       )}
 
-      <Paper elevation={3}>
-        <List>
-          {posts.map((post, index) => (
-            <Box key={post._id}>
-              {index > 0 && <Divider />}
-              <ListItem
-                alignItems="flex-start"
-                secondaryAction={
-                  post.author === session?.user?.id && (
-                    <Box>
-                      <IconButton
-                        edge="end"
-                        aria-label="edit"
-                        onClick={() => handleOpenDialog(post)}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton
-                        edge="end"
-                        aria-label="delete"
-                        onClick={() => handleDelete(post._id)}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </Box>
-                  )
-                }
-              >
-                <ListItemText
-                  primary={
-                    <Typography variant="h6" component="div">
-                      {post.title}
-                    </Typography>
-                  }
-                  secondary={
-                    <Box component="span">
-                      <Typography
-                        sx={{ display: 'inline' }}
-                        component="span"
-                        variant="body2"
-                        color="text.primary"
-                      >
-                        {post.authorName}
-                      </Typography>
-                      {' — '}
-                      <Typography
-                        component="span"
-                        variant="body2"
-                        color="text.secondary"
-                      >
-                        {new Date(post.createdAt).toLocaleString('ja-JP')}
-                      </Typography>
-                      <Box
-                        component="div"
-                        sx={{ mt: 1, whiteSpace: 'pre-wrap' }}
-                      >
-                        <Typography variant="body1">
-                          {post.content}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  }
-                />
-              </ListItem>
-            </Box>
-          ))}
-        </List>
-        
-        {pagination.totalPages > 1 && (
-          <Box display="flex" justifyContent="center" p={2}>
-            <Pagination
-              count={pagination.totalPages}
-              page={pagination.page}
-              onChange={handlePageChange}
-              color="primary"
+      {posts.length === 0 ? (
+        <Paper elevation={1} sx={{ p: 4, textAlign: 'center' }}>
+          <Typography variant="h6" color="text.secondary" gutterBottom>
+            まだ投稿がありません
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            最初の投稿を作成してみましょう！
+          </Typography>
+        </Paper>
+      ) : (
+        <Box>
+          {posts.map((post) => (
+            <EnhancedPostCard
+              key={post._id}
+              post={post}
+              currentUserId={session?.user?.id}
+              onEdit={handleOpenDialog}
+              onDelete={handleDelete}
             />
-          </Box>
-        )}
-      </Paper>
+          ))}
+        </Box>
+      )}
+        
+      {pagination.totalPages > 1 && (
+        <Box display="flex" justifyContent="center" mt={3}>
+          <Pagination
+            count={pagination.totalPages}
+            page={pagination.page}
+            onChange={handlePageChange}
+            color="primary"
+            size="large"
+          />
+        </Box>
+      )}
 
+      {/* FABボタン */}
+      <Fab
+        color="primary"
+        aria-label="add"
+        onClick={() => handleOpenDialog()}
+        sx={{
+          position: 'fixed',
+          bottom: 24,
+          right: 24,
+        }}
+      >
+        <AddIcon />
+      </Fab>
+      
       {/* 投稿作成/編集ダイアログ */}
-      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+      <Dialog 
+        open={openDialog} 
+        onClose={handleCloseDialog} 
+        maxWidth="sm" 
+        fullWidth
+        PaperProps={{
+          sx: { borderRadius: 2 }
+        }}
+      >
         <DialogTitle>
           {editingPost ? '投稿を編集' : '新規投稿'}
         </DialogTitle>
@@ -319,6 +303,8 @@ export default function BoardPage() {
             variant="outlined"
             value={formData.content}
             onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+            inputProps={{ maxLength: 500 }}
+            helperText={`${formData.content.length}/500文字`}
           />
         </DialogContent>
         <DialogActions>
@@ -332,6 +318,7 @@ export default function BoardPage() {
           </Button>
         </DialogActions>
       </Dialog>
-    </Container>
+      </Container>
+    </>
   );
 }

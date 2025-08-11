@@ -436,10 +436,51 @@ export default function ModernHeader() {
             padding: '8px',
             boxShadow: '0 10px 40px rgba(0, 0, 0, 0.12)',
             border: '1px solid rgba(229, 231, 235, 0.8)',
-            minWidth: '200px',
+            minWidth: '260px',
             zIndex: 1001,
           }}
         >
+          {/* ユーザー情報セクション */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            padding: '12px 16px',
+            borderBottom: '1px solid #e5e7eb',
+            marginBottom: '8px',
+          }}>
+            <div style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '10px',
+              background: 'linear-gradient(135deg, #ec4899 0%, #f59e0b 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'white',
+              fontSize: '14px',
+              fontWeight: '600',
+              boxShadow: '0 2px 8px rgba(236, 72, 153, 0.25)',
+              border: '2px solid rgba(255, 255, 255, 0.9)',
+            }}>
+              {getInitials(session.user?.name || session.user?.email)}
+            </div>
+            <div>
+              <div style={{
+                fontSize: '14px',
+                fontWeight: '600',
+                color: '#0f172a',
+              }}>
+                {session.user?.name || session.user?.email?.split('@')[0]}さん
+              </div>
+              <div style={{
+                fontSize: '12px',
+                color: '#64748b',
+              }}>
+                {session.user?.email}
+              </div>
+            </div>
+          </div>
           <Link
             href="/board"
             style={{
@@ -532,8 +573,36 @@ export default function ModernHeader() {
         )}
         {session ? (
           <div style={{ padding: '12px', borderTop: '1px solid #e5e7eb' }}>
-            <div style={{ fontSize: '14px', color: '#475569', marginBottom: '8px' }}>
-              {session.user?.name || session.user?.email}
+            <div style={{ 
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              marginBottom: '12px',
+            }}>
+              <div style={{
+                width: '32px',
+                height: '32px',
+                borderRadius: '10px',
+                background: 'linear-gradient(135deg, #ec4899 0%, #f59e0b 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white',
+                fontSize: '14px',
+                fontWeight: '600',
+                boxShadow: '0 2px 8px rgba(236, 72, 153, 0.25)',
+                border: '2px solid rgba(255, 255, 255, 0.9)',
+              }}>
+                {getInitials(session.user?.name || session.user?.email)}
+              </div>
+              <div>
+                <div style={{ fontSize: '14px', color: '#0f172a', fontWeight: '600' }}>
+                  {session.user?.name || session.user?.email?.split('@')[0]}さん
+                </div>
+                <div style={{ fontSize: '12px', color: '#64748b' }}>
+                  {session.user?.email}
+                </div>
+              </div>
             </div>
             <button
               onClick={handleSignOut}

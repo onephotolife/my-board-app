@@ -79,7 +79,7 @@ export default function Home() {
   }
 
   return (
-    <>
+    <main style={{ position: 'relative', zIndex: 1, isolation: 'isolate' }}>
       <style jsx global>{`
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(20px); }
@@ -127,6 +127,6 @@ export default function Home() {
           </div>
         )}
       </div>
-    </>
+    </main>
   );
 }

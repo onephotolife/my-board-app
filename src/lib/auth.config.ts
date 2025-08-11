@@ -1,8 +1,9 @@
 import Credentials from "next-auth/providers/credentials";
 import { connectDB } from "@/lib/db/mongodb";
 import User from "@/lib/models/User";
+import type { NextAuthConfig } from "next-auth";
 
-export const authConfig = {
+export const authConfig: NextAuthConfig = {
   providers: [
     Credentials({
       name: "credentials",
@@ -84,6 +85,7 @@ export const authConfig = {
   pages: {
     signIn: "/auth/signin",
     error: "/auth/error",
+    signOut: "/auth/signin",  // ログアウト後のリダイレクト先
   },
   callbacks: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -103,21 +105,60 @@ export const authConfig = {
       return true;
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async jwt({ token, user }: { token: any; user?: any }) {
+    async jwt({ token, user, account, trigger }: { token: any; user?: any; account?: any; trigger?: any }) {
+      // 初回サインイン時
       if (user) {
         token.id = user.id;
+        token.emailVerified = user.emailVerified;
       }
+      
+      // セッション更新時
+      if (trigger === "update") {
+        // 最新のユーザー情報を取得して更新
+        await connectDB();
+        const latestUser = await User.findById(token.id);
+        if (latestUser) {
+          token.emailVerified = latestUser.emailVerified;
+          token.name = latestUser.name;
+          token.email = latestUser.email;
+        }
+      }
+      
       return token;
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async session({ session, token }: { session: any; token: any }) {
-      if (session?.user && token?.id) {
-        session.user.id = token.id as string;
+      if (token) {
+        session.user = {
+          ...session.user,
+          id: token.id || token.sub,
+          emailVerified: token.emailVerified as boolean
+        };
+        
+        // セッション有効期限の計算と追加
+        const now = Date.now();
+        const maxAge = 30 * 24 * 60 * 60 * 1000; // 30日
+        const expires = new Date(now + maxAge);
+        session.expires = expires.toISOString();
       }
       return session;
     },
   },
+  // ✅ セッション設定の明示的定義
   session: {
     strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30日間
+    updateAge: 24 * 60 * 60,    // 24時間ごとに自動更新
   },
+  
+  // ✅ JWT設定
+  jwt: {
+    maxAge: 30 * 24 * 60 * 60, // 30日間
+  },
+  
+  // ✅ セキュリティ設定
+  useSecureCookies: process.env.NODE_ENV === "production",
+  
+  // ✅ デバッグ設定を完全に無効化（警告を防ぐ）
+  debug: false,
 };

@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import BoardLayoutClient from "./board-layout-client";
 
 export default async function BoardLayout({
   children,
@@ -12,5 +13,5 @@ export default async function BoardLayout({
     redirect("/auth/signin");
   }
 
-  return <>{children}</>;
+  return <BoardLayoutClient>{children}</BoardLayoutClient>;
 }

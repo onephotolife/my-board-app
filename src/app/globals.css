@@ -36,3 +36,76 @@ body {
 * {
   box-sizing: border-box;
 }
+
+/* ===== CSP COMPLIANT Z-INDEX FIX ===== */
+
+/* Reset all transforms - CSP compliant */
+html body * {
+  transform: none !important;
+  will-change: auto !important;
+}
+
+/* Ensure body is the root stacking context */
+body {
+  position: relative;
+  z-index: 0;
+}
+
+/* Force MUI Drawer to absolute top */
+.MuiDrawer-root {
+  position: fixed !important;
+  z-index: 2147483647 !important;
+}
+
+.MuiDrawer-paper {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+  z-index: 2147483647 !important;
+}
+
+.MuiBackdrop-root {
+  position: fixed !important;
+  z-index: 2147483646 !important;
+  background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+/* SwipeableDrawer specific */
+.MuiSwipeableDrawer-root {
+  position: fixed !important;
+  z-index: 2147483647 !important;
+}
+
+.MuiSwipeableDrawer-paper {
+  position: fixed !important;
+  z-index: 2147483647 !important;
+}
+
+/* Limit all other elements */
+main,
+.MuiContainer-root,
+.MuiPaper-root:not(.MuiDrawer-paper):not(.MuiSwipeableDrawer-paper),
+.MuiCard-root,
+.MuiBox-root:not(.MuiDrawer-root .MuiBox-root) {
+  position: relative !important;
+  z-index: 1 !important;
+  transform: none !important;
+}
+
+/* Specific fix for board page content */
+#board-content,
+.board-container {
+  position: relative !important;
+  z-index: 1 !important;
+  isolation: isolate !important;
+}
+
+/* Ensure menu content is clickable */
+.MuiDrawer-paper *,
+.MuiSwipeableDrawer-paper * {
+  pointer-events: auto !important;
+}

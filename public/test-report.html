@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>モバイルメニューz-index テストレポート</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #1976d2;
+            padding-bottom: 10px;
+        }
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+        .test-result {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 3px;
+        }
+        .pass {
+            color: #4caf50;
+            font-weight: bold;
+        }
+        .fail {
+            color: #f44336;
+            font-weight: bold;
+        }
+        .pending {
+            color: #ff9800;
+            font-weight: bold;
+        }
+        .code-block {
+            background: #263238;
+            color: #aed581;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+        button {
+            background: #1976d2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #1565c0;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 5px;
+        }
+        .status-pass {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        .status-fail {
+            background: #ffebee;
+            color: #c62828;
+        }
+        .status-running {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 モバイルメニューz-index テストレポート</h1>
+        
+        <div class="test-section">
+            <h2>📊 テスト実行状況</h2>
+            <p><strong>実行日時:</strong> <span id="timestamp"></span></p>
+            <p><strong>ブラウザ:</strong> <span id="browser"></span></p>
+            <p><strong>ビューポート:</strong> <span id="viewport"></span></p>
+            <p><strong>URL:</strong> <span id="current-url"></span></p>
+        </div>
+
+        <div class="test-section">
+            <h2>🧪 自動テスト実行</h2>
+            <button onclick="runTest()">テスト実行</button>
+            <button onclick="openMenu()">メニューを開く</button>
+            <button onclick="closeMenu()">メニューを閉じる</button>
+            <button onclick="clearResults()">結果をクリア</button>
+            
+            <div id="test-results" style="margin-top: 20px;"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>📝 手動検証チェックリスト</h2>
+            <div class="test-result">
+                <input type="checkbox" id="check1">
+                <label for="check1">メニューボタンが表示されている</label>
+            </div>
+            <div class="test-result">
+                <input type="checkbox" id="check2">
+                <label for="check2">メニューをタップして開ける</label>
+            </div>
+            <div class="test-result">
+                <input type="checkbox" id="check3">
+                <label for="check3">メニューが投稿の上に表示される</label>
+            </div>
+            <div class="test-result">
+                <input type="checkbox" id="check4">
+                <label for="check4">背景が暗くなる</label>
+            </div>
+            <div class="test-result">
+                <input type="checkbox" id="check5">
+                <label for="check5">×ボタンでメニューが閉じる</label>
+            </div>
+            <div class="test-result">
+                <input type="checkbox" id="check6">
+                <label for="check6">背景タップでメニューが閉じる</label>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>💻 実行コード</h2>
+            <div class="code-block">
+// メニューを開く
+document.querySelector('[aria-label="menu"]')?.click();
+
+// z-indexを確認
+const portal = document.querySelector('.MuiModal-root, [role="presentation"]');
+console.log('z-index:', getComputedStyle(portal).zIndex);
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>📊 最終判定</h2>
+            <div id="final-verdict" style="font-size: 24px; font-weight: bold; text-align: center; padding: 20px;">
+                <span class="status-badge status-running">テスト未実行</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 初期情報の表示
+        document.getElementById('timestamp').textContent = new Date().toLocaleString('ja-JP');
+        document.getElementById('browser').textContent = navigator.userAgent.substring(0, 100) + '...';
+        document.getElementById('viewport').textContent = `${window.innerWidth} x ${window.innerHeight}`;
+        document.getElementById('current-url').textContent = window.location.href;
+
+        function runTest() {
+            const results = [];
+            const resultsDiv = document.getElementById('test-results');
+            resultsDiv.innerHTML = '<h3>テスト結果:</h3>';
+
+            // Test 1: メニューボタンの存在
+            const menuButton = document.querySelector('[aria-label="menu"]');
+            results.push({
+                name: 'メニューボタン存在確認',
+                passed: !!menuButton,
+                detail: menuButton ? '✅ 発見' : '❌ 見つかりません'
+            });
+
+            // Test 2: Portalの確認
+            const portal = document.querySelector('.MuiModal-root, [role="presentation"], [data-mobile-menu-portal]');
+            let portalZIndex = 'N/A';
+            if (portal) {
+                portalZIndex = window.getComputedStyle(portal).zIndex;
+            }
+            
+            results.push({
+                name: 'Portal/メニュー表示確認',
+                passed: !!portal,
+                detail: portal ? `✅ z-index: ${portalZIndex}` : '❌ メニューが開いていません'
+            });
+
+            // Test 3: z-index値の確認
+            if (portal) {
+                const zIndexValue = parseInt(portalZIndex);
+                results.push({
+                    name: 'z-index値確認',
+                    passed: zIndexValue > 1000,
+                    detail: zIndexValue > 1000 ? `✅ ${portalZIndex}` : `❌ 低すぎます: ${portalZIndex}`
+                });
+
+                // Portal親要素確認
+                results.push({
+                    name: 'Portal配置確認',
+                    passed: portal.parentElement === document.body,
+                    detail: portal.parentElement === document.body ? '✅ body直下' : `❌ 親: ${portal.parentElement?.tagName}`
+                });
+            }
+
+            // Test 4: コンテンツのz-index確認
+            const boardContent = document.querySelector('#board-content, .MuiContainer-root');
+            if (boardContent) {
+                const contentZIndex = window.getComputedStyle(boardContent).zIndex;
+                results.push({
+                    name: 'コンテンツz-index',
+                    passed: true,
+                    detail: `コンテンツ z-index: ${contentZIndex}`
+                });
+            }
+
+            // 結果表示
+            results.forEach(result => {
+                const div = document.createElement('div');
+                div.className = 'test-result';
+                div.innerHTML = `
+                    <span class="${result.passed ? 'pass' : 'fail'}" style="width: 30px;">
+                        ${result.passed ? '✅' : '❌'}
+                    </span>
+                    <span style="flex: 1;">
+                        <strong>${result.name}:</strong> ${result.detail}
+                    </span>
+                `;
+                resultsDiv.appendChild(div);
+            });
+
+            // 最終判定
+            const allPassed = results.every(r => r.passed);
+            const verdict = document.getElementById('final-verdict');
+            if (allPassed) {
+                verdict.innerHTML = '<span class="status-badge status-pass">✅ すべてのテストに合格</span>';
+            } else {
+                const failedCount = results.filter(r => !r.passed).length;
+                verdict.innerHTML = `<span class="status-badge status-fail">❌ ${failedCount}件のテストが失敗</span>`;
+            }
+
+            // コンソールにも出力
+            console.log('Test Results:', results);
+        }
+
+        function openMenu() {
+            const menuButton = document.querySelector('[aria-label="menu"]');
+            if (menuButton) {
+                menuButton.click();
+                console.log('✅ メニューを開きました');
+                setTimeout(runTest, 500);
+            } else {
+                console.error('❌ メニューボタンが見つかりません');
+                alert('メニューボタンが見つかりません。モバイルビューでログイン後の画面で実行してください。');
+            }
+        }
+
+        function closeMenu() {
+            const closeButton = document.querySelector('[aria-label="close menu"]');
+            const backdrop = document.querySelector('.MuiBackdrop-root, [data-mobile-menu-portal]');
+            
+            if (closeButton) {
+                closeButton.click();
+                console.log('✅ メニューを閉じました');
+            } else if (backdrop) {
+                backdrop.click();
+                console.log('✅ 背景クリックでメニューを閉じました');
+            } else {
+                console.log('⚠️ メニューは開いていません');
+            }
+        }
+
+        function clearResults() {
+            document.getElementById('test-results').innerHTML = '';
+            document.getElementById('final-verdict').innerHTML = '<span class="status-badge status-running">テスト未実行</span>';
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = false);
+        }
+
+        // 自動実行オプション
+        if (window.location.hash === '#autorun') {
+            setTimeout(() => {
+                openMenu();
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

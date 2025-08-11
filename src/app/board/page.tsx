@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession, signOut } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import {
   Container,
@@ -18,16 +18,9 @@ import {
   CircularProgress,
   Alert,
   Fab,
-  AppBar,
-  Toolbar,
-  Avatar,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import LogoutIcon from '@mui/icons-material/Logout';
-import PersonIcon from '@mui/icons-material/Person';
 import EnhancedPostCard from '@/components/EnhancedPostCard';
-import QuickPostCard from '@/components/QuickPostCard';
-import CreateIcon from '@mui/icons-material/Create';
 
 interface Post {
   _id: string;
@@ -49,12 +42,6 @@ interface PaginationData {
 export default function BoardPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  
-  // ログアウト処理
-  const handleLogout = async () => {
-    await signOut({ redirect: false });
-    router.push('/auth/signin');
-  };
   const [posts, setPosts] = useState<Post[]>([]);
   const [pagination, setPagination] = useState<PaginationData>({
     page: 1,
@@ -266,8 +253,18 @@ export default function BoardPage() {
   // 未認証時のリダイレクト
   if (status === 'unauthenticated') {
     return (
-      <Container maxWidth="md" sx={{ mt: 4 }}>
-        <Paper sx={{ p: 4, textAlign: 'center' }}>
+      <Container 
+        maxWidth="md" 
+        sx={{ 
+          mt: 4,
+          position: 'relative',
+          zIndex: 1,
+          isolation: 'isolate',
+        }}
+        id="board-content"
+        className="board-container"
+      >
+        <Paper sx={{ p: 4, textAlign: 'center', position: 'relative', zIndex: 1 }}>
           <Typography variant="h5" gutterBottom>
             会員限定掲示板
           </Typography>
@@ -287,58 +284,24 @@ export default function BoardPage() {
   }
 
   return (
-    <>
-      <AppBar position="sticky" elevation={1}>
-        <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            会員制掲示板
-          </Typography>
-          {session && (
-            <Box display="flex" alignItems="center" gap={2}>
-              <Button
-                variant="contained"
-                color="secondary"
-                startIcon={<CreateIcon />}
-                onClick={() => handleOpenDialog()}
-                sx={{
-                  fontWeight: 'bold',
-                  px: 3,
-                }}
-              >
-                新規投稿
-              </Button>
-              <Box display="flex" alignItems="center" gap={1}>
-                <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.dark' }}>
-                  <PersonIcon fontSize="small" />
-                </Avatar>
-                <Typography variant="body2">
-                  {session.user?.name || session.user?.email?.split('@')[0] || 'ユーザー'}
-                </Typography>
-              </Box>
-              <Button
-                variant="outlined"
-                color="inherit"
-                startIcon={<LogoutIcon />}
-                onClick={handleLogout}
-                size="small"
-              >
-                ログアウト
-              </Button>
-            </Box>
-          )}
-        </Toolbar>
-      </AppBar>
-      
-      <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
+    <Container 
+        maxWidth="md" 
+        sx={{ 
+          mt: 4, 
+          mb: 4,
+          position: 'relative',
+          zIndex: 1,
+          isolation: 'isolate',
+        }}
+        id="board-content"
+        className="board-container"
+      >
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
             {error}
           </Alert>
         )}
         
-        {/* クイック投稿カード - 認証済みのみ表示 */}
-        {session && <QuickPostCard onOpen={() => handleOpenDialog()} />}
-
       {posts.length === 0 ? (
         <Paper elevation={1} sx={{ p: 4, textAlign: 'center' }}>
           <Typography variant="h6" color="text.secondary" gutterBottom>
@@ -374,8 +337,9 @@ export default function BoardPage() {
         </Box>
       )}
 
-      {/* FABボタン */}
-      <Fab
+      {/* FABボタン（モバイル用） */}
+      {session && (
+        <Fab
         color="primary"
         aria-label="add"
         onClick={() => handleOpenDialog()}
@@ -387,6 +351,7 @@ export default function BoardPage() {
       >
         <AddIcon />
       </Fab>
+      )}
       
       {/* 投稿作成/編集ダイアログ */}
       <Dialog 
@@ -446,7 +411,6 @@ export default function BoardPage() {
           </Button>
         </DialogActions>
       </Dialog>
-      </Container>
-    </>
+    </Container>
   );
 }

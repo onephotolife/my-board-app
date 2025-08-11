@@ -1,6 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // experimental: {
+  //   sri: {
+  //     algorithm: 'sha384'
+  //   }
+  // },
   reactStrictMode: true,
   poweredByHeader: false,
   compress: true,

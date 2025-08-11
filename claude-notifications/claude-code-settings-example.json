@@ -1,0 +1,6 @@
+{
+  "hooks": {
+    "user-prompt-submit-hook": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/claude-notifications/notify.sh response_complete 'Claudeが応答を完了しました'",
+    "response-received-hook": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/claude-notifications/notify.sh input_waiting 'Claudeがあなたの入力を待っています'"
+  }
+}

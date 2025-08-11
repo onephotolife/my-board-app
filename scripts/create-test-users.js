@@ -1,136 +1,85 @@
 #!/usr/bin/env node
 
 /**
- * テストユーザー作成スクリプト
- * 14人天才会議 - 天才11
+ * テスト用ユーザーを作成するスクリプト
+ * メール再送信テストで使用する固定ユーザーを事前に作成
  */
 
 const { MongoClient } = require('mongodb');
-const bcrypt = require('bcryptjs');
-
-const MONGODB_URI = 'mongodb://localhost:27017/boardDB';
-
-const COLORS = {
-  reset: '\x1b[0m',
-  red: '\x1b[31m',
-  green: '\x1b[32m',
-  yellow: '\x1b[33m',
-  blue: '\x1b[34m',
-  magenta: '\x1b[35m',
-  cyan: '\x1b[36m',
-  bold: '\x1b[1m',
-};
-
-function log(message, color = 'reset') {
-  console.log(`${COLORS[color]}${message}${COLORS.reset}`);
-}
+const bcryptjs = require('bcryptjs');
 
 async function createTestUsers() {
-  log('\n🧠 天才11: テストユーザー作成\n', 'cyan');
-  log('=' .repeat(70), 'cyan');
-  
-  let mongoClient;
+  const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/board-app';
+  const client = new MongoClient(mongoUri);
   
   try {
-    // MongoDB接続
-    mongoClient = new MongoClient(MONGODB_URI);
-    await mongoClient.connect();
-    const db = mongoClient.db();
+    console.log('📊 データベース接続中:', mongoUri);
+    await client.connect();
+    const db = client.db();
+    const usersCollection = db.collection('users');
     
-    // テストユーザー定義
-    const testUsers = [
-      {
-        email: 'unverified@test.com',
-        password: 'Test1234!',
-        name: '未確認太郎',
-        emailVerified: false,
-        description: 'メール未確認ユーザー'
-      },
-      {
-        email: 'verified@test.com',
-        password: 'Test1234!',
-        name: '確認済花子',
-        emailVerified: true,
-        description: 'メール確認済みユーザー'
+    console.log('👤 テストユーザー作成開始...');
+    
+    // テスト用ユーザーを作成（10個）
+    for (let i = 1; i <= 10; i++) {
+      const email = `test${i}@example.com`;
+      
+      try {
+        // 既存ユーザーを確認
+        const existingUser = await usersCollection.findOne({ email });
+        
+        if (!existingUser) {
+          // 新規作成
+          const hashedPassword = await bcryptjs.hash('Test1234!', 10);
+          
+          await usersCollection.insertOne({
+            email,
+            password: hashedPassword,
+            name: `Test User ${i}`,
+            emailVerified: false,
+            emailVerificationToken: null,
+            emailVerificationTokenExpiry: null,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          });
+          console.log(`✅ ユーザー作成: ${email}`);
+        } else {
+          // 既存ユーザーをリセット
+          await usersCollection.updateOne(
+            { email },
+            {
+              $set: {
+                emailVerified: false,
+                emailVerificationToken: null,
+                emailVerificationTokenExpiry: null,
+                updatedAt: new Date()
+              }
+            }
+          );
+          console.log(`♻️ ユーザーリセット: ${email}`);
+        }
+      } catch (error) {
+        console.error(`❌ ユーザー作成エラー (${email}):`, error.message);
       }
-    ];
-    
-    log('\n📋 テストユーザー作成', 'blue');
-    log('=' .repeat(70), 'cyan');
-    
-    for (const userData of testUsers) {
-      // 既存ユーザーを削除
-      await db.collection('users').deleteOne({ email: userData.email });
-      
-      // パスワードをハッシュ化
-      const hashedPassword = await bcrypt.hash(userData.password, 10);
-      
-      // ユーザー作成
-      await db.collection('users').insertOne({
-        email: userData.email,
-        password: hashedPassword,
-        name: userData.name,
-        emailVerified: userData.emailVerified,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      });
-      
-      log(`\n✅ ${userData.description}`, 'green');
-      log(`   Email: ${userData.email}`, 'cyan');
-      log(`   Password: ${userData.password}`, 'cyan');
-      log(`   EmailVerified: ${userData.emailVerified}`, 
-          userData.emailVerified ? 'green' : 'yellow');
     }
     
-    log('\n\n' + '='.repeat(70), 'cyan');
-    log('📊 手動テスト手順', 'magenta');
-    log('='.repeat(70), 'cyan');
+    // 作成されたユーザー数を確認
+    const testUserCount = await usersCollection.countDocuments({ 
+      email: /^test\d+@example\.com$/ 
+    });
     
-    log('\n1️⃣  メール未確認ユーザーのテスト:', 'yellow');
-    log('   1. http://localhost:3000/auth/signin にアクセス', 'cyan');
-    log('   2. Email: unverified@test.com', 'cyan');
-    log('   3. Password: Test1234!', 'cyan');
-    log('   4. ログインボタンをクリック', 'cyan');
-    log('   期待: "メールアドレスの確認が必要です" が表示される', 'green');
-    
-    log('\n2️⃣  間違ったパスワードのテスト:', 'yellow');
-    log('   1. http://localhost:3000/auth/signin にアクセス', 'cyan');
-    log('   2. Email: verified@test.com', 'cyan');
-    log('   3. Password: WrongPassword!', 'cyan');
-    log('   4. ログインボタンをクリック', 'cyan');
-    log('   期待: "ログインできませんでした" が表示される', 'green');
-    
-    log('\n3️⃣  存在しないユーザーのテスト:', 'yellow');
-    log('   1. http://localhost:3000/auth/signin にアクセス', 'cyan');
-    log('   2. Email: notexist@test.com', 'cyan');
-    log('   3. Password: Test1234!', 'cyan');
-    log('   4. ログインボタンをクリック', 'cyan');
-    log('   期待: "ログインできませんでした" が表示される', 'green');
-    
-    log('\n4️⃣  正常ログインのテスト:', 'yellow');
-    log('   1. http://localhost:3000/auth/signin にアクセス', 'cyan');
-    log('   2. Email: verified@test.com', 'cyan');
-    log('   3. Password: Test1234!', 'cyan');
-    log('   4. ログインボタンをクリック', 'cyan');
-    log('   期待: ボード画面に遷移する', 'green');
-    
-    log('\n='.repeat(70), 'cyan');
-    log('🎉 テストユーザーの作成が完了しました！', 'green');
-    log('上記の手順で手動テストを実行してください。', 'green');
-    log('='.repeat(70) + '\n', 'cyan');
+    console.log(`\n✅ テストユーザー作成完了: ${testUserCount}件`);
     
   } catch (error) {
-    log(`\n❌ エラー発生: ${error.message}`, 'red');
-    console.error(error);
+    console.error('❌ エラー:', error);
+    process.exit(1);
   } finally {
-    if (mongoClient) {
-      await mongoClient.close();
-    }
+    await client.close();
+    console.log('📊 データベース接続を閉じました');
   }
 }
 
 // 実行
-createTestUsers().catch((error) => {
-  log(`\n❌ 致命的エラー: ${error.message}`, 'red');
-  process.exit(1);
-});
+if (require.main === module) {
+  createTestUsers();
+}

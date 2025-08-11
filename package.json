@@ -18,8 +18,19 @@
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:debug": "playwright test --debug",
     "test:e2e:report": "playwright show-report",
+    "test:e2e:codegen": "playwright codegen",
+    "test:e2e:security": "playwright test tests/e2e/auth/security.spec.ts",
+    "test:e2e:rate-limit": "playwright test tests/e2e/auth/rate-limit.spec.ts",
+    "test:e2e:resend": "playwright test tests/e2e/auth/email-resend.spec.ts",
+    "test:e2e:ci": "npm run build && playwright test",
     "kill-port": "lsof -ti:3000 | xargs kill -9 2>/dev/null || echo 'Port 3000 is free'",
-    "predev": "npm run kill-port"
+    "predev": "npm run kill-port",
+    "clean": "rm -rf .next node_modules/.cache .turbo",
+    "reset": "npm run clean && npm install",
+    "test:resend": "node scripts/test-comprehensive-resend.js",
+    "test:resend:simple": "USE_SIMPLE_API=true node scripts/test-comprehensive-resend.js",
+    "setup:db": "node scripts/setup-indexes.js",
+    "fix:auto": "node scripts/auto-fix-and-test.js"
   },
   "dependencies": {
     "@auth/mongodb-adapter": "^3.10.0",
@@ -32,6 +43,7 @@
     "@react-email/render": "^1.2.0",
     "@types/zxcvbn": "^4.4.5",
     "bcryptjs": "^3.0.2",
+    "bull": "^4.16.5",
     "date-fns": "^4.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.17.0",
@@ -41,10 +53,11 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-email": "^4.2.8",
+    "redis": "^5.8.0",
     "resend": "^6.0.1",
     "styled-jsx": "^5.1.7",
     "uuid": "^11.1.0",
-    "zod": "^4.0.15",
+    "zod": "^4.0.17",
     "zxcvbn": "^4.4.2"
   },
   "devDependencies": {

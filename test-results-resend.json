@@ -1,0 +1,5 @@
+
+> my-board-app@0.1.0 test:e2e:resend
+> playwright test tests/e2e/auth/email-resend.spec.ts --reporter=json
+
+[dotenv@17.2.1] injecting env (14) from .env.test -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }

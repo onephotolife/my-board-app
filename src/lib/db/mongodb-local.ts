@@ -1,113 +1,81 @@
 import mongoose from 'mongoose';
 
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/board-app';
+
+interface ConnectionCache {
+  conn: typeof mongoose | null;
+  promise: Promise<typeof mongoose> | null;
+}
+
 declare global {
-  var mongoose: {
-    conn: mongoose.Connection | null;
-    promise: Promise<mongoose.Connection> | null;
-  };
+  var mongoose: ConnectionCache | undefined;
 }
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/boardDB';
+const cached: ConnectionCache = global.mongoose || {
+  conn: null,
+  promise: null,
+};
 
-if (!MONGODB_URI) {
-  throw new Error('Please define the MONGODB_URI environment variable');
+if (!global.mongoose) {
+  global.mongoose = cached;
 }
 
-let cached = global.mongoose;
-
-if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
-}
-
-export async function connectDB() {
+export async function connectDB(): Promise<typeof mongoose> {
+  // 既に接続済みの場合
   if (cached.conn) {
+    console.log('✅ MongoDB: 既存の接続を使用');
     return cached.conn;
   }
 
-  if (!cached.promise) {
-    const opts = {
-      bufferCommands: false,
-      serverSelectionTimeoutMS: 10000,
-      socketTimeoutMS: 45000,
-      maxPoolSize: 10,
-      minPoolSize: 2,
-    };
-
-    try {
-      // ローカル開発用の特別な処理
-      if (MONGODB_URI.includes('localhost') || MONGODB_URI.includes('127.0.0.1')) {
-        console.log('📌 ローカルMongoDBに接続を試みています...');
-        // ローカルMongoDBが起動していない場合のエラーハンドリング
-        cached.promise = mongoose.connect(MONGODB_URI, opts).catch((error) => {
-          console.error('⚠️ ローカルMongoDBに接続できません。');
-          console.error('以下のコマンドでMongoDBを起動してください:');
-          console.error('brew services start mongodb-community');
-          console.error('または');
-          console.error('mongod --dbpath /usr/local/var/mongodb');
-          throw error;
-        });
-      } else if (MONGODB_URI.includes('xxxxx') || MONGODB_URI.includes('cluster0.xxxxx')) {
-        // プレースホルダーが含まれている場合
-        console.error('\n❌ MongoDB Atlas URIにプレースホルダーが含まれています');
-        console.error('--------------------------------------------------');
-        console.error('🔧 修正方法:');
-        console.error('1. MongoDB Atlasダッシュボードにログイン');
-        console.error('2. Database > Connect をクリック');
-        console.error('3. "Connect your application"を選択');
-        console.error('4. 接続文字列をコピー（例: cluster0.abcde.mongodb.net）');
-        console.error('5. .env.localのMONGODB_URI_PRODUCTIONを更新:');
-        console.error('   mongodb+srv://username:password@cluster0.[実際の値].mongodb.net/boardDB');
-        console.error('\n📝 現在の設定:');
-        console.error(`   ${MONGODB_URI.substring(0, 60)}...`);
-        console.error('\n💡 一時的な解決策:');
-        console.error('   ローカルMongoDBを使用するには、.env.localから');
-        console.error('   MONGODB_URI_PRODUCTIONの行をコメントアウトしてください');
-        console.error('--------------------------------------------------\n');
-        throw new Error('MongoDB Atlas URI contains placeholder values - please replace "xxxxx" with your actual cluster identifier');
-      } else {
-        // MongoDB Atlas等の外部データベース
-        console.log('\n╔════════════════════════════════════════════════════════════╗');
-        console.log('║ 🌐 MongoDB Atlas接続開始                              ║');
-        console.log('╚════════════════════════════════════════════════════════════╝');
-        const maskedUri = MONGODB_URI.replace(/\/\/[^@]+@/, '//***@');
-        console.log(`📍 クラスター: ${maskedUri.match(/cluster0\.[a-z0-9]+\.mongodb\.net/)?.[0] || 'unknown'}`);
-        console.log(`📁 データベース: boardDB`);
-        console.log(`⏱️  タイムアウト: 10秒`);
-        console.log('\n🔄 接続中...');
-        
-        cached.promise = mongoose.connect(MONGODB_URI, opts).then((connection) => {
-          console.log('\n✅ MongoDB Atlas接続成功！');
-          console.log('╔════════════════════════════════════════════════════════════╗');
-          console.log('║ ✅ MongoDB Atlas (cluster0.ej6jq5c) 接続確立            ║');
-          console.log('╚════════════════════════════════════════════════════════════╝\n');
-          return connection;
-        }).catch((error) => {
-          console.error('\n❌ MongoDB Atlasへの接続に失敗しました');
-          console.error('--------------------------------------------------');
-          console.error('🔍 エラー詳細:', error.message);
-          console.error('\n📝 確認事項:');
-          console.error('1. MongoDB Atlasダッシュボードでクラスター状態確認');
-          console.error('2. Network Access → 0.0.0.0/0 が許可されているか');
-          console.error('3. Database Access → boarduser ユーザーが存在するか');
-          console.error('4. パスワード: thc1234567890THC が正しいか');
-          console.error('5. クラスターID: ej6jq5c が正しいか');
-          console.error('--------------------------------------------------\n');
-          throw error;
-        });
-      }
-    } catch (e) {
-      cached.promise = null;
-      throw e;
-    }
+  // 接続中の場合
+  if (cached.promise) {
+    console.log('⏳ MongoDB: 接続待機中...');
+    cached.conn = await cached.promise;
+    return cached.conn;
   }
 
   try {
-    cached.conn = await cached.promise;
-    // 接続成功ログはmongoose.connect内で出力済み
-  } catch (e) {
-    cached.promise = null;
-    throw e;
-  }
+    console.log('🔄 MongoDB: 新規接続開始...');
+    
+    cached.promise = mongoose.connect(MONGODB_URI, {
+      bufferCommands: false,
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    });
 
-  return cached.conn;
+    cached.conn = await cached.promise;
+    
+    console.log('✅ MongoDB: 接続成功');
+    
+    // 接続イベントリスナー
+    mongoose.connection.on('error', (err) => {
+      console.error('❌ MongoDB接続エラー:', err);
+      cached.conn = null;
+      cached.promise = null;
+    });
+
+    mongoose.connection.on('disconnected', () => {
+      console.warn('⚠️ MongoDB: 接続が切断されました');
+      cached.conn = null;
+      cached.promise = null;
+    });
+
+    return cached.conn;
+  } catch (error) {
+    console.error('❌ MongoDB接続失敗:', error);
+    cached.promise = null;
+    throw error;
+  }
+}
+
+// ヘルスチェック関数
+export async function checkDBHealth(): Promise<boolean> {
+  try {
+    const conn = await connectDB();
+    await conn.connection.db.admin().ping();
+    return true;
+  } catch {
+    return false;
+  }
 }

@@ -14,26 +14,17 @@
     "deny": []
   },
   "hooks": {
-    "PostToolUse": [
+    "after_command": [
       {
-        "matcher": ".*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/claude-notifications/notify.sh response_complete 'ツール実行完了' 'Claude Code'"
-          }
-        ]
+        "command": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/hook-test-simple.sh"
+      },
+      {
+        "command": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/claude-notifications/notify.sh response_complete 'ツール実行完了' 'Claude Code'"
       }
     ],
-    "UserPromptReceived": [
+    "user-prompt-submit-hook": [
       {
-        "matcher": ".*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/claude-notifications/notify.sh input_waiting 'ユーザー入力受信' 'Claude Code'"
-          }
-        ]
+        "command": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/claude-notifications/notify.sh input_waiting 'ユーザー入力受信' 'Claude Code'"
       }
     ]
   }

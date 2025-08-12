@@ -36,7 +36,7 @@ function PasswordResetForm() {
   // UI state
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState<string | React.ReactNode>('');
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [hoveredField, setHoveredField] = useState<string | null>(null);
   const [buttonHovered, setButtonHovered] = useState(false);
@@ -50,7 +50,7 @@ function PasswordResetForm() {
   const [reuseWarning, setReuseWarning] = useState<string | null>(null);
   const [showPasswordGenerator, setShowPasswordGenerator] = useState(false);
   const [passwordSuggestions, setPasswordSuggestions] = useState<{ memorable: string[], strong: string[] } | null>(null);
-  const debounceTimer = useRef<NodeJS.Timeout>();
+  const debounceTimer = useRef<NodeJS.Timeout | undefined>(undefined);
 
   // Validate token on component mount
   useEffect(() => {

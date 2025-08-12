@@ -1,9 +1,7 @@
 import Credentials from "next-auth/providers/credentials";
 import { connectDB } from "@/lib/db/mongodb";
 import User from "@/lib/models/User";
-import type { NextAuthConfig } from "next-auth";
-
-export const authConfig: NextAuthConfig = {
+export const authConfig = {
   providers: [
     Credentials({
       name: "credentials",

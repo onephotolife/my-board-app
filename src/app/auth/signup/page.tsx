@@ -427,9 +427,9 @@ export default function SignUpPage() {
   };
 
   const getButtonStyle = () => {
-    let style = { ...modern2025Styles.button.primary };
+    let style: any = { ...modern2025Styles.button.primary };
     if (buttonHovered) {
-      style = { ...style, ...modern2025Styles.button.hover };
+      style = { ...style, ...modern2025Styles.button.primaryHover };
     }
     if (loading) {
       style = { ...style, opacity: 0.7, cursor: 'not-allowed' };

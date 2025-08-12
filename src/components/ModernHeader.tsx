@@ -250,6 +250,9 @@ export default function ModernHeader() {
           background-color: #f8fafc;
           border-color: #6366f1;
         }
+        .mobile-menu {
+          display: none !important;
+        }
         @media (max-width: 768px) {
           .mobile-menu-button {
             display: flex !important;
@@ -258,7 +261,7 @@ export default function ModernHeader() {
             display: none !important;
           }
           .mobile-menu {
-            display: ${mobileMenuOpen ? 'flex' : 'none'};
+            display: ${mobileMenuOpen ? 'flex' : 'none'} !important;
             position: fixed;
             top: 72px;
             left: 0;
@@ -366,37 +369,9 @@ export default function ModernHeader() {
                 </button>
               </div>
             ) : (
+              // PC header login button removed - this section now shows empty div for non-logged in users
               <div style={{ display: 'flex', gap: '12px' }}>
-                <button
-                  style={outlineButtonStyle}
-                  className="outline-button-hover"
-                  onClick={handleSignIn}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#f8fafc';
-                    e.currentTarget.style.borderColor = '#6366f1';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
-                    e.currentTarget.style.borderColor = '#e5e7eb';
-                  }}
-                >
-                  ログイン
-                </button>
-                <button
-                  style={buttonStyle}
-                  className="button-hover"
-                  onClick={handleSignUp}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(99, 102, 241, 0.35)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(99, 102, 241, 0.3), 0 1px 3px rgba(0, 0, 0, 0.08)';
-                  }}
-                >
-                  新規登録
-                </button>
+                {/* Login button removed from PC header as requested */}
               </div>
             )}
           </nav>

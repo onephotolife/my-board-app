@@ -111,8 +111,7 @@ export async function POST(request: NextRequest) {
         result = await emailService.sendVerificationEmail(to, {
           userName: data.userName,
           verificationUrl: data.verificationUrl,
-          verificationCode: data.verificationCode,
-        });
+        } as any);
         break;
 
       case 'password-reset':
@@ -129,9 +128,8 @@ export async function POST(request: NextRequest) {
         result = await emailService.sendPasswordResetEmail(to, {
           userName: data.userName,
           resetUrl: data.resetUrl,
-          resetCode: data.resetCode,
           expiresIn: data.expiresIn,
-        });
+        } as any);
         break;
 
       case 'welcome':

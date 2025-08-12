@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
     // Zod検証
     const validation = resendSchema.safeParse(body);
     if (!validation.success) {
-      const firstError = validation.error?.errors?.[0];
+      const firstError = validation.error?.issues?.[0];
       return NextResponse.json(
         {
           success: false,

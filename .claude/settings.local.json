@@ -12,5 +12,29 @@
       "Bash(node:*)"
     ],
     "deny": []
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/claude-notifications/notify.sh response_complete 'ツール実行完了' 'Claude Code'"
+          }
+        ]
+      }
+    ],
+    "UserPromptReceived": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/claude-notifications/notify.sh input_waiting 'ユーザー入力受信' 'Claude Code'"
+          }
+        ]
+      }
+    ]
   }
 }

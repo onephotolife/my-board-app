@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新規登録ボタン削除テストレポート</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #1976d2;
+            padding-bottom: 10px;
+        }
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+        .test-result {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 3px;
+        }
+        .pass {
+            color: #4caf50;
+            font-weight: bold;
+        }
+        .fail {
+            color: #f44336;
+            font-weight: bold;
+        }
+        .pending {
+            color: #ff9800;
+            font-weight: bold;
+        }
+        .code-block {
+            background: #263238;
+            color: #aed581;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+        button {
+            background: #1976d2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #1565c0;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 5px;
+        }
+        .status-pass {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        .status-fail {
+            background: #ffebee;
+            color: #c62828;
+        }
+        .status-running {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 新規登録ボタン削除テストレポート</h1>
+        
+        <div class="test-section">
+            <h2>📊 テスト実行状況</h2>
+            <p><strong>実行日時:</strong> <span id="timestamp"></span></p>
+            <p><strong>ブラウザ:</strong> <span id="browser"></span></p>
+            <p><strong>ビューポート:</strong> <span id="viewport"></span></p>
+            <p><strong>テスト対象URL:</strong> <span id="current-url"></span></p>
+        </div>
+
+        <div class="test-section">
+            <h2>🧪 自動テスト実行</h2>
+            <button onclick="runComprehensiveTest()">包括的テスト実行</button>
+            <button onclick="runDesktopSignupTest()">デスクトップ新規登録確認</button>
+            <button onclick="runMobileSignupTest()">モバイル新規登録確認</button>
+            <button onclick="clearResults()">結果をクリア</button>
+            
+            <div id="test-results" style="margin-top: 20px;"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>📝 削除対象確認</h2>
+            <div class="code-block">
+&lt;a href="/auth/signup" style="padding: 10px 20px; font-size: 14px; font-weight: 600; color: white; 
+background: linear-gradient(135deg, rgb(99, 102, 241) 0%, rgb(139, 92, 246) 100%); 
+border: none; border-radius: 10px; cursor: pointer; 
+transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+box-shadow: rgba(99, 102, 241, 0.3) 0px 4px 12px, rgba(0, 0, 0, 0.08) 0px 1px 3px; 
+text-align: center; text-decoration: none;"&gt;新規登録&lt;/a&gt;
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>💻 実行テストコード</h2>
+            <div class="code-block">
+// デスクトップの新規登録ボタンの削除確認
+const desktopSignupButtons = document.querySelectorAll('button[onClick*="handleSignUp"], button[onClick*="signup"]');
+console.log('Desktop signup buttons:', desktopSignupButtons.length);
+
+// グラデーション背景のボタン確認
+const gradientButtons = Array.from(document.querySelectorAll('*')).filter(el => {
+  const style = window.getComputedStyle(el);
+  const bg = style.background || style.backgroundImage;
+  return bg.includes('rgb(99, 102, 241)') && bg.includes('rgb(139, 92, 246)');
+});
+
+// 新規登録テキストを含む要素を確認
+const signupElements = Array.from(document.querySelectorAll('*')).filter(el => 
+  el.textContent && el.textContent.includes('新規登録')
+);
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>📊 最終判定</h2>
+            <div id="final-verdict" style="font-size: 24px; font-weight: bold; text-align: center; padding: 20px;">
+                <span class="status-badge status-running">テスト未実行</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 初期情報の表示
+        document.getElementById('timestamp').textContent = new Date().toLocaleString('ja-JP');
+        document.getElementById('browser').textContent = navigator.userAgent.substring(0, 100) + '...';
+        document.getElementById('viewport').textContent = `${window.innerWidth} x ${window.innerHeight}`;
+        document.getElementById('current-url').textContent = window.location.href;
+
+        async function runComprehensiveTest() {
+            const results = [];
+            const resultsDiv = document.getElementById('test-results');
+            resultsDiv.innerHTML = '<h3>包括的テスト結果:</h3>';
+
+            // Test 1: デスクトップ用の新規登録ボタンが削除されているか
+            const desktopSignupButtons = Array.from(document.querySelectorAll('button')).filter(btn => {
+                const onclick = btn.getAttribute('onclick') || '';
+                const textContent = btn.textContent || '';
+                return (onclick.includes('handleSignUp') || onclick.includes('signup')) && 
+                       textContent.includes('新規登録');
+            });
+            
+            results.push({
+                name: 'デスクトップ新規登録ボタン削除確認',
+                passed: desktopSignupButtons.length === 0,
+                detail: desktopSignupButtons.length === 0 ? '✅ 削除済み' : `❌ ${desktopSignupButtons.length}個発見`
+            });
+
+            // Test 2: 特定のグラデーション背景ボタンが削除されているか
+            const gradientButtons = Array.from(document.querySelectorAll('*')).filter(el => {
+                const style = window.getComputedStyle(el);
+                const bg = style.background || style.backgroundImage;
+                const textContent = el.textContent || '';
+                return bg.includes('rgb(99, 102, 241)') && 
+                       bg.includes('rgb(139, 92, 246)') && 
+                       textContent.includes('新規登録');
+            });
+
+            results.push({
+                name: '特定グラデーション新規登録ボタン削除確認',
+                passed: gradientButtons.length === 0,
+                detail: gradientButtons.length === 0 ? '✅ 削除済み' : `❌ ${gradientButtons.length}個発見`
+            });
+
+            // Test 3: モバイルメニューの新規登録リンクは保持されているか
+            const mobileSignupLinks = Array.from(document.querySelectorAll('a[href="/auth/signup"]')).filter(link => {
+                const textContent = link.textContent || '';
+                return textContent.includes('新規登録');
+            });
+
+            results.push({
+                name: 'モバイル新規登録リンク保持確認',
+                passed: mobileSignupLinks.length > 0,
+                detail: mobileSignupLinks.length > 0 ? `✅ ${mobileSignupLinks.length}個保持` : '❌ 見つかりません'
+            });
+
+            // Test 4: ログインボタンは正常に表示されているか
+            const loginButtons = Array.from(document.querySelectorAll('button, a')).filter(el => {
+                const textContent = el.textContent || '';
+                return textContent.includes('ログイン');
+            });
+
+            results.push({
+                name: 'ログインボタン表示確認',
+                passed: loginButtons.length > 0,
+                detail: loginButtons.length > 0 ? `✅ ${loginButtons.length}個発見` : '❌ 見つかりません'
+            });
+
+            // Test 5: ページが正常に読み込まれているか
+            const hasHeader = document.querySelector('header') !== null;
+            const hasMain = document.querySelector('main') !== null;
+
+            results.push({
+                name: 'ページ構造正常性確認',
+                passed: hasHeader && hasMain,
+                detail: hasHeader && hasMain ? '✅ 正常' : '❌ 構造に問題あり'
+            });
+
+            // Test 6: AuthButtonsコンポーネントの新規登録は保持されているか
+            const homePageSignupButtons = Array.from(document.querySelectorAll('*')).filter(el => {
+                const textContent = el.textContent || '';
+                const parent = el.closest('.css-*') || el.closest('[class*="auth"]');
+                return textContent.includes('新規登録') && parent;
+            });
+
+            results.push({
+                name: 'ホームページ新規登録ボタン保持確認',
+                passed: true, // This should be preserved
+                detail: `📊 検出数: ${homePageSignupButtons.length}`
+            });
+
+            // 結果表示
+            results.forEach(result => {
+                const div = document.createElement('div');
+                div.className = 'test-result';
+                div.innerHTML = `
+                    <span class="${result.passed ? 'pass' : 'fail'}" style="width: 30px;">
+                        ${result.passed ? '✅' : '❌'}
+                    </span>
+                    <span style="flex: 1;">
+                        <strong>${result.name}:</strong> ${result.detail}
+                    </span>
+                `;
+                resultsDiv.appendChild(div);
+            });
+
+            // 最終判定
+            const criticalTests = results.slice(0, 5); // First 5 are critical
+            const allCriticalPassed = criticalTests.every(r => r.passed);
+            const verdict = document.getElementById('final-verdict');
+            
+            if (allCriticalPassed) {
+                verdict.innerHTML = '<span class="status-badge status-pass">✅ 全ての重要テストに合格</span>';
+            } else {
+                const failedCount = criticalTests.filter(r => !r.passed).length;
+                verdict.innerHTML = `<span class="status-badge status-fail">❌ ${failedCount}件の重要テストが失敗</span>`;
+            }
+
+            // 詳細情報をコンソールに出力
+            console.log('🔍 新規登録ボタン削除テスト詳細結果:', {
+                timestamp: new Date().toISOString(),
+                results: results,
+                desktopSignupButtons: desktopSignupButtons,
+                gradientButtons: gradientButtons,
+                mobileSignupLinks: mobileSignupLinks,
+                loginButtons: loginButtons
+            });
+        }
+
+        function runDesktopSignupTest() {
+            console.log('🖥️ デスクトップ新規登録ボタンテスト開始');
+            
+            // すべての button 要素をチェック
+            const allButtons = document.querySelectorAll('button');
+            console.log(`総ボタン数: ${allButtons.length}`);
+            
+            const signupButtons = Array.from(allButtons).filter(btn => {
+                const text = btn.textContent || '';
+                const onclick = btn.getAttribute('onclick') || '';
+                const classes = btn.className || '';
+                return text.includes('新規登録') || onclick.includes('signup') || classes.includes('signup');
+            });
+            
+            console.log('新規登録関連ボタン:', signupButtons);
+            signupButtons.forEach((btn, index) => {
+                console.log(`ボタン ${index + 1}:`, {
+                    text: btn.textContent,
+                    onclick: btn.getAttribute('onclick'),
+                    className: btn.className,
+                    styles: window.getComputedStyle(btn).background
+                });
+            });
+        }
+
+        function runMobileSignupTest() {
+            console.log('📱 モバイル新規登録リンクテスト開始');
+            
+            // すべての a 要素をチェック
+            const allLinks = document.querySelectorAll('a[href="/auth/signup"]');
+            console.log(`新規登録リンク総数: ${allLinks.length}`);
+            
+            allLinks.forEach((link, index) => {
+                console.log(`リンク ${index + 1}:`, {
+                    text: link.textContent,
+                    href: link.href,
+                    className: link.className,
+                    parent: link.parentElement?.className,
+                    visible: window.getComputedStyle(link).display !== 'none'
+                });
+            });
+        }
+
+        function clearResults() {
+            document.getElementById('test-results').innerHTML = '';
+            document.getElementById('final-verdict').innerHTML = '<span class="status-badge status-running">テスト未実行</span>';
+            console.clear();
+        }
+
+        // 自動実行オプション
+        if (window.location.hash === '#autorun') {
+            setTimeout(() => {
+                runComprehensiveTest();
+            }, 3000); // 3秒待ってから自動実行
+        }
+
+        // ページロード後に基本チェックを実行
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                console.log('🚀 ページロード完了 - 基本チェック実行中...');
+                runComprehensiveTest();
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

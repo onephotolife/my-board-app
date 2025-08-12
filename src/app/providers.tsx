@@ -46,22 +46,6 @@ const theme = createTheme({
         },
       },
     },
-    MuiSwipeableDrawer: {
-      styleOverrides: {
-        root: {
-          position: 'fixed',
-          zIndex: 2147483647,
-        },
-        paper: {
-          position: 'fixed',
-          width: '100vw',
-          height: '100vh',
-          maxWidth: '100vw',
-          maxHeight: '100vh',
-          zIndex: 2147483647,
-        },
-      },
-    },
     MuiBackdrop: {
       styleOverrides: {
         root: {

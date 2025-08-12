@@ -57,7 +57,9 @@ function SignInForm() {
         setErrorDetail(errorInfo.message);
         setErrorAction(errorInfo.action || '');
       } else {
-        router.push('/board');
+        // callbackUrlがある場合はそこへ、なければダッシュボードへリダイレクト
+        const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+        router.push(callbackUrl);
       }
     } catch {
       setError('ログイン中にエラーが発生しました');

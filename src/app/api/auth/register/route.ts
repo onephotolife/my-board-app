@@ -57,7 +57,7 @@ setInterval(() => {
 }, 5 * 60 * 1000); // 5分ごとにクリーンアップ
 
 export async function POST(request: NextRequest) {
-  let user = null;
+  let user: any = null;
   
   try {
     // IPアドレス取得（レート制限用）
@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
         { 
           error: '無効なリクエストです',
           type: 'INVALID_REQUEST',
-          details: process.env.NODE_ENV === 'development' ? error.message : undefined,
+          details: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined,
         },
         { status: 400 }
       );

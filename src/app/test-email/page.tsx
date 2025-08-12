@@ -52,7 +52,7 @@ export default function TestEmailPage() {
       const result = await response.json();
       setResult(result);
     } catch (error) {
-      setResult({ error: error.message });
+      setResult({ error: (error as Error).message });
     } finally {
       setSending(false);
     }

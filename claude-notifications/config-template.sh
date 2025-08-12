@@ -17,6 +17,9 @@ COMPLETE_SOUND="Glass"       # 上記と同じ選択肢
 # 音を強制的に再生（通知センターが音を鳴らさない場合のフォールバック）
 FORCE_SOUND=true
 
+# 右上通知センターに表示（terminal-notifier + macOS標準通知）
+FRONTEND_ALERT=true
+
 # ============================================
 # iPhone通知設定（Pushover）
 # ============================================

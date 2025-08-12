@@ -3,6 +3,7 @@
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { SessionProvider } from 'next-auth/react';
+import { UserProvider } from '@/contexts/UserContext';
 
 // CSP準拠のテーマ設定
 const theme = createTheme({
@@ -65,10 +66,12 @@ const theme = createTheme({
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <SessionProvider refetchInterval={5 * 60} refetchOnWindowFocus={true}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        {children}
-      </ThemeProvider>
+      <UserProvider>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          {children}
+        </ThemeProvider>
+      </UserProvider>
     </SessionProvider>
   );
 }

@@ -1,101 +1,160 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-// MUIコンポーネントを個別インポート（HMR最適化）
-import Container from '@mui/material/Container';
-import Paper from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import Box from '@mui/material/Box';
-import Avatar from '@mui/material/Avatar';
-import Divider from '@mui/material/Divider';
-import Alert from '@mui/material/Alert';
-import CircularProgress from '@mui/material/CircularProgress';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import PersonIcon from '@mui/icons-material/Person';
-import EmailIcon from '@mui/icons-material/Email';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import SaveIcon from '@mui/icons-material/Save';
-import CancelIcon from '@mui/icons-material/Cancel';
+import { signOut } from 'next-auth/react';
+import {
+  Container,
+  Paper,
+  Typography,
+  TextField,
+  Button,
+  Box,
+  Avatar,
+  Divider,
+  Alert,
+  CircularProgress,
+  Card,
+  CardContent,
+  IconButton,
+  Chip,
+  LinearProgress,
+} from '@mui/material';
+import {
+  Person as PersonIcon,
+  Email as EmailIcon,
+  CalendarToday as CalendarTodayIcon,
+  Save as SaveIcon,
+  Cancel as CancelIcon,
+  Edit as EditIcon,
+  Lock as LockIcon,
+  Verified as VerifiedIcon,
+} from '@mui/icons-material';
+import { useUser } from '@/contexts/UserContext';
+import { generateAvatarData } from '@/lib/utils/avatar';
+import { validateName, validateBio } from '@/lib/validations/profile';
+import PasswordChangeDialog from './components/PasswordChangeDialog';
 
 export default function ProfilePage() {
-  const { data: session, status, update } = useSession();
   const router = useRouter();
+  const { user, loading, error, updateProfile, changePassword, clearError } = useUser();
+  
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
   
   const [formData, setFormData] = useState({
     name: '',
-    email: '',
-    bio: ''
+    bio: '',
+  });
+  
+  const [formErrors, setFormErrors] = useState({
+    name: '',
+    bio: '',
   });
 
+  // ユーザー情報の初期化
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/auth/signin?callbackUrl=/profile');
-    }
-    
-    if (session?.user) {
+    if (user) {
       setFormData({
-        name: session.user.name || '',
-        email: session.user.email || '',
-        bio: ''
+        name: user.name || '',
+        bio: user.bio || '',
       });
     }
-  }, [session, status, router]);
+  }, [user]);
 
+  // エラーメッセージの表示
+  useEffect(() => {
+    if (error) {
+      setMessage({ type: 'error', text: error });
+      clearError();
+    }
+  }, [error, clearError]);
+
+  // 認証チェック
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/auth/signin?callbackUrl=/profile');
+    }
+  }, [user, loading, router]);
+
+  // アバターデータの生成
+  const avatarData = user ? generateAvatarData(user.name) : null;
+
+  // 編集モードの切り替え
   const handleEditToggle = () => {
     if (isEditing) {
       // キャンセル時は元のデータに戻す
       setFormData({
-        name: session?.user?.name || '',
-        email: session?.user?.email || '',
-        bio: ''
+        name: user?.name || '',
+        bio: user?.bio || '',
       });
+      setFormErrors({ name: '', bio: '' });
       setMessage(null);
     }
     setIsEditing(!isEditing);
   };
 
-  const handleSave = async () => {
-    setIsSaving(true);
-    setMessage(null);
+  // 入力変更ハンドラー
+  const handleInputChange = (field: 'name' | 'bio') => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setFormData(prev => ({ ...prev, [field]: value }));
     
-    try {
-      // ここでプロフィール更新APIを呼ぶ
-      // const response = await fetch('/api/profile', {
-      //   method: 'PUT',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(formData)
-      // });
-      
-      // 仮の成功処理
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // セッションを更新
-      await update({
-        ...session,
-        user: {
-          ...session?.user,
-          name: formData.name
-        }
-      });
-      
-      setMessage({ type: 'success', text: 'プロフィールを更新しました' });
-      setIsEditing(false);
-    } catch (error) {
-      setMessage({ type: 'error', text: 'プロフィールの更新に失敗しました' });
-    } finally {
-      setIsSaving(false);
+    // リアルタイムバリデーション
+    if (field === 'name') {
+      const validation = validateName(value);
+      setFormErrors(prev => ({ ...prev, name: validation.error || '' }));
+    } else if (field === 'bio') {
+      const validation = validateBio(value);
+      setFormErrors(prev => ({ ...prev, bio: validation.error || '' }));
     }
   };
 
-  if (status === 'loading') {
+  // プロフィール保存
+  const handleSave = async () => {
+    // バリデーション
+    const nameValidation = validateName(formData.name);
+    const bioValidation = validateBio(formData.bio);
+    
+    if (!nameValidation.isValid || !bioValidation.isValid) {
+      setFormErrors({
+        name: nameValidation.error || '',
+        bio: bioValidation.error || '',
+      });
+      return;
+    }
+    
+    setIsSaving(true);
+    setMessage(null);
+    
+    const result = await updateProfile(formData);
+    
+    if (result.success) {
+      setMessage({ type: 'success', text: result.message || 'プロフィールを更新しました' });
+      setIsEditing(false);
+    } else {
+      setMessage({ type: 'error', text: result.message || 'プロフィールの更新に失敗しました' });
+    }
+    
+    setIsSaving(false);
+  };
+
+  // パスワード変更ハンドラー
+  const handlePasswordChange = async (data: { currentPassword: string; newPassword: string; confirmPassword: string }) => {
+    const result = await changePassword(data);
+    
+    if (result.success) {
+      // パスワード変更成功後、再ログインを促す
+      setTimeout(() => {
+        signOut({ callbackUrl: '/auth/signin?message=password_changed' });
+      }, 2000);
+    }
+    
+    return result;
+  };
+
+  if (loading) {
     return (
       <Container maxWidth="md" sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
         <CircularProgress />
@@ -103,7 +162,7 @@ export default function ProfilePage() {
     );
   }
 
-  if (!session) {
+  if (!user) {
     return null;
   }
 
@@ -112,8 +171,18 @@ export default function ProfilePage() {
       {/* ヘッダー */}
       <Paper sx={{ p: 3, mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-          <Avatar sx={{ width: 80, height: 80, mr: 3, bgcolor: 'primary.main' }}>
-            <PersonIcon sx={{ fontSize: 40 }} />
+          <Avatar 
+            sx={{ 
+              width: 80, 
+              height: 80, 
+              mr: 3,
+              bgcolor: avatarData?.backgroundColor,
+              color: avatarData?.textColor,
+              fontSize: '2rem',
+              fontWeight: 'bold',
+            }}
+          >
+            {avatarData?.initials}
           </Avatar>
           <Box sx={{ flexGrow: 1 }}>
             <Typography variant="h4" component="h1" gutterBottom>
@@ -129,7 +198,7 @@ export default function ProfilePage() {
                 variant="contained"
                 color="primary"
                 onClick={handleEditToggle}
-                startIcon={<PersonIcon />}
+                startIcon={<EditIcon />}
               >
                 編集
               </Button>
@@ -139,7 +208,7 @@ export default function ProfilePage() {
                   variant="contained"
                   color="primary"
                   onClick={handleSave}
-                  disabled={isSaving}
+                  disabled={isSaving || !!formErrors.name || !!formErrors.bio}
                   startIcon={isSaving ? <CircularProgress size={20} /> : <SaveIcon />}
                 >
                   保存
@@ -177,19 +246,30 @@ export default function ProfilePage() {
               fullWidth
               label="名前"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={handleInputChange('name')}
               disabled={!isEditing}
+              error={!!formErrors.name}
+              helperText={formErrors.name || (isEditing ? `${formData.name.length}/50` : '')}
               InputProps={{
-                startAdornment: <PersonIcon sx={{ mr: 1, color: 'action.active' }} />
+                startAdornment: <PersonIcon sx={{ mr: 1, color: 'action.active' }} />,
               }}
             />
             <TextField
               fullWidth
               label="メールアドレス"
-              value={formData.email}
+              value={user.email}
               disabled
               InputProps={{
-                startAdornment: <EmailIcon sx={{ mr: 1, color: 'action.active' }} />
+                startAdornment: <EmailIcon sx={{ mr: 1, color: 'action.active' }} />,
+                endAdornment: user.emailVerified && (
+                  <Chip
+                    icon={<VerifiedIcon />}
+                    label="確認済み"
+                    size="small"
+                    color="success"
+                    variant="outlined"
+                  />
+                ),
               }}
               helperText="メールアドレスは変更できません"
             />
@@ -198,13 +278,50 @@ export default function ProfilePage() {
                 fullWidth
                 label="自己紹介"
                 value={formData.bio}
-                onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                onChange={handleInputChange('bio')}
                 disabled={!isEditing}
+                error={!!formErrors.bio}
+                helperText={formErrors.bio || (isEditing ? `${formData.bio.length}/200` : '')}
                 multiline
                 rows={4}
                 placeholder="自己紹介を入力してください"
               />
+              {isEditing && (
+                <LinearProgress
+                  variant="determinate"
+                  value={(formData.bio.length / 200) * 100}
+                  sx={{ mt: 1, height: 2 }}
+                  color={formData.bio.length > 180 ? 'warning' : 'primary'}
+                />
+              )}
             </Box>
+          </Box>
+        </CardContent>
+      </Card>
+
+      {/* セキュリティ */}
+      <Card sx={{ mb: 3 }}>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>
+            セキュリティ
+          </Typography>
+          <Divider sx={{ my: 2 }} />
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Box>
+              <Typography variant="body1" gutterBottom>
+                パスワード
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                定期的にパスワードを変更することをお勧めします
+              </Typography>
+            </Box>
+            <Button
+              variant="outlined"
+              startIcon={<LockIcon />}
+              onClick={() => setPasswordDialogOpen(true)}
+            >
+              パスワード変更
+            </Button>
           </Box>
         </CardContent>
       </Card>
@@ -224,28 +341,41 @@ export default function ProfilePage() {
                   アカウント作成日
                 </Typography>
                 <Typography variant="body1">
-                  {new Date().toLocaleDateString('ja-JP', {
+                  {user.createdAt ? new Date(user.createdAt).toLocaleDateString('ja-JP', {
                     year: 'numeric',
                     month: 'long',
-                    day: 'numeric'
-                  })}
+                    day: 'numeric',
+                  }) : '不明'}
                 </Typography>
               </Box>
             </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <EmailIcon sx={{ mr: 2, color: 'action.active' }} />
-              <Box>
-                <Typography variant="body2" color="text.secondary">
-                  メール確認状態
-                </Typography>
-                <Typography variant="body1" color="success.main">
-                  確認済み
-                </Typography>
+            {user.updatedAt && (
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <EditIcon sx={{ mr: 2, color: 'action.active' }} />
+                <Box>
+                  <Typography variant="body2" color="text.secondary">
+                    最終更新日
+                  </Typography>
+                  <Typography variant="body1">
+                    {new Date(user.updatedAt).toLocaleDateString('ja-JP', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
+                  </Typography>
+                </Box>
               </Box>
-            </Box>
+            )}
           </Box>
         </CardContent>
       </Card>
+
+      {/* パスワード変更ダイアログ */}
+      <PasswordChangeDialog
+        open={passwordDialogOpen}
+        onClose={() => setPasswordDialogOpen(false)}
+        onSubmit={handlePasswordChange}
+      />
     </Container>
   );
 }

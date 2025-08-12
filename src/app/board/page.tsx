@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import AuthGuard from '@/components/AuthGuard';
 import {
   Container,
   Paper,
@@ -241,50 +242,9 @@ export default function BoardPage() {
     fetchPosts(value);
   };
 
-  // ローディング中
-  if (status === 'loading' || loading) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
-        <CircularProgress size={60} />
-      </Box>
-    );
-  }
-  
-  // 未認証時のリダイレクト
-  if (status === 'unauthenticated') {
-    return (
-      <Container 
-        maxWidth="md" 
-        sx={{ 
-          mt: 4,
-          position: 'relative',
-          zIndex: 1,
-          isolation: 'isolate',
-        }}
-        id="board-content"
-        className="board-container"
-      >
-        <Paper sx={{ p: 4, textAlign: 'center', position: 'relative', zIndex: 1 }}>
-          <Typography variant="h5" gutterBottom>
-            会員限定掲示板
-          </Typography>
-          <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-            この掲示板は会員限定です。ログインしてご利用ください。
-          </Typography>
-          <Button
-            variant="contained"
-            size="large"
-            onClick={() => router.push('/auth/signin')}
-          >
-            ログインページへ
-          </Button>
-        </Paper>
-      </Container>
-    );
-  }
-
   return (
-    <Container 
+    <AuthGuard>
+      <Container 
         maxWidth="md" 
         sx={{ 
           mt: 4, 
@@ -302,115 +262,120 @@ export default function BoardPage() {
           </Alert>
         )}
         
-      {posts.length === 0 ? (
-        <Paper elevation={1} sx={{ p: 4, textAlign: 'center' }}>
-          <Typography variant="h6" color="text.secondary" gutterBottom>
-            まだ投稿がありません
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            最初の投稿を作成してみましょう！
-          </Typography>
-        </Paper>
-      ) : (
-        <Box>
-          {posts.map((post) => (
-            <EnhancedPostCard
-              key={post._id}
-              post={post}
-              currentUserId={session?.user?.id}
-              onEdit={handleOpenDialog}
-              onDelete={handleDelete}
-            />
-          ))}
-        </Box>
-      )}
+        {loading ? (
+          <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
+            <CircularProgress size={60} />
+          </Box>
+        ) : posts.length === 0 ? (
+          <Paper elevation={1} sx={{ p: 4, textAlign: 'center' }}>
+            <Typography variant="h6" color="text.secondary" gutterBottom>
+              まだ投稿がありません
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              最初の投稿を作成してみましょう！
+            </Typography>
+          </Paper>
+        ) : (
+          <Box>
+            {posts.map((post) => (
+              <EnhancedPostCard
+                key={post._id}
+                post={post}
+                currentUserId={session?.user?.id}
+                onEdit={handleOpenDialog}
+                onDelete={handleDelete}
+              />
+            ))}
+          </Box>
+        )}
         
-      {pagination.totalPages > 1 && (
-        <Box display="flex" justifyContent="center" mt={3}>
-          <Pagination
-            count={pagination.totalPages}
-            page={pagination.page}
-            onChange={handlePageChange}
-            color="primary"
-            size="large"
-          />
-        </Box>
-      )}
+        {pagination.totalPages > 1 && (
+          <Box display="flex" justifyContent="center" mt={3}>
+            <Pagination
+              count={pagination.totalPages}
+              page={pagination.page}
+              onChange={handlePageChange}
+              color="primary"
+              size="large"
+            />
+          </Box>
+        )}
 
-      {/* FABボタン（モバイル用） */}
-      {session && (
-        <Fab
-        color="primary"
-        aria-label="add"
-        onClick={() => handleOpenDialog()}
-        sx={{
-          position: 'fixed',
-          bottom: 24,
-          right: 24,
-        }}
-      >
-        <AddIcon />
-      </Fab>
-      )}
-      
-      {/* 投稿作成/編集ダイアログ */}
-      <Dialog 
-        open={openDialog} 
-        onClose={handleCloseDialog} 
-        maxWidth="sm" 
-        fullWidth
-        disableRestoreFocus
-        PaperProps={{
-          sx: { borderRadius: 2 },
-          role: 'dialog',
-          'aria-labelledby': 'post-dialog-title',
-          'aria-describedby': 'post-dialog-description',
-        }}
-      >
-        <DialogTitle id="post-dialog-title">
-          {editingPost ? '投稿を編集' : '新規投稿'}
-        </DialogTitle>
-        <DialogContent id="post-dialog-description">
-          <TextField
-            autoFocus
-            margin="dense"
-            label="タイトル"
-            fullWidth
-            variant="outlined"
-            value={formData.title}
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            sx={{ mb: 2 }}
-            inputProps={{
-              'aria-label': 'タイトル',
+        {/* FABボタン（モバイル用） */}
+        {session && (
+          <Fab
+            color="primary"
+            aria-label="add"
+            onClick={() => handleOpenDialog()}
+            sx={{
+              position: 'fixed',
+              bottom: 24,
+              right: 24,
             }}
-          />
-          <TextField
-            margin="dense"
-            label="内容"
-            fullWidth
-            multiline
-            rows={6}
-            variant="outlined"
-            value={formData.content}
-            onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-            inputProps={{ 
-              maxLength: 500,
-              'aria-label': '内容',
-            }}
-            helperText={`${formData.content.length}/500文字`}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog}>キャンセル</Button>
-          <Button
-            onClick={handleSave}
-            variant="contained"
-            disabled={!formData.title || !formData.content}
           >
-            {editingPost ? '更新' : '投稿'}
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Container>
+            <AddIcon />
+          </Fab>
+        )}
+        
+        {/* 投稿作成/編集ダイアログ */}
+        <Dialog 
+          open={openDialog} 
+          onClose={handleCloseDialog} 
+          maxWidth="sm" 
+          fullWidth
+          disableRestoreFocus
+          PaperProps={{
+            sx: { borderRadius: 2 },
+            role: 'dialog',
+            'aria-labelledby': 'post-dialog-title',
+            'aria-describedby': 'post-dialog-description',
+          }}
+        >
+          <DialogTitle id="post-dialog-title">
+            {editingPost ? '投稿を編集' : '新規投稿'}
+          </DialogTitle>
+          <DialogContent id="post-dialog-description">
+            <TextField
+              autoFocus
+              margin="dense"
+              label="タイトル"
+              fullWidth
+              variant="outlined"
+              value={formData.title}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              sx={{ mb: 2 }}
+              inputProps={{
+                'aria-label': 'タイトル',
+              }}
+            />
+            <TextField
+              margin="dense"
+              label="内容"
+              fullWidth
+              multiline
+              rows={6}
+              variant="outlined"
+              value={formData.content}
+              onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+              inputProps={{ 
+                maxLength: 500,
+                'aria-label': '内容',
+              }}
+              helperText={`${formData.content.length}/500文字`}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseDialog}>キャンセル</Button>
+            <Button
+              onClick={handleSave}
+              variant="contained"
+              disabled={!formData.title || !formData.content}
+            >
+              {editingPost ? '更新' : '投稿'}
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Container>
+    </AuthGuard>
   );
 }

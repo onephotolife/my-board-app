@@ -48,7 +48,7 @@ async function createTestUser() {
     console.log('🗑️ 既存のテストユーザーを削除しました');
     
     // パスワードをハッシュ化
-    const hashedPassword = await bcrypt.hash('TestPassword123!', 12);
+    const hashedPassword = await bcrypt.hash('testpassword123', 12);
     
     // テストユーザーを作成
     const testUser = await User.create({

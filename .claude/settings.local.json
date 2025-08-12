@@ -9,22 +9,51 @@
       "mcp__serena__search_for_pattern",
       "mcp__serena__think_about_collected_information",
       "mcp__serena__write_memory",
-      "Bash(node:*)"
+      "Bash"
     ],
     "deny": []
   },
   "hooks": {
     "after_command": [
       {
-        "command": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/hook-test-simple.sh"
-      },
-      {
-        "command": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/claude-notifications/notify.sh response_complete 'ツール実行完了' 'Claude Code'"
+        "command": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/claude-hook-notify.sh",
+        "args": ["after_command", "コマンド実行完了", "✅ Claude Code"]
       }
     ],
     "user-prompt-submit-hook": [
       {
-        "command": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/claude-notifications/notify.sh input_waiting 'ユーザー入力受信' 'Claude Code'"
+        "command": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/claude-hook-notify.sh",
+        "args": ["user_prompt", "入力待機中", "⏳ Claude Code"]
+      }
+    ],
+    "response-complete": [
+      {
+        "command": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/claude-hook-notify.sh",
+        "args": ["response_complete", "応答完了", "🎯 Claude Code"]
+      }
+    ],
+    "user-input-waiting": [
+      {
+        "command": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/claude-hook-notify.sh",
+        "args": ["input_waiting", "入力待機", "⏱️ Claude Code"]
+      }
+    ],
+    "command-complete": [
+      {
+        "command": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/claude-hook-notify.sh",
+        "args": ["command_complete", "コマンド完了", "🏁 Claude Code"]
+      }
+    ],
+    "before_command": [
+      {
+        "command": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/claude-hook-notify.sh",
+        "args": ["before_command", "コマンド開始", "🚀 Claude Code"]
+      }
+    ],
+    "session_ready": [
+      {
+        "command": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/claude-hook-notify.sh",
+        "args": ["session_ready", "セッション準備完了", "🔧 Claude Code"]
       }
     ]
   }

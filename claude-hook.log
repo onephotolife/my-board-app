@@ -1,0 +1,177 @@
+==========================================
+[HOOK NOTIFICATION] 2025-08-12 22:01:20
+Type: test
+Message: 動作テスト中
+Title: ✅ テスト通知
+------------------------------------------
+Method 1: Direct osascript...
+  ✅ osascript成功
+Method 2: terminal-notifier...
+  ✅ terminal-notifier成功
+Method 3: Sound playback...
+  ✅ 音声再生開始
+------------------------------------------
+Notification completed at 2025-08-12 22:01:20
+==========================================
+
+==========================================
+[HOOK NOTIFICATION] 2025-08-12 22:02:44
+Type: test
+Message: テスト通知
+Title: 📢 システムテスト
+------------------------------------------
+Method 1: Direct osascript...
+  ✅ osascript成功
+Method 2: terminal-notifier...
+  ✅ terminal-notifier成功
+Method 3: Sound playback...
+  ✅ 音声再生開始
+------------------------------------------
+Notification completed at 2025-08-12 22:02:44
+==========================================
+
+==========================================
+[HOOK NOTIFICATION] 2025-08-12 22:29:28
+Type: after_command
+Message: コマンド実行完了
+Title: ✅ Claude Code
+------------------------------------------
+Method 1: Direct osascript...
+  ✅ osascript成功
+Method 2: terminal-notifier...
+  ✅ terminal-notifier成功
+Method 3: Sound playback...
+  ✅ 音声再生開始
+------------------------------------------
+Notification completed at 2025-08-12 22:29:28
+==========================================
+
+==========================================
+[HOOK NOTIFICATION] 2025-08-12 22:29:31
+Type: user_prompt
+Message: 入力待機中
+Title: ⏳ Claude Code
+------------------------------------------
+Method 1: Direct osascript...
+  ✅ osascript成功
+Method 2: terminal-notifier...
+  ✅ terminal-notifier成功
+Method 3: Sound playback...
+  ✅ 音声再生開始
+  ✅ 音声読み上げ実行
+------------------------------------------
+Notification completed at 2025-08-12 22:29:31
+==========================================
+
+==========================================
+[HOOK NOTIFICATION] 2025-08-12 22:30:02
+Type: test
+Message: テスト通知
+Title: 📢 システムテスト
+------------------------------------------
+Method 1: Direct osascript...
+  ✅ osascript成功
+Method 2: terminal-notifier...
+  ✅ terminal-notifier成功
+Method 3: Sound playback...
+  ✅ 音声再生開始
+------------------------------------------
+Notification completed at 2025-08-12 22:30:02
+==========================================
+
+==========================================
+[HOOK NOTIFICATION] 2025-08-12 22:30:39
+Type: test
+Message: テスト通知
+Title: 📢 システムテスト
+------------------------------------------
+Method 1: Direct osascript...
+  ✅ osascript成功
+Method 2: terminal-notifier...
+  ✅ terminal-notifier成功
+Method 3: Sound playback...
+  ✅ 音声再生開始
+------------------------------------------
+Notification completed at 2025-08-12 22:30:39
+==========================================
+
+==========================================
+[HOOK NOTIFICATION] 2025-08-12 22:36:02
+Type: test_trigger
+Message: テスト通知メッセージ
+Title: 🔔 通知テスト
+------------------------------------------
+Method 1: Direct osascript...
+  ✅ osascript成功
+Method 2: terminal-notifier...
+  ✅ terminal-notifier成功
+Method 3: Sound playback...
+  ✅ 音声再生開始
+------------------------------------------
+Notification completed at 2025-08-12 22:36:02
+==========================================
+
+==========================================
+[HOOK NOTIFICATION] 2025-08-12 22:45:23
+Type: test_direct
+Message: 直接実行テスト
+Title: 🧪 Test
+------------------------------------------
+Method 1: Direct osascript...
+  ✅ osascript成功
+Method 2: terminal-notifier...
+  ✅ terminal-notifier成功
+Method 3: Sound playback...
+  ✅ 音声再生開始
+------------------------------------------
+Notification completed at 2025-08-12 22:45:23
+==========================================
+
+==========================================
+[HOOK NOTIFICATION] 2025-08-12 22:45:23
+Type: test_multi
+Message: 複数方式テスト
+Title: 🔄 Multi Test
+------------------------------------------
+Method 1: Direct osascript...
+  ✅ osascript成功
+Method 2: terminal-notifier...
+  ✅ terminal-notifier成功
+Method 3: Sound playback...
+  ✅ 音声再生開始
+------------------------------------------
+Notification completed at 2025-08-12 22:45:23
+==========================================
+
+==========================================
+[HOOK NOTIFICATION] 2025-08-12 22:45:42
+Type: test_direct
+Message: 直接実行テスト
+Title: 🧪 Test
+------------------------------------------
+Method 1: Direct osascript...
+  ✅ osascript成功
+Method 2: terminal-notifier...
+  ✅ terminal-notifier成功
+Method 3: Sound playback...
+  ✅ 音声再生開始
+------------------------------------------
+Notification completed at 2025-08-12 22:45:42
+==========================================
+
+==========================================
+[HOOK NOTIFICATION] 2025-08-12 22:45:47
+Type: test_multi
+Message: 複数方式テスト
+Title: 🔄 Multi Test
+------------------------------------------
+Method 1: Direct osascript...
+  ✅ osascript成功
+Method 2: terminal-notifier...
+  ✅ terminal-notifier成功
+Method 3: Sound playback...
+  ✅ 音声再生開始
+------------------------------------------
+Notification completed at 2025-08-12 22:45:47
+==========================================
+

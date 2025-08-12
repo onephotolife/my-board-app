@@ -1,0 +1,155 @@
+===========================================
+[ENHANCED NOTIFICATION START] 2025-08-12 20:58:59
+Config loaded from: /Users/yoshitaka.yamagishi/.claude-notifications-config
+Arguments: TYPE=test_enhanced, MESSAGE=強化版通知テスト, TITLE=Claude Code Enhanced Test
+🚀 Enhanced notification system starting...
+[DIAGNOSTIC] System environment check...
+  OS Version: 15.6
+  ✅ NotificationCenter running
+  ✅ terminal-notifier available: terminal-notifier 2.0.0.
+  Path: /opt/homebrew/bin/terminal-notifier
+  ⚠️  Sound file not found: .aiff
+  Current time: 20:58
+  User active:        1
+[PERMISSIONS] Checking notification permissions...
+  ✅ terminal-notifier permission found
+  ✅ Terminal permission found
+[NOTIFICATION] Sending with multiple methods...
+  Method 1: terminal-notifier (standard)
+* Removing previously sent notification, which was sent on: 2025-08-12 11:56:53 +0000
+    ✅ terminal-notifier success
+  Method 2: terminal-notifier (system sender)
+    ✅ terminal-notifier (system) success
+  Method 3: AppleScript (basic)
+    ✅ AppleScript success
+  Method 4: AppleScript (with options)
+    ✅ AppleScript (with options) success
+  Total successful methods: 4
+[SOUND] Playing notification sound...
+  Fallback to Glass.aiff
+  Sound playback initiated
+🎉 Notification sent successfully (4 methods)
+===========================================
+[ENHANCED NOTIFICATION START] 2025-08-12 21:01:04
+Config loaded from: /Users/yoshitaka.yamagishi/.claude-notifications-config
+Arguments: TYPE=test_enhanced, MESSAGE=強化版スクリプト, TITLE=Enhanced Test
+🚀 Enhanced notification system starting...
+[DIAGNOSTIC] System environment check...
+  OS Version: 15.6
+  ✅ NotificationCenter running
+  ✅ terminal-notifier available: terminal-notifier 2.0.0.
+  Path: /opt/homebrew/bin/terminal-notifier
+  ⚠️  Sound file not found: .aiff
+  Current time: 21:01
+  User active:        1
+[PERMISSIONS] Checking notification permissions...
+  ✅ terminal-notifier permission found
+  ✅ Terminal permission found
+[NOTIFICATION] Sending with multiple methods...
+  Method 1: terminal-notifier (standard)
+* Removing previously sent notification, which was sent on: 2025-08-12 12:01:00 +0000
+    ✅ terminal-notifier success
+  Method 2: terminal-notifier (system sender)
+    ✅ terminal-notifier (system) success
+  Method 3: AppleScript (basic)
+    ✅ AppleScript success
+  Method 4: AppleScript (with options)
+    ✅ AppleScript (with options) success
+  Total successful methods: 4
+[SOUND] Playing notification sound...
+  Fallback to Glass.aiff
+  Sound playback initiated
+🎉 Notification sent successfully (4 methods)
+===========================================
+[ENHANCED NOTIFICATION START] 2025-08-12 21:07:02
+Config loaded from: /Users/yoshitaka.yamagishi/.claude-notifications-config
+Arguments: TYPE=test, MESSAGE=direct, TITLE=テスト通知
+🚀 Enhanced notification system starting...
+[DIAGNOSTIC] System environment check...
+  OS Version: 15.6
+  ✅ NotificationCenter running
+  ✅ terminal-notifier available: terminal-notifier 2.0.0.
+  Path: /opt/homebrew/bin/terminal-notifier
+  ⚠️  Sound file not found: .aiff
+  Current time: 21:07
+  User active:        1
+[PERMISSIONS] Checking notification permissions...
+  ✅ terminal-notifier permission found
+  ✅ Terminal permission found
+[NOTIFICATION] Sending with multiple methods...
+  Method 1: terminal-notifier (standard)
+* Removing previously sent notification, which was sent on: 2025-08-12 12:01:04 +0000
+    ✅ terminal-notifier success
+  Method 2: terminal-notifier (system sender)
+    ✅ terminal-notifier (system) success
+  Method 3: AppleScript (basic)
+    ✅ AppleScript success
+  Method 4: AppleScript (with options)
+    ✅ AppleScript (with options) success
+  Total successful methods: 4
+[SOUND] Playing notification sound...
+  Fallback to Glass.aiff
+  Sound playback initiated
+🎉 Notification sent successfully (4 methods)
+===========================================
+[ENHANCED NOTIFICATION START] 2025-08-12 21:12:06
+Config loaded from: /Users/yoshitaka.yamagishi/.claude-notifications-config
+Arguments: TYPE=test_direct, MESSAGE=直接実行テスト, TITLE=✅ Direct Test
+🚀 Enhanced notification system starting...
+[DIAGNOSTIC] System environment check...
+  OS Version: 15.6
+  ✅ NotificationCenter running
+  ✅ terminal-notifier available: terminal-notifier 2.0.0.
+  Path: /opt/homebrew/bin/terminal-notifier
+  ⚠️  Sound file not found: .aiff
+  Current time: 21:12
+  User active:        1
+[PERMISSIONS] Checking notification permissions...
+  ✅ terminal-notifier permission found
+  ✅ Terminal permission found
+[NOTIFICATION] Sending with multiple methods...
+  Method 1: terminal-notifier (standard)
+* Removing previously sent notification, which was sent on: 2025-08-12 12:07:02 +0000
+    ✅ terminal-notifier success
+  Method 2: terminal-notifier (system sender)
+    ✅ terminal-notifier (system) success
+  Method 3: AppleScript (basic)
+    ✅ AppleScript success
+  Method 4: AppleScript (with options)
+    ✅ AppleScript (with options) success
+  Total successful methods: 4
+[SOUND] Playing notification sound...
+  Fallback to Glass.aiff
+  Sound playback initiated
+🎉 Notification sent successfully (4 methods)
+===========================================
+[ENHANCED NOTIFICATION START] 2025-08-12 21:55:59
+Config loaded from: /Users/yoshitaka.yamagishi/.claude-notifications-config
+Arguments: TYPE=test_manual, MESSAGE=手動テスト, TITLE=🔔 Manual Test
+🚀 Enhanced notification system starting...
+[DIAGNOSTIC] System environment check...
+  OS Version: 15.6
+  ✅ NotificationCenter running
+  ✅ terminal-notifier available: terminal-notifier 2.0.0.
+  Path: /opt/homebrew/bin/terminal-notifier
+  ⚠️  Sound file not found: .aiff
+  Current time: 21:55
+  User active:        1
+[PERMISSIONS] Checking notification permissions...
+  ✅ terminal-notifier permission found
+  ✅ Terminal permission found
+[NOTIFICATION] Sending with multiple methods...
+  Method 1: terminal-notifier (standard)
+* Removing previously sent notification, which was sent on: 2025-08-12 12:12:06 +0000
+    ✅ terminal-notifier success
+  Method 2: terminal-notifier (system sender)
+    ✅ terminal-notifier (system) success
+  Method 3: AppleScript (basic)
+    ✅ AppleScript success
+  Method 4: AppleScript (with options)
+    ✅ AppleScript (with options) success
+  Total successful methods: 4
+[SOUND] Playing notification sound...
+  Fallback to Glass.aiff
+  Sound playback initiated
+🎉 Notification sent successfully (4 methods)

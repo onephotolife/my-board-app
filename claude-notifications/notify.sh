@@ -74,8 +74,14 @@ EOF
     echo "  ✅ AppleScript通知送信完了"
     
     # 手法3: 音の確実な再生
-    afplay "/System/Library/Sounds/${SOUND}.aiff" 2>/dev/null &
-    echo "  🔊 音再生完了: $SOUND"
+    if [ -n "$SOUND" ]; then
+        afplay "/System/Library/Sounds/${SOUND}.aiff" 2>/dev/null &
+        echo "  🔊 音再生完了: $SOUND"
+    else
+        # デフォルトサウンドを再生
+        afplay "/System/Library/Sounds/Glass.aiff" 2>/dev/null &
+        echo "  🔊 音再生完了: Glass (デフォルト)"
+    fi
     
     # 手法4: システムログ記録
     echo "$(date '+%Y-%m-%d %H:%M:%S') - Claude Code通知: $TITLE - $MESSAGE" >> "$HOME/.claude-notifications.log"
@@ -92,9 +98,17 @@ send_perfect_notification
 # Chatwork通知（設定されている場合）
 if [ "${ENABLE_CHATWORK:-false}" = "true" ] && [ -n "$CHATWORK_API_TOKEN" ] && [ -n "$CHATWORK_ROOM_ID" ]; then
     echo "📱 Chatwork通知送信中..."
+    
+    # メンション付きメッセージを作成
+    if [ -n "$CHATWORK_MENTION_USER_ID" ]; then
+        CHATWORK_MESSAGE="[To:${CHATWORK_MENTION_USER_ID}][info][title]${TITLE}[/title]${MESSAGE}[/info]"
+    else
+        CHATWORK_MESSAGE="[info][title]${TITLE}[/title]${MESSAGE}[/info]"
+    fi
+    
     curl -s -X POST "https://api.chatwork.com/v2/rooms/$CHATWORK_ROOM_ID/messages" \
         -H "X-ChatWorkToken: $CHATWORK_API_TOKEN" \
-        -d "body=[info] $TITLE%0A$MESSAGE" > /dev/null 2>&1 &
+        -d "body=${CHATWORK_MESSAGE}" > /dev/null 2>&1 &
     echo "  ✅ Chatwork送信完了"
 fi
 

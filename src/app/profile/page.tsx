@@ -3,20 +3,19 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import {
-  Container,
-  Paper,
-  Typography,
-  TextField,
-  Button,
-  Box,
-  Avatar,
-  Divider,
-  Alert,
-  CircularProgress,
-  Card,
-  CardContent
-} from '@mui/material';
+// MUIコンポーネントを個別インポート（HMR最適化）
+import Container from '@mui/material/Container';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import Avatar from '@mui/material/Avatar';
+import Divider from '@mui/material/Divider';
+import Alert from '@mui/material/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 import PersonIcon from '@mui/icons-material/Person';
 import EmailIcon from '@mui/icons-material/Email';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';

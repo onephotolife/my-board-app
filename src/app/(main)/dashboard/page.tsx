@@ -21,6 +21,20 @@ import PersonIcon from '@mui/icons-material/Person';
 import SettingsIcon from '@mui/icons-material/Settings';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 
+interface PostStats {
+  totalPosts: number;
+  monthlyPosts: number;
+  lastPostDate: string | null;
+  totalLikes: number;
+  accountCreatedDate: string;
+}
+
+interface UserActivity {
+  loginCount: number;
+  lastLogin: string;
+  accountCreatedDate: string;
+}
+
 export default function DashboardPage() {
   const { data: session, status } = useSession({
     required: true,
@@ -29,7 +43,8 @@ export default function DashboardPage() {
     }
   });
   
-  const [accountCreatedDate, setAccountCreatedDate] = useState<string>('');
+  const [postStats, setPostStats] = useState<PostStats | null>(null);
+  const [userActivity, setUserActivity] = useState<UserActivity | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -38,10 +53,33 @@ export default function DashboardPage() {
       if (!(session?.user as any)?.emailVerified) {
         redirect('/auth/verify-email');
       }
-      setAccountCreatedDate(new Date().toLocaleDateString('ja-JP'));
-      setIsLoading(false);
+      
+      // 統計データを取得
+      fetchStats();
     }
   }, [status, session]);
+
+  const fetchStats = async () => {
+    try {
+      // 投稿統計を取得
+      const postStatsRes = await fetch('/api/posts/stats');
+      if (postStatsRes.ok) {
+        const data = await postStatsRes.json();
+        setPostStats(data);
+      }
+
+      // ユーザーアクティビティを取得
+      const activityRes = await fetch('/api/user/activity');
+      if (activityRes.ok) {
+        const data = await activityRes.json();
+        setUserActivity(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch stats:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   if (status === 'loading' || isLoading) {
     return (
@@ -157,13 +195,20 @@ export default function DashboardPage() {
             <Divider sx={{ my: 2 }} />
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
               <Typography variant="body2">
-                <strong>総投稿数:</strong> 0件
+                <strong>総投稿数:</strong> {postStats?.totalPosts || 0}件
               </Typography>
               <Typography variant="body2">
-                <strong>今月の投稿:</strong> 0件
+                <strong>今月の投稿:</strong> {postStats?.monthlyPosts || 0}件
               </Typography>
               <Typography variant="body2">
-                <strong>最終投稿日:</strong> なし
+                <strong>最終投稿日:</strong> {
+                  postStats?.lastPostDate 
+                    ? new Date(postStats.lastPostDate).toLocaleDateString('ja-JP')
+                    : 'なし'
+                }
+              </Typography>
+              <Typography variant="body2">
+                <strong>いいね獲得数:</strong> {postStats?.totalLikes || 0}件
               </Typography>
             </Box>
           </CardContent>
@@ -186,13 +231,23 @@ export default function DashboardPage() {
             <Divider sx={{ my: 2 }} />
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
               <Typography variant="body2">
-                <strong>ログイン回数:</strong> 1回
+                <strong>ログイン回数:</strong> {userActivity?.loginCount || 1}回
               </Typography>
               <Typography variant="body2">
-                <strong>最終ログイン:</strong> 今
+                <strong>最終ログイン:</strong> {
+                  userActivity?.lastLogin 
+                    ? new Date(userActivity.lastLogin).toLocaleDateString('ja-JP')
+                    : '今'
+                }
               </Typography>
               <Typography variant="body2">
-                <strong>アカウント作成日:</strong> {accountCreatedDate}
+                <strong>アカウント作成日:</strong> {
+                  userActivity?.accountCreatedDate 
+                    ? new Date(userActivity.accountCreatedDate).toLocaleDateString('ja-JP')
+                    : postStats?.accountCreatedDate
+                      ? new Date(postStats.accountCreatedDate).toLocaleDateString('ja-JP')
+                      : '不明'
+                }
               </Typography>
             </Box>
           </CardContent>

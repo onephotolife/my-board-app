@@ -99,6 +99,19 @@ export const authConfig = {
           // メール未確認エラーとして特別なURLにリダイレクト
           return "/auth/signin?error=EmailNotVerified";
         }
+        
+        // ログインカウントと最終ログイン日時を更新
+        if (user.id && user.id !== "email-not-verified") {
+          try {
+            await connectDB();
+            await User.findByIdAndUpdate(user.id, {
+              $inc: { loginCount: 1 },
+              lastLogin: new Date()
+            });
+          } catch (error) {
+            console.error('Failed to update login stats:', error);
+          }
+        }
       }
       return true;
     },

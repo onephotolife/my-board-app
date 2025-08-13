@@ -11,6 +11,8 @@ export interface IUser extends Document {
   emailVerified?: Date;
   passwordChangedAt?: Date;
   profileCompletedAt?: Date;
+  loginCount?: number;
+  lastLogin?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -66,6 +68,14 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>(
       default: null,
     },
     profileCompletedAt: {
+      type: Date,
+      default: null,
+    },
+    loginCount: {
+      type: Number,
+      default: 0,
+    },
+    lastLogin: {
       type: Date,
       default: null,
     },

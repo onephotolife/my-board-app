@@ -112,9 +112,11 @@ main,
   z-index: 2147483647 !important;
 }
 
-/* Fix for Dialog centering */
+/* Fix for Dialog centering and visibility */
 .MuiDialog-root {
-  z-index: 1300 !important;
+  z-index: 2147483640 !important;
+  position: fixed !important;
+  inset: 0 !important;
 }
 
 .MuiDialog-container {
@@ -122,12 +124,28 @@ main,
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
+  z-index: 2147483641 !important;
+  position: fixed !important;
 }
 
 .MuiDialog-paper {
+  /* Force dialog to be visible */
+  position: fixed !important;
+  z-index: 2147483647 !important;
   /* Allow transform for centering */
   transform: translate(-50%, -50%) !important;
+  top: 50% !important;
+  left: 50% !important;
   max-height: calc(100% - 64px) !important;
+  max-width: calc(100% - 64px) !important;
+  margin: 0 !important;
+}
+
+/* Ensure dialog backdrop is visible but behind dialog */
+.MuiDialog-root .MuiBackdrop-root {
+  z-index: 2147483639 !important;
+  position: fixed !important;
+  inset: 0 !important;
 }
 
 /* Specific fix for board page content */

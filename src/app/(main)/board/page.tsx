@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import AuthGuard from '@/components/AuthGuard';
 import {
   Container,
@@ -49,6 +49,8 @@ interface PaginationData {
 export default function BoardPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const editPostId = searchParams?.get('edit');
   
   // デバッグ用ログ
   useEffect(() => {
@@ -75,6 +77,7 @@ export default function BoardPage() {
     title: '',
     content: '',
   });
+  const [saving, setSaving] = useState(false);
 
   // 投稿一覧を取得（認証必須）
   const fetchPosts = async (page: number = 1) => {
@@ -175,6 +178,50 @@ export default function BoardPage() {
     }
   }, [status]);
 
+  // 編集パラメータがある場合、該当する投稿を取得して編集ダイアログを開く
+  useEffect(() => {
+    if (editPostId && posts.length > 0) {
+      // 投稿リストから編集対象を探す
+      const postToEdit = posts.find(p => p._id === editPostId);
+      if (postToEdit) {
+        setEditingPost(postToEdit);
+        setFormData({
+          title: postToEdit.title,
+          content: postToEdit.content,
+        });
+        setOpenDialog(true);
+      } else {
+        // 投稿リストにない場合はAPIから取得
+        fetchSinglePost(editPostId);
+      }
+    }
+  }, [editPostId, posts.length]); // postsの長さのみを依存配列に含める
+
+  // 単一の投稿を取得
+  const fetchSinglePost = async (postId: string) => {
+    try {
+      const response = await fetch(`/api/posts/${postId}`, {
+        cache: 'no-store',
+      });
+      
+      if (!response.ok) {
+        throw new Error('投稿の取得に失敗しました');
+      }
+      
+      const post = await response.json();
+      // 取得した投稿で編集ダイアログを開く（直接stateを更新）
+      setEditingPost(post);
+      setFormData({
+        title: post.title,
+        content: post.content,
+      });
+      setOpenDialog(true);
+    } catch (err) {
+      console.error('投稿取得エラー:', err);
+      setError('編集する投稿が見つかりません');
+    }
+  };
+
   // 新規投稿/編集ダイアログを開く
   const handleOpenDialog = (post?: Post) => {
     if (post) {
@@ -199,10 +246,18 @@ export default function BoardPage() {
     setOpenDialog(false);
     setEditingPost(null);
     setFormData({ title: '', content: '' });
+    
+    // 編集パラメータがある場合はURLから削除
+    if (editPostId) {
+      router.push('/board');
+    }
   };
 
   // 投稿を保存（リアルタイム更新対応）
   const handleSave = async () => {
+    // 既に保存中の場合は処理しない
+    if (saving) return;
+    
     try {
       // フォームデータの検証
       if (!formData.title || !formData.content) {
@@ -210,7 +265,9 @@ export default function BoardPage() {
         return;
       }
 
+      setSaving(true); // 保存開始
       console.log('送信するデータ:', formData);
+      console.log('編集中の投稿ID:', editingPost?._id);
 
       const url = editingPost
         ? `/api/posts/${editingPost._id}`
@@ -286,9 +343,11 @@ export default function BoardPage() {
       }
 
       handleCloseDialog();
+      setSaving(false); // 保存完了
     } catch (error) {
       console.error('投稿の保存エラー:', error);
       setError(error instanceof Error ? error.message : '保存に失敗しました');
+      setSaving(false); // エラー時もリセット
     }
   };
 
@@ -462,9 +521,9 @@ export default function BoardPage() {
             <Button
               onClick={handleSave}
               variant="contained"
-              disabled={!formData.title || !formData.content}
+              disabled={!formData.title || !formData.content || saving}
             >
-              {editingPost ? '更新' : '投稿'}
+              {saving ? '保存中...' : (editingPost ? '更新' : '投稿')}
             </Button>
           </DialogActions>
       </Dialog>

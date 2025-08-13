@@ -193,6 +193,14 @@ export default function BoardPage() {
   // 投稿を保存（リアルタイム更新対応）
   const handleSave = async () => {
     try {
+      // フォームデータの検証
+      if (!formData.title || !formData.content) {
+        setError('タイトルと内容は必須です');
+        return;
+      }
+
+      console.log('送信するデータ:', formData);
+
       const url = editingPost
         ? `/api/posts/${editingPost._id}`
         : '/api/posts';
@@ -205,21 +213,59 @@ export default function BoardPage() {
         cache: 'no-store',
       });
 
-      if (!response.ok) throw new Error('保存に失敗しました');
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('APIエラーレスポンス:', errorData);
+        if (errorData.details) {
+          // バリデーションエラーの詳細を表示
+          const errorMessages = errorData.details.map((d: any) => d.message).join(', ');
+          throw new Error(errorMessages || errorData.error || '保存に失敗しました');
+        }
+        throw new Error(errorData.error || '保存に失敗しました');
+      }
       
-      const savedPost = await response.json();
+      const data = await response.json();
+      const savedPost = data.post || data;
+      
+      // _idフィールドの確認（MongoDBの_idまたはidを使用）
+      if (!savedPost._id && savedPost.id) {
+        savedPost._id = savedPost.id;
+      }
+      
+      // レスポンスデータをコンポーネント用の形式に変換
+      const formattedPost = {
+        ...savedPost,
+        _id: savedPost._id || savedPost.id, // _idを確実に設定
+        authorName: savedPost.authorInfo?.name || savedPost.authorName || session?.user?.name || '名無し',
+        authorEmail: savedPost.authorInfo?.email || savedPost.authorEmail || session?.user?.email,
+      };
+      
+      // _idが存在することを確認
+      if (!formattedPost._id) {
+        console.error('投稿にIDが設定されていません:', formattedPost);
+        // 一時的なIDを生成
+        formattedPost._id = `temp-${Date.now()}`;
+      }
       
       // リアルタイム更新
       if (editingPost) {
         // 編集の場合
         setPosts(prevPosts => 
           prevPosts.map(post => 
-            post._id === savedPost._id ? savedPost : post
+            post._id === formattedPost._id ? formattedPost : post
           )
         );
       } else {
-        // 新規投稿の場合（先頭に追加）
-        setPosts(prevPosts => [savedPost, ...prevPosts]);
+        // 新規投稿の場合 - 重複を防ぐ
+        setPosts(prevPosts => {
+          // 既に同じIDの投稿が存在しないか確認
+          const exists = prevPosts.some(p => p._id === formattedPost._id);
+          if (exists) {
+            console.warn('重複する投稿を検出、スキップします:', formattedPost._id);
+            return prevPosts;
+          }
+          return [formattedPost, ...prevPosts];
+        });
         setPagination(prev => ({ ...prev, total: prev.total + 1 }));
         
         // 確実にするため、少し遅れて再取得
@@ -229,8 +275,9 @@ export default function BoardPage() {
       }
 
       handleCloseDialog();
-    } catch {
-      setError('保存に失敗しました');
+    } catch (error) {
+      console.error('投稿の保存エラー:', error);
+      setError(error instanceof Error ? error.message : '保存に失敗しました');
     }
   };
 
@@ -294,9 +341,9 @@ export default function BoardPage() {
           </Paper>
         ) : (
           <Box>
-            {posts.map((post) => (
+            {posts.map((post, index) => (
               <EnhancedPostCard
-                key={post._id}
+                key={post._id || `post-${index}-${Date.now()}`}
                 post={post}
                 currentUserId={session?.user?.id}
                 onEdit={handleOpenDialog}
@@ -407,8 +454,12 @@ export default function BoardPage() {
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               sx={{ mb: 2, mt: 1 }}
               inputProps={{
+                maxLength: 100,
                 'aria-label': 'タイトル',
               }}
+              helperText={`${formData.title.length}/100文字`}
+              required
+              error={formData.title.length > 100}
             />
             <TextField
               margin="dense"
@@ -420,10 +471,12 @@ export default function BoardPage() {
               value={formData.content}
               onChange={(e) => setFormData({ ...formData, content: e.target.value })}
               inputProps={{ 
-                maxLength: 500,
+                maxLength: 1000,
                 'aria-label': '内容',
               }}
-              helperText={`${formData.content.length}/500文字`}
+              helperText={`${formData.content.length}/1000文字`}
+              required
+              error={formData.content.length > 1000}
             />
           </DialogContent>
           <DialogActions sx={{ p: 2 }}>

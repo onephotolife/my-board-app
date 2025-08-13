@@ -20,44 +20,61 @@ const theme = createTheme({
     mobileStepper: 1000,
     fab: 1050,
     speedDial: 1050,
-    appBar: 1200,
-    drawer: 2147483647, // JavaScript最大安全整数に近い値
-    modal: 2147483645,
-    snackbar: 1400,
-    tooltip: 1500,
+    appBar: 1100,
+    drawer: 1200,
+    modal: 9999,
+    snackbar: 10000,
+    tooltip: 10001,
   },
   components: {
-    MuiDrawer: {
+    MuiDialog: {
+      defaultProps: {
+        disablePortal: false,
+      },
       styleOverrides: {
         root: {
-          position: 'fixed',
-          zIndex: 2147483647,
-        },
-        paper: {
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          width: '100vw',
-          height: '100vh',
-          maxWidth: '100vw',
-          maxHeight: '100vh',
-          zIndex: 2147483647,
+          zIndex: '99999 !important',
+          '& .MuiBackdrop-root': {
+            zIndex: '99998 !important',
+            position: 'fixed !important',
+          },
+          '& .MuiDialog-container': {
+            zIndex: '99999 !important',
+            position: 'fixed !important',
+            '& .MuiPaper-root': {
+              zIndex: '99999 !important',
+              position: 'fixed !important',
+            },
+          },
         },
       },
     },
     MuiBackdrop: {
       styleOverrides: {
         root: {
-          position: 'fixed',
-          zIndex: 2147483646,
+          position: 'fixed !important',
+          zIndex: '99998 !important',
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
         },
       },
     },
     MuiModal: {
-      defaultProps: {
-        disablePortal: false,
+      styleOverrides: {
+        root: {
+          zIndex: '99999 !important',
+        },
+      },
+    },
+    MuiCssBaseline: {
+      styleOverrides: {
+        body: {
+          '& .MuiDialog-root': {
+            zIndex: '99999 !important',
+          },
+          '& .MuiBackdrop-root': {
+            zIndex: '99998 !important',
+          },
+        },
       },
     },
   },

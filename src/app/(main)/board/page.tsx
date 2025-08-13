@@ -165,6 +165,10 @@ export default function BoardPage() {
       setFormData({ title: '', content: '' });
     }
     setOpenDialog(true);
+    // フォーカスをダイアログに移動させるため、FABからフォーカスを外す
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
   };
 
   // ダイアログを閉じる
@@ -244,6 +248,7 @@ export default function BoardPage() {
 
   return (
     <AuthGuard>
+      <>
       <Container 
         maxWidth="md" 
         sx={{ 
@@ -300,38 +305,83 @@ export default function BoardPage() {
             />
           </Box>
         )}
+      </Container>
+      </>
 
-        {/* FABボタン（モバイル用） */}
-        {session && (
-          <Fab
-            color="primary"
-            aria-label="add"
-            onClick={() => handleOpenDialog()}
-            sx={{
-              position: 'fixed',
-              bottom: 24,
-              right: 24,
-            }}
-          >
-            <AddIcon />
-          </Fab>
-        )}
-        
-        {/* 投稿作成/編集ダイアログ */}
-        <Dialog 
-          open={openDialog} 
-          onClose={handleCloseDialog} 
-          maxWidth="sm" 
-          fullWidth
-          disableRestoreFocus
-          PaperProps={{
-            sx: { borderRadius: 2 },
-            role: 'dialog',
-            'aria-labelledby': 'post-dialog-title',
-            'aria-describedby': 'post-dialog-description',
+      {/* FABボタン - AuthGuardの直下、main要素の外に配置 */}
+      {session && (
+        <Fab
+          color="primary"
+          aria-label="add"
+          onClick={() => handleOpenDialog()}
+          sx={{
+            position: 'fixed',
+            bottom: 24,
+            right: 24,
+            zIndex: 1100,
           }}
         >
-          <DialogTitle id="post-dialog-title">
+          <AddIcon />
+        </Fab>
+      )}
+      
+      {/* 投稿作成/編集ダイアログ - AuthGuardの直下、main要素の外に配置 */}
+      <Dialog 
+        open={openDialog} 
+        onClose={handleCloseDialog} 
+        maxWidth="sm"
+        fullWidth
+        aria-labelledby="post-dialog-title"
+        aria-describedby="post-dialog-description"
+        PaperProps={{
+          sx: {
+            position: 'fixed !important',
+            top: '50% !important',
+            left: '50% !important',
+            transform: 'translate(-50%, -50%) !important',
+            zIndex: 99999,
+            width: { xs: '95%', sm: '600px' },
+            maxWidth: { xs: '95%', sm: '600px' },
+            maxHeight: '90vh',
+            overflow: 'auto',
+            m: '0 !important',
+            right: 'auto !important',
+            bottom: 'auto !important',
+          }
+        }}
+        sx={{
+          '& .MuiBackdrop-root': {
+            zIndex: 99998,
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          },
+          '& .MuiDialog-container': {
+            zIndex: 99999,
+            position: 'fixed !important',
+            top: '0 !important',
+            left: '0 !important',
+            right: '0 !important',
+            bottom: '0 !important',
+            display: 'flex !important',
+            alignItems: 'center !important',
+            justifyContent: 'center !important',
+            '& .MuiPaper-root': {
+              position: 'fixed !important',
+              top: '50% !important',
+              left: '50% !important',
+              transform: 'translate(-50%, -50%) !important',
+              right: 'auto !important',
+              bottom: 'auto !important',
+              margin: '0 !important',
+            }
+          },
+        }}
+      >
+        <DialogTitle id="post-dialog-title">
             {editingPost ? '投稿を編集' : '新規投稿'}
           </DialogTitle>
           <DialogContent id="post-dialog-description">
@@ -343,7 +393,7 @@ export default function BoardPage() {
               variant="outlined"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              sx={{ mb: 2 }}
+              sx={{ mb: 2, mt: 1 }}
               inputProps={{
                 'aria-label': 'タイトル',
               }}
@@ -364,8 +414,10 @@ export default function BoardPage() {
               helperText={`${formData.content.length}/500文字`}
             />
           </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseDialog}>キャンセル</Button>
+          <DialogActions sx={{ p: 2 }}>
+            <Button onClick={handleCloseDialog}>
+              キャンセル
+            </Button>
             <Button
               onClick={handleSave}
               variant="contained"
@@ -374,8 +426,7 @@ export default function BoardPage() {
               {editingPost ? '更新' : '投稿'}
             </Button>
           </DialogActions>
-        </Dialog>
-      </Container>
+      </Dialog>
     </AuthGuard>
   );
 }

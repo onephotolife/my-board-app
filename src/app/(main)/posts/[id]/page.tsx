@@ -16,6 +16,11 @@ import {
   CircularProgress,
   Alert,
   Stack,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from '@mui/material';
 import {
   ArrowBack as ArrowBackIcon,
@@ -58,6 +63,8 @@ export default function PostDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [isLiked, setIsLiked] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   // 投稿を取得
   const fetchPost = async () => {
@@ -115,10 +122,19 @@ export default function PostDetailPage() {
     }
   };
 
-  // 投稿を削除
-  const handleDelete = async () => {
-    if (!confirm('本当にこの投稿を削除しますか？')) return;
+  // 削除ダイアログを開く
+  const handleDeleteClick = () => {
+    setDeleteDialogOpen(true);
+  };
 
+  // 削除をキャンセル
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
+  };
+
+  // 投稿を削除（確認後）
+  const handleDeleteConfirm = async () => {
+    setDeleting(true);
     try {
       const response = await fetch(`/api/posts/${postId}`, {
         method: 'DELETE',
@@ -132,6 +148,7 @@ export default function PostDetailPage() {
     } catch (err) {
       console.error('削除エラー:', err);
       setError('投稿の削除に失敗しました');
+      setDeleting(false);
     }
   };
 
@@ -236,7 +253,7 @@ export default function PostDetailPage() {
                 <IconButton onClick={handleEdit}>
                   <EditIcon />
                 </IconButton>
-                <IconButton color="error" onClick={handleDelete}>
+                <IconButton color="error" onClick={handleDeleteClick}>
                   <DeleteIcon />
                 </IconButton>
               </Stack>
@@ -299,6 +316,56 @@ export default function PostDetailPage() {
           </Box>
         </Paper>
       </Container>
+
+      {/* 削除確認ダイアログ */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={handleDeleteCancel}
+        aria-labelledby="delete-dialog-title"
+        aria-describedby="delete-dialog-description"
+        maxWidth="xs"
+        fullWidth
+        PaperProps={{
+          style: {
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            margin: 0,
+            zIndex: 2147483647,
+          }
+        }}
+        sx={{
+          '& .MuiBackdrop-root': {
+            zIndex: 2147483646,
+          },
+        }}
+      >
+        <DialogTitle id="delete-dialog-title">
+          投稿を削除しますか？
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="delete-dialog-description">
+            この操作は取り消すことができません。本当にこの投稿を削除してもよろしいですか？
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ p: 2 }}>
+          <Button 
+            onClick={handleDeleteCancel}
+            disabled={deleting}
+          >
+            キャンセル
+          </Button>
+          <Button 
+            onClick={handleDeleteConfirm}
+            color="error"
+            variant="contained"
+            disabled={deleting}
+          >
+            {deleting ? '削除中...' : '削除'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </AuthGuard>
   );
 }

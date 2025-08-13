@@ -281,7 +281,7 @@ export default function DashboardPage() {
           <Chip
             label="投稿一覧を見る"
             component="a"
-            href="/"
+            href="/board"
             clickable
             color="primary"
             variant="outlined"

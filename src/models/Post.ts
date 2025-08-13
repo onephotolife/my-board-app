@@ -1,11 +1,17 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document, Types } from 'mongoose';
 
 export interface IPost extends Document {
   title: string;
   content: string;
-  author: string; // ユーザーID
-  authorName: string; // ユーザー名（表示用）
-  authorEmail?: string; // メールアドレス（オプション）
+  author: Types.ObjectId;
+  authorInfo: {
+    name: string;
+    email: string;
+    avatar?: string;
+  };
+  status: 'published' | 'draft' | 'deleted';
+  tags?: string[];
+  likes: Types.ObjectId[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -14,29 +20,53 @@ const PostSchema = new Schema({
   title: {
     type: String,
     required: [true, 'タイトルは必須です'],
+    trim: true,
     maxlength: [100, 'タイトルは100文字以内にしてください'],
   },
   content: {
     type: String,
-    required: [true, '投稿内容は必須です'],
-    maxlength: [500, '投稿は500文字以内にしてください'],
+    required: [true, '本文は必須です'],
+    maxlength: [1000, '本文は1000文字以内にしてください'],
   },
   author: {
-    type: String,
-    required: [true, 'ユーザーIDは必須です'],
+    type: Schema.Types.ObjectId,
     ref: 'User',
+    required: [true, '投稿者情報は必須です'],
   },
-  authorName: {
+  authorInfo: {
+    name: {
+      type: String,
+      required: [true, '投稿者名は必須です'],
+    },
+    email: {
+      type: String,
+      required: [true, 'メールアドレスは必須です'],
+    },
+    avatar: {
+      type: String,
+      default: null,
+    },
+  },
+  status: {
     type: String,
-    required: [true, '投稿者名は必須です'],
-    maxlength: [50, '投稿者名は50文字以内にしてください'],
+    enum: ['published', 'draft', 'deleted'],
+    default: 'published',
   },
-  authorEmail: {
+  tags: [{
     type: String,
-    required: false,
-  },
+    trim: true,
+  }],
+  likes: [{
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+  }],
 }, {
   timestamps: true,
 });
+
+// インデックスの設定
+PostSchema.index({ author: 1, createdAt: -1 });
+PostSchema.index({ status: 1, createdAt: -1 });
+PostSchema.index({ tags: 1 });
 
 export default mongoose.models.Post || mongoose.model<IPost>('Post', PostSchema);

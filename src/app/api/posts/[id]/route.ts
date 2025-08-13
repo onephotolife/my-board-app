@@ -1,36 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
 import { connectDB } from '@/lib/db/mongodb';
-import Post from '@/lib/models/Post';
+import Post from '@/models/Post';
+import { auth } from '@/lib/auth';
+import { z } from 'zod';
 
-// PUT: 投稿を更新
-export async function PUT(
+// バリデーションスキーマ
+const PostUpdateSchema = z.object({
+  title: z.string().min(1, 'タイトルは必須です').max(100, 'タイトルは100文字以内にしてください'),
+  content: z.string().min(1, '本文は必須です').max(1000, '本文は1000文字以内にしてください'),
+  tags: z.array(z.string()).optional(),
+  status: z.enum(['published', 'draft']).optional(),
+});
+
+// GET: 個別投稿取得
+export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await auth();
-    
-    if (!session) {
-      return NextResponse.json(
-        { error: '認証が必要です' },
-        { status: 401 }
-      );
-    }
-
-    const { title, content } = await request.json();
-
-    if (!title || !content) {
-      return NextResponse.json(
-        { error: 'タイトルと内容は必須です' },
-        { status: 400 }
-      );
-    }
-
     await connectDB();
     
     const { id } = await params;
-    const post = await Post.findById(id);
+    const post = await Post.findById(id).lean();
 
     if (!post) {
       return NextResponse.json(
@@ -39,21 +30,95 @@ export async function PUT(
       );
     }
 
-    // 投稿者のみ編集可能
+    // 削除済みの投稿は表示しない
+    if (post.status === 'deleted') {
+      return NextResponse.json(
+        { error: '投稿が見つかりません' },
+        { status: 404 }
+      );
+    }
+
+    // セッション情報を取得
+    const session = await auth();
+
+    // 権限情報を追加
+    const postWithPermissions = {
+      ...post,
+      canEdit: session?.user?.id === post.author.toString(),
+      canDelete: session?.user?.id === post.author.toString(),
+    };
+
+    return NextResponse.json(postWithPermissions);
+  } catch (error) {
+    console.error('投稿取得エラー:', error);
+    return NextResponse.json(
+      { error: '投稿の取得に失敗しました' },
+      { status: 500 }
+    );
+  }
+}
+
+// PUT: 投稿更新（作成者のみ）
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    // 認証チェック
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'ログインが必要です' },
+        { status: 401 }
+      );
+    }
+
+    await connectDB();
+    
+    const { id } = await params;
+
+    // 投稿の存在確認
+    const post = await Post.findById(id);
+    if (!post) {
+      return NextResponse.json(
+        { error: '投稿が見つかりません' },
+        { status: 404 }
+      );
+    }
+
+    // 所有者チェック
     if (post.author.toString() !== session.user.id) {
       return NextResponse.json(
-        { error: 'この投稿を編集する権限がありません' },
+        { error: '編集権限がありません' },
         { status: 403 }
       );
     }
 
-    post.title = title;
-    post.content = content;
-    await post.save();
+    // リクエストボディを取得
+    const body = await request.json();
 
-    return NextResponse.json(post);
+    // バリデーション
+    const validatedData = PostUpdateSchema.parse(body);
+
+    // 投稿を更新
+    const updatedPost = await Post.findByIdAndUpdate(
+      id,
+      validatedData,
+      { new: true, runValidators: true }
+    );
+
+    return NextResponse.json({
+      message: '投稿を更新しました',
+      post: updatedPost,
+    });
   } catch (error) {
-    console.error('Update post error:', error);
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: 'バリデーションエラー', details: error.errors },
+        { status: 400 }
+      );
+    }
+    console.error('投稿更新エラー:', error);
     return NextResponse.json(
       { error: '投稿の更新に失敗しました' },
       { status: 500 }
@@ -61,17 +126,17 @@ export async function PUT(
   }
 }
 
-// DELETE: 投稿を削除
+// DELETE: 投稿削除（作成者のみ）
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // 認証チェック
     const session = await auth();
-    
-    if (!session) {
+    if (!session?.user?.id) {
       return NextResponse.json(
-        { error: '認証が必要です' },
+        { error: 'ログインが必要です' },
         { status: 401 }
       );
     }
@@ -79,8 +144,9 @@ export async function DELETE(
     await connectDB();
     
     const { id } = await params;
-    const post = await Post.findById(id);
 
+    // 投稿の存在確認
+    const post = await Post.findById(id);
     if (!post) {
       return NextResponse.json(
         { error: '投稿が見つかりません' },
@@ -88,21 +154,22 @@ export async function DELETE(
       );
     }
 
-    // 投稿者のみ削除可能
+    // 所有者チェック
     if (post.author.toString() !== session.user.id) {
       return NextResponse.json(
-        { error: 'この投稿を削除する権限がありません' },
+        { error: '削除権限がありません' },
         { status: 403 }
       );
     }
 
-    await post.deleteOne();
+    // ソフトデリート（statusを'deleted'に変更）
+    await Post.findByIdAndUpdate(id, { status: 'deleted' });
 
     return NextResponse.json({
-      message: '投稿が削除されました',
+      message: '投稿を削除しました',
     });
   } catch (error) {
-    console.error('Delete post error:', error);
+    console.error('投稿削除エラー:', error);
     return NextResponse.json(
       { error: '投稿の削除に失敗しました' },
       { status: 500 }

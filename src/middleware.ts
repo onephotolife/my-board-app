@@ -6,6 +6,9 @@ import { getToken } from 'next-auth/jwt';
 const protectedPaths = [
   '/dashboard',
   '/profile',
+  '/board',
+  '/board/new',
+  '/board/*/edit',  // ワイルドカードパターン
   '/posts/new',
   '/posts/*/edit',  // ワイルドカードパターン
 ];
@@ -88,8 +91,17 @@ export async function middleware(request: NextRequest) {
   // その他のセキュリティヘッダー
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('X-Content-Type-Options', 'nosniff');
+  response.headers.set('X-XSS-Protection', '1; mode=block');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  
+  // HTTPS環境でのみStrict-Transport-Securityを設定
+  if (!isDevelopment) {
+    response.headers.set(
+      'Strict-Transport-Security',
+      'max-age=31536000; includeSubDomains; preload'
+    );
+  }
   
   // 認証チェック
   if (isProtectedPath(pathname)) {

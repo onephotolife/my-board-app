@@ -29,6 +29,12 @@ interface Post {
   content: string;
   author: string;
   authorName: string;
+  authorEmail?: string;
+  authorInfo?: {
+    name: string;
+    email: string;
+    avatar?: string | null;
+  };
   createdAt: string;
   updatedAt: string;
 }
@@ -89,7 +95,13 @@ export default function BoardPage() {
       }
       
       console.log(`投稿取得成功: ${data.posts?.length || 0}件`);
-      setPosts(data.posts || []);
+      // APIレスポンスをコンポーネント用の形式に変換
+      const formattedPosts = (data.posts || []).map((post: any) => ({
+        ...post,
+        authorName: post.authorInfo?.name || post.authorName || '名無し',
+        authorEmail: post.authorInfo?.email || post.authorEmail,
+      }));
+      setPosts(formattedPosts);
       setPagination(data.pagination || {
         page: 1,
         limit: 10,

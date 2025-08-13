@@ -83,12 +83,16 @@ export default function EnhancedPostCard({
     }
   };
   
-  const getAvatarColor = (name: string) => {
+  const getAvatarColor = (name: string | undefined) => {
     const colors = [
       '#f44336', '#e91e63', '#9c27b0', '#673ab7',
       '#3f51b5', '#2196f3', '#00bcd4', '#009688',
       '#4caf50', '#8bc34a', '#ff9800', '#ff5722',
     ];
+    // nameが未定義または空の場合のフォールバック
+    if (!name || name.length === 0) {
+      return colors[0]; // デフォルトカラー
+    }
     const index = name.charCodeAt(0) % colors.length;
     return colors[index];
   };

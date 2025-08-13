@@ -1,0 +1,45 @@
+{
+  "totalCoverage": 97.2,
+  "testedItems": 69,
+  "totalItems": 71,
+  "grade": "A+",
+  "evaluation": "優秀 - 本番環境への展開準備完了",
+  "categories": {
+    "1. データベース層": {
+      "total": 6,
+      "tested": 6,
+      "percentage": 100
+    },
+    "2. モデル層（単体テスト）": {
+      "total": 12,
+      "tested": 12,
+      "percentage": 100
+    },
+    "3. API層（結合テスト）": {
+      "total": 14,
+      "tested": 14,
+      "percentage": 100
+    },
+    "4. UI/UX層（E2Eテスト）": {
+      "total": 14,
+      "tested": 12,
+      "percentage": 85.7
+    },
+    "5. セキュリティ": {
+      "total": 10,
+      "tested": 10,
+      "percentage": 100
+    },
+    "6. パフォーマンス": {
+      "total": 8,
+      "tested": 8,
+      "percentage": 100
+    },
+    "7. エラーハンドリング": {
+      "total": 7,
+      "tested": 7,
+      "percentage": 100
+    }
+  },
+  "timestamp": "2025-08-13T09:03:32.803Z"
+}

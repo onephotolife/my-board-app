@@ -93,8 +93,8 @@ export default function NewPostPage() {
       
       const data = await response.json();
       
-      // 成功したら投稿詳細ページまたは一覧ページへリダイレクト
-      router.push('/');
+      // 成功したら掲示板ページ（投稿一覧）へリダイレクト
+      router.push('/board');
     } catch (error) {
       setError(error instanceof Error ? error.message : '投稿の作成中にエラーが発生しました');
     } finally {
@@ -103,7 +103,8 @@ export default function NewPostPage() {
   };
 
   const handleCancel = () => {
-    router.push('/dashboard');
+    // キャンセル時は掲示板ページへ戻る
+    router.push('/board');
   };
 
   if (status === 'loading') {

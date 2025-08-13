@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db/mongodb';
-import Post from '@/models/Post';
+import Post from '@/lib/models/Post';
 import { auth } from '@/lib/auth';
 import cacheManager from '@/lib/cache';
 import { withRateLimit } from '@/lib/rateLimit';
@@ -50,7 +50,23 @@ export async function POST(
       }
 
       // いいねをトグル
-      const isLiked = post.toggleLike(userId);
+      const userIdStr = userId.toString();
+      const likeIndex = post.likes ? post.likes.indexOf(userIdStr) : -1;
+      
+      let isLiked: boolean;
+      if (likeIndex === -1) {
+        // いいねを追加
+        if (!post.likes) {
+          post.likes = [];
+        }
+        post.likes.push(userIdStr);
+        isLiked = true;
+      } else {
+        // いいねを削除
+        post.likes.splice(likeIndex, 1);
+        isLiked = false;
+      }
+      
       await post.save();
 
       // キャッシュを無効化
@@ -60,7 +76,7 @@ export async function POST(
       return NextResponse.json({
         success: true,
         isLiked,
-        likeCount: post.likeCount,
+        likeCount: post.likes ? post.likes.length : 0,
         message: isLiked ? 'いいねしました' : 'いいねを取り消しました'
       });
 

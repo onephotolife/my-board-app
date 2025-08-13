@@ -114,8 +114,19 @@ export default function PostDetailPage() {
       }
       
       const data = await response.json();
-      setPost(prev => prev ? { ...prev, likes: data.likes } : null);
-      setIsLiked(!isLiked);
+      // APIからの応答に基づいて状態を更新
+      setIsLiked(data.isLiked);
+      // いいね数を更新
+      setPost(prev => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          likes: data.isLiked 
+            ? [...(prev.likes || []), session.user?.id || ''].filter(Boolean)
+            : (prev.likes || []).filter(id => id !== session.user?.id),
+          likeCount: data.likeCount
+        };
+      });
     } catch (err) {
       console.error('いいねエラー:', err);
       setError('いいねの更新に失敗しました');

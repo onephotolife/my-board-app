@@ -6,8 +6,12 @@ export interface IPost extends Document {
   author: string;  // ユーザーIDを文字列として保存
   authorName: string;
   authorEmail?: string;
+  status?: 'published' | 'draft' | 'deleted';
+  likes: string[];  // いいねしたユーザーIDの配列
+  likeCount?: number;  // 仮想プロパティ
   createdAt: Date;
   updatedAt: Date;
+  toggleLike(userId: string): boolean;
 }
 
 const PostSchema = new Schema<IPost>(
@@ -35,6 +39,15 @@ const PostSchema = new Schema<IPost>(
       type: String,
       required: false,
     },
+    status: {
+      type: String,
+      enum: ['published', 'draft', 'deleted'],
+      default: 'published',
+    },
+    likes: [{
+      type: String,  // ユーザーIDを文字列として保存
+      ref: 'User'
+    }],
   },
   {
     timestamps: true,
@@ -44,5 +57,35 @@ const PostSchema = new Schema<IPost>(
 // Index for pagination and sorting
 PostSchema.index({ createdAt: -1 });
 PostSchema.index({ author: 1 });
+
+// toggleLikeメソッドの追加
+PostSchema.methods.toggleLike = function(userId: string): boolean {
+  const userIdStr = userId.toString();
+  const likeIndex = this.likes.indexOf(userIdStr);
+  
+  if (likeIndex === -1) {
+    // いいねを追加
+    this.likes.push(userIdStr);
+    return true;
+  } else {
+    // いいねを削除
+    this.likes.splice(likeIndex, 1);
+    return false;
+  }
+};
+
+// 仮想プロパティ: いいね数
+PostSchema.virtual('likeCount').get(function() {
+  return this.likes ? this.likes.length : 0;
+});
+
+// JSON変換時の設定
+PostSchema.set('toJSON', {
+  virtuals: true,
+  transform: function (doc, ret) {
+    delete ret.__v;
+    return ret;
+  },
+});
 
 export default mongoose.models.Post || mongoose.model<IPost>('Post', PostSchema);

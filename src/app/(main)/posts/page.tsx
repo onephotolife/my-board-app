@@ -90,6 +90,12 @@ export default function PostsListPage() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [openCreateDialog, setOpenCreateDialog] = useState(false);
+  const [formData, setFormData] = useState({
+    title: '',
+    content: '',
+  });
+  const [saving, setSaving] = useState(false);
 
   // 投稿一覧を取得
   const fetchPosts = async (page: number = 1) => {
@@ -175,6 +181,46 @@ export default function PostsListPage() {
     router.push(`/posts/${id}`);
   };
 
+  // 新規投稿ダイアログを閉じる
+  const handleCloseCreateDialog = () => {
+    setOpenCreateDialog(false);
+    setFormData({ title: '', content: '' });
+  };
+
+  // 新規投稿を保存
+  const handleSavePost = async () => {
+    if (saving) return;
+    
+    try {
+      if (!formData.title || !formData.content) {
+        setError('タイトルと内容は必須です');
+        return;
+      }
+
+      setSaving(true);
+      
+      const response = await fetch('/api/posts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+        cache: 'no-store',
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || '保存に失敗しました');
+      }
+      
+      handleCloseCreateDialog();
+      fetchPosts(1); // 投稿リストを更新
+    } catch (error) {
+      console.error('投稿の保存エラー:', error);
+      setError(error instanceof Error ? error.message : '保存に失敗しました');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   // ページ変更
   const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number) => {
     fetchPosts(value);
@@ -248,7 +294,7 @@ export default function PostsListPage() {
             </ToggleButtonGroup>
             <Button
               variant="contained"
-              onClick={() => router.push('/board')}
+              onClick={() => setOpenCreateDialog(true)}
             >
               新規投稿
             </Button>
@@ -469,6 +515,86 @@ export default function PostsListPage() {
             disabled={deleting}
           >
             {deleting ? '削除中...' : '削除'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* 新規投稿作成ダイアログ */}
+      <Dialog 
+        open={openCreateDialog} 
+        onClose={handleCloseCreateDialog} 
+        maxWidth="sm"
+        fullWidth
+        aria-labelledby="post-dialog-title"
+        aria-describedby="post-dialog-description"
+        PaperProps={{
+          style: {
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            margin: 0,
+            maxHeight: '90vh',
+            width: '90%',
+            maxWidth: '600px',
+            zIndex: 2147483647,
+          }
+        }}
+        sx={{
+          '& .MuiBackdrop-root': {
+            zIndex: 2147483646,
+          },
+        }}
+      >
+        <DialogTitle id="post-dialog-title">
+          新規投稿
+        </DialogTitle>
+        <DialogContent id="post-dialog-description">
+          <TextField
+            autoFocus
+            margin="dense"
+            label="タイトル"
+            fullWidth
+            variant="outlined"
+            value={formData.title}
+            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+            sx={{ mb: 2, mt: 1 }}
+            inputProps={{
+              maxLength: 100,
+              'aria-label': 'タイトル',
+            }}
+            helperText={`${formData.title.length}/100文字`}
+            required
+            error={formData.title.length > 100}
+          />
+          <TextField
+            margin="dense"
+            label="内容"
+            fullWidth
+            multiline
+            rows={6}
+            variant="outlined"
+            value={formData.content}
+            onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+            inputProps={{ 
+              maxLength: 1000,
+              'aria-label': '内容',
+            }}
+            helperText={`${formData.content.length}/1000文字`}
+            required
+            error={formData.content.length > 1000}
+          />
+        </DialogContent>
+        <DialogActions sx={{ p: 2 }}>
+          <Button onClick={handleCloseCreateDialog}>
+            キャンセル
+          </Button>
+          <Button
+            onClick={handleSavePost}
+            variant="contained"
+            disabled={!formData.title || !formData.content || saving}
+          >
+            {saving ? '保存中...' : '投稿'}
           </Button>
         </DialogActions>
       </Dialog>

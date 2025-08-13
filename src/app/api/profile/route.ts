@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import connectDB from '@/lib/mongodb';
+import { auth } from '@/lib/auth';
+import dbConnect from '@/lib/mongodb';
 import User from '@/models/User';
 
 // GET: プロフィール取得
 export async function GET(req: NextRequest) {
   try {
     // セッション確認
-    const session = await getServerSession();
+    const session = await auth();
     if (!session?.user?.email) {
       return NextResponse.json(
         { error: '認証が必要です' },
@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
     }
 
     // データベース接続
-    await connectDB();
+    await dbConnect();
 
     // ユーザー情報を取得
     const user = await User.findOne({ email: session.user.email })
@@ -56,7 +56,7 @@ export async function GET(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   try {
     // セッション確認
-    const session = await getServerSession();
+    const session = await auth();
     if (!session?.user?.email) {
       return NextResponse.json(
         { error: '認証が必要です' },
@@ -105,7 +105,7 @@ export async function PUT(req: NextRequest) {
     }
 
     // データベース接続
-    await connectDB();
+    await dbConnect();
 
     // ユーザー情報を更新
     const updatedUser = await User.findOneAndUpdate(

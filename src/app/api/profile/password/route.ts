@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import connectDB from '@/lib/mongodb';
+import { auth } from '@/lib/auth';
+import dbConnect from '@/lib/mongodb';
 import User from '@/models/User';
 import bcrypt from 'bcryptjs';
 
@@ -8,7 +8,7 @@ import bcrypt from 'bcryptjs';
 export async function PUT(req: NextRequest) {
   try {
     // セッション確認
-    const session = await getServerSession();
+    const session = await auth();
     if (!session?.user?.email) {
       return NextResponse.json(
         { error: '認証が必要です' },
@@ -59,7 +59,7 @@ export async function PUT(req: NextRequest) {
     }
 
     // データベース接続
-    await connectDB();
+    await dbConnect();
 
     // ユーザーを取得（パスワードフィールドを含む）
     const user = await User.findOne({ email: session.user.email }).select('+password');

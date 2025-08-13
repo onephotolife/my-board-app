@@ -39,8 +39,8 @@ body {
 
 /* ===== CSP COMPLIANT Z-INDEX FIX ===== */
 
-/* Reset all transforms - CSP compliant */
-html body * {
+/* Reset all transforms - CSP compliant (except for dialogs and menus) */
+html body *:not(.MuiDialog-root):not(.MuiDialog-container):not(.MuiDialog-paper):not(.MuiMenu-root):not(.MuiPopover-root):not(.MuiBackdrop-root) {
   transform: none !important;
   will-change: auto !important;
 }
@@ -85,15 +85,49 @@ body {
   z-index: 2147483647 !important;
 }
 
-/* Limit all other elements */
+/*/* Limit all other elements */
 main,
 .MuiContainer-root,
-.MuiPaper-root:not(.MuiDrawer-paper):not(.MuiSwipeableDrawer-paper),
+.MuiPaper-root:not(.MuiDrawer-paper):not(.MuiSwipeableDrawer-paper):not(.MuiMenu-paper):not(.MuiPopover-paper):not(.MuiDialog-paper),
 .MuiCard-root,
 .MuiBox-root:not(.MuiDrawer-root .MuiBox-root) {
   position: relative !important;
   z-index: 1 !important;
   transform: none !important;
+}
+
+/*/* Fix for Menu and Popover components */
+.MuiMenu-root,
+.MuiPopover-root {
+  z-index: 2147483647 !important;
+}
+
+.MuiMenu-paper,
+.MuiPopover-paper {
+  position: fixed !important;
+  z-index: 2147483647 !important;
+}
+
+.MuiMenu-list {
+  z-index: 2147483647 !important;
+}
+
+/* Fix for Dialog centering */
+.MuiDialog-root {
+  z-index: 1300 !important;
+}
+
+.MuiDialog-container {
+  height: 100vh !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.MuiDialog-paper {
+  /* Allow transform for centering */
+  transform: translate(-50%, -50%) !important;
+  max-height: calc(100% - 64px) !important;
 }
 
 /* Specific fix for board page content */

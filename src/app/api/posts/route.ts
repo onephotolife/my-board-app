@@ -34,6 +34,7 @@ export async function GET(request: NextRequest) {
 
     // セッション情報を取得（オプション）
     const session = await auth();
+    console.log('API Session:', session ? { userId: session.user?.id, email: session.user?.email } : 'No session');
 
     // 投稿を取得
     const posts = await Post.find(query)
@@ -43,11 +44,27 @@ export async function GET(request: NextRequest) {
       .lean();
 
     // 権限情報を追加
-    const postsWithPermissions = posts.map((post: any) => ({
-      ...post,
-      canEdit: session?.user?.id === post.author.toString(),
-      canDelete: session?.user?.id === post.author.toString(),
-    }));
+    const postsWithPermissions = posts.map((post: any) => {
+      // 投稿者判定のデバッグ
+      const isOwner = session?.user?.id === post.author.toString();
+      console.log('Post ownership check:', {
+        postId: post._id,
+        postAuthor: post.author.toString(),
+        sessionUserId: session?.user?.id,
+        isOwner
+      });
+      
+      return {
+        ...post,
+        canEdit: isOwner,
+        canDelete: isOwner,
+        // セッション情報をデバッグ用に追加
+        _debug: {
+          sessionUserId: session?.user?.id,
+          postAuthorId: post.author.toString()
+        }
+      };
+    });
 
     // 総数を取得
     const total = await Post.countDocuments(query);

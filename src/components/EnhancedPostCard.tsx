@@ -33,6 +33,8 @@ interface Post {
   authorEmail?: string;
   createdAt: string;
   updatedAt: string;
+  canEdit?: boolean;
+  canDelete?: boolean;
 }
 
 interface EnhancedPostCardProps {
@@ -52,7 +54,25 @@ export default function EnhancedPostCard({
   const [showComments, setShowComments] = useState(false);
   const [comment, setComment] = useState('');
   
-  const isOwner = currentUserId === post.author;
+  // 投稿者の判定：APIから返されるcanEdit/canDeleteフラグを優先的に使用
+  // フラグがない場合はフォールバックとしてcurrentUserIdで判定
+  const isOwner = post.canEdit !== undefined ? post.canEdit : (
+    currentUserId && (
+      currentUserId === post.author || 
+      currentUserId === post.authorEmail ||
+      currentUserId === post.author?.toString()
+    )
+  );
+  
+  // デバッグ用ログ
+  console.log('PostCard ownership:', {
+    postId: post._id,
+    canEdit: post.canEdit,
+    canDelete: post.canDelete,
+    isOwner,
+    currentUserId,
+    postAuthor: post.author
+  });
   
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -115,6 +135,39 @@ export default function EnhancedPostCard({
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
                 onClose={handleMenuClose}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                disablePortal={false}
+                keepMounted
+                elevation={24}
+                PaperProps={{
+                  style: {
+                    zIndex: 2147483647, // 最大のz-index値
+                    position: 'fixed',
+                  },
+                  sx: {
+                    zIndex: 2147483647,
+                    position: 'fixed !important',
+                  }
+                }}
+                MenuListProps={{
+                  style: {
+                    zIndex: 2147483647,
+                  }
+                }}
+                PopoverClasses={{
+                  root: 'MuiPopover-root',
+                  paper: 'MuiPopover-paper'
+                }}
+                style={{
+                  zIndex: 2147483647,
+                }}
               >
                 <MenuItem onClick={handleEdit}>
                   <EditIcon sx={{ mr: 1 }} fontSize="small" />

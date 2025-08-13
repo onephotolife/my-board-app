@@ -49,6 +49,17 @@ interface PaginationData {
 export default function BoardPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  
+  // デバッグ用ログ
+  useEffect(() => {
+    if (session) {
+      console.log('Board Page Session:', {
+        userId: session.user?.id,
+        email: session.user?.email,
+        name: session.user?.name,
+      });
+    }
+  }, [session]);
   const [posts, setPosts] = useState<Post[]>([]);
   const [pagination, setPagination] = useState<PaginationData>({
     page: 1,
@@ -345,7 +356,7 @@ export default function BoardPage() {
               <EnhancedPostCard
                 key={post._id || `post-${index}-${Date.now()}`}
                 post={post}
-                currentUserId={session?.user?.id}
+                currentUserId={session?.user?.id || session?.user?.email}
                 onEdit={handleOpenDialog}
                 onDelete={handleDelete}
               />
@@ -384,7 +395,7 @@ export default function BoardPage() {
         </Fab>
       )}
       
-      {/* 投稿作成/編集ダイアログ - AuthGuardの直下、main要素の外に配置 */}
+      {/* 投稿作成/編集ダイアログ - 強制的に中央配置 */}
       <Dialog 
         open={openDialog} 
         onClose={handleCloseDialog} 
@@ -393,51 +404,16 @@ export default function BoardPage() {
         aria-labelledby="post-dialog-title"
         aria-describedby="post-dialog-description"
         PaperProps={{
-          sx: {
-            position: 'fixed !important',
-            top: '50% !important',
-            left: '50% !important',
-            transform: 'translate(-50%, -50%) !important',
-            zIndex: 99999,
-            width: { xs: '95%', sm: '600px' },
-            maxWidth: { xs: '95%', sm: '600px' },
-            maxHeight: '90vh',
-            overflow: 'auto',
-            m: '0 !important',
-            right: 'auto !important',
-            bottom: 'auto !important',
-          }
-        }}
-        sx={{
-          '& .MuiBackdrop-root': {
-            zIndex: 99998,
+          style: {
             position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          },
-          '& .MuiDialog-container': {
-            zIndex: 99999,
-            position: 'fixed !important',
-            top: '0 !important',
-            left: '0 !important',
-            right: '0 !important',
-            bottom: '0 !important',
-            display: 'flex !important',
-            alignItems: 'center !important',
-            justifyContent: 'center !important',
-            '& .MuiPaper-root': {
-              position: 'fixed !important',
-              top: '50% !important',
-              left: '50% !important',
-              transform: 'translate(-50%, -50%) !important',
-              right: 'auto !important',
-              bottom: 'auto !important',
-              margin: '0 !important',
-            }
-          },
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            margin: 0,
+            maxHeight: '90vh',
+            width: '90%',
+            maxWidth: '600px',
+          }
         }}
       >
         <DialogTitle id="post-dialog-title">

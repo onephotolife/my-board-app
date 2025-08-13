@@ -50,6 +50,9 @@ export default function ClientHeader() {
             <Skeleton variant="rectangular" width={120} height={36} sx={{ borderRadius: 1 }} />
           ) : session ? (
             <>
+              <Button color="inherit" href="/posts">
+                投稿一覧
+              </Button>
               <Button color="inherit" href="/board">
                 掲示板
               </Button>

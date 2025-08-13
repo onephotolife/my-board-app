@@ -53,7 +53,7 @@ fi
 send_perfect_notification() {
     echo "🚀 右上通知を送信中: $TITLE"
     
-    # 手法1: terminal-notifier（最優先）
+    # 手法1: terminal-notifier（最優先）- ポップアップ表示強化
     if command -v terminal-notifier >/dev/null 2>&1; then
         terminal-notifier \
             -title "$TITLE" \
@@ -61,17 +61,21 @@ send_perfect_notification() {
             -sound "$SOUND" \
             -ignoreDnD \
             -sender com.apple.Terminal \
-            -group "claude-code-notifications" &
-        echo "  ✅ terminal-notifier送信完了"
+            -group "claude-code-notifications" \
+            -activate "com.apple.Terminal" \
+            -timeout 10 \
+            -closeLabel "閉じる" \
+            -actions "確認,無視" &
+        echo "  ✅ terminal-notifier送信完了（ポップアップ強化）"
     fi
     
-    # 手法2: AppleScript（フォールバック）
+    # 手法2: AppleScript（フォールバック）- ポップアップ表示強化
     osascript <<EOF &
 try
-    display notification "$MESSAGE" with title "$TITLE" sound name "$SOUND"
+    display notification "$MESSAGE" with title "$TITLE" sound name "$SOUND" subtitle "右上に表示中"
 end try
 EOF
-    echo "  ✅ AppleScript通知送信完了"
+    echo "  ✅ AppleScript通知送信完了（ポップアップ強化）"
     
     # 手法3: 音の確実な再生
     if [ -n "$SOUND" ]; then

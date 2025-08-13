@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/claude-notifications/notify.sh response_complete 'Claude has finished responding' 'Claude Code'"
+            "command": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/claude-notifications/notify.sh response_complete 'Claude has finished responding' 'Claude Code'"
           }
         ]
       }

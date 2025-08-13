@@ -67,6 +67,7 @@ export async function PUT(req: NextRequest) {
     // リクエストボディを取得
     const body = await req.json();
     const { name, bio } = body;
+    
 
     // バリデーション
     if (!name || typeof name !== 'string') {
@@ -107,18 +108,38 @@ export async function PUT(req: NextRequest) {
     // データベース接続
     await dbConnect();
 
-    // ユーザー情報を更新
-    const updatedUser = await User.findOneAndUpdate(
+    // bioの値を適切に処理
+    const bioValue = bio !== undefined && bio !== null ? String(bio).trim() : '';
+    
+    console.log('[DEBUG] Update request:', {
+      email: session.user.email,
+      name: name.trim(),
+      bio: bioValue,
+      bioLength: bioValue.length
+    });
+
+    // ユーザー情報を更新 - 別の方法を試す
+    const result = await User.updateOne(
       { email: session.user.email },
       {
         $set: {
           name: name.trim(),
-          bio: bio ? bio.trim() : '',
+          bio: bioValue,
           updatedAt: new Date(),
         },
-      },
-      { new: true, runValidators: true }
-    ).select('-password');
+      }
+    );
+    
+    console.log('[DEBUG] MongoDB update result:', {
+      acknowledged: result.acknowledged,
+      modifiedCount: result.modifiedCount,
+      matchedCount: result.matchedCount
+    });
+    
+    // 更新後のユーザー情報を取得
+    const updatedUser = await User.findOne({ email: session.user.email }).select('-password');
+    
+    console.log('[DEBUG] Updated user bio:', updatedUser?.bio);
 
     if (!updatedUser) {
       return NextResponse.json(
@@ -127,17 +148,19 @@ export async function PUT(req: NextRequest) {
       );
     }
 
+
     // レスポンス用のユーザーオブジェクトを作成
     const userProfile = {
       id: updatedUser._id.toString(),
       email: updatedUser.email,
       name: updatedUser.name,
-      bio: updatedUser.bio || '',
+      bio: updatedUser.bio !== undefined && updatedUser.bio !== null ? updatedUser.bio : '',
       avatar: updatedUser.avatar || '',
       emailVerified: updatedUser.emailVerified,
       createdAt: updatedUser.createdAt,
       updatedAt: updatedUser.updatedAt,
     };
+    
 
     return NextResponse.json(
       { 

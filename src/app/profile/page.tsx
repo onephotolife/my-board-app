@@ -97,7 +97,7 @@ export default function ProfilePage() {
   };
 
   // 入力変更ハンドラー
-  const handleInputChange = (field: 'name' | 'bio') => (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (field: 'name' | 'bio') => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const value = e.target.value;
     setFormData(prev => ({ ...prev, [field]: value }));
     

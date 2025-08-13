@@ -51,6 +51,7 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>(
       type: String,
       maxlength: [200, '自己紹介は200文字以内で入力してください'],
       default: '',
+      required: false,
     },
     avatar: {
       type: String,

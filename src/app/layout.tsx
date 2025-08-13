@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { NoMuiProviders } from "./providers-no-mui";
-import ModernHeader from "@/components/ModernHeader";
+import { Providers } from "./providers";
+import ClientHeader from "@/components/ClientHeader";
 
 export const metadata: Metadata = {
   title: "会員制掲示板",
@@ -28,10 +28,10 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body>
-        <NoMuiProviders>
-          <ModernHeader />
+        <Providers>
+          <ClientHeader />
           <main>{children}</main>
-        </NoMuiProviders>
+        </Providers>
       </body>
     </html>
   );

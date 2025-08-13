@@ -7,9 +7,25 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const token = searchParams.get('token');
 
+    console.log('🔍 メール確認リクエスト受信:', {
+      url: request.url,
+      token: token ? `${token.substring(0, 8)}...` : 'null',
+      tokenLength: token?.length,
+      userAgent: request.headers.get('user-agent')
+    });
+
     if (!token) {
+      console.log('❌ トークンが提供されていません');
       return NextResponse.json(
         { error: '無効なトークンです' },
+        { status: 400 }
+      );
+    }
+
+    if (token.length !== 36) {
+      console.log('❌ トークンの形式が無効です:', { length: token.length });
+      return NextResponse.json(
+        { error: 'トークンの形式が無効です' },
         { status: 400 }
       );
     }
@@ -29,15 +45,35 @@ export async function GET(request: NextRequest) {
     }
 
     // ユーザー検索（まず期限を考慮せずに検索）
+    console.log('🔍 データベースでトークン検索中...');
     const userWithToken = await User.findOne({ emailVerificationToken: token });
     
     if (!userWithToken) {
       console.log('⚠️ トークンに一致するユーザーが見つかりません');
+      
+      // デバッグ用：類似するトークンがあるかチェック
+      const similarTokens = await User.find(
+        { emailVerificationToken: { $exists: true, $ne: null } },
+        { emailVerificationToken: 1, email: 1 }
+      ).limit(5);
+      
+      console.log('🔍 データベース内の既存トークン（最大5件）:', 
+        similarTokens.map(u => ({
+          email: u.email,
+          token: u.emailVerificationToken ? `${u.emailVerificationToken.substring(0, 8)}...` : 'null'
+        }))
+      );
+      
       return NextResponse.json(
         { error: 'トークンが無効です' },
         { status: 400 }
       );
     }
+    
+    console.log('✅ ユーザー見つかりました:', { 
+      email: userWithToken.email, 
+      emailVerified: userWithToken.emailVerified 
+    });
     
     // 期限チェック
     const now = new Date();

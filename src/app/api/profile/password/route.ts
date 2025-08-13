@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
-import dbConnect from '@/lib/mongodb';
-import User from '@/models/User';
-import bcrypt from 'bcryptjs';
+import { connectDB } from '@/lib/db/mongodb';
+import User from '@/lib/models/User';
 
 // PUT: パスワード変更
 export async function PUT(req: NextRequest) {
@@ -59,7 +58,7 @@ export async function PUT(req: NextRequest) {
     }
 
     // データベース接続
-    await dbConnect();
+    await connectDB();
 
     // ユーザーを取得（パスワードフィールドを含む）
     const user = await User.findOne({ email: session.user.email }).select('+password');
@@ -80,13 +79,9 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    // 新しいパスワードをハッシュ化
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(newPassword, salt);
-
-    // パスワードを更新
-    user.password = hashedPassword;
-    user.passwordChangedAt = new Date();
+    // パスワードを更新（pre('save')ミドルウェアで自動的にハッシュ化される）
+    user.password = newPassword;
+    user.lastPasswordChange = new Date();
     await user.save();
 
     // セキュリティのため、パスワード変更後は再ログインを促す

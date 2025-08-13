@@ -10,7 +10,6 @@ import { getAuthErrorMessage } from '@/lib/auth-errors';
 function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [mounted, setMounted] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -25,8 +24,6 @@ function SignInForm() {
   const urlError = searchParams.get('error');
 
   useEffect(() => {
-    setMounted(true);
-    
     // URLパラメータからのエラー処理
     if (urlError) {
       const errorInfo = getAuthErrorMessage(urlError);
@@ -134,17 +131,6 @@ function SignInForm() {
     fontWeight: '600',
     transition: 'color 0.2s',
   };
-
-  if (!mounted) {
-    return (
-      <div style={containerStyle}>
-        <div style={{ ...modern2025Styles.card, ...formContainerStyle }}>
-          <h1 style={titleStyle}>ログイン</h1>
-          <p style={subtitleStyle}>アカウントにログインして続ける</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <>

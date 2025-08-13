@@ -1,6 +1,6 @@
 'use client';
 
-import { AppBar, Toolbar, Typography, Button, Box, Avatar, Menu, MenuItem, IconButton } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, Box, Avatar, Menu, MenuItem, IconButton, Skeleton } from '@mui/material';
 import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -47,7 +47,7 @@ export default function ClientHeader() {
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           {status === 'loading' ? (
-            <Box sx={{ width: 120, height: 36 }} />
+            <Skeleton variant="rectangular" width={120} height={36} sx={{ borderRadius: 1 }} />
           ) : session ? (
             <>
               <Button color="inherit" href="/board">

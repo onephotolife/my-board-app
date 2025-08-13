@@ -68,7 +68,18 @@ export default function WelcomeSection({ session }: WelcomeSectionProps) {
         </Avatar>
         
         <Box flex={1} minWidth={200}>
-          <Typography variant="h4" fontWeight="bold" gutterBottom>
+          <Typography 
+            variant="h4" 
+            fontWeight="bold" 
+            gutterBottom
+            sx={{
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              maxWidth: { xs: '100%', sm: '400px', md: '600px' }
+            }}
+            title={`おかえりなさい、${userName}さん！`}
+          >
             おかえりなさい、{userName}さん！
           </Typography>
           <Typography variant="body1" sx={{ opacity: 0.95 }}>

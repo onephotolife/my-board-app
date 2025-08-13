@@ -53,8 +53,19 @@ export default function ClientHeader() {
               <Button color="inherit" href="/board">
                 掲示板
               </Button>
-              <Box sx={{ display: 'flex', alignItems: 'center', ml: 2 }}>
-                <Typography component="span" sx={{ mr: 1, color: 'inherit' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', ml: 2, maxWidth: { xs: 150, sm: 200, md: 250 } }}>
+                <Typography 
+                  component="span" 
+                  sx={{ 
+                    mr: 1, 
+                    color: 'inherit',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    maxWidth: { xs: 100, sm: 150, md: 200 }
+                  }}
+                  title={`${session.user?.name}さん`}
+                >
                   {session.user?.name}さん
                 </Typography>
                 <IconButton

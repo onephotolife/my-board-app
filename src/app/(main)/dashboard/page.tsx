@@ -71,7 +71,17 @@ export default function DashboardPage() {
           <DashboardIcon fontSize="large" />
           ダッシュボード
         </Typography>
-        <Typography variant="body1" color="text.secondary">
+        <Typography 
+          variant="body1" 
+          color="text.secondary"
+          sx={{
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            maxWidth: { xs: '100%', sm: '600px', md: '800px' }
+          }}
+          title={`ようこそ、${session?.user?.name || session?.user?.email}さん`}
+        >
           ようこそ、{session?.user?.name || session?.user?.email}さん
         </Typography>
       </Box>
@@ -94,10 +104,26 @@ export default function DashboardPage() {
             </Box>
             <Divider sx={{ my: 2 }} />
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              <Typography variant="body2">
+              <Typography 
+                variant="body2"
+                sx={{
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap'
+                }}
+                title={`名前: ${session?.user?.name || '未設定'}`}
+              >
                 <strong>名前:</strong> {session?.user?.name || '未設定'}
               </Typography>
-              <Typography variant="body2">
+              <Typography 
+                variant="body2"
+                sx={{
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap'
+                }}
+                title={`メール: ${session?.user?.email}`}
+              >
                 <strong>メール:</strong> {session?.user?.email}
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>

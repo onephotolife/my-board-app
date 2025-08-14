@@ -35,8 +35,8 @@ function hashToken(token: string, secret: string): string {
  */
 export async function getOrCreateCSRFToken(): Promise<string> {
   const cookieStore = cookies();
-  const cookieName = process.env.NODE_ENV === 'production' ? CSRF_COOKIE_NAME : 'csrf-token';
-  const existingToken = cookieStore.get(cookieName);
+  const csrfCookieName = process.env.NODE_ENV === 'production' ? CSRF_COOKIE_NAME : 'csrf-token';
+  const existingToken = cookieStore.get(csrfCookieName);
   
   if (existingToken?.value) {
     return existingToken.value;
@@ -47,8 +47,7 @@ export async function getOrCreateCSRFToken(): Promise<string> {
   
   // Cookieに保存（httpOnly, secure, sameSite=strict）
   // 注意: __Host- プレフィックスはHTTPS環境でのみ使用可能
-  const cookieName = process.env.NODE_ENV === 'production' ? CSRF_COOKIE_NAME : 'csrf-token';
-  cookieStore.set(cookieName, newToken, {
+  cookieStore.set(csrfCookieName, newToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
@@ -92,8 +91,8 @@ export async function verifyCSRFToken(
   
   try {
     // Cookieからトークンを取得（開発環境と本番環境で異なるCookie名）
-    const cookieName = process.env.NODE_ENV === 'production' ? CSRF_COOKIE_NAME : 'csrf-token';
-    const cookieToken = request.cookies.get(cookieName)?.value;
+    const csrfCookieName = process.env.NODE_ENV === 'production' ? CSRF_COOKIE_NAME : 'csrf-token';
+    const cookieToken = request.cookies.get(csrfCookieName)?.value;
     if (!cookieToken) {
       console.warn('CSRF: Cookie token not found');
       return false;
@@ -240,13 +239,13 @@ export async function secureFetch(
 export async function regenerateCSRFToken(): Promise<string> {
   const cookieStore = cookies();
   const newToken = generateCSRFToken();
-  const cookieName = process.env.NODE_ENV === 'production' ? CSRF_COOKIE_NAME : 'csrf-token';
+  const csrfCookieName = process.env.NODE_ENV === 'production' ? CSRF_COOKIE_NAME : 'csrf-token';
   
   // 古いトークンを削除
-  cookieStore.delete(cookieName);
+  cookieStore.delete(csrfCookieName);
   
   // 新しいトークンを設定
-  cookieStore.set(cookieName, newToken, {
+  cookieStore.set(csrfCookieName, newToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',

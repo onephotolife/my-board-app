@@ -66,7 +66,7 @@ export default function ClientHeader() {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            <Link href={session ? "/board" : "/"} style={{ color: 'inherit', textDecoration: 'none' }}>
+            <Link href="/" style={{ color: 'inherit', textDecoration: 'none' }}>
               会員制掲示板
             </Link>
           </Typography>

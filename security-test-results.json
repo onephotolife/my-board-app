@@ -1,0 +1,44 @@
+{
+  "timestamp": "2025-08-14T03:39:59.064Z",
+  "results": [
+    {
+      "name": "レート制限（6回目でブロックまたは認証エラー）",
+      "passed": false
+    },
+    {
+      "name": "XSS攻撃の防御",
+      "passed": false
+    },
+    {
+      "name": "セキュリティヘッダー",
+      "passed": false
+    },
+    {
+      "name": "NoSQLインジェクション防御",
+      "passed": true
+    },
+    {
+      "name": "レスポンスタイム記録",
+      "passed": false
+    },
+    {
+      "name": "入力サニタイゼーション",
+      "passed": false
+    }
+  ],
+  "percentage": "16.7",
+  "summary": {
+    "rateLimit": false,
+    "xss": false,
+    "headers": false,
+    "injection": true,
+    "responseTime": false,
+    "sanitization": false
+  },
+  "phase": "Phase 1 (基本セキュリティ)",
+  "environment": {
+    "nodeVersion": "v22.17.0",
+    "platform": "darwin",
+    "url": "http://localhost:3000"
+  }
+}

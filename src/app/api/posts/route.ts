@@ -3,6 +3,7 @@ import { connectDB } from '@/lib/db/mongodb';
 import Post from '@/models/Post';
 import User from '@/lib/models/User';
 import { getUnifiedSession, getUserFromSession } from '@/lib/auth/session-helper';
+import { InputSanitizer } from '@/lib/security/sanitizer';
 import { z } from 'zod';
 
 // バリデーションスキーマ
@@ -104,9 +105,16 @@ export async function POST(request: NextRequest) {
 
     // リクエストボディを取得
     const body = await request.json();
+    
+    // 入力のサニタイゼーション
+    const sanitizedBody = {
+      title: InputSanitizer.sanitizeText(body.title || ''),
+      content: InputSanitizer.sanitizeText(body.content || ''),
+      tags: body.tags ? body.tags.map((tag: any) => InputSanitizer.sanitizeText(tag)) : undefined
+    };
 
     // バリデーション
-    const validatedData = PostCreateSchema.parse(body);
+    const validatedData = PostCreateSchema.parse(sanitizedBody);
 
     // ユーザー情報を取得（統合セッションヘルパー使用）
     const user = await getUserFromSession(request);

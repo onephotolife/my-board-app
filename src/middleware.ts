@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
+import { RateLimiter } from '@/lib/security/rate-limiter';
+import { InputSanitizer } from '@/lib/security/sanitizer';
 
 // 保護されたパス（認証が必要）
 const protectedPaths = [
@@ -49,6 +51,58 @@ function isPublicPath(pathname: string): boolean {
 
 export async function middleware(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl;
+  const startTime = Date.now();
+  
+  // 静的ファイルはスキップ
+  if (
+    pathname.startsWith('/_next/static') ||
+    pathname.startsWith('/_next/image') ||
+    pathname.includes('/favicon.ico')
+  ) {
+    return NextResponse.next();
+  }
+  
+  // APIルートのレート制限チェック
+  if (pathname.startsWith('/api/')) {
+    const rateLimitResult = await RateLimiter.check(request);
+    
+    if (!rateLimitResult.allowed) {
+      const limitResponse = NextResponse.json(
+        { 
+          error: 'Too many requests. Please try again later.',
+          retryAfter: Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000)
+        },
+        { status: 429 }
+      );
+      
+      limitResponse.headers.set('X-RateLimit-Limit', '5');
+      limitResponse.headers.set('X-RateLimit-Remaining', String(rateLimitResult.remaining));
+      limitResponse.headers.set('X-RateLimit-Reset', String(rateLimitResult.resetTime));
+      limitResponse.headers.set('Retry-After', String(Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000)));
+      
+      console.warn(`Rate limit exceeded: ${request.ip} - ${pathname}`);
+      return limitResponse;
+    }
+  }
+  
+  // クエリパラメータのサニタイゼーション
+  const url = new URL(request.url);
+  let paramsSanitized = false;
+
+  searchParams.forEach((value, key) => {
+    const sanitized = InputSanitizer.sanitizeText(value);
+    if (sanitized !== value) {
+      url.searchParams.set(key, sanitized);
+      paramsSanitized = true;
+      console.warn(`Sanitized query parameter: ${key}`);
+    }
+  });
+
+  // パラメータが変更された場合、新しいURLにリダイレクト
+  if (paramsSanitized) {
+    return NextResponse.redirect(url);
+  }
+  
   const response = NextResponse.next();
   
   // セキュリティヘッダーの設定
@@ -144,6 +198,10 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL(callbackUrl, request.url));
     }
   }
+  
+  // レスポンスタイムの記録
+  const duration = Date.now() - startTime;
+  response.headers.set('X-Response-Time', `${duration}ms`);
   
   return response;
 }

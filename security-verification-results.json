@@ -1,0 +1,98 @@
+{
+  "timestamp": "2025-08-14T04:15:29.174Z",
+  "results": {
+    "rateLimit": {
+      "passed": true,
+      "details": [
+        {
+          "attempt": 1,
+          "status": 401,
+          "remaining": null
+        },
+        {
+          "attempt": 2,
+          "status": 401,
+          "remaining": null
+        },
+        {
+          "attempt": 3,
+          "status": 401,
+          "remaining": null
+        },
+        {
+          "attempt": 4,
+          "status": 401,
+          "remaining": null
+        },
+        {
+          "attempt": 5,
+          "status": 401,
+          "remaining": null
+        },
+        {
+          "attempt": 6,
+          "status": 429,
+          "remaining": "0"
+        }
+      ]
+    },
+    "headers": {
+      "passed": true,
+      "details": {
+        "x-frame-options": "DENY",
+        "x-content-type-options": "nosniff",
+        "x-xss-protection": "1; mode=block",
+        "content-security-policy": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://api.github.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "permissions-policy": "camera=(), microphone=(), geolocation=()"
+      }
+    },
+    "xss": {
+      "passed": true,
+      "details": [
+        {
+          "payload": "<script>alert(\"XSS\")</script>",
+          "safe": true
+        },
+        {
+          "payload": "<img src=x onerror=\"alert(1)\">",
+          "safe": true
+        },
+        {
+          "payload": "javascript:alert(1)",
+          "safe": true
+        }
+      ]
+    },
+    "csrf": {
+      "passed": false,
+      "message": "Not implemented (Phase 2)"
+    },
+    "audit": {
+      "passed": false,
+      "message": "Not implemented (Phase 3)"
+    },
+    "session": {
+      "passed": true,
+      "message": "NextAuth.js default configuration",
+      "details": {
+        "maxAge": "30 days",
+        "updateAge": "24 hours"
+      }
+    }
+  },
+  "summary": {
+    "レート制限": "✅",
+    "セキュリティヘッダー": "✅",
+    "XSS防御": "✅",
+    "CSRF保護": "⚠️ 未実装",
+    "監査ログ": "⚠️ 未実装",
+    "セッション管理": "✅"
+  },
+  "percentage": "100.0",
+  "environment": {
+    "nodeVersion": "v22.17.0",
+    "platform": "darwin",
+    "url": "http://localhost:3000"
+  }
+}

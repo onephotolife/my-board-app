@@ -22,6 +22,7 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   'PUT:/api/posts/*': { windowMs: 60000, maxRequests: 10 },       // 1分間に10回
   'DELETE:/api/posts/*': { windowMs: 60000, maxRequests: 5 },     // 1分間に5回
   'POST:/api/auth/test-login': { windowMs: 60000, maxRequests: 10 }, // テスト用
+  'GET:/api/health': { windowMs: 60000, maxRequests: 50 },        // 1分間に50回（ヘルスチェック用）
   'default': { windowMs: 60000, maxRequests: 100 }                // デフォルト
 };
 

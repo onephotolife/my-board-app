@@ -1,0 +1,56 @@
+{
+  "timestamp": "2025-08-14T05:19:46.114Z",
+  "environment": "http://localhost:3000",
+  "results": {
+    "unit": {
+      "passed": 8,
+      "failed": 0,
+      "warnings": 0
+    },
+    "integration": {
+      "passed": 6,
+      "failed": 0,
+      "warnings": 1
+    },
+    "e2e": {
+      "passed": 6,
+      "failed": 0,
+      "warnings": 0
+    },
+    "accessibility": {
+      "passed": 6,
+      "failed": 0,
+      "warnings": 1
+    },
+    "performance": {
+      "passed": 5,
+      "failed": 1,
+      "warnings": 0
+    },
+    "usability": {
+      "passed": 5,
+      "failed": 0,
+      "warnings": 0
+    }
+  },
+  "performanceMetrics": {
+    "fcp": [
+      72,
+      68,
+      43
+    ],
+    "lcp": [],
+    "tti": [],
+    "cls": [],
+    "fid": []
+  },
+  "summary": {
+    "totalTests": 39,
+    "totalPassed": 36,
+    "totalFailed": 1,
+    "totalWarnings": 2,
+    "overallPassRate": "92.3",
+    "uxScore": 92,
+    "performanceScore": 100
+  }
+}

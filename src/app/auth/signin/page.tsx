@@ -151,7 +151,7 @@ function SignInForm() {
       
       <div style={containerStyle}>
         <div style={{ ...modern2025Styles.card, ...formContainerStyle, animation: 'fadeIn 0.5s ease-out' }}>
-          <h1 style={titleStyle}>おかえりなさい</h1>
+          <h1 style={titleStyle}>ログイン - Sign In</h1>
           <p style={subtitleStyle}>アカウントにログインして続ける</p>
           
           {verified && (

@@ -457,6 +457,29 @@ export default function ModernHeader() {
             </div>
           </div>
           <Link
+            href="/dashboard"
+            style={{
+              display: 'block',
+              padding: '12px 16px',
+              fontSize: '14px',
+              color: '#475569',
+              textDecoration: 'none',
+              borderRadius: '8px',
+              transition: 'background 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'rgba(99, 102, 241, 0.05)';
+              e.currentTarget.style.color = '#6366f1';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.color = '#475569';
+            }}
+            onClick={() => setMenuOpen(false)}
+          >
+            📊 ダッシュボード
+          </Link>
+          <Link
             href="/board"
             style={{
               display: 'block',
@@ -538,6 +561,9 @@ export default function ModernHeader() {
         </Link>
         {session && (
           <>
+            <Link href="/dashboard" style={{ ...navLinkStyle, padding: '12px' }}>
+              ダッシュボード
+            </Link>
             <Link href="/board" style={{ ...navLinkStyle, padding: '12px' }}>
               掲示板
             </Link>

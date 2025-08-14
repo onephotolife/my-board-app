@@ -1,7 +1,5 @@
 'use client';
 
-import ModernHeader from '@/components/ModernHeader';
-
 export default function BoardLayoutClient({
   children,
 }: {
@@ -9,7 +7,6 @@ export default function BoardLayoutClient({
 }) {
   return (
     <>
-      <ModernHeader />
       {children}
     </>
   );

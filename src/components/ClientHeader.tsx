@@ -1,16 +1,34 @@
 'use client';
 
-import { AppBar, Toolbar, Typography, Button, Box, Avatar, Menu, MenuItem, IconButton, Skeleton } from '@mui/material';
+import { 
+  AppBar, 
+  Toolbar, 
+  Typography, 
+  Button, 
+  Box, 
+  Avatar, 
+  Menu, 
+  MenuItem, 
+  IconButton, 
+  Skeleton, 
+  Divider
+} from '@mui/material';
 import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import PersonIcon from '@mui/icons-material/Person';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import LogoutIcon from '@mui/icons-material/Logout';
+import ForumIcon from '@mui/icons-material/Forum';
+import MenuIcon from '@mui/icons-material/Menu';
+import SlideDrawer from './SlideDrawer';
 
 export default function ClientHeader() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const handleSignOut = async () => {
     await signOut({ redirect: false });
@@ -30,6 +48,12 @@ export default function ClientHeader() {
     handleMenuClose();
   };
 
+  const handleDashboardClick = () => {
+    router.push('/dashboard');
+    handleMenuClose();
+  };
+
+
   // アバターの頭文字を生成
   const getInitials = (name?: string | null) => {
     if (!name) return '?';
@@ -38,25 +62,44 @@ export default function ClientHeader() {
   };
 
   return (
-    <AppBar position="static">
-      <Toolbar>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          <Link href="/" style={{ color: 'inherit', textDecoration: 'none' }}>
-            会員制掲示板
-          </Link>
-        </Typography>
+    <>
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            <Link href={session ? "/board" : "/"} style={{ color: 'inherit', textDecoration: 'none' }}>
+              会員制掲示板
+            </Link>
+          </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           {status === 'loading' ? (
             <Skeleton variant="rectangular" width={120} height={36} sx={{ borderRadius: 1 }} />
           ) : session ? (
             <>
-              <Button color="inherit" href="/posts">
-                投稿一覧
-              </Button>
-              <Button color="inherit" href="/board">
+              <IconButton
+                color="inherit"
+                href="/dashboard"
+                sx={{ display: { xs: 'flex', sm: 'none' } }}
+                aria-label="ダッシュボード"
+              >
+                <DashboardIcon />
+              </IconButton>
+              <Button 
+                color="inherit" 
+                href="/board"
+                startIcon={<ForumIcon />}
+                sx={{ display: { xs: 'none', sm: 'flex' } }}
+              >
                 掲示板
               </Button>
-              <Box sx={{ display: 'flex', alignItems: 'center', ml: 2, maxWidth: { xs: 150, sm: 200, md: 250 } }}>
+              <Button 
+                color="inherit" 
+                href="/dashboard"
+                startIcon={<DashboardIcon />}
+                sx={{ display: { xs: 'none', md: 'flex' } }}
+              >
+                ダッシュボード
+              </Button>
+              <Box sx={{ display: 'flex', alignItems: 'center', ml: { xs: 1, sm: 2 }, maxWidth: { xs: 150, sm: 200, md: 250 } }}>
                 <Typography 
                   component="span" 
                   sx={{ 
@@ -65,7 +108,8 @@ export default function ClientHeader() {
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
-                    maxWidth: { xs: 100, sm: 150, md: 200 }
+                    maxWidth: { xs: 100, sm: 150, md: 200 },
+                    display: { xs: 'none', sm: 'inline' }
                   }}
                   title={`${session.user?.name}さん`}
                 >
@@ -92,12 +136,24 @@ export default function ClientHeader() {
                     vertical: 'top',
                     horizontal: 'right',
                   }}
+                  PaperProps={{
+                    sx: {
+                      minWidth: 200,
+                      mt: 1
+                    }
+                  }}
                 >
+                  <MenuItem onClick={handleDashboardClick}>
+                    <DashboardIcon sx={{ mr: 1, fontSize: 20 }} />
+                    ダッシュボード
+                  </MenuItem>
                   <MenuItem onClick={handleProfileClick}>
-                    <PersonIcon sx={{ mr: 1 }} />
+                    <PersonIcon sx={{ mr: 1, fontSize: 20 }} />
                     プロフィール
                   </MenuItem>
+                  <Divider sx={{ my: 0.5 }} />
                   <MenuItem onClick={handleSignOut}>
+                    <LogoutIcon sx={{ mr: 1, fontSize: 20 }} />
                     ログアウト
                   </MenuItem>
                 </Menu>
@@ -110,8 +166,25 @@ export default function ClientHeader() {
               </Button>
             </>
           )}
+          <IconButton
+            color="inherit"
+            aria-label="メニューを開く"
+            edge="end"
+            onClick={() => setDrawerOpen(true)}
+            sx={{ ml: 1 }}
+          >
+            <MenuIcon />
+          </IconButton>
         </Box>
       </Toolbar>
     </AppBar>
+    
+    {/* SlideDrawerコンポーネントを使用 */}
+    <SlideDrawer 
+      open={drawerOpen} 
+      onClose={() => setDrawerOpen(false)}
+      onOpen={() => setDrawerOpen(true)} 
+    />
+    </>
   );
 }

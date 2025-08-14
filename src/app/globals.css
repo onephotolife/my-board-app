@@ -181,66 +181,10 @@ main,
   top: 0;
 }
 
-/* Main navigation */
-.main-nav {
-  background: var(--background);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  padding: 1rem 0;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.nav-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.nav-logo {
-  font-size: 1.5rem;
-  font-weight: bold;
-  text-decoration: none;
-  color: var(--foreground);
-}
-
-.nav-menu {
-  display: flex;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  gap: 2rem;
-}
-
-.nav-menu a {
-  color: var(--foreground);
-  text-decoration: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  transition: background-color 0.2s;
-}
-
-.nav-menu a:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-}
-
-@media (prefers-color-scheme: dark) {
-  .main-nav {
-    border-bottom-color: rgba(255, 255, 255, 0.1);
-  }
-  
-  .nav-menu a:hover {
-    background-color: rgba(255, 255, 255, 0.05);
-  }
-}
-
 /* Main content area */
 main {
-  min-height: calc(100vh - 200px);
-  padding: 2rem 0;
+  min-height: calc(100vh - 100px);
+  padding: 0;
 }
 
 /* Footer */

@@ -29,23 +29,6 @@ export default function RootLayout({
     <html lang="ja">
       <body>
         <Providers>
-          {/* スキップリンク（アクセシビリティ向上） */}
-          <a href="#main-content" className="skip-link">
-            メインコンテンツへスキップ
-          </a>
-          
-          {/* ナビゲーション要素 */}
-          <nav role="navigation" aria-label="メインナビゲーション" className="main-nav">
-            <div className="nav-container">
-              <a href="/" className="nav-logo">会員制掲示板</a>
-              <ul className="nav-menu">
-                <li><a href="/">ホーム</a></li>
-                <li><a href="/board">掲示板</a></li>
-                <li><a href="/auth/signin">ログイン</a></li>
-              </ul>
-            </div>
-          </nav>
-          
           {/* メインコンテンツ */}
           <main id="main-content" role="main">
             {children}

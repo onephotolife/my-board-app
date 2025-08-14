@@ -7,19 +7,14 @@ import {
   Button, 
   Box, 
   Avatar, 
-  Menu, 
-  MenuItem, 
   IconButton, 
-  Skeleton, 
-  Divider
+  Skeleton
 } from '@mui/material';
 import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import PersonIcon from '@mui/icons-material/Person';
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import LogoutIcon from '@mui/icons-material/Logout';
 import ForumIcon from '@mui/icons-material/Forum';
 import MenuIcon from '@mui/icons-material/Menu';
 import SlideDrawer from './SlideDrawer';
@@ -27,30 +22,11 @@ import SlideDrawer from './SlideDrawer';
 export default function ClientHeader() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const handleSignOut = async () => {
     await signOut({ redirect: false });
     router.push('/');
-  };
-
-  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleProfileClick = () => {
-    router.push('/profile');
-    handleMenuClose();
-  };
-
-  const handleDashboardClick = () => {
-    router.push('/dashboard');
-    handleMenuClose();
   };
 
 
@@ -115,48 +91,9 @@ export default function ClientHeader() {
                 >
                   {session.user?.name}さん
                 </Typography>
-                <IconButton
-                  onClick={handleMenuOpen}
-                  sx={{ p: 0 }}
-                  aria-label="プロフィールメニュー"
-                >
-                  <Avatar sx={{ width: 32, height: 32, bgcolor: 'secondary.main' }}>
-                    {getInitials(session.user?.name)}
-                  </Avatar>
-                </IconButton>
-                <Menu
-                  anchorEl={anchorEl}
-                  open={Boolean(anchorEl)}
-                  onClose={handleMenuClose}
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right',
-                  }}
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                  PaperProps={{
-                    sx: {
-                      minWidth: 200,
-                      mt: 1
-                    }
-                  }}
-                >
-                  <MenuItem onClick={handleDashboardClick}>
-                    <DashboardIcon sx={{ mr: 1, fontSize: 20 }} />
-                    ダッシュボード
-                  </MenuItem>
-                  <MenuItem onClick={handleProfileClick}>
-                    <PersonIcon sx={{ mr: 1, fontSize: 20 }} />
-                    プロフィール
-                  </MenuItem>
-                  <Divider sx={{ my: 0.5 }} />
-                  <MenuItem onClick={handleSignOut}>
-                    <LogoutIcon sx={{ mr: 1, fontSize: 20 }} />
-                    ログアウト
-                  </MenuItem>
-                </Menu>
+                <Avatar sx={{ width: 32, height: 32, bgcolor: 'secondary.main' }}>
+                  {getInitials(session.user?.name)}
+                </Avatar>
               </Box>
             </>
           ) : (

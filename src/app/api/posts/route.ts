@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db/mongodb';
 import Post from '@/models/Post';
 import User from '@/lib/models/User';
-import { auth } from '@/lib/auth';
+import { getUnifiedSession, getUserFromSession } from '@/lib/auth/session-helper';
 import { z } from 'zod';
 
 // バリデーションスキーマ
@@ -32,8 +32,8 @@ export async function GET(request: NextRequest) {
       query.author = author;
     }
 
-    // セッション情報を取得（オプション）
-    const session = await auth();
+    // セッション情報を取得（統合セッションヘルパー使用）
+    const session = await getUnifiedSession(request);
     console.log('API Session:', session ? { userId: session.user?.id, email: session.user?.email } : 'No session');
 
     // 投稿を取得
@@ -91,8 +91,8 @@ export async function GET(request: NextRequest) {
 // POST: 新規投稿作成（認証必須）
 export async function POST(request: NextRequest) {
   try {
-    // 認証チェック
-    const session = await auth();
+    // 認証チェック（統合セッションヘルパー使用）
+    const session = await getUnifiedSession(request);
     if (!session?.user?.id) {
       return NextResponse.json(
         { error: 'ログインが必要です' },
@@ -108,8 +108,8 @@ export async function POST(request: NextRequest) {
     // バリデーション
     const validatedData = PostCreateSchema.parse(body);
 
-    // ユーザー情報を取得
-    const user = await User.findById(session.user.id);
+    // ユーザー情報を取得（統合セッションヘルパー使用）
+    const user = await getUserFromSession(request);
     if (!user) {
       return NextResponse.json(
         { error: 'ユーザーが見つかりません' },

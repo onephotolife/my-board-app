@@ -1,0 +1,50 @@
+{
+  "timestamp": "2025-08-14T03:11:23.631Z",
+  "results": {
+    "passed": 8,
+    "failed": 0,
+    "tests": [
+      {
+        "name": "自分の投稿に編集・削除ボタンが表示される",
+        "passed": true,
+        "details": "canEdit=true, canDelete=true"
+      },
+      {
+        "name": "他人の投稿にはボタンが表示されない",
+        "passed": true,
+        "details": "canEdit=false, canDelete=false"
+      },
+      {
+        "name": "自分の投稿を編集できる",
+        "passed": true,
+        "details": "Status: 200"
+      },
+      {
+        "name": "他人の投稿を編集しようとすると拒否される",
+        "passed": true,
+        "details": "Status: 403"
+      },
+      {
+        "name": "APIに不正な削除リクエストを送ると403エラー",
+        "passed": true,
+        "details": "Status: 403"
+      },
+      {
+        "name": "未認証リクエストは401エラー",
+        "passed": true,
+        "details": "Status: 401"
+      },
+      {
+        "name": "自分の投稿を削除できる",
+        "passed": true,
+        "details": "Status: 200"
+      },
+      {
+        "name": "削除した投稿が表示されない",
+        "passed": true,
+        "details": "投稿が見つからない"
+      }
+    ]
+  },
+  "percentage": "100.0"
+}

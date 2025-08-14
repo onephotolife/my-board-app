@@ -4,6 +4,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { SessionProvider } from 'next-auth/react';
 import { UserProvider } from '@/contexts/UserContext';
+import { PermissionProvider } from '@/contexts/PermissionContext';
 
 // CSP準拠のテーマ設定
 const theme = createTheme({
@@ -84,10 +85,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <SessionProvider refetchInterval={5 * 60} refetchOnWindowFocus={true}>
       <UserProvider>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          {children}
-        </ThemeProvider>
+        <PermissionProvider>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            {children}
+          </ThemeProvider>
+        </PermissionProvider>
       </UserProvider>
     </SessionProvider>
   );

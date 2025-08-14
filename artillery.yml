@@ -1,0 +1,84 @@
+config:
+  target: "http://localhost:3000"
+  phases:
+    - duration: 30
+      arrivalRate: 5
+      name: "Warm up"
+    - duration: 60
+      arrivalRate: 10
+      name: "Ramp up"
+    - duration: 30
+      arrivalRate: 20
+      name: "Sustained load"
+  http:
+    timeout: 10
+
+scenarios:
+  - name: "Permission Check Performance Test"
+    flow:
+      # 投稿一覧取得（認証なし）
+      - get:
+          url: "/api/posts?limit=10"
+          capture:
+            - json: "$.posts[0]._id"
+              as: "firstPostId"
+          expect:
+            - statusCode: 200
+            - contentType: json
+      
+      # 権限情報取得（ゲスト）
+      - get:
+          url: "/api/user/permissions"
+          expect:
+            - statusCode: 200
+            - contentType: json
+      
+      # セッション確認
+      - get:
+          url: "/api/auth/session"
+          expect:
+            - statusCode: 200
+      
+      # 個別投稿取得（権限チェック含む）
+      - get:
+          url: "/api/posts/689d231c71658c3212b2f6c2"
+          expect:
+            - statusCode:
+                - 200
+                - 404
+      
+      # 未認証での更新試行（401期待）
+      - put:
+          url: "/api/posts/689d231c71658c3212b2f6c2"
+          json:
+            content: "Load test update"
+          expect:
+            - statusCode: 401
+      
+      # 未認証での削除試行（401期待）
+      - delete:
+          url: "/api/posts/689d231c71658c3212b2f6c2"
+          expect:
+            - statusCode: 401
+  
+  - name: "High Volume Read Test"
+    weight: 3
+    flow:
+      # 高頻度読み取りテスト
+      - loop:
+          - get:
+              url: "/api/posts?limit=5"
+          - think: 1
+        count: 5
+  
+  - name: "Permission API Stress Test"
+    weight: 2
+    flow:
+      # 権限APIへの負荷テスト
+      - loop:
+          - get:
+              url: "/api/user/permissions"
+          - get:
+              url: "/api/auth/session"
+          - think: 0.5
+        count: 10

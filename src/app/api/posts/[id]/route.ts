@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db/mongodb';
 import Post from '@/models/Post';
-import { auth } from '@/lib/auth';
+import { getUnifiedSession } from '@/lib/auth/session-helper';
 import { z } from 'zod';
 
 // バリデーションスキーマ
@@ -38,8 +38,8 @@ export async function GET(
       );
     }
 
-    // セッション情報を取得
-    const session = await auth();
+    // セッション情報を取得（統合セッションヘルパー使用）
+    const session = await getUnifiedSession(request);
 
     // 権限情報を追加
     const postWithPermissions = {
@@ -64,8 +64,8 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // 認証チェック
-    const session = await auth();
+    // 認証チェック（統合セッションヘルパー使用）
+    const session = await getUnifiedSession(request);
     if (!session?.user?.id) {
       return NextResponse.json(
         { error: 'ログインが必要です' },
@@ -132,8 +132,8 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // 認証チェック
-    const session = await auth();
+    // 認証チェック（統合セッションヘルパー使用）
+    const session = await getUnifiedSession(request);
     if (!session?.user?.id) {
       return NextResponse.json(
         { error: 'ログインが必要です' },

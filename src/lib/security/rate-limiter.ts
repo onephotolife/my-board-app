@@ -15,6 +15,7 @@ interface RateLimitEntry {
 
 // エンドポイント毎の設定
 export const RATE_LIMITS: Record<string, RateLimitConfig> = {
+  'GET:/api/posts': { windowMs: 60000, maxRequests: 5 },          // 1分間に5回（テスト用）
   'POST:/api/posts': { windowMs: 60000, maxRequests: 5 },        // 1分間に5回
   'POST:/api/auth/signin': { windowMs: 900000, maxRequests: 5 },  // 15分間に5回
   'POST:/api/auth/signup': { windowMs: 3600000, maxRequests: 3 }, // 1時間に3回

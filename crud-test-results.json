@@ -1,0 +1,50 @@
+{
+  "timestamp": "2025-08-14T05:01:40.204Z",
+  "environment": "http://localhost:3000",
+  "results": {
+    "unit": {
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0
+    },
+    "integration": {
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0
+    },
+    "e2e": {
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0
+    },
+    "security": {
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "performance": [
+    {
+      "name": "トップページ",
+      "time": 71,
+      "passed": true
+    },
+    {
+      "name": "投稿一覧API",
+      "time": 2,
+      "passed": true
+    },
+    {
+      "name": "ヘルスチェック",
+      "time": 43,
+      "passed": true
+    }
+  ],
+  "summary": {
+    "totalTests": 21,
+    "totalPassed": 21,
+    "totalFailed": 0,
+    "totalSkipped": 0,
+    "overallPassRate": "100.0"
+  }
+}

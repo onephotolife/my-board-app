@@ -37,7 +37,6 @@ export default function RootLayout({
           {/* フッター要素 */}
           <footer role="contentinfo" className="site-footer">
             <div className="footer-container">
-              <p>&copy; 2025 会員制掲示板. All rights reserved.</p>
               <nav aria-label="フッターナビゲーション">
                 <ul className="footer-links">
                   <li><a href="/privacy">プライバシーポリシー</a></li>
@@ -45,6 +44,7 @@ export default function RootLayout({
                   <li><a href="/contact">お問い合わせ</a></li>
                 </ul>
               </nav>
+              <p>&copy; 2025 会員制掲示板. All rights reserved.</p>
             </div>
           </footer>
         </Providers>

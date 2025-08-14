@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import AuthGuard from '@/components/AuthGuard';
+import { csrfFetch } from '@/hooks/useCSRF';
 import {
   Container,
   Paper,
@@ -278,7 +279,7 @@ export default function BoardPage() {
         : '/api/posts';
       const method = editingPost ? 'PUT' : 'POST';
 
-      const response = await fetch(url, {
+      const response = await csrfFetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -374,7 +375,7 @@ export default function BoardPage() {
     
     setDeleting(true);
     try {
-      const response = await fetch(`/api/posts/${postToDelete}`, {
+      const response = await csrfFetch(`/api/posts/${postToDelete}`, {
         method: 'DELETE',
       });
 

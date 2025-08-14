@@ -5,6 +5,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { SessionProvider } from 'next-auth/react';
 import { UserProvider } from '@/contexts/UserContext';
 import { PermissionProvider } from '@/contexts/PermissionContext';
+import { CSRFProvider } from '@/components/CSRFProvider';
 
 // CSP準拠のテーマ設定
 const theme = createTheme({
@@ -86,10 +87,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <SessionProvider refetchInterval={5 * 60} refetchOnWindowFocus={true}>
       <UserProvider>
         <PermissionProvider>
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
-            {children}
-          </ThemeProvider>
+          <CSRFProvider>
+            <ThemeProvider theme={theme}>
+              <CssBaseline />
+              {children}
+            </ThemeProvider>
+          </CSRFProvider>
         </PermissionProvider>
       </UserProvider>
     </SessionProvider>

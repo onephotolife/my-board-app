@@ -1,0 +1,82 @@
+==========================================
+Claude Code 通知システムテスト開始
+開始時刻: 2025年 8月12日 火曜日 22時45分42秒 JST
+テストスクリプト: /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/claude-notification-test-suite.sh
+==========================================
+Test: 直接実行テスト
+Result: FAIL
+Details: 通知または音声が検出されない
+Time: 2025年 8月12日 火曜日 22時45分47秒 JST
+---
+Test: 複数方式テスト
+Result: PASS
+Details: ログに実行記録が確認された (1件)
+Time: 2025年 8月12日 火曜日 22時45分50秒 JST
+---
+Test: 設定ファイル存在
+Result: PASS
+Details: /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/.claude/settings.local.json が存在
+Time: 2025年 8月12日 火曜日 22時45分50秒 JST
+---
+Test: 設定ファイル構文
+Result: PASS
+Details: JSON構文が正しい
+Time: 2025年 8月12日 火曜日 22時45分50秒 JST
+---
+Test: Hook設定内容
+Result: PASS
+Details: 7個のHookが設定済み
+Time: 2025年 8月12日 火曜日 22時45分50秒 JST
+---
+Test: 監視スクリプト実行権限
+Result: PASS
+Details: 実行権限が設定されている
+Time: 2025年 8月12日 火曜日 22時45分50秒 JST
+---
+Test: フォールバックスクリプト実行権限
+Result: PASS
+Details: 実行権限が設定されている
+Time: 2025年 8月12日 火曜日 22時45分50秒 JST
+---
+Test: コマンド存在: osascript
+Result: PASS
+Details: コマンドが利用可能
+Time: 2025年 8月12日 火曜日 22時45分50秒 JST
+---
+Test: コマンド存在: afplay
+Result: PASS
+Details: コマンドが利用可能
+Time: 2025年 8月12日 火曜日 22時45分50秒 JST
+---
+Test: コマンド存在: jq
+Result: PASS
+Details: コマンドが利用可能
+Time: 2025年 8月12日 火曜日 22時45分50秒 JST
+---
+Test: コマンド存在: pgrep
+Result: PASS
+Details: コマンドが利用可能
+Time: 2025年 8月12日 火曜日 22時45分50秒 JST
+---
+Test: コマンド存在: tail
+Result: PASS
+Details: コマンドが利用可能
+Time: 2025年 8月12日 火曜日 22時45分50秒 JST
+---
+Test: システム通知権限
+Result: PASS
+Details: 通知権限が有効
+Time: 2025年 8月12日 火曜日 22時45分50秒 JST
+---
+Test: システム音声
+Result: PASS
+Details: 音声再生が可能
+Time: 2025年 8月12日 火曜日 22時45分50秒 JST
+---
+==========================================
+テスト完了時刻: 2025年 8月12日 火曜日 22時45分51秒 JST
+総合結果: MINOR_ISSUES
+総テスト数: 14
+成功: 13
+失敗: 1
+==========================================

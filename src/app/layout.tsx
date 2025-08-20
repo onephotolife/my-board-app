@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import "./globals.css";
 import { Providers } from "./providers";
+import ClientHeader from "@/components/ClientHeader";
 
 export const metadata: Metadata = {
-  title: "オープン掲示板",
-  description: "誰でも自由に投稿できる掲示板",
-  keywords: "掲示板,オープン,コミュニティ",
+  title: "会員制掲示板",
+  description: "会員限定の掲示板システム",
+  keywords: "掲示板,会員制,コミュニティ",
   openGraph: {
-    title: "オープン掲示板",
-    description: "誰でも自由に投稿できる掲示板",
+    title: "会員制掲示板",
+    description: "会員限定の掲示板システム",
     type: "website",
   },
 };
@@ -27,56 +27,27 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
-      <head>
-        {/* DNS プリフェッチとプリコネクト */}
-        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        
-        {/* クリティカルCSS */}
-        <style dangerouslySetInnerHTML={{
-          __html: `
-            body {
-              margin: 0;
-              padding: 0;
-              width: 100%;
-              min-height: 100vh;
-              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-              -webkit-font-smoothing: antialiased;
-              -moz-osx-font-smoothing: grayscale;
-            }
-            .loading-skeleton {
-              background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-              background-size: 200% 100%;
-              animation: loading 1.5s infinite;
-              border-radius: 4px;
-            }
-            @keyframes loading {
-              0% { background-position: 200% 0; }
-              100% { background-position: -200% 0; }
-            }
-          `
-        }} />
-      </head>
-      <body className="antialiased">
-        <Providers>{children}</Providers>
-        
-        {/* Service Worker登録 */}
-        <Script
-          id="register-sw"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                  navigator.serviceWorker.register('/sw.js').catch(err => 
-                    console.log('Service Worker registration failed:', err)
-                  );
-                });
-              }
-            `
-          }}
-        />
+      <body>
+        <Providers>
+          {/* メインコンテンツ */}
+          <main id="main-content" role="main">
+            {children}
+          </main>
+          
+          {/* フッター要素 */}
+          <footer role="contentinfo" className="site-footer">
+            <div className="footer-container">
+              <nav aria-label="フッターナビゲーション">
+                <ul className="footer-links">
+                  <li><a href="/privacy">プライバシーポリシー</a></li>
+                  <li><a href="/terms">利用規約</a></li>
+                  <li><a href="/contact">お問い合わせ</a></li>
+                </ul>
+              </nav>
+              <p>&copy; 2025 会員制掲示板. All rights reserved.</p>
+            </div>
+          </footer>
+        </Providers>
       </body>
     </html>
   );

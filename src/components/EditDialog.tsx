@@ -7,10 +7,13 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import Alert from '@mui/material/Alert';
+import { usePermissions } from '@/contexts/PermissionContext';
 
 interface Post {
   _id: string;
   content: string;
+  author?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -25,6 +28,7 @@ interface EditDialogProps {
 const EditDialog = memo(function EditDialog({ open, post, onClose, onUpdate }: EditDialogProps) {
   const [content, setContent] = useState('');
   const [updating, setUpdating] = useState(false);
+  const { canEdit } = usePermissions();
 
   useEffect(() => {
     if (post) {
@@ -32,7 +36,14 @@ const EditDialog = memo(function EditDialog({ open, post, onClose, onUpdate }: E
     }
   }, [post]);
 
+  const hasPermission = post?.author ? canEdit(post.author) : false;
+
   const handleUpdate = async () => {
+    if (!hasPermission) {
+      alert('この投稿を編集する権限がありません');
+      return;
+    }
+    
     setUpdating(true);
     try {
       await onUpdate(content);
@@ -58,6 +69,11 @@ const EditDialog = memo(function EditDialog({ open, post, onClose, onUpdate }: E
     >
       <DialogTitle>投稿を編集</DialogTitle>
       <DialogContent>
+        {!hasPermission && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            この投稿を編集する権限がありません
+          </Alert>
+        )}
         <TextField
           fullWidth
           multiline
@@ -66,6 +82,7 @@ const EditDialog = memo(function EditDialog({ open, post, onClose, onUpdate }: E
           value={content}
           onChange={(e) => setContent(e.target.value)}
           sx={{ mt: 1 }}
+          disabled={!hasPermission || updating}
           slotProps={{
             htmlInput: { maxLength: 200 }
           }}
@@ -77,7 +94,7 @@ const EditDialog = memo(function EditDialog({ open, post, onClose, onUpdate }: E
         <Button 
           onClick={handleUpdate} 
           variant="contained" 
-          disabled={!content.trim() || updating}
+          disabled={!content.trim() || updating || !hasPermission}
         >
           更新
         </Button>

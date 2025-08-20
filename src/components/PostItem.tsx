@@ -6,8 +6,10 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
+import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import { CanEdit, CanDelete } from '@/components/permissions/PermissionGate';
 
 interface Post {
   _id: string;
@@ -44,12 +46,39 @@ const PostItem = memo(function PostItem({ post, onEdit, onDelete }: PostItemProp
       }}
       secondaryAction={
         <Box sx={{ display: 'flex', gap: { xs: 0, sm: 1 } }}>
-          <IconButton edge="end" aria-label="edit" onClick={() => onEdit(post)}>
-            <EditIcon />
-          </IconButton>
-          <IconButton edge="end" aria-label="delete" onClick={() => onDelete(post._id)}>
-            <DeleteIcon />
-          </IconButton>
+          <CanEdit 
+            resourceOwnerId={post.author}
+            fallback={
+              <Tooltip title="編集権限がありません">
+                <span>
+                  <IconButton edge="end" disabled>
+                    <EditIcon />
+                  </IconButton>
+                </span>
+              </Tooltip>
+            }
+          >
+            <IconButton edge="end" aria-label="edit" onClick={() => onEdit(post)}>
+              <EditIcon />
+            </IconButton>
+          </CanEdit>
+          
+          <CanDelete 
+            resourceOwnerId={post.author}
+            fallback={
+              <Tooltip title="削除権限がありません">
+                <span>
+                  <IconButton edge="end" disabled>
+                    <DeleteIcon />
+                  </IconButton>
+                </span>
+              </Tooltip>
+            }
+          >
+            <IconButton edge="end" aria-label="delete" onClick={() => onDelete(post._id)}>
+              <DeleteIcon />
+            </IconButton>
+          </CanDelete>
         </Box>
       }
     >

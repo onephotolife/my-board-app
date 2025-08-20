@@ -1,0 +1,22 @@
+==========================================
+[DEBUG HOOK START] 2025-08-12 20:53:13
+Arguments: response_complete テスト通知 Claude Code Test
+Argument count: 3
+Working directory: /Users/yoshitaka.yamagishi/Documents/projects/my-board-app
+User: yoshitaka.yamagishi
+------------------------------------------
+notify.sh found at: /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/claude-notifications/notify.sh
+Executing notify.sh...
+🚀 右上通知を送信中: Claude Code Test
+  ✅ terminal-notifier送信完了
+  ✅ AppleScript通知送信完了
+  🔊 音再生完了: Glass (デフォルト)
+  📝 ログ記録完了
+🎉 右上通知送信完了
+📱 Chatwork通知送信中...
+  ✅ Chatwork送信完了
+🎯 全通知処理完了
+notify.sh exit code: 0
+[DEBUG HOOK END] 2025-08-12 20:53:15
+==========================================
+

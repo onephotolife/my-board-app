@@ -1,0 +1,110 @@
+{
+  "timestamp": "2025-08-12T14:23:12.554Z",
+  "summary": {
+    "total": 14,
+    "passed": 7,
+    "failed": 2,
+    "warnings": 3,
+    "errors": 2
+  },
+  "results": [
+    {
+      "testName": "未ログインアクセス: /dashboard",
+      "status": "passed",
+      "details": "ログインページへ正しくリダイレクト",
+      "duration": 1088,
+      "timestamp": "2025-08-12T14:22:31.962Z"
+    },
+    {
+      "testName": "未ログインアクセス: /profile",
+      "status": "passed",
+      "details": "ログインページへ正しくリダイレクト",
+      "duration": 682,
+      "timestamp": "2025-08-12T14:22:33.146Z"
+    },
+    {
+      "testName": "未ログインアクセス: /posts/new",
+      "status": "passed",
+      "details": "ログインページへ正しくリダイレクト",
+      "duration": 682,
+      "timestamp": "2025-08-12T14:22:34.329Z"
+    },
+    {
+      "testName": "未ログインアクセス: /board",
+      "status": "warning",
+      "details": "リダイレクトはされたがcallbackUrlが不正: null",
+      "duration": 1081,
+      "timestamp": "2025-08-12T14:22:35.913Z"
+    },
+    {
+      "testName": "ローディング状態の表示",
+      "status": "warning",
+      "details": "ローディング表示が見つかりません",
+      "duration": 513,
+      "timestamp": "2025-08-12T14:22:36.929Z"
+    },
+    {
+      "testName": "ログイン後のリダイレクト",
+      "status": "passed",
+      "details": "/dashboard へ正しくリダイレクト",
+      "duration": 2314,
+      "timestamp": "2025-08-12T14:22:39.244Z"
+    },
+    {
+      "testName": "API認証 (未認証): GET /api/posts",
+      "status": "passed",
+      "details": "認証エラーメッセージで保護",
+      "duration": 53,
+      "timestamp": "2025-08-12T14:22:39.300Z"
+    },
+    {
+      "testName": "API認証 (未認証): POST /api/posts",
+      "status": "passed",
+      "details": "ステータス 401 で正しく拒否",
+      "duration": 28,
+      "timestamp": "2025-08-12T14:22:39.329Z"
+    },
+    {
+      "testName": "API認証 (未認証): GET /api/user",
+      "status": "failed",
+      "details": "ステータス 500 - 保護されていない",
+      "duration": 982,
+      "timestamp": "2025-08-12T14:22:40.312Z"
+    },
+    {
+      "testName": "API認証 (未認証): PUT /api/user/profile",
+      "status": "failed",
+      "details": "ステータス 500 - 保護されていない",
+      "duration": 125,
+      "timestamp": "2025-08-12T14:22:40.438Z"
+    },
+    {
+      "testName": "API認証 (認証済み): GET /api/posts",
+      "status": "passed",
+      "details": "アクセス許可",
+      "duration": 50,
+      "timestamp": "2025-08-12T14:22:40.488Z"
+    },
+    {
+      "testName": "API認証 (認証済み): POST /api/posts",
+      "status": "warning",
+      "details": "ステータス 400",
+      "duration": 30,
+      "timestamp": "2025-08-12T14:22:40.518Z"
+    },
+    {
+      "testName": "ログインエラー処理",
+      "status": "error",
+      "details": "Waiting for selector `input[name=\"email\"], input[type=\"email\"]` failed: Waiting failed: 30000ms exceeded",
+      "duration": 30778,
+      "timestamp": "2025-08-12T14:23:11.297Z"
+    },
+    {
+      "testName": "セッション管理",
+      "status": "error",
+      "details": "SyntaxError: Failed to execute 'querySelector' on 'Document': 'button:has-text(\"ログアウト\"), button:has-text(\"Logout\"), button:has-text(\"Sign out\")' is not a valid selector.",
+      "duration": 1257,
+      "timestamp": "2025-08-12T14:23:12.554Z"
+    }
+  ]
+}

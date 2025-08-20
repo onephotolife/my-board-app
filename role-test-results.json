@@ -1,0 +1,184 @@
+[
+  {
+    "role": "admin",
+    "passed": 2,
+    "failed": 4,
+    "tests": [
+      {
+        "action": "read_posts",
+        "expected": true,
+        "actual": true,
+        "passed": true,
+        "status": 200
+      },
+      {
+        "action": "create_post",
+        "expected": true,
+        "actual": true,
+        "passed": true,
+        "status": 201
+      },
+      {
+        "action": "edit_own_post",
+        "expected": true,
+        "actual": false,
+        "passed": false,
+        "status": 403
+      },
+      {
+        "action": "delete_own_post",
+        "expected": true,
+        "actual": false,
+        "passed": false,
+        "status": 403
+      },
+      {
+        "action": "edit_others_post",
+        "expected": true,
+        "actual": false,
+        "passed": false,
+        "status": 403
+      },
+      {
+        "action": "delete_others_post",
+        "expected": true,
+        "actual": false,
+        "passed": false,
+        "status": 403
+      }
+    ]
+  },
+  {
+    "role": "moderator",
+    "passed": 3,
+    "failed": 3,
+    "tests": [
+      {
+        "action": "read_posts",
+        "expected": true,
+        "actual": true,
+        "passed": true,
+        "status": 200
+      },
+      {
+        "action": "create_post",
+        "expected": true,
+        "actual": true,
+        "passed": true,
+        "status": 201
+      },
+      {
+        "action": "edit_own_post",
+        "expected": true,
+        "actual": false,
+        "passed": false,
+        "status": 403
+      },
+      {
+        "action": "delete_own_post",
+        "expected": true,
+        "actual": false,
+        "passed": false,
+        "status": 403
+      },
+      {
+        "action": "edit_others_post",
+        "expected": false,
+        "actual": false,
+        "passed": true,
+        "status": 403
+      },
+      {
+        "action": "delete_others_post",
+        "expected": true,
+        "actual": false,
+        "passed": false,
+        "status": 403
+      }
+    ]
+  },
+  {
+    "role": "user",
+    "passed": 4,
+    "failed": 2,
+    "tests": [
+      {
+        "action": "read_posts",
+        "expected": true,
+        "actual": true,
+        "passed": true,
+        "status": 200
+      },
+      {
+        "action": "create_post",
+        "expected": true,
+        "actual": true,
+        "passed": true,
+        "status": 201
+      },
+      {
+        "action": "edit_own_post",
+        "expected": true,
+        "actual": false,
+        "passed": false,
+        "status": 403
+      },
+      {
+        "action": "delete_own_post",
+        "expected": true,
+        "actual": false,
+        "passed": false,
+        "status": 403
+      },
+      {
+        "action": "edit_others_post",
+        "expected": false,
+        "actual": false,
+        "passed": true,
+        "status": 403
+      },
+      {
+        "action": "delete_others_post",
+        "expected": false,
+        "actual": false,
+        "passed": true,
+        "status": 403
+      }
+    ]
+  },
+  {
+    "role": "guest",
+    "passed": 1,
+    "failed": 3,
+    "tests": [
+      {
+        "action": "read_posts",
+        "expected": true,
+        "actual": true,
+        "passed": true,
+        "status": 200
+      },
+      {
+        "action": "create_post",
+        "expected": false,
+        "actual": true,
+        "passed": false,
+        "status": 401
+      },
+      {
+        "action": "edit_any_post",
+        "expected": false,
+        "actual": true,
+        "passed": false,
+        "status": 401
+      },
+      {
+        "action": "delete_any_post",
+        "expected": false,
+        "actual": true,
+        "passed": false,
+        "status": 401
+      }
+    ]
+  }
+]

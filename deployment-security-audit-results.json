@@ -1,0 +1,192 @@
+{
+  "timestamp": "2025-08-14T04:34:11.435Z",
+  "score": 69,
+  "summary": {
+    "passed": 22,
+    "failed": 4,
+    "warnings": 6
+  },
+  "details": {
+    "authentication": [
+      {
+        "name": "パスワードポリシー",
+        "status": "PASS",
+        "details": "8文字以上、複雑性要件あり"
+      },
+      {
+        "name": "セッションタイムアウト",
+        "status": "PASS",
+        "details": "30分の非アクティブタイムアウト設定"
+      },
+      {
+        "name": "ブルートフォース対策",
+        "status": "PASS",
+        "details": "5回失敗でロック"
+      }
+    ],
+    "authorization": [
+      {
+        "name": "ルート保護: /dashboard",
+        "status": "PASS",
+        "details": "未認証アクセス拒否"
+      },
+      {
+        "name": "ルート保護: /board",
+        "status": "PASS",
+        "details": "未認証アクセス拒否"
+      },
+      {
+        "name": "ルート保護: /api/posts",
+        "status": "PASS",
+        "details": "未認証アクセス拒否"
+      },
+      {
+        "name": "ルート保護: /api/users/profile",
+        "status": "PASS",
+        "details": "未認証アクセス拒否"
+      }
+    ],
+    "dataProtection": [
+      {
+        "name": "HTTPS強制",
+        "status": "WARN",
+        "details": "本番環境でHTTPS必須"
+      },
+      {
+        "name": "Cookieセキュリティ",
+        "status": "PASS",
+        "details": "Secure, HttpOnly, SameSite=Strict"
+      },
+      {
+        "name": "環境変数: NEXTAUTH_SECRET",
+        "status": "FAIL",
+        "details": "未設定"
+      },
+      {
+        "name": "環境変数: MONGODB_URI",
+        "status": "FAIL",
+        "details": "未設定"
+      },
+      {
+        "name": "環境変数: JWT_SECRET",
+        "status": "FAIL",
+        "details": "未設定"
+      },
+      {
+        "name": "環境変数: ENCRYPTION_KEY",
+        "status": "FAIL",
+        "details": "未設定"
+      }
+    ],
+    "inputValidation": [
+      {
+        "name": "XSS防御: <script>alert(\"XSS\")...",
+        "status": "PASS",
+        "details": "ペイロード無害化"
+      },
+      {
+        "name": "XSS防御: <img src=x onerror=\"...",
+        "status": "PASS",
+        "details": "ペイロード無害化"
+      },
+      {
+        "name": "XSS防御: javascript:alert(1)...",
+        "status": "PASS",
+        "details": "ペイロード無害化"
+      },
+      {
+        "name": "NoSQLインジェクション防御",
+        "status": "PASS",
+        "details": "演算子の無効化"
+      }
+    ],
+    "securityHeaders": [
+      {
+        "name": "x-frame-options",
+        "status": "PASS",
+        "details": "DENY"
+      },
+      {
+        "name": "x-content-type-options",
+        "status": "PASS",
+        "details": "nosniff"
+      },
+      {
+        "name": "x-xss-protection",
+        "status": "PASS",
+        "details": "1; mode=block"
+      },
+      {
+        "name": "content-security-policy",
+        "status": "PASS",
+        "details": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://api.github.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+      },
+      {
+        "name": "referrer-policy",
+        "status": "PASS",
+        "details": "strict-origin-when-cross-origin"
+      },
+      {
+        "name": "permissions-policy",
+        "status": "PASS",
+        "details": "camera=(), microphone=(), geolocation=()"
+      }
+    ],
+    "rateLimit": [
+      {
+        "name": "/api/posts",
+        "status": "PASS",
+        "details": "5回/1分で制限"
+      },
+      {
+        "name": "/api/auth/signin",
+        "status": "PASS",
+        "details": "5回/15分で制限"
+      }
+    ],
+    "dependencies": [
+      {
+        "name": "脆弱性スキャン",
+        "status": "WARN",
+        "details": "npm auditの実行に失敗"
+      },
+      {
+        "name": "ライセンス確認",
+        "status": "PASS",
+        "details": "MITライセンス互換"
+      }
+    ],
+    "configuration": [
+      {
+        "name": "環境設定",
+        "status": "WARN",
+        "details": "NODE_ENV=development"
+      },
+      {
+        "name": "デバッグモード",
+        "status": "PASS",
+        "details": "無効"
+      },
+      {
+        "name": "エラーページ: 404.tsx",
+        "status": "WARN",
+        "details": "デフォルト使用"
+      },
+      {
+        "name": "エラーページ: 500.tsx",
+        "status": "WARN",
+        "details": "デフォルト使用"
+      },
+      {
+        "name": "エラーページ: _error.tsx",
+        "status": "WARN",
+        "details": "デフォルト使用"
+      }
+    ],
+    "overall": {
+      "passed": 0,
+      "failed": 0,
+      "warnings": 0
+    }
+  }
+}

@@ -1,0 +1,90 @@
+// Email configuration
+import { EmailConfig, EmailError, EmailErrorType } from '@/types/email';
+
+// Validate environment variables
+function validateEmailConfig(): void {
+  const required = ['GMAIL_USER', 'GMAIL_APP_PASSWORD', 'EMAIL_FROM'];
+  const missing = required.filter(key => !process.env[key]);
+  
+  if (missing.length > 0) {
+    throw new EmailError(
+      EmailErrorType.INVALID_CONFIG,
+      `Missing required email configuration: ${missing.join(', ')}`,
+      { missing }
+    );
+  }
+}
+
+// Email configuration
+export function getEmailConfig(): EmailConfig {
+  validateEmailConfig();
+  
+  return {
+    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+    port: parseInt(process.env.SMTP_PORT || '587', 10),
+    secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
+    auth: {
+      user: process.env.GMAIL_USER!,
+      pass: process.env.GMAIL_APP_PASSWORD!,
+    },
+    from: process.env.EMAIL_FROM!,
+    replyTo: process.env.EMAIL_REPLY_TO || process.env.EMAIL_FROM!,
+  };
+}
+
+// App configuration for emails
+export const emailAppConfig = {
+  appName: process.env.NEXT_PUBLIC_APP_NAME || 'Board App',
+  appUrl: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+  supportEmail: process.env.SUPPORT_EMAIL || 'support@boardapp.com',
+  socialLinks: {
+    twitter: process.env.TWITTER_URL || '',
+    facebook: process.env.FACEBOOK_URL || '',
+    linkedin: process.env.LINKEDIN_URL || '',
+  },
+};
+
+// Email rate limiting configuration
+export const rateLimitConfig = {
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  maxEmailsPerWindow: 5,
+  maxEmailsPerDay: 20,
+};
+
+// Email template configuration
+export const templateConfig = {
+  colors: {
+    primary: '#667eea',
+    secondary: '#764ba2',
+    success: '#48bb78',
+    error: '#f56565',
+    warning: '#ed8936',
+    text: '#1a202c',
+    textLight: '#718096',
+    background: '#f7fafc',
+    white: '#ffffff',
+    border: '#e2e8f0',
+  },
+  fonts: {
+    sans: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+  },
+  sizes: {
+    containerWidth: '600px',
+    buttonPadding: '12px 24px',
+    borderRadius: '8px',
+  },
+};
+
+// Token expiration times
+export const tokenExpiration = {
+  verification: 24 * 60 * 60 * 1000, // 24 hours
+  passwordReset: 60 * 60 * 1000, // 1 hour
+};
+
+// Email subjects
+export const emailSubjects = {
+  verification: `${emailAppConfig.appName} - メールアドレスを確認してください`,
+  passwordReset: `${emailAppConfig.appName} - パスワードリセットのご案内`,
+  welcome: `${emailAppConfig.appName}へようこそ！`,
+  passwordChanged: `${emailAppConfig.appName} - パスワードが変更されました`,
+};

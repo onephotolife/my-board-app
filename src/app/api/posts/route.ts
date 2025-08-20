@@ -1,58 +1,156 @@
 import { NextRequest, NextResponse } from 'next/server';
-import dbConnect from '@/lib/mongodb';
+import { connectDB } from '@/lib/db/mongodb';
 import Post from '@/models/Post';
+import User from '@/lib/models/User';
+import { getUnifiedSession, getUserFromSession } from '@/lib/auth/session-helper';
+import { InputSanitizer } from '@/lib/security/sanitizer';
+import { z } from 'zod';
 
-export async function GET() {
+// バリデーションスキーマ
+const PostCreateSchema = z.object({
+  title: z.string().min(1, 'タイトルは必須です').max(100, 'タイトルは100文字以内にしてください'),
+  content: z.string().min(1, '本文は必須です').max(1000, '本文は1000文字以内にしてください'),
+  tags: z.array(z.string()).optional(),
+});
+
+// GET: 投稿一覧取得
+export async function GET(request: NextRequest) {
   try {
-    await dbConnect();
-    const posts = await Post.find({}).sort({ createdAt: -1 });
-    return NextResponse.json({ success: true, data: posts });
-  } catch (error) {
-    console.error('Error in GET /api/posts:', error);
-    
-    // MongoDB接続エラーの詳細情報をログに出力
-    if (error instanceof Error) {
-      console.error('Error name:', error.name);
-      console.error('Error message:', error.message);
-      console.error('Error stack:', error.stack);
+    await connectDB();
+
+    const searchParams = request.nextUrl.searchParams;
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '20');
+    const sort = searchParams.get('sort') || '-createdAt';
+    const author = searchParams.get('author');
+    const status = searchParams.get('status') || 'published';
+
+    const skip = (page - 1) * limit;
+
+    // クエリ条件
+    const query: any = { status };
+    if (author) {
+      query.author = author;
     }
-    
-    return NextResponse.json(
-      { 
-        success: false, 
-        error: process.env.NODE_ENV === 'production' 
-          ? 'Failed to fetch posts' 
-          : (error instanceof Error ? error.message : 'Failed to fetch posts')
+
+    // セッション情報を取得（統合セッションヘルパー使用）
+    const session = await getUnifiedSession(request);
+    console.log('API Session:', session ? { userId: session.user?.id, email: session.user?.email } : 'No session');
+
+    // 投稿を取得
+    const posts = await Post.find(query)
+      .sort(sort)
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    // 権限情報を追加
+    const postsWithPermissions = posts.map((post: any) => {
+      // 投稿者判定のデバッグ
+      const isOwner = session?.user?.id === post.author.toString();
+      console.log('Post ownership check:', {
+        postId: post._id,
+        postAuthor: post.author.toString(),
+        sessionUserId: session?.user?.id,
+        isOwner
+      });
+      
+      return {
+        ...post,
+        canEdit: isOwner,
+        canDelete: isOwner,
+        // セッション情報をデバッグ用に追加
+        _debug: {
+          sessionUserId: session?.user?.id,
+          postAuthorId: post.author.toString()
+        }
+      };
+    });
+
+    // 総数を取得
+    const total = await Post.countDocuments(query);
+
+    return NextResponse.json({
+      posts: postsWithPermissions,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
       },
+      isAuthenticated: !!session,
+    });
+  } catch (error) {
+    console.error('投稿一覧取得エラー:', error);
+    return NextResponse.json(
+      { error: '投稿の取得に失敗しました' },
       { status: 500 }
     );
   }
 }
 
+// POST: 新規投稿作成（認証必須）
 export async function POST(request: NextRequest) {
   try {
-    await dbConnect();
+    // 認証チェック（統合セッションヘルパー使用）
+    const session = await getUnifiedSession(request);
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'ログインが必要です' },
+        { status: 401 }
+      );
+    }
+
+    await connectDB();
+
+    // リクエストボディを取得
     const body = await request.json();
     
-    const post = await Post.create(body);
+    // 入力のサニタイゼーション
+    const sanitizedBody = {
+      title: InputSanitizer.sanitizeText(body.title || ''),
+      content: InputSanitizer.sanitizeText(body.content || ''),
+      tags: body.tags ? body.tags.map((tag: any) => InputSanitizer.sanitizeText(tag)) : undefined
+    };
+
+    // バリデーション
+    const validatedData = PostCreateSchema.parse(sanitizedBody);
+
+    // ユーザー情報を取得（統合セッションヘルパー使用）
+    const user = await getUserFromSession(request);
+    if (!user) {
+      return NextResponse.json(
+        { error: 'ユーザーが見つかりません' },
+        { status: 404 }
+      );
+    }
+
+    // 新規投稿を作成
+    const newPost = await Post.create({
+      ...validatedData,
+      author: session.user.id,
+      authorInfo: {
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar,
+      },
+      status: 'published',
+    });
+
     return NextResponse.json(
-      { success: true, data: post },
+      { message: '投稿を作成しました', post: newPost },
       { status: 201 }
     );
   } catch (error) {
-    console.error('Error in POST /api/posts:', error);
-    
-    if (error && typeof error === 'object' && 'name' in error && error.name === 'ValidationError' && 'errors' in error) {
-      const validationError = error as {errors: Record<string, {message: string}>};
-      const messages = Object.values(validationError.errors).map((err) => err.message);
+    if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { success: false, error: messages.join(', ') },
+        { error: 'バリデーションエラー', details: error.errors },
         { status: 400 }
       );
     }
-    
+    console.error('投稿作成エラー:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to create post' },
+      { error: '投稿の作成に失敗しました' },
       { status: 500 }
     );
   }

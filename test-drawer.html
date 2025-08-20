@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drawer Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 3px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Drawer動作テスト</h1>
+    
+    <div class="test-section">
+        <h2>手動テスト手順</h2>
+        <ol>
+            <li><a href="http://localhost:3000" target="_blank">http://localhost:3000</a> を開く</li>
+            <li>右上のハンバーガーメニューボタン（☰）をクリック</li>
+            <li>以下を確認:
+                <ul>
+                    <li>✅ Drawerが左からスライドインする</li>
+                    <li>✅ Drawerの幅が280pxである（全画面ではない）</li>
+                    <li>✅ 背景に半透明のオーバーレイが表示される</li>
+                    <li>✅ メニュー内に「ホーム」「ログイン」が表示される</li>
+                </ul>
+            </li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h2>Drawer確認用スクリプト</h2>
+        <button onclick="checkDrawer()">Drawerの状態を確認</button>
+        <pre id="result"></pre>
+    </div>
+
+    <script>
+        function checkDrawer() {
+            const script = `
+// ブラウザのコンソールで実行
+const drawer = document.querySelector('.MuiDrawer-paper');
+if (drawer) {
+    const styles = window.getComputedStyle(drawer);
+    console.log('Drawer情報:');
+    console.log('幅:', styles.width);
+    console.log('位置:', styles.position);
+    console.log('左:', styles.left);
+    console.log('トランスフォーム:', styles.transform);
+    
+    const rect = drawer.getBoundingClientRect();
+    console.log('実際のサイズ:', rect.width, 'x', rect.height);
+    console.log('画面幅:', window.innerWidth);
+    console.log('全画面？:', rect.width === window.innerWidth);
+} else {
+    console.log('Drawerが見つかりません。ハンバーガーメニューをクリックしてください。');
+}
+            `;
+            document.getElementById('result').textContent = script;
+            alert('上記のスクリプトをブラウザのコンソールにコピー&ペーストして実行してください');
+        }
+    </script>
+</body>
+</html>

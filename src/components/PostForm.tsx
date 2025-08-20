@@ -5,6 +5,7 @@ import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
+import { csrfFetch } from '@/hooks/useCSRF';
 
 interface PostFormProps {
   onSubmit: (title: string, content: string, author: string) => Promise<void>;

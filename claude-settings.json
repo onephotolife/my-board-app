@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__serena__check_onboarding_performed",
+      "mcp__serena__onboarding",
+      "mcp__serena__list_dir",
+      "mcp__serena__get_symbols_overview",
+      "mcp__serena__find_symbol",
+      "mcp__serena__search_for_pattern",
+      "mcp__serena__think_about_collected_information",
+      "mcp__serena__write_memory",
+      "Bash"
+    ],
+    "deny": []
+  },
+  "hooks": {
+    "after_command": [
+      {
+        "command": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/claude-notifications/notify-enhanced.sh",
+        "args": ["response_complete", "Claudeの応答が完了しました", "✅ Claude Code - 応答完了"]
+      }
+    ],
+    "user-prompt-submit-hook": [
+      {
+        "command": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/claude-notifications/notify-enhanced.sh",
+        "args": ["input_waiting", "Claudeがあなたの入力を待っています", "⏳ Claude Code - 入力待ち"]
+      }
+    ]
+  }
+}

@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DMARC監視ダッシュボード - blankinai.com</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .card h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-pass { background: #4caf50; }
+        .status-warn { background: #ff9800; }
+        .status-fail { background: #f44336; }
+        .status-unknown { background: #9e9e9e; }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .metric:last-child {
+            border-bottom: none;
+        }
+        
+        .metric-label {
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .metric-value {
+            font-weight: bold;
+            color: #333;
+            font-size: 1.1rem;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #f0f0f0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50, #8bc34a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            transition: width 1s ease;
+        }
+        
+        .phase-timeline {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .phase-timeline::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #ddd;
+            z-index: 0;
+        }
+        
+        .phase-item {
+            position: relative;
+            text-align: center;
+            flex: 1;
+            z-index: 1;
+        }
+        
+        .phase-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #ddd;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .phase-active .phase-circle {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .phase-complete .phase-circle {
+            background: #4caf50;
+            color: white;
+            border-color: #4caf50;
+        }
+        
+        .phase-label {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .alert {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        
+        .alert-danger {
+            background: #f8d7da;
+            border-color: #f44336;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            border-color: #4caf50;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5a67d8;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .data-table th {
+            background: #f5f5f5;
+            color: #666;
+            font-weight: 600;
+        }
+        
+        .timestamp {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 0.9rem;
+        }
+        
+        .chart-container {
+            height: 200px;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .chart-bar {
+            position: absolute;
+            bottom: 0;
+            width: 30px;
+            background: #667eea;
+            border-radius: 5px 5px 0 0;
+            transition: height 1s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="timestamp" id="timestamp"></div>
+        <h1>🛡️ DMARC監視ダッシュボード</h1>
+        <p style="text-align: center; color: white; margin-bottom: 30px;">blankinai.com</p>
+        
+        <div class="dashboard">
+            <!-- 現在のステータス -->
+            <div class="card">
+                <h2>現在のステータス</h2>
+                <div class="metric">
+                    <span class="metric-label">DMARCポリシー</span>
+                    <span class="metric-value" id="current-policy">
+                        <span class="status-indicator status-unknown"></span>
+                        確認中...
+                    </span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">SPF設定</span>
+                    <span class="metric-value" id="spf-status">
+                        <span class="status-indicator status-unknown"></span>
+                        確認中...
+                    </span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">DKIM設定</span>
+                    <span class="metric-value" id="dkim-status">
+                        <span class="status-indicator status-unknown"></span>
+                        確認中...
+                    </span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">セレクタ</span>
+                    <span class="metric-value">rs20250806</span>
+                </div>
+            </div>
+            
+            <!-- 認証率 -->
+            <div class="card">
+                <h2>認証率（過去7日間）</h2>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="auth-rate" style="width: 0%">
+                        0%
+                    </div>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">総メール数</span>
+                    <span class="metric-value" id="total-emails">0</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">認証成功</span>
+                    <span class="metric-value" id="auth-pass">0</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">認証失敗</span>
+                    <span class="metric-value" id="auth-fail">0</span>
+                </div>
+            </div>
+            
+            <!-- フェーズ進行状況 -->
+            <div class="card" style="grid-column: span 2;">
+                <h2>導入フェーズ進行状況</h2>
+                <div class="phase-timeline">
+                    <div class="phase-item" id="phase1">
+                        <div class="phase-circle">1</div>
+                        <div class="phase-label">監視</div>
+                    </div>
+                    <div class="phase-item" id="phase2">
+                        <div class="phase-circle">2</div>
+                        <div class="phase-label">隔離10%</div>
+                    </div>
+                    <div class="phase-item" id="phase3">
+                        <div class="phase-circle">3</div>
+                        <div class="phase-label">隔離50%</div>
+                    </div>
+                    <div class="phase-item" id="phase4">
+                        <div class="phase-circle">4</div>
+                        <div class="phase-label">隔離100%</div>
+                    </div>
+                    <div class="phase-item" id="phase5">
+                        <div class="phase-circle">5</div>
+                        <div class="phase-label">拒否</div>
+                    </div>
+                </div>
+                <div id="phase-alert"></div>
+            </div>
+            
+            <!-- 最近の問題 -->
+            <div class="card">
+                <h2>最近の問題</h2>
+                <div id="recent-issues">
+                    <p style="color: #666; text-align: center; padding: 20px;">
+                        問題は検出されていません
+                    </p>
+                </div>
+            </div>
+            
+            <!-- トップ送信元 -->
+            <div class="card">
+                <h2>トップ送信元（過去24時間）</h2>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>送信元</th>
+                            <th>メール数</th>
+                            <th>認証率</th>
+                        </tr>
+                    </thead>
+                    <tbody id="top-sources">
+                        <tr>
+                            <td colspan="3" style="text-align: center; color: #666;">
+                                データ読み込み中...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- アクション -->
+            <div class="card">
+                <h2>クイックアクション</h2>
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="checkStatus()">
+                        状態確認
+                    </button>
+                    <button class="btn btn-secondary" onclick="downloadReport()">
+                        レポート
+                    </button>
+                </div>
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="nextPhase()">
+                        次のフェーズへ
+                    </button>
+                    <button class="btn btn-danger" onclick="rollback()">
+                        ロールバック
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 設定
+        const DOMAIN = 'blankinai.com';
+        const DKIM_SELECTOR = 'rs20250806';
+        
+        // モックデータ（実際の実装ではAPIから取得）
+        let dashboardData = {
+            currentPolicy: 'none',
+            spfStatus: true,
+            dkimStatus: true,
+            authRate: 95,
+            totalEmails: 1543,
+            authPass: 1466,
+            authFail: 77,
+            currentPhase: 1,
+            topSources: [
+                { source: 'mail.sakura.ne.jp', count: 890, rate: 100 },
+                { source: 'sendgrid.net', count: 450, rate: 98 },
+                { source: 'gmail.com', count: 203, rate: 85 }
+            ],
+            issues: []
+        };
+        
+        // 初期化
+        function init() {
+            updateTimestamp();
+            updateDashboard();
+            setInterval(updateTimestamp, 60000); // 1分ごとに更新
+            setInterval(checkStatus, 300000); // 5分ごとに自動確認
+        }
+        
+        // タイムスタンプ更新
+        function updateTimestamp() {
+            const now = new Date();
+            document.getElementById('timestamp').textContent = 
+                `最終更新: ${now.toLocaleString('ja-JP')}`;
+        }
+        
+        // ダッシュボード更新
+        function updateDashboard() {
+            // ポリシー表示
+            const policyElement = document.getElementById('current-policy');
+            const policyMap = {
+                'none': '<span class="status-indicator status-warn"></span>監視モード',
+                'quarantine': '<span class="status-indicator status-warn"></span>隔離',
+                'reject': '<span class="status-indicator status-pass"></span>拒否'
+            };
+            policyElement.innerHTML = policyMap[dashboardData.currentPolicy] || 
+                '<span class="status-indicator status-unknown"></span>未設定';
+            
+            // SPF/DKIM状態
+            document.getElementById('spf-status').innerHTML = dashboardData.spfStatus ?
+                '<span class="status-indicator status-pass"></span>設定済み' :
+                '<span class="status-indicator status-fail"></span>未設定';
+            
+            document.getElementById('dkim-status').innerHTML = dashboardData.dkimStatus ?
+                '<span class="status-indicator status-pass"></span>設定済み' :
+                '<span class="status-indicator status-fail"></span>未設定';
+            
+            // 認証率
+            const authRateElement = document.getElementById('auth-rate');
+            authRateElement.style.width = dashboardData.authRate + '%';
+            authRateElement.textContent = dashboardData.authRate + '%';
+            
+            // 色分け
+            if (dashboardData.authRate >= 99) {
+                authRateElement.style.background = 'linear-gradient(90deg, #4caf50, #8bc34a)';
+            } else if (dashboardData.authRate >= 95) {
+                authRateElement.style.background = 'linear-gradient(90deg, #ff9800, #ffc107)';
+            } else {
+                authRateElement.style.background = 'linear-gradient(90deg, #f44336, #ff5722)';
+            }
+            
+            // メール統計
+            document.getElementById('total-emails').textContent = 
+                dashboardData.totalEmails.toLocaleString();
+            document.getElementById('auth-pass').textContent = 
+                dashboardData.authPass.toLocaleString();
+            document.getElementById('auth-fail').textContent = 
+                dashboardData.authFail.toLocaleString();
+            
+            // フェーズ進行状況
+            updatePhaseTimeline();
+            
+            // トップ送信元
+            updateTopSources();
+            
+            // 問題表示
+            updateIssues();
+        }
+        
+        // フェーズタイムライン更新
+        function updatePhaseTimeline() {
+            for (let i = 1; i <= 5; i++) {
+                const phaseElement = document.getElementById(`phase${i}`);
+                phaseElement.classList.remove('phase-active', 'phase-complete');
+                
+                if (i < dashboardData.currentPhase) {
+                    phaseElement.classList.add('phase-complete');
+                } else if (i === dashboardData.currentPhase) {
+                    phaseElement.classList.add('phase-active');
+                }
+            }
+            
+            // フェーズアラート
+            const alertElement = document.getElementById('phase-alert');
+            if (dashboardData.authRate >= 99 && dashboardData.currentPhase < 5) {
+                alertElement.innerHTML = `
+                    <div class="alert alert-success">
+                        ✅ 認証率が99%以上です。次のフェーズへの移行を検討できます。
+                    </div>
+                `;
+            } else if (dashboardData.authRate < 95) {
+                alertElement.innerHTML = `
+                    <div class="alert alert-danger">
+                        ⚠️ 認証率が95%未満です。問題を解決してから次のフェーズへ進んでください。
+                    </div>
+                `;
+            } else {
+                alertElement.innerHTML = '';
+            }
+        }
+        
+        // トップ送信元更新
+        function updateTopSources() {
+            const tbody = document.getElementById('top-sources');
+            tbody.innerHTML = dashboardData.topSources.map(source => `
+                <tr>
+                    <td>${source.source}</td>
+                    <td>${source.count}</td>
+                    <td>
+                        <span style="color: ${source.rate >= 95 ? '#4caf50' : '#ff9800'}">
+                            ${source.rate}%
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        // 問題更新
+        function updateIssues() {
+            const issuesElement = document.getElementById('recent-issues');
+            if (dashboardData.issues.length === 0) {
+                issuesElement.innerHTML = `
+                    <p style="color: #666; text-align: center; padding: 20px;">
+                        問題は検出されていません
+                    </p>
+                `;
+            } else {
+                issuesElement.innerHTML = dashboardData.issues.map(issue => `
+                    <div class="alert alert-danger">
+                        ${issue}
+                    </div>
+                `).join('');
+            }
+        }
+        
+        // アクション関数
+        function checkStatus() {
+            console.log('DNS状態を確認中...');
+            // 実際の実装ではAJAXでサーバーにリクエスト
+            updateDashboard();
+            alert('状態を確認しました');
+        }
+        
+        function downloadReport() {
+            console.log('レポートをダウンロード中...');
+            // 実際の実装ではレポートファイルをダウンロード
+            alert('レポートのダウンロードを開始しました');
+        }
+        
+        function nextPhase() {
+            if (dashboardData.currentPhase >= 5) {
+                alert('すでに最終フェーズです');
+                return;
+            }
+            
+            if (dashboardData.authRate < 95) {
+                if (!confirm('認証率が95%未満ですが、次のフェーズに進みますか？')) {
+                    return;
+                }
+            }
+            
+            const phases = ['', '監視', '隔離10%', '隔離50%', '完全隔離', '拒否'];
+            if (confirm(`Phase ${dashboardData.currentPhase + 1} (${phases[dashboardData.currentPhase + 1]}) に移行しますか？`)) {
+                console.log(`Phase ${dashboardData.currentPhase + 1} に移行`);
+                // 実際の実装ではサーバーにリクエスト
+                dashboardData.currentPhase++;
+                updateDashboard();
+            }
+        }
+        
+        function rollback() {
+            if (confirm('本当に監視モード（Phase 1）に戻しますか？')) {
+                console.log('Phase 1 にロールバック');
+                // 実際の実装ではサーバーにリクエスト
+                dashboardData.currentPhase = 1;
+                dashboardData.currentPolicy = 'none';
+                updateDashboard();
+                alert('監視モードに戻しました');
+            }
+        }
+        
+        // ページ読み込み時に初期化
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

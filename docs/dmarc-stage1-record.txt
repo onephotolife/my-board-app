@@ -1,0 +1,32 @@
+# DMARC第1段階 - 監視モード設定
+
+## DNSレコード設定値
+
+### ホスト名（Name）:
+_dmarc
+
+### レコードタイプ（Type）:
+TXT
+
+### 値（Value）:
+v=DMARC1; p=none; rua=mailto:dmarc@blankinai.com; pct=100; sp=none
+
+## レコードの説明
+
+- v=DMARC1: DMARCバージョン1を使用
+- p=none: ポリシーは「なし」（監視のみ、メール拒否なし）
+- rua=mailto:dmarc@blankinai.com: 集約レポートの送信先
+- pct=100: 全メール（100%）に適用
+- sp=none: サブドメインも同じポリシー（監視のみ）
+
+## 設定確認用コマンド
+
+確認コマンド:
+```bash
+dig TXT _dmarc.blankinai.com
+```
+
+期待される応答:
+```
+_dmarc.blankinai.com. 3600 IN TXT "v=DMARC1; p=none; rua=mailto:dmarc@blankinai.com; pct=100; sp=none"
+```

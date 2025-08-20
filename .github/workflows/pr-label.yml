@@ -1,0 +1,178 @@
+name: PR Auto Label
+
+on:
+  pull_request:
+    types: [opened, edited]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  label:
+    name: 🏷️ Auto Label
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Label based on PR title
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const title = pr.title.toLowerCase();
+            const labels = [];
+            
+            // タイトルのプレフィックスに基づくラベル
+            if (title.startsWith('[bug]') || title.includes('fix:')) {
+              labels.push('bug');
+            }
+            if (title.startsWith('[feat]') || title.includes('feat:')) {
+              labels.push('enhancement');
+            }
+            if (title.startsWith('[docs]') || title.includes('docs:')) {
+              labels.push('documentation');
+            }
+            if (title.startsWith('[test]') || title.includes('test:')) {
+              labels.push('testing');
+            }
+            if (title.startsWith('[refactor]') || title.includes('refactor:')) {
+              labels.push('refactoring');
+            }
+            if (title.startsWith('[hotfix]')) {
+              labels.push('hotfix', 'urgent');
+            }
+            if (title.startsWith('[chore]') || title.includes('chore:')) {
+              labels.push('chore');
+            }
+            if (title.includes('wip') || title.includes('draft')) {
+              labels.push('work-in-progress');
+            }
+            
+            // ブランチ名に基づくラベル
+            const branch = pr.head.ref.toLowerCase();
+            if (branch.startsWith('feature/')) {
+              labels.push('feature');
+            }
+            if (branch.startsWith('hotfix/')) {
+              labels.push('hotfix');
+            }
+            if (branch.startsWith('release/')) {
+              labels.push('release');
+            }
+            if (branch.includes('dependabot')) {
+              labels.push('dependencies');
+            }
+            
+            // PRのサイズに基づくラベル
+            if (pr.additions + pr.deletions < 10) {
+              labels.push('size/XS');
+            } else if (pr.additions + pr.deletions < 50) {
+              labels.push('size/S');
+            } else if (pr.additions + pr.deletions < 200) {
+              labels.push('size/M');
+            } else if (pr.additions + pr.deletions < 500) {
+              labels.push('size/L');
+            } else {
+              labels.push('size/XL');
+            }
+            
+            // 既存のラベルを取得
+            const { data: currentLabels } = await github.rest.issues.listLabelsOnIssue({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number
+            });
+            
+            const currentLabelNames = currentLabels.map(label => label.name);
+            const newLabels = labels.filter(label => !currentLabelNames.includes(label));
+            
+            // 新しいラベルを追加
+            if (newLabels.length > 0) {
+              // ラベルが存在するか確認し、なければ作成
+              for (const label of newLabels) {
+                try {
+                  await github.rest.issues.getLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    name: label
+                  });
+                } catch (error) {
+                  // ラベルが存在しない場合は作成
+                  const labelColors = {
+                    'bug': 'd73a4a',
+                    'enhancement': 'a2eeef',
+                    'documentation': '0075ca',
+                    'testing': 'fef2c0',
+                    'refactoring': 'fbca04',
+                    'hotfix': 'e11d21',
+                    'urgent': 'e11d21',
+                    'chore': 'fef2c0',
+                    'work-in-progress': 'fbca04',
+                    'feature': '0e8a16',
+                    'release': '0e8a16',
+                    'dependencies': '0366d6',
+                    'size/XS': 'ffffff',
+                    'size/S': 'ffffff',
+                    'size/M': 'ffffff',
+                    'size/L': 'fef2c0',
+                    'size/XL': 'e11d21'
+                  };
+                  
+                  await github.rest.issues.createLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    name: label,
+                    color: labelColors[label] || 'f9d0c4',
+                    description: `Auto-generated label for ${label}`
+                  });
+                }
+              }
+              
+              // ラベルを追加
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                labels: newLabels
+              });
+              
+              console.log(`Added labels: ${newLabels.join(', ')}`);
+            }
+
+      - name: Check PR template usage
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const body = pr.body || '';
+            
+            // テンプレートのチェックリスト項目を確認
+            const checklistPattern = /- \[[ x]\]/g;
+            const checklistItems = body.match(checklistPattern) || [];
+            const checkedItems = body.match(/- \[x\]/g) || [];
+            
+            if (checklistItems.length === 0) {
+              // テンプレートが使用されていない
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body: `⚠️ PRテンプレートが使用されていないようです。\n\n適切なテンプレートを使用することをお勧めします：\n- [デフォルト](.github/pull_request_template.md)\n- [バグ修正](.github/PULL_REQUEST_TEMPLATE/bug_fix.md)\n- [新機能](.github/PULL_REQUEST_TEMPLATE/feature.md)\n- [リファクタリング](.github/PULL_REQUEST_TEMPLATE/refactor.md)`
+              });
+              
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                labels: ['needs-template']
+              });
+            } else if (checkedItems.length < checklistItems.length) {
+              // チェックリストが未完了
+              const completion = Math.round((checkedItems.length / checklistItems.length) * 100);
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body: `📋 チェックリスト進捗: ${completion}% (${checkedItems.length}/${checklistItems.length})\n\nすべての項目を確認してからマージしてください。`
+              });
+            }

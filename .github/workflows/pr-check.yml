@@ -1,0 +1,325 @@
+name: PR Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
+jobs:
+  # リント実行
+  lint:
+    name: 🔍 Lint Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        id: eslint
+        run: |
+          npm run lint -- --format json --output-file eslint-report.json || true
+          npm run lint
+
+      - name: Annotate ESLint results
+        if: failure()
+        uses: ataylorme/eslint-annotate-action@v2
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          report-json: "eslint-report.json"
+
+  # タイプチェック
+  typecheck:
+    name: 📘 Type Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run TypeScript check
+        run: npx tsc --noEmit
+
+  # テスト実行
+  test:
+    name: 🧪 Unit Tests
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 22.x]
+    
+    services:
+      mongodb:
+        image: mongo:7
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval 'db.adminCommand(\"ping\")'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests with coverage
+        run: npm test -- --coverage --passWithNoTests
+        env:
+          MONGODB_URI: mongodb://localhost:27017/test-db
+          CI: true
+
+      - name: Upload coverage reports
+        if: matrix.node-version == '20.x'
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info
+          flags: unittests
+          fail_ci_if_error: false
+
+  # ビルドチェック
+  build:
+    name: 🏗️ Build Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+
+      - name: Check build size
+        run: |
+          echo "## 📊 Build Size Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| File | Size |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|------|" >> $GITHUB_STEP_SUMMARY
+          find .next -name "*.js" -o -name "*.css" | while read file; do
+            size=$(du -h "$file" | cut -f1)
+            echo "| ${file#.next/} | $size |" >> $GITHUB_STEP_SUMMARY
+          done
+
+  # セキュリティチェック
+  security:
+    name: 🔒 Security Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run npm audit
+        run: |
+          npm audit --production --audit-level=moderate || true
+          npm audit --production --audit-level=moderate --json > audit-report.json || true
+
+      - name: Comment PR with audit results
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let auditReport;
+            try {
+              auditReport = JSON.parse(fs.readFileSync('audit-report.json', 'utf8'));
+            } catch (e) {
+              return;
+            }
+            
+            const { vulnerabilities } = auditReport.metadata;
+            if (vulnerabilities.total === 0) return;
+            
+            const comment = `## 🔒 Security Audit Report
+            
+            Found ${vulnerabilities.total} vulnerabilities:
+            - 🔴 Critical: ${vulnerabilities.critical}
+            - 🟠 High: ${vulnerabilities.high}
+            - 🟡 Moderate: ${vulnerabilities.moderate}
+            - ⚪ Low: ${vulnerabilities.low}
+            
+            Run \`npm audit fix\` to fix ${vulnerabilities.fixable} of them.`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+  # PR分析とコメント
+  analyze:
+    name: 📊 PR Analysis
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Analyze PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+            
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+            
+            // ファイル統計
+            const stats = {
+              total: files.length,
+              added: files.filter(f => f.status === 'added').length,
+              modified: files.filter(f => f.status === 'modified').length,
+              removed: files.filter(f => f.status === 'removed').length,
+              additions: pr.additions,
+              deletions: pr.deletions
+            };
+            
+            // ファイルタイプ別統計
+            const fileTypes = {};
+            files.forEach(file => {
+              const ext = file.filename.split('.').pop();
+              fileTypes[ext] = (fileTypes[ext] || 0) + 1;
+            });
+            
+            const comment = `## 📊 PR統計情報
+            
+            ### 📁 ファイル変更
+            - 総ファイル数: ${stats.total}
+            - 追加: ${stats.added} | 変更: ${stats.modified} | 削除: ${stats.removed}
+            - 行数: +${stats.additions} / -${stats.deletions}
+            
+            ### 📝 ファイルタイプ
+            ${Object.entries(fileTypes).map(([ext, count]) => `- .${ext}: ${count}`).join('\n')}
+            
+            ### 🏷️ 推奨ラベル
+            ${stats.additions > 500 ? '- `large-pr` - 大規模な変更\n' : ''}
+            ${stats.total > 20 ? '- `many-files` - 多数のファイル変更\n' : ''}
+            ${fileTypes.test || fileTypes.spec ? '- `has-tests` - テスト含む\n' : '- `needs-tests` - テストが必要かも\n'}
+            `;
+            
+            // 既存のコメントを探す
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number
+            });
+            
+            const botComment = comments.find(comment => 
+              comment.user.type === 'Bot' && comment.body.includes('PR統計情報')
+            );
+            
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: comment
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: comment
+              });
+            }
+
+  # 全チェックの集約
+  pr-check-status:
+    name: ✅ PR Check Status
+    runs-on: ubuntu-latest
+    needs: [lint, typecheck, test, build, security]
+    if: always()
+    
+    steps:
+      - name: Check results
+        run: |
+          if [[ "${{ needs.lint.result }}" != "success" || 
+                "${{ needs.typecheck.result }}" != "success" || 
+                "${{ needs.test.result }}" != "success" || 
+                "${{ needs.build.result }}" != "success" ]]; then
+            echo "❌ Some checks failed"
+            exit 1
+          fi
+          echo "✅ All checks passed!"
+
+      - name: Add success comment
+        if: success() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const comment = `## ✅ すべてのチェックが成功しました！
+            
+            | チェック | 状態 |
+            |---------|------|
+            | 🔍 Lint | ✅ |
+            | 📘 TypeScript | ✅ |
+            | 🧪 Tests | ✅ |
+            | 🏗️ Build | ✅ |
+            | 🔒 Security | ✅ |
+            
+            このPRはマージ可能です。`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });

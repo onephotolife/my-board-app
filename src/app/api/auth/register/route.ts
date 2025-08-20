@@ -301,19 +301,39 @@ export async function POST(request: NextRequest) {
       );
 
     } catch (emailError) {
-      console.error('Email error:', emailError);
+      console.error('❌ メール送信エラー詳細:', {
+        error: emailError instanceof Error ? emailError.message : emailError,
+        stack: emailError instanceof Error ? emailError.stack : undefined,
+        code: (emailError as any)?.code,
+        type: (emailError as any)?.type,
+        cause: (emailError as any)?.cause,
+      });
       
       // メール送信エラーでもユーザー登録は成功しているので、適切に処理
       await User.findByIdAndUpdate(user._id, {
         emailSendFailed: true,
       });
       
+      // エラーの種類に応じたメッセージ
+      let errorDetail = '確認メールの送信に問題が発生しました';
+      if (emailError instanceof Error) {
+        if (emailError.message.includes('AUTH') || emailError.message.includes('authentication')) {
+          errorDetail = 'メールサーバーの認証エラーが発生しました';
+        } else if (emailError.message.includes('ECONNREFUSED') || emailError.message.includes('ETIMEDOUT')) {
+          errorDetail = 'メールサーバーに接続できませんでした';
+        }
+      }
+      
       return NextResponse.json(
         { 
-          message: '登録は完了しましたが、確認メールの送信に問題が発生しました',
-          warning: '後ほど確認メールを再送信してください',
+          message: '登録は完了しましたが、' + errorDetail,
+          warning: 'サポートにお問い合わせいただくか、後ほど確認メールを再送信してください',
           userId: user._id,
           type: 'EMAIL_ERROR',
+          debugInfo: process.env.NODE_ENV === 'development' ? {
+            errorMessage: emailError instanceof Error ? emailError.message : String(emailError),
+            errorType: (emailError as any)?.type,
+          } : undefined,
         },
         { status: 201 }
       );

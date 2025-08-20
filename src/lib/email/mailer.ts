@@ -33,6 +33,14 @@ export class EmailService {
     try {
       const config = getEmailConfig();
       
+      console.log('🔧 メールサービス初期化:', {
+        host: config.host,
+        port: config.port,
+        secure: config.secure,
+        user: config.auth.user,
+        from: config.from,
+      });
+
       // Create transporter
       this.transporter = nodemailer.createTransport({
         host: config.host,
@@ -46,20 +54,43 @@ export class EmailService {
           // Do not fail on invalid certs
           rejectUnauthorized: false,
         },
+        logger: process.env.NODE_ENV === 'development', // 開発環境でログを有効化
+        debug: process.env.NODE_ENV === 'development', // デバッグ情報を表示
       });
 
       // Verify connection
-      if (process.env.NODE_ENV === 'production') {
+      if (process.env.NODE_ENV === 'production' || process.env.SEND_EMAILS === 'true') {
+        console.log('🔍 SMTPサーバーへの接続を検証中...');
         await this.transporter.verify();
         console.log('✅ Email service connected successfully');
       }
 
       this.initialized = true;
     } catch (error) {
-      console.error('❌ Email service initialization failed:', error);
+      console.error('❌ Email service initialization failed:', {
+        error: error instanceof Error ? error.message : error,
+        code: (error as any)?.code,
+        errno: (error as any)?.errno,
+        syscall: (error as any)?.syscall,
+        hostname: (error as any)?.hostname,
+        stack: error instanceof Error ? error.stack : undefined,
+      });
+      
+      // エラーメッセージをより具体的に
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      let specificMessage = 'メールサービスの初期化に失敗しました';
+      
+      if (errorMessage.includes('Invalid login') || errorMessage.includes('AUTH')) {
+        specificMessage = 'SMTP認証に失敗しました。ユーザー名とパスワードを確認してください。';
+      } else if (errorMessage.includes('ECONNREFUSED')) {
+        specificMessage = 'メールサーバーに接続できません。ホスト名とポート番号を確認してください。';
+      } else if (errorMessage.includes('ETIMEDOUT')) {
+        specificMessage = 'メールサーバーへの接続がタイムアウトしました。ネットワーク設定を確認してください。';
+      }
+      
       throw new EmailError(
         EmailErrorType.INVALID_CONFIG,
-        'Failed to initialize email service',
+        specificMessage,
         error
       );
     }
@@ -110,6 +141,13 @@ export class EmailService {
         );
       }
 
+      console.log('📧 メール送信開始:', {
+        to: options.to,
+        subject: options.subject,
+        environment: process.env.NODE_ENV,
+        sendEmails: process.env.SEND_EMAILS,
+      });
+
       await this.initialize();
 
       if (!this.transporter) {
@@ -135,13 +173,30 @@ export class EmailService {
       }
 
       // Send email
-      const info = await this.transporter.sendMail({
-        from: options.from || getEmailConfig().from,
+      const config = getEmailConfig();
+      const mailOptions = {
+        from: options.from || config.from,
         to: options.to,
         subject: options.subject,
         html: options.html,
         text: options.text,
         attachments: options.attachments,
+      };
+
+      console.log('📮 メール送信オプション:', {
+        from: mailOptions.from,
+        to: mailOptions.to,
+        subject: mailOptions.subject,
+        host: config.host,
+        port: config.port,
+        user: config.auth.user,
+      });
+
+      const info = await this.transporter.sendMail(mailOptions);
+
+      console.log('✅ メール送信成功:', {
+        messageId: info.messageId,
+        response: info.response,
       });
 
       return {
@@ -150,15 +205,39 @@ export class EmailService {
         details: info,
       };
     } catch (error) {
-      console.error('Email send error:', error);
+      console.error('❌ メール送信エラー:', {
+        error: error instanceof Error ? error.message : error,
+        stack: error instanceof Error ? error.stack : undefined,
+        code: (error as any)?.code,
+        response: (error as any)?.response,
+        responseCode: (error as any)?.responseCode,
+      });
       
       if (error instanceof EmailError) {
         throw error;
       }
 
+      // さくらインターネット特有のエラーをチェック
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      if (errorMessage.includes('AUTH') || errorMessage.includes('authentication')) {
+        throw new EmailError(
+          EmailErrorType.INVALID_CONFIG,
+          'SMTP認証に失敗しました。メールサーバーの認証情報を確認してください。',
+          error
+        );
+      }
+
+      if (errorMessage.includes('ECONNREFUSED') || errorMessage.includes('ETIMEDOUT')) {
+        throw new EmailError(
+          EmailErrorType.SEND_FAILED,
+          'メールサーバーに接続できません。ホストとポートの設定を確認してください。',
+          error
+        );
+      }
+
       throw new EmailError(
         EmailErrorType.SEND_FAILED,
-        'Failed to send email',
+        `メール送信に失敗しました: ${errorMessage}`,
         error
       );
     }

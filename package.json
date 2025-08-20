@@ -115,7 +115,7 @@
     "mongodb-memory-server": "^10.2.0",
     "node-fetch": "^2.7.0",
     "playwright": "^1.54.2",
-    "puppeteer": "^24.16.1",
+    "puppeteer": "^24.16.2",
     "redis": "^5.8.1",
     "tailwindcss": "^4",
     "typescript": "^5"

@@ -3,7 +3,7 @@ import { EmailConfig, EmailError, EmailErrorType } from '@/types/email';
 
 // Validate environment variables
 function validateEmailConfig(): void {
-  const required = ['GMAIL_USER', 'GMAIL_APP_PASSWORD', 'EMAIL_FROM'];
+  const required = ['EMAIL_SERVER_USER', 'EMAIL_SERVER_PASSWORD'];
   const missing = required.filter(key => !process.env[key]);
   
   if (missing.length > 0) {
@@ -19,16 +19,17 @@ function validateEmailConfig(): void {
 export function getEmailConfig(): EmailConfig {
   validateEmailConfig();
   
+  // さくらインターネットのSMTP設定
   return {
-    host: process.env.SMTP_HOST || 'smtp.gmail.com',
-    port: parseInt(process.env.SMTP_PORT || '587', 10),
+    host: process.env.EMAIL_SERVER_HOST || 'blankinai.sakura.ne.jp',
+    port: parseInt(process.env.EMAIL_SERVER_PORT || '587', 10),
     secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
     auth: {
-      user: process.env.GMAIL_USER!,
-      pass: process.env.GMAIL_APP_PASSWORD!,
+      user: process.env.EMAIL_SERVER_USER!, // さくらのメールアカウント
+      pass: process.env.EMAIL_SERVER_PASSWORD!, // さくらのメールパスワード
     },
-    from: process.env.EMAIL_FROM!,
-    replyTo: process.env.EMAIL_REPLY_TO || process.env.EMAIL_FROM!,
+    from: process.env.EMAIL_FROM || 'Board App <noreply@blankinai.com>',
+    replyTo: process.env.EMAIL_REPLY_TO || process.env.EMAIL_FROM || 'support@blankinai.com',
   };
 }
 

@@ -41,47 +41,59 @@ export class EmailService {
         from: config.from,
       });
 
-      // Create transporter
-      // さくらインターネットのSMTPを確実に使用するため、明示的に設定
-      const transportConfig = {
-        host: config.host,
-        port: config.port,
-        secure: config.secure,
-        auth: {
-          user: config.auth.user,
-          pass: config.auth.pass,
-        },
-        tls: {
-          // Do not fail on invalid certs
-          rejectUnauthorized: false,
-          // さくらインターネット用の追加設定
-          servername: 'blankinai.sakura.ne.jp',
-        },
-        // SMTPサーバーの明示的な指定
-        name: 'blankinai.sakura.ne.jp',
-        // 接続タイムアウト設定
-        connectionTimeout: 10000,
-        greetingTimeout: 10000,
-        // デバッグ設定
-        logger: process.env.NODE_ENV === 'development' || process.env.DEBUG_EMAIL === 'true',
-        debug: process.env.NODE_ENV === 'development' || process.env.DEBUG_EMAIL === 'true',
-      };
-
-      console.log('📨 Transporter設定:', {
-        host: transportConfig.host,
-        port: transportConfig.port,
-        name: transportConfig.name,
-        servername: transportConfig.tls.servername,
+      // Gmailへの誤接続を防ぐため、完全にハードコードされた設定を使用
+      // 注意: 環境変数ではなく、直接値を指定
+      const sakuraHost = 'blankinai.sakura.ne.jp';
+      const sakuraPort = 587;
+      const sakuraUser = config.auth.user || 'noreply@blankinai.com';
+      const sakuraPass = config.auth.pass;
+      
+      console.log('🌸 さくらSMTP設定 (強制):', {
+        host: sakuraHost,
+        port: sakuraPort,
+        user: sakuraUser,
+        hasPassword: !!sakuraPass,
+        timestamp: new Date().toISOString(),
       });
 
+      // nodemailerの設定を完全に上書き
+      const transportConfig: any = {
+        host: sakuraHost, // 必ずさくらのホストを使用
+        port: sakuraPort,
+        secure: false, // STARTTLSを使用
+        requireTLS: true, // TLSを必須に
+        auth: {
+          user: sakuraUser,
+          pass: sakuraPass,
+        },
+        tls: {
+          rejectUnauthorized: false,
+          minVersion: 'TLSv1.2',
+        },
+        // 追加の設定
+        name: sakuraHost,
+        localAddress: undefined, // ローカルアドレスを指定しない
+        connectionTimeout: 15000,
+        greetingTimeout: 15000,
+        socketTimeout: 15000,
+      };
+
+      // デバッグログを有効化
+      if (process.env.NODE_ENV === 'production') {
+        transportConfig.logger = true;
+        transportConfig.debug = true;
+      }
+
+      console.log('🚀 nodemailer.createTransport()実行中...');
       this.transporter = nodemailer.createTransport(transportConfig);
 
-      // Verify connection
-      if (process.env.NODE_ENV === 'production' || process.env.SEND_EMAILS === 'true') {
-        console.log('🔍 SMTPサーバーへの接続を検証中...');
-        await this.transporter.verify();
-        console.log('✅ Email service connected successfully');
-      }
+      // Verify connection - 一時的にverifyをスキップして問題を特定
+      console.log('⚠️  SMTP verifyをスキップ中 (デバッグ目的)');
+      // if (process.env.NODE_ENV === 'production' || process.env.SEND_EMAILS === 'true') {
+      //   console.log('🔍 SMTPサーバーへの接続を検証中...');
+      //   await this.transporter.verify();
+      //   console.log('✅ Email service connected successfully');
+      // }
 
       this.initialized = true;
     } catch (error) {

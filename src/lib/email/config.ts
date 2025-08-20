@@ -3,14 +3,20 @@ import { EmailConfig, EmailError, EmailErrorType } from '@/types/email';
 
 // Validate environment variables
 function validateEmailConfig(): void {
-  const required = ['EMAIL_SERVER_USER', 'EMAIL_SERVER_PASSWORD'];
-  const missing = required.filter(key => !process.env[key]);
+  // 新旧両方の環境変数名をサポート
+  const hasNewVars = process.env.EMAIL_SERVER_USER && process.env.EMAIL_SERVER_PASSWORD;
+  const hasOldVars = process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD;
   
-  if (missing.length > 0) {
+  if (!hasNewVars && !hasOldVars) {
     throw new EmailError(
       EmailErrorType.INVALID_CONFIG,
-      `Missing required email configuration: ${missing.join(', ')}`,
-      { missing }
+      'Missing required email configuration: EMAIL_SERVER_USER/PASSWORD or GMAIL_USER/APP_PASSWORD',
+      { 
+        missing: [
+          'EMAIL_SERVER_USER or GMAIL_USER',
+          'EMAIL_SERVER_PASSWORD or GMAIL_APP_PASSWORD'
+        ] 
+      }
     );
   }
 }
@@ -20,13 +26,14 @@ export function getEmailConfig(): EmailConfig {
   validateEmailConfig();
   
   // さくらインターネットのSMTP設定
+  // 新旧両方の環境変数名をサポート
   return {
-    host: process.env.EMAIL_SERVER_HOST || 'blankinai.sakura.ne.jp',
-    port: parseInt(process.env.EMAIL_SERVER_PORT || '587', 10),
+    host: process.env.EMAIL_SERVER_HOST || process.env.SMTP_HOST || 'blankinai.sakura.ne.jp',
+    port: parseInt(process.env.EMAIL_SERVER_PORT || process.env.SMTP_PORT || '587', 10),
     secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
     auth: {
-      user: process.env.EMAIL_SERVER_USER!, // さくらのメールアカウント
-      pass: process.env.EMAIL_SERVER_PASSWORD!, // さくらのメールパスワード
+      user: process.env.EMAIL_SERVER_USER || process.env.GMAIL_USER || '', // さくらのメールアカウント
+      pass: process.env.EMAIL_SERVER_PASSWORD || process.env.GMAIL_APP_PASSWORD || '', // さくらのメールパスワード
     },
     from: process.env.EMAIL_FROM || 'Board App <noreply@blankinai.com>',
     replyTo: process.env.EMAIL_REPLY_TO || process.env.EMAIL_FROM || 'support@blankinai.com',

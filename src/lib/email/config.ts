@@ -25,15 +25,33 @@ function validateEmailConfig(): void {
 export function getEmailConfig(): EmailConfig {
   validateEmailConfig();
   
-  // さくらインターネットのSMTP設定
-  // 新旧両方の環境変数名をサポート
+  // さくらインターネットのSMTP設定を強制
+  // Gmailに誤接続する問題を回避するため、明示的にさくらのホストを指定
+  const host = 'blankinai.sakura.ne.jp'; // 固定値でさくらを指定
+  
+  // 環境変数から認証情報を取得
+  const user = process.env.EMAIL_SERVER_USER || process.env.GMAIL_USER || 'noreply@blankinai.com';
+  const pass = process.env.EMAIL_SERVER_PASSWORD || process.env.GMAIL_APP_PASSWORD || '';
+  
+  console.log('🔐 メール設定確認:', {
+    host,
+    port: 587,
+    user,
+    hasPassword: !!pass,
+    envVars: {
+      EMAIL_SERVER_HOST: process.env.EMAIL_SERVER_HOST,
+      EMAIL_SERVER_USER: process.env.EMAIL_SERVER_USER,
+      GMAIL_USER: process.env.GMAIL_USER,
+    }
+  });
+  
   return {
-    host: process.env.EMAIL_SERVER_HOST || process.env.SMTP_HOST || 'blankinai.sakura.ne.jp',
-    port: parseInt(process.env.EMAIL_SERVER_PORT || process.env.SMTP_PORT || '587', 10),
-    secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
+    host, // 必ずさくらのホストを使用
+    port: 587, // さくらの標準ポート
+    secure: false, // STARTTLSを使用
     auth: {
-      user: process.env.EMAIL_SERVER_USER || process.env.GMAIL_USER || '', // さくらのメールアカウント
-      pass: process.env.EMAIL_SERVER_PASSWORD || process.env.GMAIL_APP_PASSWORD || '', // さくらのメールパスワード
+      user,
+      pass,
     },
     from: process.env.EMAIL_FROM || 'Board App <noreply@blankinai.com>',
     replyTo: process.env.EMAIL_REPLY_TO || process.env.EMAIL_FROM || 'support@blankinai.com',

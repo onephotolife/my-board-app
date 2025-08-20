@@ -42,7 +42,8 @@ export class EmailService {
       });
 
       // Create transporter
-      this.transporter = nodemailer.createTransport({
+      // さくらインターネットのSMTPを確実に使用するため、明示的に設定
+      const transportConfig = {
         host: config.host,
         port: config.port,
         secure: config.secure,
@@ -53,10 +54,27 @@ export class EmailService {
         tls: {
           // Do not fail on invalid certs
           rejectUnauthorized: false,
+          // さくらインターネット用の追加設定
+          servername: 'blankinai.sakura.ne.jp',
         },
-        logger: process.env.NODE_ENV === 'development', // 開発環境でログを有効化
-        debug: process.env.NODE_ENV === 'development', // デバッグ情報を表示
+        // SMTPサーバーの明示的な指定
+        name: 'blankinai.sakura.ne.jp',
+        // 接続タイムアウト設定
+        connectionTimeout: 10000,
+        greetingTimeout: 10000,
+        // デバッグ設定
+        logger: process.env.NODE_ENV === 'development' || process.env.DEBUG_EMAIL === 'true',
+        debug: process.env.NODE_ENV === 'development' || process.env.DEBUG_EMAIL === 'true',
+      };
+
+      console.log('📨 Transporter設定:', {
+        host: transportConfig.host,
+        port: transportConfig.port,
+        name: transportConfig.name,
+        servername: transportConfig.tls.servername,
       });
+
+      this.transporter = nodemailer.createTransport(transportConfig);
 
       // Verify connection
       if (process.env.NODE_ENV === 'production' || process.env.SEND_EMAILS === 'true') {

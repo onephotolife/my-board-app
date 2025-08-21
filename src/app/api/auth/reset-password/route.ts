@@ -276,7 +276,7 @@ export async function POST(request: NextRequest) {
             passwordHistory: updatedHistory,
             lastPasswordChange: new Date(),
             passwordResetCount: (user.passwordResetCount || 0) + 1,
-            emailVerified: user.emailVerified || new Date(),
+            emailVerified: true,  // パスワードリセット完了時は必ずメール確認済みとする
           },
           $unset: {
             passwordResetToken: 1,

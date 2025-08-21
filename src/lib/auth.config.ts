@@ -60,8 +60,15 @@ export const authConfig = {
           // メール確認は会員制掲示板の必須要件
           const skipEmailVerification = false; // 本番環境用に修正
           
-          if (!skipEmailVerification && userObject?.emailVerified !== true) {
-            console.log('⛔ メール未確認のためログイン拒否');
+          // emailVerifiedは Boolean 型であるべき（Dateの場合も考慮）
+          const isEmailVerified = userObject?.emailVerified === true || 
+                                  (userObject?.emailVerified instanceof Date && userObject.emailVerified !== null);
+          
+          if (!skipEmailVerification && !isEmailVerified) {
+            console.log('⛔ メール未確認のためログイン拒否:', {
+              emailVerified: userObject?.emailVerified,
+              type: typeof userObject?.emailVerified
+            });
             // メール未確認の場合、特別なユーザーオブジェクトを返す
             return {
               id: "email-not-verified",

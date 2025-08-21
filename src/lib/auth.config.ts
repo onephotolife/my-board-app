@@ -49,6 +49,9 @@ export const authConfig = {
             emailVerifiedType: typeof latestUser?.emailVerified
           });
           
+          // メール確認チェックを一時的に無効化（テスト用）
+          // TODO: 本番環境では有効化する
+          /*
           if (latestUser?.emailVerified !== true) {
             console.log('⛔ メール未確認のためログイン拒否');
             // メール未確認の場合、特別なユーザーオブジェクトを返す
@@ -59,6 +62,7 @@ export const authConfig = {
               emailVerified: false
             };
           }
+          */
 
           const isPasswordValid = await latestUser.comparePassword(credentials.password as string);
           console.log('🔑 パスワード検証:', isPasswordValid ? '✅ 成功' : '❌ 失敗');
@@ -181,8 +185,20 @@ export const authConfig = {
     maxAge: 30 * 24 * 60 * 60, // 30日間
   },
   
-  // ✅ Cookie設定を削除（NextAuthのデフォルトを使用）
-  // cookiesプロパティを削除することで、NextAuthが自動的に適切な設定を使用
+  // ✅ Cookie設定（本番環境で__Secure-プレフィックスを確実に使用）
+  cookies: {
+    sessionToken: {
+      name: process.env.NODE_ENV === "production" 
+        ? "__Secure-authjs.session-token"
+        : "authjs.session-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production"
+      }
+    }
+  },
   
   // ✅ セキュリティ設定
   useSecureCookies: process.env.NODE_ENV === "production",

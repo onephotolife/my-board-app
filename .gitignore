@@ -39,3 +39,30 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# アーカイブディレクトリ
+archive/
+docs/archive/
+
+# 一時レポート・テストファイル
+*-report-*.md
+*-test-*.md
+test*.js
+test*.sh
+*.backup
+*.log.tmp
+response.json
+xss_test.json
+
+# テスト結果
+test-results/
+test-reports/
+coverage/
+.nyc_output/
+
+# 一時ファイル
+*.tmp
+*.temp
+temp-*
+tmp-*
+

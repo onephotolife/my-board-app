@@ -3,7 +3,7 @@ import { connectDB } from '@/lib/db/mongodb';
 import Post from '@/models/Post';
 import User from '@/lib/models/User';
 import { getUnifiedSession, getUserFromSession } from '@/lib/auth/session-helper';
-import { InputSanitizer } from '@/lib/security/sanitizer';
+import { EnhancedSanitizer } from '@/lib/security/enhanced-sanitizer';
 import { z } from 'zod';
 import { postCache } from '@/lib/cache/memory-cache';
 
@@ -20,21 +20,31 @@ export async function GET(request: NextRequest) {
     await connectDB();
 
     const searchParams = request.nextUrl.searchParams;
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '20');
-    const sort = searchParams.get('sort') || '-createdAt';
-    const author = searchParams.get('author');
-    const status = searchParams.get('status') || 'published';
+    
+    // パラメータのサニタイゼーション
+    const page = EnhancedSanitizer.sanitizeNumber(searchParams.get('page'), 1, 1000) || 1;
+    const limit = EnhancedSanitizer.sanitizeNumber(searchParams.get('limit'), 1, 100) || 20;
+    const sort = EnhancedSanitizer.sanitizeURLParam(searchParams.get('sort') || '-createdAt');
+    const author = EnhancedSanitizer.sanitizeObjectId(searchParams.get('author') || '') || undefined;
+    const status = EnhancedSanitizer.sanitizeURLParam(searchParams.get('status') || 'published');
+    const search = EnhancedSanitizer.sanitizeSearchQuery(searchParams.get('search') || '');
 
     const skip = (page - 1) * limit;
     
     // キャッシュキーの生成
     const cacheKey = `posts:${page}:${limit}:${sort}:${author || 'all'}:${status}`;
 
-    // クエリ条件
+    // クエリ条件（サニタイズ済み）
     const query: any = { status };
     if (author) {
       query.author = author;
+    }
+    if (search) {
+      // 検索クエリの追加（正規表現をエスケープ済み）
+      query.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { content: { $regex: search, $options: 'i' } }
+      ];
     }
     
     // キャッシュから取得を試みる
@@ -132,11 +142,11 @@ export async function POST(request: NextRequest) {
     // リクエストボディを取得
     const body = await request.json();
     
-    // 入力のサニタイゼーション
+    // 入力のサニタイゼーション（強化版）
     const sanitizedBody = {
-      title: InputSanitizer.sanitizeText(body.title || ''),
-      content: InputSanitizer.sanitizeText(body.content || ''),
-      tags: body.tags ? body.tags.map((tag: any) => InputSanitizer.sanitizeText(tag)) : undefined
+      title: EnhancedSanitizer.sanitizeText(body.title || ''),
+      content: EnhancedSanitizer.sanitizeText(body.content || ''),
+      tags: body.tags ? body.tags.map((tag: any) => EnhancedSanitizer.sanitizeText(tag)) : undefined
     };
 
     // バリデーション

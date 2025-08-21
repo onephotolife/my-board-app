@@ -35,7 +35,7 @@ function hashToken(token: string, secret: string): string {
  * CSRFトークンの取得または生成
  */
 export async function getOrCreateCSRFToken(): Promise<string> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const csrfCookieName = process.env.NODE_ENV === 'production' ? CSRF_COOKIE_NAME : 'csrf-token';
   const existingToken = cookieStore.get(csrfCookieName);
   
@@ -238,7 +238,7 @@ export async function secureFetch(
  * CSRFトークンの再生成（セキュリティ強化）
  */
 export async function regenerateCSRFToken(): Promise<string> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const newToken = generateCSRFToken();
   const csrfCookieName = process.env.NODE_ENV === 'production' ? CSRF_COOKIE_NAME : 'csrf-token';
   

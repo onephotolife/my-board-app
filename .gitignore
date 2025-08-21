@@ -66,3 +66,25 @@ coverage/
 temp-*
 tmp-*
 
+
+# Test artifacts
+test-results/
+test-results.json
+e2e-results.json
+playwright-report/
+e2e/screenshots/
+test-*.txt
+
+# Cache files
+.serena/cache/
+
+# Temporary files
+cookies.txt
+*PROGRESS*.md
+*_REPORT.md
+*CONFERENCE*.md
+
+# IDE specific
+*.swp
+*.swo
+.DS_Store

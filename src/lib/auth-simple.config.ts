@@ -39,13 +39,19 @@ export const simpleAuthConfig = {
             return null;
           }
 
-          // メール確認チェックを一時的に無効化（デバッグ用）
+          // メール確認は会員制掲示板の必須要件
+          if (!user.emailVerified) {
+            console.log('⛔ [SimpleAuth] メール未確認のためログイン拒否');
+            return null;
+          }
+
           console.log('✅ [SimpleAuth] 認証成功:', user.email);
           
           return {
             id: user._id.toString(),
             email: user.email,
             name: user.name || user.email,
+            emailVerified: user.emailVerified,
           };
         } catch (error) {
           console.error('❌ [SimpleAuth] 認証エラー:', error);
@@ -73,6 +79,7 @@ export const simpleAuthConfig = {
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
+        token.emailVerified = user.emailVerified;
       }
       return token;
     },
@@ -81,14 +88,16 @@ export const simpleAuthConfig = {
       console.log('📊 [Session Callback]:', {
         hasSession: !!session,
         hasToken: !!token,
-        tokenId: token?.id
+        tokenId: token?.id,
+        emailVerified: token?.emailVerified
       });
       
       if (token) {
         session.user = {
           id: token.id,
           email: token.email,
-          name: token.name
+          name: token.name,
+          emailVerified: token.emailVerified
         };
       }
       return session;
@@ -104,8 +113,27 @@ export const simpleAuthConfig = {
     maxAge: 30 * 24 * 60 * 60, // 30日
   },
   
+  // 🔑 本番環境用Cookie設定（403エラー対策）
+  cookies: {
+    sessionToken: {
+      name: process.env.NODE_ENV === "production" 
+        ? "__Secure-authjs.session-token"
+        : "authjs.session-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+        domain: process.env.NODE_ENV === "production" 
+          ? ".blankbrainai.com" 
+          : undefined
+      }
+    }
+  },
+  
   // 重要な設定
   secret: process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
   debug: true,
   trustHost: true,
+  useSecureCookies: process.env.NODE_ENV === "production",
 };

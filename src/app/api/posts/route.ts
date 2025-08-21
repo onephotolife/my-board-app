@@ -25,6 +25,14 @@ export async function GET(req: NextRequest) {
         : 'authjs.session-token',
     });
 
+    console.log('🔍 [API] 認証トークン確認:', {
+      hasToken: !!token,
+      userId: token?.id || token?.sub,
+      email: token?.email,
+      emailVerified: token?.emailVerified,
+      tokenKeys: token ? Object.keys(token) : []
+    });
+
     if (!token) {
       return createErrorResponse('認証が必要です', 401, 'UNAUTHORIZED');
     }
@@ -156,6 +164,14 @@ export async function POST(req: NextRequest) {
       cookieName: process.env.NODE_ENV === 'production' 
         ? '__Secure-authjs.session-token'
         : 'authjs.session-token',
+    });
+
+    console.log('🔍 [API] 認証トークン確認:', {
+      hasToken: !!token,
+      userId: token?.id || token?.sub,
+      email: token?.email,
+      emailVerified: token?.emailVerified,
+      tokenKeys: token ? Object.keys(token) : []
     });
 
     if (!token) {

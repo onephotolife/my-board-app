@@ -205,12 +205,16 @@ export async function middleware(request: NextRequest) {
   if (isProtectedPath(pathname)) {
     console.log('🔍 Middleware: 保護されたパス:', pathname);
     
-    // JWTトークンを取得（cookieNameを明示的に指定）
+    // JWTトークンを取得（環境に応じたcookieName）
+    const cookieName = process.env.NODE_ENV === 'production' 
+      ? '__Secure-authjs.session-token'
+      : 'authjs.session-token';
+      
     const token = await getToken({ 
       req: request,
       secret: process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
-      cookieName: '__Secure-authjs.session-token', // 本番環境用のCookie名
-      secureCookie: true,
+      cookieName,
+      secureCookie: process.env.NODE_ENV === 'production',
     });
     
     console.log('🎫 Middleware: トークン状態:', {
@@ -242,25 +246,35 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(url);
     }
     
-    // メール未確認チェックを一時的に無効化（デバッグ用）
-    // TODO: 本番環境では有効化
-    /*
+    // メール確認チェック（会員制掲示板として必須）
     if (token && !token.emailVerified) {
       // メール未確認の場合、確認ページへリダイレクト
       const url = new URL('/auth/verify-email', request.url);
       console.log('📧 Middleware: メール未確認のためリダイレクト');
       return NextResponse.redirect(url);
     }
-    */
   }
   
   // 認証チェック（APIエンドポイント）
   if (isProtectedApiPath(pathname)) {
+    const cookieName = process.env.NODE_ENV === 'production' 
+      ? '__Secure-authjs.session-token'
+      : 'authjs.session-token';
+      
     const token = await getToken({ 
       req: request,
       secret: process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
-      cookieName: '__Secure-authjs.session-token',
-      secureCookie: true,
+      cookieName,
+      secureCookie: process.env.NODE_ENV === 'production',
+    });
+    
+    console.log('🔍 [Middleware API] 認証チェック:', {
+      pathname,
+      hasToken: !!token,
+      userId: token?.id,
+      emailVerified: token?.emailVerified,
+      cookieName,
+      environment: process.env.NODE_ENV
     });
     
     if (!token) {
@@ -282,16 +296,19 @@ export async function middleware(request: NextRequest) {
   
   // 認証済みユーザーが認証ページにアクセスした場合
   if (pathname.startsWith('/auth/signin') || pathname.startsWith('/auth/signup')) {
+    const cookieName = process.env.NODE_ENV === 'production' 
+      ? '__Secure-authjs.session-token'
+      : 'authjs.session-token';
+      
     const token = await getToken({ 
       req: request,
       secret: process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
-      cookieName: '__Secure-authjs.session-token',
-      secureCookie: true,
+      cookieName,
+      secureCookie: process.env.NODE_ENV === 'production',
     });
     
-    if (token) {
-      // emailVerifiedチェックを一時的に無効化
-      // callbackUrlがある場合はそこへ、なければダッシュボードへ
+    if (token && token.emailVerified) {
+      // メール確認済みの場合のみリダイレクト
       const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
       return NextResponse.redirect(new URL(callbackUrl, request.url));
     }

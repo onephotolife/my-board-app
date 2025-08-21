@@ -181,18 +181,8 @@ export const authConfig = {
     maxAge: 30 * 24 * 60 * 60, // 30日間
   },
   
-  // ✅ Cookie設定（本番環境用）
-  cookies: {
-    sessionToken: {
-      name: `${process.env.NODE_ENV === "production" ? "__Secure-" : ""}authjs.session-token`,
-      options: {
-        httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        secure: process.env.NODE_ENV === "production",
-      },
-    },
-  },
+  // ✅ Cookie設定を削除（NextAuthのデフォルトを使用）
+  // cookiesプロパティを削除することで、NextAuthが自動的に適切な設定を使用
   
   // ✅ セキュリティ設定
   useSecureCookies: process.env.NODE_ENV === "production",

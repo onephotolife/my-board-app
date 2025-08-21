@@ -256,11 +256,12 @@ function VerifyEmailContent() {
 
 export default function VerifyEmailPage() {
   return (
-    <Suspense fallback={
+    <Suspense fallback={(
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
         <CircularProgress />
       </Box>
-    }>
+    )}
+    >
       <VerifyEmailContent />
     </Suspense>
   );

@@ -1,7 +1,8 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import PostItem from '../PostItem';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+
+import PostItem from '../PostItem';
 
 const theme = createTheme();
 

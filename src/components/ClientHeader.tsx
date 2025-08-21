@@ -17,6 +17,7 @@ import { useState } from 'react';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ForumIcon from '@mui/icons-material/Forum';
 import MenuIcon from '@mui/icons-material/Menu';
+
 import SlideDrawer from './SlideDrawer';
 
 export default function ClientHeader() {
@@ -113,8 +114,8 @@ export default function ClientHeader() {
             <MenuIcon />
           </IconButton>
         </Box>
-      </Toolbar>
-    </AppBar>
+        </Toolbar>
+      </AppBar>
     
     {/* SlideDrawerコンポーネントを使用 */}
     <SlideDrawer 

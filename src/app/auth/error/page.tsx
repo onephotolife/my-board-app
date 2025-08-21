@@ -5,6 +5,7 @@ import { Container, Paper, Typography, Button, Box, Alert } from '@mui/material'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import Link from 'next/link';
 import { Suspense } from 'react';
+
 import { getAuthErrorMessage } from '@/lib/auth-errors';
 
 function AuthErrorContent() {

@@ -1,7 +1,9 @@
 import { NextRequest } from 'next/server';
+
 import { POST } from '@/app/api/auth/register/route';
-import * as dbHelper from '../../helpers/db';
 import User from '@/lib/models/User';
+
+import * as dbHelper from '../../helpers/db';
 
 // メール送信のモック
 jest.mock('@/lib/mail/sendMail', () => ({

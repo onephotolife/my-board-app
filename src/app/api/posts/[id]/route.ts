@@ -1,207 +1,262 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { connectDB } from '@/lib/db/mongodb';
-import Post from '@/models/Post';
-import { getUnifiedSession } from '@/lib/auth/session-helper';
-import { EnhancedSanitizer } from '@/lib/security/enhanced-sanitizer';
+import { getToken } from 'next-auth/jwt';
 import { z } from 'zod';
 
-// バリデーションスキーマ
-const PostUpdateSchema = z.object({
-  title: z.string().min(1, 'タイトルは必須です').max(100, 'タイトルは100文字以内にしてください'),
-  content: z.string().min(1, '本文は必須です').max(1000, '本文は1000文字以内にしてください'),
-  tags: z.array(z.string()).optional(),
-  status: z.enum(['published', 'draft']).optional(),
-});
+import { connectDB } from '@/lib/db/mongodb-local';
+import Post from '@/lib/models/Post';
+import { checkPostOwnership, createErrorResponse, AuthUser } from '@/lib/middleware/auth';
+import { updatePostSchema, formatValidationErrors } from '@/lib/validations/post';
 
-// GET: 個別投稿取得
+// 認証チェックヘルパー
+async function getAuthenticatedUser(req: NextRequest): Promise<AuthUser | null> {
+  try {
+    const token = await getToken({
+      req,
+      secret: process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
+      cookieName: process.env.NODE_ENV === 'production' 
+        ? '__Secure-authjs.session-token'
+        : 'authjs.session-token',
+    });
+
+    if (!token) {
+      return null;
+    }
+
+    // メール確認チェック
+    if (!token.emailVerified) {
+      return null;
+    }
+
+    return {
+      id: token.id as string || token.sub as string,
+      email: token.email as string,
+      name: token.name as string,
+      emailVerified: true,
+    };
+  } catch (error) {
+    console.error('認証チェックエラー:', error);
+    return null;
+  }
+}
+
+// GET: 個別投稿取得（認証必須）
 export async function GET(
-  request: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await connectDB();
-    
+    // 認証チェック
+    const user = await getAuthenticatedUser(req);
+    if (!user) {
+      return createErrorResponse('認証が必要です', 401, 'UNAUTHORIZED');
+    }
+
     const { id } = await params;
     
-    // IDのサニタイゼーションと検証
-    const sanitizedId = EnhancedSanitizer.sanitizeObjectId(id);
-    if (!sanitizedId) {
-      return NextResponse.json(
-        { error: '無効なIDフォーマット' },
-        { status: 400 }
-      );
+    await connectDB();
+    
+    // 投稿を取得
+    const post = await Post.findById(id);
+    
+    if (!post) {
+      return createErrorResponse('投稿が見つかりません', 404, 'NOT_FOUND');
     }
     
-    const post = await Post.findById(sanitizedId).lean();
-
-    if (!post) {
-      return NextResponse.json(
-        { error: '投稿が見つかりません' },
-        { status: 404 }
-      );
-    }
-
     // 削除済みの投稿は表示しない
     if (post.status === 'deleted') {
-      return NextResponse.json(
-        { error: '投稿が見つかりません' },
-        { status: 404 }
-      );
+      return createErrorResponse('投稿が見つかりません', 404, 'NOT_FOUND');
     }
-
-    // セッション情報を取得（統合セッションヘルパー使用）
-    const session = await getUnifiedSession(request);
-
+    
+    // 閲覧数を増加（作成者以外の場合）
+    if (post.author._id !== user.id) {
+      await post.incrementViews();
+    }
+    
     // 権限情報を追加
+    const isOwner = post.author._id === user.id;
     const postWithPermissions = {
-      ...post,
-      canEdit: session?.user?.id === post.author.toString(),
-      canDelete: session?.user?.id === post.author.toString(),
+      ...post.toJSON(),
+      canEdit: isOwner,
+      canDelete: isOwner,
+      isLikedByUser: post.likes?.includes(user.id) || false,
     };
-
-    return NextResponse.json(postWithPermissions);
+    
+    return NextResponse.json({
+      success: true,
+      data: postWithPermissions,
+    });
   } catch (error) {
     console.error('投稿取得エラー:', error);
-    return NextResponse.json(
-      { error: '投稿の取得に失敗しました' },
-      { status: 500 }
-    );
+    return createErrorResponse('投稿の取得に失敗しました', 500, 'FETCH_ERROR');
   }
 }
 
 // PUT: 投稿更新（作成者のみ）
 export async function PUT(
-  request: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // 認証チェック（統合セッションヘルパー使用）
-    const session = await getUnifiedSession(request);
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: 'ログインが必要です' },
-        { status: 401 }
-      );
+    // 認証チェック
+    const user = await getAuthenticatedUser(req);
+    if (!user) {
+      return createErrorResponse('認証が必要です', 401, 'UNAUTHORIZED');
     }
 
-    await connectDB();
-    
     const { id } = await params;
     
-    // IDのサニタイゼーションと検証
-    const sanitizedId = EnhancedSanitizer.sanitizeObjectId(id);
-    if (!sanitizedId) {
-      return NextResponse.json(
-        { error: '無効なIDフォーマット' },
-        { status: 400 }
-      );
+    // 投稿の所有者チェック
+    const { isOwner, post, error } = await checkPostOwnership(id, user.id);
+    
+    if (error) {
+      return createErrorResponse(error, post ? 403 : 404, post ? 'FORBIDDEN' : 'NOT_FOUND');
     }
-
-    // 投稿の存在確認
-    const post = await Post.findById(sanitizedId);
-    if (!post) {
-      return NextResponse.json(
-        { error: '投稿が見つかりません' },
-        { status: 404 }
-      );
+    
+    if (!isOwner) {
+      return createErrorResponse('この投稿を編集する権限がありません', 403, 'FORBIDDEN');
     }
-
-    // 所有者チェック
-    if (post.author.toString() !== session.user.id) {
-      return NextResponse.json(
-        { error: '編集権限がありません' },
-        { status: 403 }
-      );
-    }
-
-    // リクエストボディを取得
-    const body = await request.json();
-
+    
+    // リクエストボディの取得
+    const body = await req.json();
+    
     // バリデーション
-    const validatedData = PostUpdateSchema.parse(body);
-
+    const validatedData = updatePostSchema.parse(body);
+    
+    await connectDB();
+    
     // 投稿を更新
     const updatedPost = await Post.findByIdAndUpdate(
-      sanitizedId,
-      validatedData,
-      { new: true, runValidators: true }
+      id,
+      {
+        ...validatedData,
+        updatedAt: new Date(),
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
     );
-
+    
+    if (!updatedPost) {
+      return createErrorResponse('投稿の更新に失敗しました', 500, 'UPDATE_ERROR');
+    }
+    
     return NextResponse.json({
-      message: '投稿を更新しました',
-      post: updatedPost,
+      success: true,
+      data: updatedPost,
+      message: '投稿が更新されました',
     });
   } catch (error) {
+    console.error('投稿更新エラー:', error);
+    
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'バリデーションエラー', details: error.errors },
+        {
+          success: false,
+          error: {
+            message: 'バリデーションエラー',
+            details: formatValidationErrors(error),
+          },
+        },
         { status: 400 }
       );
     }
-    console.error('投稿更新エラー:', error);
-    return NextResponse.json(
-      { error: '投稿の更新に失敗しました' },
-      { status: 500 }
-    );
+    
+    return createErrorResponse('投稿の更新に失敗しました', 500, 'UPDATE_ERROR');
   }
 }
 
 // DELETE: 投稿削除（作成者のみ）
 export async function DELETE(
-  request: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // 認証チェック（統合セッションヘルパー使用）
-    const session = await getUnifiedSession(request);
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: 'ログインが必要です' },
-        { status: 401 }
-      );
+    // 認証チェック
+    const user = await getAuthenticatedUser(req);
+    if (!user) {
+      return createErrorResponse('認証が必要です', 401, 'UNAUTHORIZED');
     }
 
-    await connectDB();
-    
     const { id } = await params;
     
-    // IDのサニタイゼーションと検証
-    const sanitizedId = EnhancedSanitizer.sanitizeObjectId(id);
-    if (!sanitizedId) {
-      return NextResponse.json(
-        { error: '無効なIDフォーマット' },
-        { status: 400 }
-      );
+    // 投稿の所有者チェック
+    const { isOwner, post, error } = await checkPostOwnership(id, user.id);
+    
+    if (error) {
+      return createErrorResponse(error, post ? 403 : 404, post ? 'FORBIDDEN' : 'NOT_FOUND');
     }
-
-    // 投稿の存在確認
-    const post = await Post.findById(sanitizedId);
-    if (!post) {
-      return NextResponse.json(
-        { error: '投稿が見つかりません' },
-        { status: 404 }
-      );
+    
+    if (!isOwner) {
+      return createErrorResponse('この投稿を削除する権限がありません', 403, 'FORBIDDEN');
     }
-
-    // 所有者チェック
-    if (post.author.toString() !== session.user.id) {
-      return NextResponse.json(
-        { error: '削除権限がありません' },
-        { status: 403 }
-      );
+    
+    await connectDB();
+    
+    // ソフトデリート
+    const deletedPost = await Post.findById(id);
+    if (deletedPost) {
+      await deletedPost.softDelete();
     }
-
-    // ソフトデリート（statusを'deleted'に変更）
-    await Post.findByIdAndUpdate(sanitizedId, { status: 'deleted' });
-
+    
     return NextResponse.json({
-      message: '投稿を削除しました',
+      success: true,
+      message: '投稿が削除されました',
     });
   } catch (error) {
     console.error('投稿削除エラー:', error);
-    return NextResponse.json(
-      { error: '投稿の削除に失敗しました' },
-      { status: 500 }
-    );
+    return createErrorResponse('投稿の削除に失敗しました', 500, 'DELETE_ERROR');
+  }
+}
+
+// PATCH: いいね機能（トグル）
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    // 認証チェック
+    const user = await getAuthenticatedUser(req);
+    if (!user) {
+      return createErrorResponse('認証が必要です', 401, 'UNAUTHORIZED');
+    }
+
+    const { id } = await params;
+    const { action } = await req.json();
+    
+    if (action !== 'toggle_like') {
+      return createErrorResponse('無効なアクションです', 400, 'INVALID_ACTION');
+    }
+    
+    await connectDB();
+    
+    // 投稿を取得
+    const post = await Post.findById(id);
+    
+    if (!post) {
+      return createErrorResponse('投稿が見つかりません', 404, 'NOT_FOUND');
+    }
+    
+    // 削除済みの投稿にはいいねできない
+    if (post.status === 'deleted') {
+      return createErrorResponse('投稿が見つかりません', 404, 'NOT_FOUND');
+    }
+    
+    // いいねをトグル
+    const updatedPost = await post.toggleLike(user.id);
+    
+    const isLiked = updatedPost.likes.includes(user.id);
+    
+    return NextResponse.json({
+      success: true,
+      data: {
+        isLiked,
+        likeCount: updatedPost.likes.length,
+      },
+      message: isLiked ? 'いいねしました' : 'いいねを取り消しました',
+    });
+  } catch (error) {
+    console.error('いいね処理エラー:', error);
+    return createErrorResponse('いいね処理に失敗しました', 500, 'LIKE_ERROR');
   }
 }

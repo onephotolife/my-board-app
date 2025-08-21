@@ -3,6 +3,7 @@
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { SessionProvider } from 'next-auth/react';
+
 import { UserProvider } from '@/contexts/UserContext';
 import { PermissionProvider } from '@/contexts/PermissionContext';
 import { CSRFProvider } from '@/components/CSRFProvider';

@@ -2,9 +2,11 @@
 
 import { Container, Typography, Paper, Box, Divider, Alert } from '@mui/material';
 import Link from 'next/link';
+
 import { modern2025Styles } from '@/styles/modern-2025';
-import { termsMetadata } from './metadata';
 import ClientHeader from '@/components/ClientHeader';
+
+import { termsMetadata } from './metadata';
 
 export default function TermsPage() {
   // 最終更新日時をフォーマット

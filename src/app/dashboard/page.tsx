@@ -545,7 +545,7 @@ export default function DashboardPage() {
                               </Avatar>
                             </ListItemAvatar>
                             <ListItemText
-                              primary={
+                              primary={(
                                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                                   <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
                                     {post.title || '無題の投稿'}
@@ -554,8 +554,8 @@ export default function DashboardPage() {
                                     {formatTimeAgo(post.createdAt)}
                                   </Typography>
                                 </Box>
-                              }
-                              secondary={
+                              )}
+                              secondary={(
                                 <Typography
                                   variant="body2"
                                   color="text.secondary"
@@ -569,7 +569,7 @@ export default function DashboardPage() {
                                 >
                                   {post.content}
                                 </Typography>
-                              }
+                              )}
                             />
                           </ListItem>
                           {index < posts.length - 1 && <Divider variant="inset" component="li" />}

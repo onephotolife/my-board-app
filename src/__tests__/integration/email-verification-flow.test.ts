@@ -9,8 +9,9 @@
 
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
-import User from '@/lib/models/User';
 import bcrypt from 'bcryptjs';
+
+import User from '@/lib/models/User';
 
 describe('Email Verification Flow - Integration Tests', () => {
   let mongoServer: MongoMemoryServer;

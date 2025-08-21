@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+
 import { auth } from '@/lib/auth';
 import { connectDB } from '@/lib/db/mongodb';
 import Post from '@/lib/models/Post';

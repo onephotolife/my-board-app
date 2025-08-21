@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { v4 as uuidv4 } from 'uuid';
+
 import { connectDB } from '@/lib/db/mongodb-local';
 import User from '@/lib/models/User';
 import { getEmailService } from '@/lib/email/mailer-fixed';
-import { v4 as uuidv4 } from 'uuid';
 
 export async function POST(request: NextRequest) {
   try {

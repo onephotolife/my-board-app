@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+
 import { modern2025Styles } from '@/styles/modern-2025';
 
 export default function PasswordResetLink() {

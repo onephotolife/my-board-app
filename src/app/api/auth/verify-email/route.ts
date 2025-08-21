@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+
 import { connectDB } from '@/lib/db/mongodb-local';
 import User from '@/lib/models/User';
 

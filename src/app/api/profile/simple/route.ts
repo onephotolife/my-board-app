@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
+import mongoose from 'mongoose';
+
 import { auth } from '@/lib/auth';
 import dbConnect from '@/lib/mongodb';
-import mongoose from 'mongoose';
 
 export async function PUT(req: NextRequest) {
   try {

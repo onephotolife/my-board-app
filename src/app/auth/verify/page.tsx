@@ -27,6 +27,7 @@ import {
   AppRegistration as RegisterIcon,
   Close as CloseIcon,
 } from '@mui/icons-material';
+
 import { AuthErrorCode } from '@/lib/errors/auth-errors';
 
 function VerifyEmailContent() {

@@ -1,7 +1,8 @@
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import Post from '../Post';
 import { faker } from '@faker-js/faker/locale/ja';
+
+import Post from '../Post';
 
 /**
  * Postモデル単体テスト

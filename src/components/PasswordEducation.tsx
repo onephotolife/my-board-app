@@ -12,7 +12,8 @@ export const PasswordEducation: React.FC = () => {
       borderRadius: '8px',
       marginTop: '16px',
       fontSize: '14px'
-    }}>
+    }}
+    >
       <h4 style={{
         margin: '0 0 12px 0',
         fontSize: '16px',
@@ -21,7 +22,8 @@ export const PasswordEducation: React.FC = () => {
         display: 'flex',
         alignItems: 'center',
         gap: '8px'
-      }}>
+      }}
+      >
         🔐 なぜ新しいパスワードが必要？
       </h4>
       
@@ -77,7 +79,8 @@ export const PasswordEducation: React.FC = () => {
             backgroundColor: 'white',
             borderRadius: '6px',
             border: '1px solid #E5E7EB'
-          }}>
+          }}
+          >
             <h5 style={{ margin: '0 0 8px 0', fontSize: '14px', fontWeight: '600', color: '#1F2937' }}>
               セキュリティポリシーについて
             </h5>
@@ -98,7 +101,8 @@ export const PasswordEducation: React.FC = () => {
               backgroundColor: '#EFF6FF',
               borderRadius: '4px',
               border: '1px solid #BFDBFE'
-            }}>
+            }}
+            >
               <p style={{ margin: 0, fontSize: '12px', color: '#1E40AF' }}>
                 💡 ヒント: パスワードマネージャーの使用を推奨します。
                 複雑なパスワードを安全に管理でき、毎回異なる強力なパスワードを

@@ -12,6 +12,7 @@ import {
   Hr,
   Img,
 } from '@react-email/components';
+
 import { templateConfig, emailAppConfig } from '../config';
 
 interface BaseLayoutProps {

@@ -15,9 +15,11 @@ import {
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import Link from 'next/link';
+
 import { modern2025Styles } from '@/styles/modern-2025';
-import { contactMetadata } from './metadata';
 import ClientHeader from '@/components/ClientHeader';
+
+import { contactMetadata } from './metadata';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({

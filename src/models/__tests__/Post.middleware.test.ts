@@ -1,7 +1,9 @@
+import { EventEmitter } from 'events';
+
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+
 import Post from '../Post';
-import { EventEmitter } from 'events';
 
 // イベントエミッターでミドルウェアをシミュレート
 const postEvents = new EventEmitter();

@@ -1,6 +1,7 @@
 'use client';
 
 import { ReactNode } from 'react';
+
 import { usePermissions } from '@/contexts/PermissionContext';
 import { Permission } from '@/lib/permissions/types';
 

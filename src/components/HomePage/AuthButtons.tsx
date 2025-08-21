@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+
 import { modern2025Styles } from '@/styles/modern-2025';
 
 export default function AuthButtons() {

@@ -1,5 +1,6 @@
-import { EmailService } from './mailer';
 import { MetricsService } from '../monitoring/metrics';
+
+import { EmailService } from './mailer';
 
 interface EmailJob {
   id?: string;

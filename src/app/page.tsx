@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
+import { Container, CircularProgress, Box } from '@mui/material';
+
 import { modern2025Styles } from '@/styles/modern-2025';
 import WelcomeSection from '@/components/WelcomeSection';
 import AuthButtons from '@/components/HomePage/AuthButtons';
 import PasswordResetLink from '@/components/HomePage/PasswordResetLink';
 import FeatureGrid from '@/components/HomePage/FeatureGrid';
-import { Container, CircularProgress, Box } from '@mui/material';
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -93,7 +94,8 @@ export default function Home() {
           transform: translateY(-4px);
           box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
         }
-      `}</style>
+      `}
+      </style>
 
       <div style={status === 'authenticated' ? { minHeight: '100vh', background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', padding: '40px 20px' } : containerStyle}>
         {status === 'authenticated' ? (

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+
 import { modern2025Styles } from '@/styles/modern-2025';
 import PasswordStrengthIndicator from '@/components/PasswordStrengthIndicator';
 import { PasswordStrengthResult, PasswordStrength } from '@/lib/utils/password-validation';
@@ -454,7 +455,8 @@ export default function SignUpPage() {
             transform: translateY(0);
           }
         }
-      `}</style>
+      `}
+      </style>
 
       <div style={containerStyle}>
         <div style={formContainerStyle}>
@@ -472,7 +474,8 @@ export default function SignUpPage() {
               color: '#dc2626',
               fontSize: '14px',
               whiteSpace: 'pre-line',
-            }}>
+            }}
+            >
               {error}
             </div>
           )}
@@ -485,7 +488,8 @@ export default function SignUpPage() {
               padding: '12px',
               color: '#16a34a',
               fontSize: '14px',
-            }}>
+            }}
+            >
               {success}
             </div>
           )}
@@ -502,7 +506,8 @@ export default function SignUpPage() {
                 fontSize: '14px',
                 fontWeight: '500',
                 color: modern2025Styles.colors.text.primary,
-              }}>
+              }}
+              >
                 お名前 <span style={{ color: '#ef4444' }}>*</span>
               </label>
               <input
@@ -552,7 +557,8 @@ export default function SignUpPage() {
                 fontSize: '14px',
                 fontWeight: '500',
                 color: modern2025Styles.colors.text.primary,
-              }}>
+              }}
+              >
                 メールアドレス <span style={{ color: '#ef4444' }}>*</span>
               </label>
               <div style={{ position: 'relative' }}>
@@ -581,7 +587,8 @@ export default function SignUpPage() {
                     transform: 'translateY(-50%)',
                     fontSize: '12px',
                     color: '#94a3b8',
-                  }}>
+                  }}
+                  >
                     確認中...
                   </div>
                 )}
@@ -592,7 +599,8 @@ export default function SignUpPage() {
                     top: '50%',
                     transform: 'translateY(-50%)',
                     fontSize: '16px',
-                  }}>
+                  }}
+                  >
                     ✅
                   </div>
                 )}
@@ -615,7 +623,8 @@ export default function SignUpPage() {
                 fontSize: '14px',
                 fontWeight: '500',
                 color: modern2025Styles.colors.text.primary,
-              }}>
+              }}
+              >
                 パスワード <span style={{ color: '#ef4444' }}>*</span>
               </label>
               <div style={{ position: 'relative' }}>
@@ -680,7 +689,8 @@ export default function SignUpPage() {
                 fontSize: '14px',
                 fontWeight: '500',
                 color: modern2025Styles.colors.text.primary,
-              }}>
+              }}
+              >
                 パスワード（確認） <span style={{ color: '#ef4444' }}>*</span>
               </label>
               <div style={{ position: 'relative' }}>
@@ -739,7 +749,8 @@ export default function SignUpPage() {
               fontSize: '12px',
               color: modern2025Styles.colors.text.secondary,
               lineHeight: '1.5',
-            }}>
+            }}
+            >
               登録することで、
               <Link href="/terms" style={{ ...linkStyle, fontSize: '12px' }}>
                 利用規約

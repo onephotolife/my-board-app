@@ -356,11 +356,11 @@ function SignInFormEnhanced() {
 export default function EnhancedSignInPage() {
   return (
     <Suspense 
-      fallback={
+      fallback={(
         <Box display="flex" justifyContent="center" mt={8}>
           <CircularProgress />
         </Box>
-      }
+      )}
     >
       <SignInFormEnhanced />
     </Suspense>

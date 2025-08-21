@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
 import mongoose from 'mongoose';
+
+import { auth } from '@/lib/auth';
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://yoshitaka_yamagishi:d82YJQKGwdAl4xZl@cluster0.ej6jq5c.mongodb.net/boardDB?retryWrites=true&w=majority';
 

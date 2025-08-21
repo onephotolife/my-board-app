@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { useRouter, useSearchParams } from 'next/navigation';
+
 import VerifyEmailPage from '@/app/auth/verify-email/page';
 
 // モックの設定

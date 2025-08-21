@@ -1,91 +1,172 @@
-import mongoose, { Schema, Document, Types } from 'mongoose';
+import mongoose, { Schema, Document, Model } from 'mongoose';
 
+// 投稿インターフェース
 export interface IPost extends Document {
   title: string;
   content: string;
-  author: string;  // ユーザーIDを文字列として保存
-  authorName: string;
-  authorEmail?: string;
-  status?: 'published' | 'draft' | 'deleted';
-  likes: string[];  // いいねしたユーザーIDの配列
-  likeCount?: number;  // 仮想プロパティ
+  author: {
+    _id: string;
+    name: string;
+    email: string;
+  };
+  status: 'published' | 'draft' | 'deleted';
+  views: number;
+  likes: string[];
+  tags: string[];
+  category: 'general' | 'tech' | 'question' | 'discussion' | 'announcement';
   createdAt: Date;
   updatedAt: Date;
-  toggleLike(userId: string): boolean;
+  deletedAt?: Date;
+  // メソッド
+  softDelete(): Promise<IPost>;
+  incrementViews(): Promise<IPost>;
+  toggleLike(userId: string): Promise<IPost>;
 }
 
+// Postスキーマの定義
 const PostSchema = new Schema<IPost>(
   {
     title: {
       type: String,
-      required: true,
+      required: [true, 'タイトルは必須です'],
+      minlength: [1, 'タイトルを入力してください'],
+      maxlength: [100, 'タイトルは100文字以内で入力してください'],
       trim: true,
-      maxlength: 200,
     },
     content: {
       type: String,
-      required: true,
-      maxlength: 10000,
+      required: [true, '本文は必須です'],
+      minlength: [1, '本文を入力してください'],
+      maxlength: [1000, '本文は1000文字以内で入力してください'],
     },
     author: {
-      type: String,  // ユーザーIDを文字列として保存
-      required: true,
-    },
-    authorName: {
-      type: String,
-      required: true,
-    },
-    authorEmail: {
-      type: String,
-      required: false,
+      _id: {
+        type: String,
+        required: true,
+      },
+      name: {
+        type: String,
+        required: true,
+      },
+      email: {
+        type: String,
+        required: true,
+      },
     },
     status: {
       type: String,
       enum: ['published', 'draft', 'deleted'],
       default: 'published',
     },
-    likes: [{
-      type: String,  // ユーザーIDを文字列として保存
-      ref: 'User'
-    }],
+    views: {
+      type: Number,
+      default: 0,
+    },
+    likes: {
+      type: [String],
+      default: [],
+    },
+    tags: {
+      type: [String],
+      default: [],
+      validate: {
+        validator: function(tags: string[]) {
+          return tags.length <= 5;
+        },
+        message: 'タグは最大5個までです',
+      },
+    },
+    category: {
+      type: String,
+      enum: ['general', 'tech', 'question', 'discussion', 'announcement'],
+      default: 'general',
+    },
+    deletedAt: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,
   }
 );
 
-// Index for pagination and sorting
+// インデックスの設定（パフォーマンス最適化）
 PostSchema.index({ createdAt: -1 });
-PostSchema.index({ author: 1 });
+PostSchema.index({ 'author._id': 1 });
+PostSchema.index({ status: 1 });
+PostSchema.index({ tags: 1 });
+PostSchema.index({ category: 1 });
+PostSchema.index({ 'author._id': 1, createdAt: -1 }); // 複合インデックス
 
-// toggleLikeメソッドの追加
-PostSchema.methods.toggleLike = function(userId: string): boolean {
-  const userIdStr = userId.toString();
-  const likeIndex = this.likes.indexOf(userIdStr);
-  
-  if (likeIndex === -1) {
-    // いいねを追加
-    this.likes.push(userIdStr);
-    return true;
-  } else {
-    // いいねを削除
-    this.likes.splice(likeIndex, 1);
-    return false;
-  }
+// 静的メソッド
+PostSchema.statics.findPublished = function(page = 1, limit = 10) {
+  const skip = (page - 1) * limit;
+  return this.find({ status: 'published' })
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
 };
 
-// 仮想プロパティ: いいね数
+PostSchema.statics.findByAuthor = function(authorId: string, includeDeleted = false) {
+  const query = includeDeleted 
+    ? { 'author._id': authorId }
+    : { 'author._id': authorId, status: { $ne: 'deleted' } };
+  return this.find(query).sort({ createdAt: -1 });
+};
+
+PostSchema.statics.countPublished = function() {
+  return this.countDocuments({ status: 'published' });
+};
+
+// インスタンスメソッド
+PostSchema.methods.softDelete = function() {
+  this.status = 'deleted';
+  this.deletedAt = new Date();
+  return this.save();
+};
+
+PostSchema.methods.incrementViews = function() {
+  this.views += 1;
+  return this.save();
+};
+
+PostSchema.methods.toggleLike = function(userId: string) {
+  const index = this.likes.indexOf(userId);
+  if (index > -1) {
+    this.likes.splice(index, 1);
+  } else {
+    this.likes.push(userId);
+  }
+  return this.save();
+};
+
+// 仮想プロパティ
 PostSchema.virtual('likeCount').get(function() {
   return this.likes ? this.likes.length : 0;
+});
+
+PostSchema.virtual('isLikedBy').get(function() {
+  return (userId: string) => this.likes.includes(userId);
 });
 
 // JSON変換時の設定
 PostSchema.set('toJSON', {
   virtuals: true,
   transform: function (doc, ret) {
+    ret.id = ret._id;
+    delete ret._id;
     delete ret.__v;
+    // 削除済みの投稿は内容を隠す
+    if (ret.status === 'deleted' && !ret.includeDeleted) {
+      ret.title = '[削除済み]';
+      ret.content = '[この投稿は削除されました]';
+    }
     return ret;
   },
 });
 
-export default mongoose.models.Post || mongoose.model<IPost>('Post', PostSchema);
+// モデルのエクスポート
+const Post: Model<IPost> = mongoose.models.Post || mongoose.model<IPost>('Post', PostSchema);
+
+export default Post;

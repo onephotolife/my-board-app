@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+
 import { modern2025Styles } from '@/styles/modern-2025';
 import { getAuthErrorMessage } from '@/lib/auth-errors';
 
@@ -212,7 +213,8 @@ function SignInForm() {
           color: ${modern2025Styles.input.placeholder.color};
           font-weight: ${modern2025Styles.input.placeholder.fontWeight};
         }
-      `}</style>
+      `}
+      </style>
       
       <div style={containerStyle}>
         <div style={{ ...modern2025Styles.card, ...formContainerStyle, animation: 'fadeIn 0.5s ease-out' }}>
@@ -231,7 +233,8 @@ function SignInForm() {
               animation: 'slideUp 0.3s ease-out',
               marginBottom: '20px',
               textAlign: 'left'
-            }}>
+            }}
+            >
               <div style={{ fontWeight: '600', marginBottom: errorDetail ? '8px' : '0' }}>
                 {error}
               </div>
@@ -357,17 +360,19 @@ function SignInForm() {
 
 export default function SignInPage() {
   return (
-    <Suspense fallback={
+    <Suspense fallback={(
       <div style={{ 
         display: 'flex', 
         justifyContent: 'center', 
         alignItems: 'center',
         minHeight: '100vh',
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      }}>
+      }}
+      >
         <div style={{ color: 'white', fontSize: '18px' }}>Loading...</div>
       </div>
-    }>
+    )}
+    >
       <SignInForm />
     </Suspense>
   );

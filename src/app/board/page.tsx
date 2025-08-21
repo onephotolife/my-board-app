@@ -21,7 +21,13 @@ import {
   IconButton,
   Alert,
   Stack,
-  Pagination
+  Pagination,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  ToggleButton,
+  ToggleButtonGroup
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -32,19 +38,64 @@ import {
   AccessTime as AccessTimeIcon,
   Comment as CommentIcon,
   ThumbUp as ThumbUpIcon,
-  Visibility as VisibilityIcon
+  Visibility as VisibilityIcon,
+  ArrowUpward as ArrowUpwardIcon,
+  ArrowDownward as ArrowDownwardIcon,
+  LocalOffer as LocalOfferIcon,
+  Category as CategoryIcon
 } from '@mui/icons-material';
+
+// カテゴリー定数
+const CATEGORIES = {
+  all: 'すべて',
+  general: '一般',
+  tech: '技術',
+  question: '質問',
+  discussion: '議論',
+  announcement: 'お知らせ',
+} as const;
+
+const SORT_OPTIONS = {
+  '-createdAt': '新着順',
+  'createdAt': '古い順',
+  '-views': '閲覧数多い順',
+  'views': '閲覧数少ない順',
+  '-updatedAt': '更新日時新しい順',
+  'updatedAt': '更新日時古い順',
+} as const;
 
 interface Post {
   _id: string;
-  title?: string;
+  title: string;
   content: string;
-  author?: string;
+  author: {
+    _id: string;
+    name: string;
+    email: string;
+  };
+  status: 'published' | 'draft' | 'deleted';
+  views: number;
+  likes: string[];
+  tags: string[];
+  category: 'general' | 'tech' | 'question' | 'discussion' | 'announcement';
   createdAt: string;
   updatedAt: string;
-  views?: number;
-  likes?: number;
-  comments?: number;
+  canEdit?: boolean;
+  canDelete?: boolean;
+  isLikedByUser?: boolean;
+}
+
+interface PostsResponse {
+  success: boolean;
+  data: Post[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
 }
 
 const formatTimeAgo = (date: string | Date) => {
@@ -70,6 +121,10 @@ export default function BoardPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [category, setCategory] = useState('all');
+  const [sortBy, setSortBy] = useState('-createdAt');
+  const [error, setError] = useState<string | null>(null);
   const postsPerPage = 10;
 
   useEffect(() => {
@@ -81,19 +136,55 @@ export default function BoardPage() {
     if (status === 'authenticated') {
       fetchPosts();
     }
-  }, [status, router, page]);
+  }, [status, router, page, category, sortBy]);
+
+  // 検索のデバウンス
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (page !== 1) {
+        setPage(1); // 検索時はページを1に戻す
+      } else {
+        fetchPosts();
+      }
+    }, 300);
+    
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm]);
 
   const fetchPosts = async () => {
     setLoading(true);
+    setError(null);
     try {
-      const response = await fetch('/api/posts');
-      if (response.ok) {
-        const data = await response.json();
-        setPosts(data);
-        setTotalPages(Math.ceil(data.length / postsPerPage));
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: postsPerPage.toString(),
+        sort: sortBy,
+        ...(category !== 'all' && { category }),
+        ...(searchTerm && { search: searchTerm }),
+      });
+
+      const response = await fetch(`/api/posts?${params}`);
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error?.message || '投稿の取得に失敗しました');
+      }
+      
+      const data: PostsResponse = await response.json();
+      
+      if (data.success) {
+        setPosts(data.data);
+        setTotalPages(data.pagination.totalPages);
+        setTotal(data.pagination.total);
+      } else {
+        throw new Error('投稿の取得に失敗しました');
       }
     } catch (error) {
       console.error('投稿の取得に失敗:', error);
+      setError(error instanceof Error ? error.message : '投稿の取得に失敗しました');
+      setPosts([]);
+      setTotalPages(1);
+      setTotal(0);
     } finally {
       setLoading(false);
     }
@@ -103,15 +194,37 @@ export default function BoardPage() {
     setSearchTerm(event.target.value);
   };
 
-  const filteredPosts = posts.filter(post => 
-    post.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (post.title && post.title.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
-
-  const paginatedPosts = filteredPosts.slice(
-    (page - 1) * postsPerPage,
-    page * postsPerPage
-  );
+  // いいねをトグルする関数
+  const toggleLike = async (postId: string, currentlyLiked: boolean) => {
+    try {
+      const response = await fetch(`/api/posts/${postId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action: 'toggle_like' }),
+      });
+      
+      if (response.ok) {
+        // 投稿リストを更新
+        setPosts(prevPosts => 
+          prevPosts.map(post => 
+            post._id === postId 
+              ? {
+                  ...post,
+                  isLikedByUser: !currentlyLiked,
+                  likes: currentlyLiked 
+                    ? post.likes.filter(id => id !== session?.user?.id)
+                    : [...post.likes, session?.user?.id || '']
+                }
+              : post
+          )
+        );
+      }
+    } catch (error) {
+      console.error('いいねの更新に失敗:', error);
+    }
+  };
 
   if (status === 'loading') {
     return (
@@ -168,15 +281,39 @@ export default function BoardPage() {
                 />
               </Paper>
             </Grid>
-            <Grid item xs={12} md={6}>
-              <Stack direction="row" spacing={2} justifyContent="flex-end">
-                <Button startIcon={<FilterListIcon />} variant="outlined">
-                  フィルター
-                </Button>
-                <Button startIcon={<SortIcon />} variant="outlined">
-                  並び替え
-                </Button>
-              </Stack>
+            <Grid item xs={12} md={3}>
+              <FormControl fullWidth variant="outlined" size="small">
+                <InputLabel>カテゴリー</InputLabel>
+                <Select
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  label="カテゴリー"
+                  startAdornment={<CategoryIcon sx={{ mr: 1, fontSize: 20 }} />}
+                >
+                  {Object.entries(CATEGORIES).map(([value, label]) => (
+                    <MenuItem key={value} value={value}>
+                      {label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <FormControl fullWidth variant="outlined" size="small">
+                <InputLabel>並び替え</InputLabel>
+                <Select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  label="並び替え"
+                  startAdornment={<SortIcon sx={{ mr: 1, fontSize: 20 }} />}
+                >
+                  {Object.entries(SORT_OPTIONS).map(([value, label]) => (
+                    <MenuItem key={value} value={value}>
+                      {label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Grid>
           </Grid>
         </Paper>
@@ -186,7 +323,7 @@ export default function BoardPage() {
           <Grid item xs={12} sm={4}>
             <Paper sx={{ p: 3, textAlign: 'center' }}>
               <Typography variant="h4" color="primary" gutterBottom>
-                {posts.length}
+                {total}
               </Typography>
               <Typography variant="body1" color="text.secondary">
                 総投稿数
@@ -210,14 +347,21 @@ export default function BoardPage() {
           <Grid item xs={12} sm={4}>
             <Paper sx={{ p: 3, textAlign: 'center' }}>
               <Typography variant="h4" color="warning.main" gutterBottom>
-                {session?.user?.name ? '1' : '0'}
+                {page}
               </Typography>
               <Typography variant="body1" color="text.secondary">
-                アクティブメンバー
+                現在のページ
               </Typography>
             </Paper>
           </Grid>
         </Grid>
+
+        {/* エラー表示 */}
+        {error && (
+          <Alert severity="error" sx={{ mb: 4 }}>
+            {error}
+          </Alert>
+        )}
 
         {/* 投稿一覧 */}
         {loading ? (
@@ -227,10 +371,10 @@ export default function BoardPage() {
               投稿を読み込み中...
             </Typography>
           </Box>
-        ) : paginatedPosts.length > 0 ? (
+        ) : posts.length > 0 ? (
           <>
             <Grid container spacing={3}>
-              {paginatedPosts.map((post) => (
+              {posts.map((post) => (
                 <Grid item xs={12} key={post._id}>
                   <Card
                     sx={{
@@ -247,30 +391,48 @@ export default function BoardPage() {
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                           <Avatar sx={{ mr: 2, bgcolor: 'primary.main' }}>
-                            {post.author?.[0]?.toUpperCase() || 'U'}
+                            {post.author.name[0]?.toUpperCase()}
                           </Avatar>
                           <Box>
                             <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                              {post.author || '匿名ユーザー'}
+                              {post.author.name}
                             </Typography>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                               <AccessTimeIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
                               <Typography variant="caption" color="text.secondary">
                                 {formatTimeAgo(post.createdAt)}
                               </Typography>
+                              <Chip
+                                label={CATEGORIES[post.category]}
+                                size="small"
+                                variant="outlined"
+                                color={post.category === 'announcement' ? 'error' : post.category === 'tech' ? 'primary' : 'default'}
+                                sx={{ ml: 1 }}
+                              />
+                              {post.tags.length > 0 && (
+                                <Chip
+                                  label={post.tags[0]}
+                                  size="small"
+                                  variant="filled"
+                                  sx={{ ml: 1, fontSize: '0.7rem', height: '20px' }}
+                                  icon={<LocalOfferIcon sx={{ fontSize: '12px !important' }} />}
+                                />
+                              )}
                             </Box>
                           </Box>
                         </Box>
-                        <Chip
-                          label="未読"
-                          size="small"
-                          color="primary"
-                          variant="outlined"
-                        />
+                        {post.canEdit && (
+                          <Chip
+                            label="自分の投稿"
+                            size="small"
+                            color="success"
+                            variant="filled"
+                          />
+                        )}
                       </Box>
 
                       <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                        {post.title || '無題の投稿'}
+                        {post.title}
                       </Typography>
                       
                       <Typography
@@ -295,19 +457,39 @@ export default function BoardPage() {
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                             <VisibilityIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
                             <Typography variant="caption" color="text.secondary">
-                              {post.views || Math.floor(Math.random() * 100)}
+                              {post.views}
                             </Typography>
                           </Box>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                            <ThumbUpIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
-                            <Typography variant="caption" color="text.secondary">
-                              {post.likes || Math.floor(Math.random() * 20)}
+                          <Box 
+                            sx={{ 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              gap: 0.5,
+                              cursor: 'pointer',
+                              '&:hover': { opacity: 0.7 }
+                            }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleLike(post._id, post.isLikedByUser || false);
+                            }}
+                          >
+                            <ThumbUpIcon 
+                              sx={{ 
+                                fontSize: 18, 
+                                color: post.isLikedByUser ? 'primary.main' : 'text.secondary' 
+                              }} 
+                            />
+                            <Typography 
+                              variant="caption" 
+                              color={post.isLikedByUser ? 'primary.main' : 'text.secondary'}
+                            >
+                              {post.likes.length}
                             </Typography>
                           </Box>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                             <CommentIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
                             <Typography variant="caption" color="text.secondary">
-                              {post.comments || Math.floor(Math.random() * 10)}
+                              0
                             </Typography>
                           </Box>
                         </Stack>

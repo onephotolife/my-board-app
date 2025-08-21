@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+
 import "./globals.css";
-import { Providers } from "./providers";
 import ClientHeader from "@/components/ClientHeader";
 import { AppReadyNotifier } from "@/components/AppReadyNotifier";
 import { NoScriptFallback } from "@/components/NoScriptFallback";
+
+import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: {

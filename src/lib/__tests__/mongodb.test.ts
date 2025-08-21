@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+
 import dbConnect from '../mongodb';
 
 // Mongooseのモック

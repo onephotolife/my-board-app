@@ -1,5 +1,6 @@
-import { RateLimit } from '@/lib/models/RateLimit';
 import { NextRequest } from 'next/server';
+
+import { RateLimit } from '@/lib/models/RateLimit';
 import { connectDB } from '@/lib/db/mongodb-local';
 
 export interface RateLimitOptions {

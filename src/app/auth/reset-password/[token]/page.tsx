@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense, useCallback, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+
 import { modern2025Styles } from '@/styles/modern-2025';
 import { 
   validatePasswordStrength, 
@@ -280,7 +281,8 @@ function PasswordResetForm() {
               borderRadius: '50%',
               margin: '0 auto',
               animation: 'spin 1s linear infinite'
-            }} />
+            }}
+            />
           </div>
         </div>
       </div>
@@ -294,7 +296,8 @@ function PasswordResetForm() {
           ...modern2025Styles.card, 
           ...formContainerStyle,
           textAlign: 'center'
-        }}>
+        }}
+        >
           {/* Error Icon */}
           <div style={{
             width: '64px',
@@ -305,7 +308,8 @@ function PasswordResetForm() {
             alignItems: 'center',
             justifyContent: 'center',
             margin: '0 auto 24px'
-          }}>
+          }}
+          >
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" style={{ color: 'white' }}>
               <path 
                 strokeLinecap="round" 
@@ -321,7 +325,8 @@ function PasswordResetForm() {
             ...titleStyle,
             color: modern2025Styles.colors.error,
             marginBottom: '16px'
-          }}>
+          }}
+          >
             無効なリンク
           </h1>
           
@@ -329,7 +334,8 @@ function PasswordResetForm() {
             ...subtitleStyle,
             marginBottom: '24px',
             color: modern2025Styles.colors.text.primary
-          }}>
+          }}
+          >
             {tokenValidation.error || 'このパスワードリセットリンクは無効または期限切れです。'}
           </p>
 
@@ -378,7 +384,8 @@ function PasswordResetForm() {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
           }
-        `}</style>
+        `}
+        </style>
         
         <div style={containerStyle}>
           <div style={{ 
@@ -386,7 +393,8 @@ function PasswordResetForm() {
             ...formContainerStyle, 
             animation: 'fadeIn 0.5s ease-out',
             textAlign: 'center'
-          }}>
+          }}
+          >
             {/* Success Icon */}
             <div style={{
               width: '64px',
@@ -398,7 +406,8 @@ function PasswordResetForm() {
               justifyContent: 'center',
               margin: '0 auto 24px',
               animation: 'pulse 2s infinite'
-            }}>
+            }}
+            >
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" style={{ color: 'white' }}>
                 <path 
                   strokeLinecap="round" 
@@ -414,7 +423,8 @@ function PasswordResetForm() {
               ...titleStyle,
               color: modern2025Styles.colors.success,
               marginBottom: '16px'
-            }}>
+            }}
+            >
               パスワードリセット完了
             </h1>
             
@@ -422,7 +432,8 @@ function PasswordResetForm() {
               ...subtitleStyle,
               marginBottom: '24px',
               color: modern2025Styles.colors.text.primary
-            }}>
+            }}
+            >
               パスワードが正常にリセットされました。
               <br />
               新しいパスワードでログインしてください。
@@ -468,14 +479,16 @@ function PasswordResetForm() {
           color: ${modern2025Styles.input.placeholder.color};
           font-weight: ${modern2025Styles.input.placeholder.fontWeight};
         }
-      `}</style>
+      `}
+      </style>
       
       <div style={containerStyle}>
         <div style={{ 
           ...modern2025Styles.card, 
           ...formContainerStyle, 
           animation: 'fadeIn 0.5s ease-out' 
-        }}>
+        }}
+        >
           {/* Lock Icon */}
           <div style={{
             width: '48px',
@@ -486,7 +499,8 @@ function PasswordResetForm() {
             alignItems: 'center',
             justifyContent: 'center',
             margin: '0 auto 24px'
-          }}>
+          }}
+          >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style={{ color: 'white' }}>
               <path 
                 strokeLinecap="round" 
@@ -508,7 +522,8 @@ function PasswordResetForm() {
               ...modern2025Styles.alert.error, 
               animation: 'slideUp 0.3s ease-out',
               marginBottom: '20px'
-            }}>
+            }}
+            >
               {error}
             </div>
           )}
@@ -576,20 +591,23 @@ function PasswordResetForm() {
                     backgroundColor: '#e5e7eb',
                     borderRadius: '2px',
                     overflow: 'hidden'
-                  }}>
+                  }}
+                  >
                     <div style={{
                       width: `${strengthConfig.percentage}%`,
                       height: '100%',
                       backgroundColor: strengthConfig.color,
                       transition: 'all 0.3s ease'
-                    }} />
+                    }}
+                    />
                   </div>
                   <div style={{
                     marginTop: '4px',
                     fontSize: '12px',
                     color: strengthConfig.color,
                     fontWeight: '500'
-                  }}>
+                  }}
+                  >
                     {strengthConfig.label}
                   </div>
                   {passwordStrength.feedback.length > 0 && (
@@ -597,7 +615,8 @@ function PasswordResetForm() {
                       marginTop: '4px',
                       fontSize: '12px',
                       color: modern2025Styles.colors.text.secondary
-                    }}>
+                    }}
+                    >
                       {passwordStrength.feedback.filter(f => !f.startsWith('良好')).slice(0, 2).join('、')}
                     </div>
                   )}
@@ -614,7 +633,8 @@ function PasswordResetForm() {
                 borderRadius: '8px',
                 marginTop: '12px',
                 animation: 'slideUp 0.3s ease-out'
-              }}>
+              }}
+              >
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
                   <span style={{ fontSize: '18px' }}>⚠️</span>
                   <div style={{ flex: 1 }}>
@@ -653,7 +673,8 @@ function PasswordResetForm() {
                 borderRadius: '8px',
                 marginTop: '12px',
                 animation: 'slideUp 0.3s ease-out'
-              }}>
+              }}
+              >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                   <h4 style={{ margin: 0, fontSize: '16px', color: '#1E40AF' }}>🔐 パスワード候補</h4>
                   <button
@@ -683,7 +704,9 @@ function PasswordResetForm() {
                         borderRadius: '4px',
                         fontSize: '13px',
                         fontFamily: 'monospace'
-                      }}>{pwd}</code>
+                      }}
+                      >{pwd}
+                      </code>
                       <button
                         type="button"
                         onClick={() => {
@@ -718,7 +741,9 @@ function PasswordResetForm() {
                         borderRadius: '4px',
                         fontSize: '13px',
                         fontFamily: 'monospace'
-                      }}>{pwd}</code>
+                      }}
+                      >{pwd}
+                      </code>
                       <button
                         type="button"
                         onClick={() => {
@@ -823,7 +848,8 @@ function PasswordResetForm() {
                   marginTop: '4px',
                   fontSize: '12px',
                   color: modern2025Styles.colors.error
-                }}>
+                }}
+                >
                   {confirmPasswordError}
                 </div>
               )}
@@ -845,8 +871,8 @@ function PasswordResetForm() {
               {loading ? (
                 <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ animation: 'spin 1s linear infinite' }}>
-                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" strokeOpacity="0.3"/>
-                    <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" strokeOpacity="0.3" />
+                    <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                   </svg>
                   更新中...
                 </span>
@@ -884,17 +910,19 @@ function PasswordResetForm() {
 
 export default function PasswordResetPage() {
   return (
-    <Suspense fallback={
+    <Suspense fallback={(
       <div style={{ 
         display: 'flex', 
         justifyContent: 'center', 
         alignItems: 'center',
         minHeight: '100vh',
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      }}>
+      }}
+      >
         <div style={{ color: 'white', fontSize: '18px' }}>Loading...</div>
       </div>
-    }>
+    )}
+    >
       <PasswordResetForm />
     </Suspense>
   );

@@ -47,11 +47,23 @@ import {
 
 interface Post {
   _id: string;
-  title?: string;
+  title: string;
   content: string;
-  author?: string;
+  author: {
+    _id: string;
+    name: string;
+    email: string;
+  };
+  status: 'published' | 'draft' | 'deleted';
+  views: number;
+  likes: string[];
+  tags: string[];
+  category: 'general' | 'tech' | 'question' | 'discussion' | 'announcement';
   createdAt: string;
   updatedAt: string;
+  canEdit?: boolean;
+  canDelete?: boolean;
+  isLikedByUser?: boolean;
 }
 
 interface Comment {
@@ -60,6 +72,15 @@ interface Comment {
   author: string;
   createdAt: string;
 }
+
+// カテゴリー定数
+const CATEGORIES = {
+  general: '一般',
+  tech: '技術',
+  question: '質問',
+  discussion: '議論',
+  announcement: 'お知らせ',
+} as const;
 
 const formatTimeAgo = (date: string | Date) => {
   const now = new Date();
@@ -85,15 +106,12 @@ export default function PostDetailPage() {
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [liked, setLiked] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [editContent, setEditContent] = useState('');
-  const [editTitle, setEditTitle] = useState('');
   const [commentText, setCommentText] = useState('');
   const [comments, setComments] = useState<Comment[]>([]);
   const [submittingComment, setSubmittingComment] = useState(false);
+  const [likingPost, setLikingPost] = useState(false);
   
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -123,20 +141,29 @@ export default function PostDetailPage() {
 
   const fetchPost = async () => {
     setLoading(true);
+    setError('');
+    
     try {
       const response = await fetch(`/api/posts/${postId}`);
-      if (response.ok) {
-        const data = await response.json();
-        setPost(data);
-        setEditContent(data.content);
-        setEditTitle(data.title || '');
-      } else if (response.status === 404) {
-        setError('投稿が見つかりません');
+      
+      if (!response.ok) {
+        if (response.status === 404) {
+          setError('投稿が見つかりません');
+          return;
+        }
+        throw new Error('投稿の取得に失敗しました');
+      }
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setPost(data.data);
       } else {
-        setError('投稿の取得に失敗しました');
+        throw new Error(data.error?.message || '投稿の取得に失敗しました');
       }
     } catch (err) {
-      setError('ネットワークエラーが発生しました');
+      console.error('投稿取得エラー:', err);
+      setError(err instanceof Error ? err.message : '投稿の取得に失敗しました');
     } finally {
       setLoading(false);
     }
@@ -148,44 +175,58 @@ export default function PostDetailPage() {
         method: 'DELETE',
       });
       
-      if (response.ok) {
+      const data = await response.json();
+      
+      if (data.success) {
         router.push('/board');
       } else {
-        setError('投稿の削除に失敗しました');
+        setError(data.error?.message || '投稿の削除に失敗しました');
       }
     } catch (err) {
+      console.error('投稿削除エラー:', err);
       setError('ネットワークエラーが発生しました');
     }
     setDeleteDialogOpen(false);
   };
 
-  const handleEdit = async () => {
+  const handleLike = async () => {
+    if (!post || likingPost) return;
+    
+    setLikingPost(true);
+    
     try {
       const response = await fetch(`/api/posts/${postId}`, {
-        method: 'PUT',
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          title: editTitle,
-          content: editContent,
+          action: 'toggle_like'
         }),
       });
       
-      if (response.ok) {
-        const updatedPost = await response.json();
-        setPost(updatedPost);
-        setEditDialogOpen(false);
+      const data = await response.json();
+      
+      if (data.success) {
+        // 投稿データを更新
+        setPost(prevPost => {
+          if (!prevPost) return null;
+          return {
+            ...prevPost,
+            likes: data.data.isLiked 
+              ? [...prevPost.likes.filter(id => id !== session?.user?.id), session?.user?.id || '']
+              : prevPost.likes.filter(id => id !== session?.user?.id),
+            isLikedByUser: data.data.isLiked
+          };
+        });
       } else {
-        setError('投稿の更新に失敗しました');
+        console.error('いいね処理エラー:', data.error?.message);
       }
     } catch (err) {
-      setError('ネットワークエラーが発生しました');
+      console.error('いいね処理エラー:', err);
+    } finally {
+      setLikingPost(false);
     }
-  };
-
-  const handleLike = () => {
-    setLiked(!liked);
   };
 
   const handleBookmark = () => {
@@ -245,7 +286,7 @@ export default function PostDetailPage() {
     return null;
   }
 
-  const isAuthor = post.author === session?.user?.name || post.author === session?.user?.email;
+  const isAuthor = post.canEdit || false;
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: '#f5f5f5' }}>
@@ -258,7 +299,7 @@ export default function PostDetailPage() {
             </IconButton>
             {isAuthor && (
               <Stack direction="row" spacing={1}>
-                <IconButton onClick={() => setEditDialogOpen(true)}>
+                <IconButton onClick={() => router.push(`/posts/${postId}/edit`)}>
                   <EditIcon />
                 </IconButton>
                 <IconButton onClick={() => setDeleteDialogOpen(true)} color="error">
@@ -277,11 +318,11 @@ export default function PostDetailPage() {
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Avatar sx={{ mr: 2, bgcolor: 'primary.main' }}>
-                {post.author?.[0]?.toUpperCase() || 'U'}
+                {post.author.name[0]?.toUpperCase()}
               </Avatar>
               <Box>
                 <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                  {post.author || '匿名ユーザー'}
+                  {post.author.name}
                 </Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -300,12 +341,29 @@ export default function PostDetailPage() {
             </Box>
           </Box>
 
+          {/* カテゴリーとタグ */}
+          <Box sx={{ mb: 2 }}>
+            <Chip
+              label={CATEGORIES[post.category]}
+              size="small"
+              color={post.category === 'announcement' ? 'error' : post.category === 'tech' ? 'primary' : 'default'}
+              sx={{ mr: 1 }}
+            />
+            {post.tags && post.tags.map((tag) => (
+              <Chip
+                key={tag}
+                label={`#${tag}`}
+                size="small"
+                variant="outlined"
+                sx={{ mr: 1 }}
+              />
+            ))}
+          </Box>
+
           {/* タイトル */}
-          {post.title && (
-            <Typography variant="h4" gutterBottom sx={{ fontWeight: 700, mb: 3 }}>
-              {post.title}
-            </Typography>
-          )}
+          <Typography variant="h4" gutterBottom sx={{ fontWeight: 700, mb: 3 }}>
+            {post.title}
+          </Typography>
 
           {/* 内容 */}
           <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', mb: 4 }}>
@@ -314,15 +372,28 @@ export default function PostDetailPage() {
 
           <Divider sx={{ my: 3 }} />
 
+          {/* 統計情報 */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, mb: 3, color: 'text.secondary' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              <VisibilityIcon sx={{ fontSize: 18 }} />
+              <Typography variant="body2">{post.views} 閲覧</Typography>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              <ThumbUpIcon sx={{ fontSize: 18 }} />
+              <Typography variant="body2">{post.likes.length} いいね</Typography>
+            </Box>
+          </Box>
+
           {/* アクションボタン */}
           <Stack direction="row" spacing={2} alignItems="center">
             <Button
-              startIcon={liked ? <ThumbUpIcon /> : <ThumbUpOutlinedIcon />}
+              startIcon={post.isLikedByUser ? <ThumbUpIcon /> : <ThumbUpOutlinedIcon />}
               onClick={handleLike}
-              variant={liked ? 'contained' : 'outlined'}
+              variant={post.isLikedByUser ? 'contained' : 'outlined'}
               size="small"
+              disabled={likingPost}
             >
-              いいね {liked ? 1 : 0}
+              {likingPost ? '処理中...' : 'いいね'} {post.likes.length}
             </Button>
             <Button
               startIcon={<CommentIcon />}
@@ -388,7 +459,7 @@ export default function PostDetailPage() {
                         </Avatar>
                       </ListItemAvatar>
                       <ListItemText
-                        primary={
+                        primary={(
                           <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                             <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
                               {comment.author}
@@ -397,12 +468,12 @@ export default function PostDetailPage() {
                               {formatTimeAgo(comment.createdAt)}
                             </Typography>
                           </Box>
-                        }
-                        secondary={
+                        )}
+                        secondary={(
                           <Typography variant="body2" sx={{ mt: 1 }}>
                             {comment.content}
                           </Typography>
-                        }
+                        )}
                       />
                     </ListItem>
                     {index < comments.length - 1 && <Divider variant="inset" component="li" />}
@@ -434,33 +505,6 @@ export default function PostDetailPage() {
         </DialogActions>
       </Dialog>
 
-      {/* 編集ダイアログ */}
-      <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)} maxWidth="md" fullWidth>
-        <DialogTitle>投稿を編集</DialogTitle>
-        <DialogContent>
-          <TextField
-            fullWidth
-            label="タイトル"
-            value={editTitle}
-            onChange={(e) => setEditTitle(e.target.value)}
-            sx={{ mb: 2, mt: 1 }}
-          />
-          <TextField
-            fullWidth
-            multiline
-            rows={10}
-            label="内容"
-            value={editContent}
-            onChange={(e) => setEditContent(e.target.value)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setEditDialogOpen(false)}>キャンセル</Button>
-          <Button onClick={handleEdit} variant="contained">
-            更新
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 }

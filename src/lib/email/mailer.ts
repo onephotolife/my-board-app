@@ -1,6 +1,7 @@
 // Email service using Nodemailer
 import nodemailer, { Transporter } from 'nodemailer';
 import { render } from '@react-email/render';
+
 import {
   EmailOptions,
   EmailSendResult,
@@ -8,6 +9,7 @@ import {
   EmailErrorType,
   EmailTemplateData,
 } from '@/types/email';
+
 import { getEmailConfig, emailAppConfig, rateLimitConfig } from './config';
 import VerificationEmail from './templates/verification';
 import PasswordResetEmail from './templates/password-reset';

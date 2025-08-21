@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
+
 import { connectDB } from '@/lib/db/mongodb-local';
 import User from '@/lib/models/User';
-import { z } from 'zod';
 
 // メールアドレス検証スキーマ
 const checkEmailSchema = z.object({

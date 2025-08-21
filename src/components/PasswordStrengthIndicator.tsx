@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+
 import { checkPasswordStrength, getStrengthLabel, getStrengthColor, PasswordStrength, PasswordStrengthResult } from '@/lib/utils/password-validation';
 
 interface PasswordStrengthIndicatorProps {
@@ -65,7 +66,8 @@ export default function PasswordStrengthIndicator({
           justifyContent: 'space-between',
           alignItems: 'center',
           marginBottom: '4px',
-        }}>
+        }}
+        >
           <span style={{ fontSize: '12px', color: '#64748b' }}>パスワード強度</span>
           <span style={{ fontSize: '12px', fontWeight: 'bold', color }}>
             {label}
@@ -77,7 +79,8 @@ export default function PasswordStrengthIndicator({
           backgroundColor: '#e2e8f0',
           borderRadius: '3px',
           overflow: 'hidden',
-        }}>
+        }}
+        >
           <div
             style={{
               height: '100%',
@@ -94,7 +97,8 @@ export default function PasswordStrengthIndicator({
           display: 'flex',
           gap: '4px',
           marginTop: '4px',
-        }}>
+        }}
+        >
           {[0, 1, 2, 3, 4].map((level) => (
             <div
               key={level}
@@ -116,7 +120,8 @@ export default function PasswordStrengthIndicator({
           fontSize: '11px',
           color: '#94a3b8',
           marginBottom: '8px',
-        }}>
+        }}
+        >
           推定解読時間: <strong>{crackTime}</strong>
         </div>
       )}
@@ -129,7 +134,8 @@ export default function PasswordStrengthIndicator({
           borderRadius: '6px',
           padding: '8px 12px',
           marginBottom: '8px',
-        }}>
+        }}
+        >
           {errors.map((error, index) => (
             <div key={index} style={{
               fontSize: '12px',
@@ -138,7 +144,8 @@ export default function PasswordStrengthIndicator({
               alignItems: 'flex-start',
               gap: '6px',
               marginBottom: index < errors.length - 1 ? '4px' : 0,
-            }}>
+            }}
+            >
               <span style={{ flexShrink: 0 }}>❌</span>
               <span>{error}</span>
             </div>
@@ -152,7 +159,8 @@ export default function PasswordStrengthIndicator({
           fontSize: '12px',
           color: '#64748b',
           lineHeight: '1.5',
-        }}>
+        }}
+        >
           {feedback.warning && (
             <div style={{
               backgroundColor: '#fef3c7',
@@ -163,7 +171,8 @@ export default function PasswordStrengthIndicator({
               display: 'flex',
               alignItems: 'flex-start',
               gap: '6px',
-            }}>
+            }}
+            >
               <span style={{ flexShrink: 0 }}>⚠️</span>
               <span style={{ color: '#92400e' }}>{feedback.warning}</span>
             </div>
@@ -175,7 +184,8 @@ export default function PasswordStrengthIndicator({
               border: '1px solid #bae6fd',
               borderRadius: '6px',
               padding: '8px 12px',
-            }}>
+            }}
+            >
               <div style={{ marginBottom: '4px', fontWeight: 'bold', color: '#0369a1' }}>
                 💡 改善のヒント:
               </div>
@@ -186,7 +196,8 @@ export default function PasswordStrengthIndicator({
                   gap: '6px',
                   marginBottom: index < feedback.suggestions.length - 1 ? '4px' : 0,
                   color: '#0c4a6e',
-                }}>
+                }}
+                >
                   <span style={{ flexShrink: 0 }}>•</span>
                   <span>{suggestion}</span>
                 </div>
@@ -204,7 +215,8 @@ export default function PasswordStrengthIndicator({
           backgroundColor: '#f8fafc',
           borderRadius: '6px',
           fontSize: '11px',
-        }}>
+        }}
+        >
           <div style={{ marginBottom: '6px', fontWeight: 'bold', color: '#475569' }}>
             パスワード要件:
           </div>
@@ -243,7 +255,8 @@ function RequirementItem({ met, text }: { met: boolean; text: string }) {
       alignItems: 'center',
       gap: '6px',
       color: met ? '#059669' : '#94a3b8',
-    }}>
+    }}
+    >
       <span style={{ fontSize: '14px' }}>
         {met ? '✅' : '⭕'}
       </span>

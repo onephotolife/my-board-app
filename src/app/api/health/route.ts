@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+
 import { dbConnectionManager } from '@/lib/db/connection-manager';
 
 /**

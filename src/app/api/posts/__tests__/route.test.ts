@@ -1,7 +1,9 @@
-import { GET, POST } from '../route';
 import { NextRequest } from 'next/server';
+
 import dbConnect from '@/lib/mongodb';
 import Post from '@/models/Post';
+
+import { GET, POST } from '../route';
 
 // モック
 jest.mock('@/lib/mongodb');

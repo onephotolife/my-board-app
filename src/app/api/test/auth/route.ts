@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
 import { getToken } from 'next-auth/jwt';
+
+import { auth } from '@/lib/auth';
 
 export async function GET(request: Request) {
   console.log('🧪 認証テストAPI開始');

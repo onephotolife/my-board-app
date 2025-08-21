@@ -78,7 +78,8 @@ export function NoScriptFallback() {
             font-size: 14px;
           }
         `
-      }} />
+      }}
+      />
       
       <div className="no-js-content">
         <header className="no-js-header">
@@ -87,7 +88,7 @@ export function NoScriptFallback() {
         </header>
 
         <div className="no-js-alert">
-          <strong>⚠️ JavaScript が無効になっています</strong><br/>
+          <strong>⚠️ JavaScript が無効になっています</strong><br />
           より良い体験のために、ブラウザでJavaScriptを有効にしてください。
         </div>
 
@@ -123,14 +124,14 @@ export function NoScriptFallback() {
           <div className="no-js-card">
             <h2>📱 対応環境</h2>
             <p>
-              <strong>推奨ブラウザ:</strong><br/>
-              • Chrome (最新版)<br/>
-              • Firefox (最新版)<br/>
-              • Safari (最新版)<br/>
+              <strong>推奨ブラウザ:</strong><br />
+              • Chrome (最新版)<br />
+              • Firefox (最新版)<br />
+              • Safari (最新版)<br />
               • Edge (最新版)
             </p>
             <p>
-              <strong>モバイル対応:</strong><br/>
+              <strong>モバイル対応:</strong><br />
               スマートフォンやタブレットでもご利用いただけます。
             </p>
           </div>

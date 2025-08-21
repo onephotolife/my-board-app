@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
-import User from '@/lib/models/User';
 import { v4 as uuidv4 } from 'uuid';
+
+import User from '@/lib/models/User';
 
 export interface TestUser {
   email: string;

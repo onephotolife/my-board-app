@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+
 import { CanEdit, CanDelete } from '@/components/permissions/PermissionGate';
 
 interface Post {
@@ -44,11 +45,11 @@ const PostItem = memo(function PostItem({ post, onEdit, onDelete }: PostItemProp
         maxWidth: '100%',
         overflow: 'hidden'
       }}
-      secondaryAction={
+      secondaryAction={(
         <Box sx={{ display: 'flex', gap: { xs: 0, sm: 1 } }}>
           <CanEdit 
             resourceOwnerId={post.author}
-            fallback={
+            fallback={(
               <Tooltip title="編集権限がありません">
                 <span>
                   <IconButton edge="end" disabled>
@@ -56,7 +57,7 @@ const PostItem = memo(function PostItem({ post, onEdit, onDelete }: PostItemProp
                   </IconButton>
                 </span>
               </Tooltip>
-            }
+            )}
           >
             <IconButton edge="end" aria-label="edit" onClick={() => onEdit(post)}>
               <EditIcon />
@@ -65,7 +66,7 @@ const PostItem = memo(function PostItem({ post, onEdit, onDelete }: PostItemProp
           
           <CanDelete 
             resourceOwnerId={post.author}
-            fallback={
+            fallback={(
               <Tooltip title="削除権限がありません">
                 <span>
                   <IconButton edge="end" disabled>
@@ -73,17 +74,17 @@ const PostItem = memo(function PostItem({ post, onEdit, onDelete }: PostItemProp
                   </IconButton>
                 </span>
               </Tooltip>
-            }
+            )}
           >
             <IconButton edge="end" aria-label="delete" onClick={() => onDelete(post._id)}>
               <DeleteIcon />
             </IconButton>
           </CanDelete>
         </Box>
-      }
+      )}
     >
       <ListItemText
-        primary={
+        primary={(
           <Box>
             <Typography 
               variant="h6" 
@@ -108,8 +109,8 @@ const PostItem = memo(function PostItem({ post, onEdit, onDelete }: PostItemProp
               投稿者: {post.author} | {formatDate(post.createdAt)}
             </Typography>
           </Box>
-        }
-        secondary={
+        )}
+        secondary={(
           <Typography 
             variant="body1" 
             sx={{ 
@@ -121,7 +122,7 @@ const PostItem = memo(function PostItem({ post, onEdit, onDelete }: PostItemProp
           >
             {post.content}
           </Typography>
-        }
+        )}
         sx={{ pr: 10 }}
       />
     </ListItem>

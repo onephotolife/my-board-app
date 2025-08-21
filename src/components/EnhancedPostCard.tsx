@@ -120,11 +120,11 @@ export default function EnhancedPostCard({
   return (
     <Card sx={{ mb: 3, boxShadow: 2, '&:hover': { boxShadow: 4 } }}>
       <CardHeader
-        avatar={
+        avatar={(
           <Avatar sx={{ bgcolor: getAvatarColor(post.authorName) }}>
             {post.authorName[0]?.toUpperCase() || '?'}
           </Avatar>
-        }
+        )}
         action={
           isOwner && (
             <>
@@ -181,7 +181,7 @@ export default function EnhancedPostCard({
             </>
           )
         }
-        title={
+        title={(
           <Box display="flex" alignItems="center" gap={1}>
             <Typography variant="subtitle1" fontWeight="bold">
               {post.authorName}
@@ -190,7 +190,7 @@ export default function EnhancedPostCard({
               <Chip label="あなた" size="small" color="primary" />
             )}
           </Box>
-        }
+        )}
         subheader={formatDate(post.createdAt)}
       />
       

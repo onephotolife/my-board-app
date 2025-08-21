@@ -58,7 +58,7 @@ export default function PureHeader() {
     return (
       <header style={headerStyle}>
         <h1 style={titleStyle}>会員制掲示板</h1>
-        <div></div>
+        <div />
       </header>
     );
   }

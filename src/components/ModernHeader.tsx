@@ -277,7 +277,8 @@ export default function ModernHeader() {
             z-index: 999;
           }
         }
-      `}</style>
+      `}
+      </style>
 
       <header style={headerStyle}>
         <div style={containerStyle}>
@@ -384,15 +385,18 @@ export default function ModernHeader() {
             <span style={{
               ...hamburgerLineStyle,
               transform: mobileMenuOpen ? 'rotate(45deg) translateY(6px)' : 'none',
-            }} />
+            }}
+            />
             <span style={{
               ...hamburgerLineStyle,
               opacity: mobileMenuOpen ? 0 : 1,
-            }} />
+            }}
+            />
             <span style={{
               ...hamburgerLineStyle,
               transform: mobileMenuOpen ? 'rotate(-45deg) translateY(-6px)' : 'none',
-            }} />
+            }}
+            />
           </button>
         </div>
       </header>
@@ -423,7 +427,8 @@ export default function ModernHeader() {
             padding: '12px 16px',
             borderBottom: '1px solid #e5e7eb',
             marginBottom: '8px',
-          }}>
+          }}
+          >
             <div style={{
               width: '32px',
               height: '32px',
@@ -437,7 +442,8 @@ export default function ModernHeader() {
               fontWeight: '600',
               boxShadow: '0 2px 8px rgba(236, 72, 153, 0.25)',
               border: '2px solid rgba(255, 255, 255, 0.9)',
-            }}>
+            }}
+            >
               {getInitials(session.user?.name || session.user?.email)}
             </div>
             <div>
@@ -445,13 +451,15 @@ export default function ModernHeader() {
                 fontSize: '14px',
                 fontWeight: '600',
                 color: '#0f172a',
-              }}>
+              }}
+              >
                 {session.user?.name || session.user?.email?.split('@')[0]}さん
               </div>
               <div style={{
                 fontSize: '12px',
                 color: '#64748b',
-              }}>
+              }}
+              >
                 {session.user?.email}
               </div>
             </div>
@@ -579,7 +587,8 @@ export default function ModernHeader() {
               alignItems: 'center',
               gap: '10px',
               marginBottom: '12px',
-            }}>
+            }}
+            >
               <div style={{
                 width: '32px',
                 height: '32px',
@@ -593,7 +602,8 @@ export default function ModernHeader() {
                 fontWeight: '600',
                 boxShadow: '0 2px 8px rgba(236, 72, 153, 0.25)',
                 border: '2px solid rgba(255, 255, 255, 0.9)',
-              }}>
+              }}
+              >
                 {getInitials(session.user?.name || session.user?.email)}
               </div>
               <div>

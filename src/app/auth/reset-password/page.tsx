@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
+
 import { modern2025Styles } from '@/styles/modern-2025';
 
 function PasswordResetRequestForm() {
@@ -157,7 +158,8 @@ function PasswordResetRequestForm() {
           color: ${modern2025Styles.input.placeholder.color};
           font-weight: ${modern2025Styles.input.placeholder.fontWeight};
         }
-      `}</style>
+      `}
+      </style>
 
       <div style={containerStyle}>
         <div style={{ ...modern2025Styles.card, ...formContainerStyle, animation: 'fadeIn 0.5s ease-out' }}>
@@ -258,7 +260,8 @@ function PasswordResetRequestForm() {
                 fontWeight: '600', 
                 marginBottom: '16px',
                 color: modern2025Styles.colors.text.primary 
-              }}>
+              }}
+              >
                 メールを送信しました
               </h2>
               
@@ -272,7 +275,8 @@ function PasswordResetRequestForm() {
                 fontSize: '14px',
                 marginTop: '24px',
                 lineHeight: '1.6'
-              }}>
+              }}
+              >
                 メールが届かない場合は、迷惑メールフォルダをご確認ください。<br />
                 それでも見つからない場合は、数分後に再度お試しください。
               </p>
@@ -321,17 +325,19 @@ function PasswordResetRequestForm() {
 
 export default function PasswordResetRequestPage() {
   return (
-    <Suspense fallback={
+    <Suspense fallback={(
       <div style={{ 
         display: 'flex', 
         justifyContent: 'center', 
         alignItems: 'center',
         minHeight: '100vh',
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      }}>
+      }}
+      >
         <div style={{ color: 'white', fontSize: '18px' }}>Loading...</div>
       </div>
-    }>
+    )}
+    >
       <PasswordResetRequestForm />
     </Suspense>
   );

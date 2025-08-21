@@ -1,8 +1,9 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import EditDialog from '../EditDialog';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+
+import EditDialog from '../EditDialog';
 
 const theme = createTheme();
 

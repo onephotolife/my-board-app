@@ -1,9 +1,10 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from '@jest/globals';
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import bcrypt from 'bcryptjs';
+
 import Post from '@/models/Post';
 import User from '@/lib/models/User';
-import bcrypt from 'bcryptjs';
 
 let mongoServer: MongoMemoryServer;
 let testUser1: any;

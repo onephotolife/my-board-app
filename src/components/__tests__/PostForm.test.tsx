@@ -1,8 +1,9 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import PostForm from '../PostForm';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+
+import PostForm from '../PostForm';
 
 const theme = createTheme();
 

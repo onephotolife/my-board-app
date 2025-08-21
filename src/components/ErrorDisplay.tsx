@@ -12,6 +12,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+
 import { ERROR_MESSAGES, ErrorType, ErrorDetails, DetailedError } from '@/lib/utils/errorMessages';
 import { modern2025Styles } from '@/styles/modern-2025';
 
@@ -238,7 +239,8 @@ const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
             transform: scale(1.05);
           }
         }
-      `}</style>
+      `}
+      </style>
       
       <div
         style={containerStyle}
@@ -300,14 +302,16 @@ const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
               fontWeight: '600', 
               marginBottom: '8px',
               color: colorStyles.iconColor
-            }}>
+            }}
+            >
               対処方法：
             </div>
             <ol style={{ 
               margin: '0', 
               paddingLeft: '20px',
               lineHeight: '1.6'
-            }}>
+            }}
+            >
               {errorDetails.guidance.steps.map((step, index) => (
                 <li key={index} style={{ marginBottom: '4px' }}>
                   {step}
@@ -327,7 +331,8 @@ const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
             fontSize: '14px',
             fontWeight: '600',
             color: colorStyles.iconColor
-          }}>
+          }}
+          >
             💡 クイック解決: {errorDetails.guidance.quickFix}
           </div>
         )}
@@ -366,7 +371,8 @@ const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
             marginBottom: '12px',
             fontSize: '14px',
             lineHeight: '1.5'
-          }}>
+          }}
+          >
             {/* トラブルシューティング */}
             <div style={{ marginBottom: '12px' }}>
               <div style={{ fontWeight: '600', marginBottom: '6px' }}>
@@ -406,7 +412,8 @@ const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
                 borderRadius: '4px',
                 fontSize: '12px',
                 fontFamily: 'monospace'
-              }}>
+              }}
+              >
                 {additionalInfo.errorId && (
                   <div>エラーID: {additionalInfo.errorId}</div>
                 )}
@@ -598,7 +605,8 @@ export const ErrorToast: React.FC<{
             transform: translateX(0);
           }
         }
-      `}</style>
+      `}
+      </style>
     </div>
   );
 };

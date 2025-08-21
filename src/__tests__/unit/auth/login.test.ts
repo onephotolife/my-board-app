@@ -1,7 +1,8 @@
 import { authConfig } from '@/lib/auth.config';
+import User from '@/lib/models/User';
+
 import * as dbHelper from '../../helpers/db';
 import { createTestUser } from '../../helpers/auth';
-import User from '@/lib/models/User';
 
 describe('User Login (NextAuth)', () => {
   beforeAll(async () => {

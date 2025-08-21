@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import {
   Box,
   Container,
@@ -25,7 +25,6 @@ import {
 } from '@mui/material';
 import {
   ArrowBack as ArrowBackIcon,
-  Send as SendIcon,
   Save as SaveIcon,
   Cancel as CancelIcon,
   FormatBold as FormatBoldIcon,
@@ -34,36 +33,111 @@ import {
   FormatQuote as FormatQuoteIcon,
   Code as CodeIcon,
   Link as LinkIcon,
-  Image as ImageIcon
+  Delete as DeleteIcon
 } from '@mui/icons-material';
 
-export default function NewPostPage() {
+// カテゴリー定数
+const CATEGORIES = {
+  general: '一般',
+  tech: '技術',
+  question: '質問',
+  discussion: '議論',
+  announcement: 'お知らせ',
+} as const;
+
+interface Post {
+  _id: string;
+  title: string;
+  content: string;
+  author: {
+    _id: string;
+    name: string;
+    email: string;
+  };
+  status: 'published' | 'draft' | 'deleted';
+  views: number;
+  likes: string[];
+  tags: string[];
+  category: 'general' | 'tech' | 'question' | 'discussion' | 'announcement';
+  createdAt: string;
+  updatedAt: string;
+  canEdit?: boolean;
+  canDelete?: boolean;
+}
+
+export default function EditPostPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const params = useParams();
+  const postId = params.id as string;
+
+  const [post, setPost] = useState<Post | null>(null);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [category, setCategory] = useState('general');
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
-  const [isDraft, setIsDraft] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   // 認証チェック
-  if (status === 'loading') {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/auth/signin');
+      return;
+    }
+    
+    if (status === 'authenticated' && postId) {
+      fetchPost();
+    }
+  }, [status, postId, router]);
 
-  if (status === 'unauthenticated') {
-    router.push('/auth/signin');
-    return null;
-  }
+  const fetchPost = async () => {
+    setLoading(true);
+    setError('');
+    
+    try {
+      const response = await fetch(`/api/posts/${postId}`);
+      
+      if (!response.ok) {
+        if (response.status === 404) {
+          setError('投稿が見つかりません');
+          return;
+        }
+        throw new Error('投稿の取得に失敗しました');
+      }
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        const postData = data.data;
+        setPost(postData);
+        
+        // 編集権限チェック
+        if (!postData.canEdit) {
+          setError('この投稿を編集する権限がありません');
+          return;
+        }
+        
+        // フォームに値を設定
+        setTitle(postData.title);
+        setContent(postData.content);
+        setCategory(postData.category);
+        setTags(postData.tags || []);
+      } else {
+        throw new Error(data.error?.message || '投稿の取得に失敗しました');
+      }
+    } catch (err) {
+      console.error('投稿取得エラー:', err);
+      setError(err instanceof Error ? err.message : '投稿の取得に失敗しました');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent, saveAsDraft = false) => {
     e.preventDefault();
@@ -92,14 +166,13 @@ export default function NewPostPage() {
       return;
     }
 
-    setLoading(true);
+    setSaving(true);
     setError('');
     setValidationErrors({});
-    setIsDraft(saveAsDraft);
     
     try {
-      const response = await fetch('/api/posts', {
-        method: 'POST',
+      const response = await fetch(`/api/posts/${postId}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -117,21 +190,41 @@ export default function NewPostPage() {
       if (data.success) {
         setSuccess(true);
         setTimeout(() => {
-          router.push('/board');
+          router.push(`/posts/${postId}`);
         }, 1500);
       } else {
         if (data.error?.details && typeof data.error.details === 'object') {
           setValidationErrors(data.error.details);
         } else {
-          setError(data.error?.message || '投稿の作成に失敗しました');
+          setError(data.error?.message || '投稿の更新に失敗しました');
         }
       }
     } catch (err) {
+      console.error('投稿更新エラー:', err);
       setError('ネットワークエラーが発生しました');
     } finally {
-      setLoading(false);
-      setIsDraft(false);
+      setSaving(false);
     }
+  };
+
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(`/api/posts/${postId}`, {
+        method: 'DELETE',
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        router.push('/board');
+      } else {
+        setError(data.error?.message || '投稿の削除に失敗しました');
+      }
+    } catch (err) {
+      console.error('投稿削除エラー:', err);
+      setError('ネットワークエラーが発生しました');
+    }
+    setDeleteDialogOpen(false);
   };
 
   const handleAddTag = () => {
@@ -149,16 +242,23 @@ export default function NewPostPage() {
 
   const handleRemoveTag = (tagToRemove: string) => {
     setTags(tags.filter(tag => tag !== tagToRemove));
+    setValidationErrors(prev => ({ ...prev, tags: '' }));
   };
 
   const handleCancel = () => {
-    if (content || title) {
-      const confirmed = window.confirm('入力内容が失われますが、よろしいですか？');
+    const hasChanges = 
+      title !== (post?.title || '') ||
+      content !== (post?.content || '') ||
+      category !== (post?.category || 'general') ||
+      JSON.stringify(tags) !== JSON.stringify(post?.tags || []);
+      
+    if (hasChanges) {
+      const confirmed = window.confirm('変更内容が失われますが、よろしいですか？');
       if (confirmed) {
-        router.push('/board');
+        router.push(`/posts/${postId}`);
       }
     } else {
-      router.push('/board');
+      router.push(`/posts/${postId}`);
     }
   };
 
@@ -204,36 +304,72 @@ export default function NewPostPage() {
     }, 0);
   };
 
+  // ローディング状態
+  if (status === 'loading' || loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  // エラー状態
+  if (error) {
+    return (
+      <Box sx={{ minHeight: '100vh', bgcolor: '#f5f5f5', py: 4 }}>
+        <Container maxWidth="md">
+          <Alert severity="error" sx={{ mb: 3 }}>
+            {error}
+          </Alert>
+          <Stack direction="row" spacing={2}>
+            <Button onClick={() => router.push('/board')} variant="outlined">
+              掲示板に戻る
+            </Button>
+            {postId && (
+              <Button onClick={() => router.push(`/posts/${postId}`)} variant="outlined">
+                投稿詳細に戻る
+              </Button>
+            )}
+          </Stack>
+        </Container>
+      </Box>
+    );
+  }
+
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: '#f5f5f5', py: 4 }}>
       <Container maxWidth="md">
         {/* ヘッダー */}
         <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <IconButton onClick={() => router.push('/board')} sx={{ mr: 2 }}>
+            <IconButton onClick={() => router.push(`/posts/${postId}`)} sx={{ mr: 2 }}>
               <ArrowBackIcon />
             </IconButton>
             <Typography variant="h4" sx={{ fontWeight: 700 }}>
-              新規投稿
+              投稿を編集
             </Typography>
           </Box>
+          
+          {/* 削除ボタン */}
+          <Button
+            variant="outlined"
+            color="error"
+            startIcon={<DeleteIcon />}
+            onClick={() => setDeleteDialogOpen(true)}
+            disabled={saving}
+          >
+            削除
+          </Button>
         </Box>
 
         {/* 成功メッセージ */}
         {success && (
           <Alert severity="success" sx={{ mb: 3 }}>
-            {isDraft ? '下書きが保存されました！' : '投稿が作成されました！'}掲示板にリダイレクトしています...
+            投稿が更新されました！投稿詳細にリダイレクトしています...
           </Alert>
         )}
 
-        {/* エラーメッセージ */}
-        {error && (
-          <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError('')}>
-            {error}
-          </Alert>
-        )}
-
-        {/* 投稿フォーム */}
+        {/* 編集フォーム */}
         <Paper sx={{ p: 4 }}>
           <form onSubmit={handleSubmit}>
             {/* タイトル */}
@@ -264,11 +400,11 @@ export default function NewPostPage() {
                 onChange={(e) => setCategory(e.target.value)}
                 label="カテゴリー"
               >
-                <MenuItem value="general">一般</MenuItem>
-                <MenuItem value="tech">技術</MenuItem>
-                <MenuItem value="question">質問</MenuItem>
-                <MenuItem value="discussion">議論</MenuItem>
-                <MenuItem value="announcement">お知らせ</MenuItem>
+                {Object.entries(CATEGORIES).map(([value, label]) => (
+                  <MenuItem key={value} value={value}>
+                    {label}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
 
@@ -300,7 +436,7 @@ export default function NewPostPage() {
               </Stack>
             </Paper>
 
-            {/* 内容 */}
+            {/* 本文 */}
             <TextField
               id="content-input"
               fullWidth
@@ -338,16 +474,19 @@ export default function NewPostPage() {
                     }
                   }}
                   sx={{ flex: 1 }}
+                  inputProps={{ maxLength: 20 }}
                 />
-                <Button onClick={handleAddTag} variant="outlined">
+                <Button onClick={handleAddTag} variant="outlined" disabled={tags.length >= 5}>
                   追加
                 </Button>
               </Box>
+              
               {validationErrors.tags && (
                 <Alert severity="error" sx={{ mt: 1, mb: 1 }}>
                   {validationErrors.tags}
                 </Alert>
               )}
+              
               {tags.length > 0 && (
                 <Box sx={{ mt: 1 }}>
                   <Stack direction="row" spacing={1} flexWrap="wrap">
@@ -378,7 +517,7 @@ export default function NewPostPage() {
                 color="error"
                 startIcon={<CancelIcon />}
                 onClick={handleCancel}
-                disabled={loading}
+                disabled={saving}
               >
                 キャンセル
               </Button>
@@ -388,21 +527,21 @@ export default function NewPostPage() {
                   variant="outlined"
                   startIcon={<SaveIcon />}
                   onClick={(e) => handleSubmit(e, true)}
-                  disabled={loading || !title.trim() || !content.trim()}
+                  disabled={saving || !title.trim() || !content.trim()}
                 >
-                  {loading && isDraft ? '保存中...' : '下書き保存'}
+                  {saving ? '保存中...' : '下書き保存'}
                 </Button>
                 <Button
                   type="submit"
                   variant="contained"
-                  startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <SendIcon />}
-                  disabled={loading || !title.trim() || !content.trim()}
+                  startIcon={saving ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />}
+                  disabled={saving || !title.trim() || !content.trim()}
                   sx={{
-                    background: loading ? 'grey.400' : 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
+                    background: saving ? 'grey.400' : 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
                     color: 'white'
                   }}
                 >
-                  {loading ? '投稿中...' : '投稿する'}
+                  {saving ? '更新中...' : '更新'}
                 </Button>
               </Stack>
             </Box>
@@ -417,25 +556,18 @@ export default function NewPostPage() {
             </Typography>
             <Divider sx={{ mb: 2 }} />
             
-            {title && (
-              <Typography variant="h5" gutterBottom>
-                {title}
-              </Typography>
-            )}
+            <Typography variant="h5" gutterBottom>
+              {title || 'タイトルのプレビュー'}
+            </Typography>
             
-            {category && (
-              <Chip 
-                label={category === 'general' ? '一般' : 
-                       category === 'tech' ? '技術' : 
-                       category === 'question' ? '質問' : 
-                       category === 'discussion' ? '議論' : 'お知らせ'}
-                size="small"
-                sx={{ mb: 2 }}
-              />
-            )}
+            <Chip 
+              label={CATEGORIES[category as keyof typeof CATEGORIES]}
+              size="small"
+              sx={{ mb: 2 }}
+            />
             
             <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
-              {content || '内容のプレビューがここに表示されます...'}
+              {content || '本文のプレビューがここに表示されます...'}
             </Typography>
             
             {tags.length > 0 && (
@@ -453,6 +585,45 @@ export default function NewPostPage() {
           </CardContent>
         </Card>
       </Container>
+
+      {/* 削除確認ダイアログ */}
+      {deleteDialogOpen && (
+        <Box
+          sx={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            bgcolor: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1300
+          }}
+        >
+          <Paper sx={{ p: 3, maxWidth: 400, mx: 2 }}>
+            <Typography variant="h6" gutterBottom>
+              投稿を削除しますか？
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+              この操作は取り消せません。本当に削除してもよろしいですか？
+            </Typography>
+            <Stack direction="row" spacing={2} justifyContent="flex-end">
+              <Button onClick={() => setDeleteDialogOpen(false)}>
+                キャンセル
+              </Button>
+              <Button 
+                onClick={handleDelete} 
+                color="error" 
+                variant="contained"
+              >
+                削除
+              </Button>
+            </Stack>
+          </Paper>
+        </Box>
+      )}
     </Box>
   );
 }

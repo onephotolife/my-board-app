@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+
 import Post from '../Post';
 
 describe('Custom Validators Tests', () => {

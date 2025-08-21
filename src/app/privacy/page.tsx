@@ -2,9 +2,11 @@
 
 import { Container, Typography, Paper, Box, Divider } from '@mui/material';
 import Link from 'next/link';
+
 import { modern2025Styles } from '@/styles/modern-2025';
-import { privacyMetadata } from './metadata';
 import ClientHeader from '@/components/ClientHeader';
+
+import { privacyMetadata } from './metadata';
 
 export default function PrivacyPage() {
   // 最終更新日時をフォーマット
@@ -44,7 +46,7 @@ export default function PrivacyPage() {
           background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
           borderRadius: 2,
         }}
-      >
+        >
         <Typography 
           variant="h3" 
           component="h1" 
@@ -242,8 +244,8 @@ export default function PrivacyPage() {
             ← トップページに戻る
           </Link>
         </Box>
-      </Paper>
-    </Container>
+        </Paper>
+      </Container>
     </>
   );
 }

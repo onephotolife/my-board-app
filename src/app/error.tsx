@@ -110,7 +110,8 @@ export default function Error({
               whiteSpace: 'pre-wrap',
               wordBreak: 'break-word',
               fontFamily: 'monospace',
-            }}>
+            }}
+            >
               {error.message}
             </Typography>
             {error.digest && (

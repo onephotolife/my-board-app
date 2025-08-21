@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
+import bcrypt from 'bcryptjs';
+import { z } from 'zod';
+
 import dbConnect from '@/lib/mongodb';
 import User from '@/lib/models/User';
 import PasswordReset from '@/models/PasswordReset';
-import bcrypt from 'bcryptjs';
-import { z } from 'zod';
 import { isPasswordReused, getPasswordReuseError, updatePasswordHistory, PASSWORD_HISTORY_LIMIT } from '@/lib/auth/password-validator';
 import { logPasswordReuseAttempt, logPasswordResetSuccess } from '@/lib/security/audit-log';
 

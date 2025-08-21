@@ -7,9 +7,12 @@ import {
   Link,
   Section,
 } from '@react-email/components';
-import BaseLayout from './base-layout';
-import { templateConfig } from '../config';
+
 import { EmailTemplateData } from '@/types/email';
+
+import { templateConfig } from '../config';
+
+import BaseLayout from './base-layout';
 
 interface PasswordResetEmailProps extends EmailTemplateData {
   userName: string;

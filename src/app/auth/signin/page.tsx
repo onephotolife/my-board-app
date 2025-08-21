@@ -53,10 +53,24 @@ function SignInForm() {
         setError(errorInfo.title);
         setErrorDetail(errorInfo.message);
         setErrorAction(errorInfo.action || '');
-      } else {
+      } else if (result?.ok) {
+        // ログイン成功
+        console.log('✅ ログイン成功、リダイレクト中...');
+        
+        // セッションを更新
+        router.refresh();
+        
         // callbackUrlがある場合はそこへ、なければダッシュボードへリダイレクト
         const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
-        router.push(callbackUrl);
+        
+        // 少し遅延を入れてセッションが確実に更新されるのを待つ
+        setTimeout(() => {
+          window.location.href = callbackUrl;
+        }, 100);
+      } else {
+        // 予期しないエラー
+        setError('ログインに失敗しました');
+        setErrorDetail('メールアドレスまたはパスワードが正しくありません。');
       }
     } catch {
       setError('ログイン中にエラーが発生しました');

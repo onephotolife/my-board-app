@@ -96,8 +96,9 @@ export const authConfig = {
         }
         // メール未確認チェック
         if (user.id === "email-not-verified") {
-          // メール未確認エラーとして特別なURLにリダイレクト
-          return "/auth/signin?error=EmailNotVerified";
+          // メール未確認の場合はfalseを返す（エラーはクライアント側で処理）
+          console.log('📧 メール未確認のためログイン拒否');
+          return false;
         }
         
         // ログインカウントと最終ログイン日時を更新

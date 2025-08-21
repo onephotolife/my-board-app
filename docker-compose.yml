@@ -1,0 +1,135 @@
+version: '3.8'
+
+services:
+  # Next.jsアプリケーション
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: board-app:latest
+    container_name: board-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=${MONGODB_URI}
+      - NEXTAUTH_URL=${NEXTAUTH_URL}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - EMAIL_FROM=${EMAIL_FROM}
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - board-network
+    volumes:
+      - ./logs:/app/logs
+      - ./uploads:/app/public/uploads
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # MongoDB
+  mongodb:
+    image: mongo:7.0
+    container_name: board-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
+      - MONGO_INITDB_DATABASE=board-app
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+      - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - board-network
+    command: mongod --auth
+
+  # Redis（キャッシュ用）
+  redis:
+    image: redis:7-alpine
+    container_name: board-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - board-network
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Nginx（リバースプロキシ）
+  nginx:
+    image: nginx:alpine
+    container_name: board-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./public:/usr/share/nginx/html/public:ro
+    depends_on:
+      - app
+    networks:
+      - board-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # バックアップサービス（オプション）
+  backup:
+    image: alpine:latest
+    container_name: board-backup
+    restart: unless-stopped
+    volumes:
+      - mongodb_data:/data/db:ro
+      - ./backups:/backups
+    environment:
+      - MONGO_HOST=mongodb
+      - MONGO_PORT=27017
+      - MONGO_DB=board-app
+      - MONGO_USER=admin
+      - MONGO_PASSWORD=${MONGO_ROOT_PASSWORD}
+    networks:
+      - board-network
+    entrypoint: |
+      sh -c 'while true; do
+        echo "Backup started at $$(date)"
+        mongodump --host=$$MONGO_HOST:$$MONGO_PORT \
+                  --username=$$MONGO_USER \
+                  --password=$$MONGO_PASSWORD \
+                  --db=$$MONGO_DB \
+                  --out=/backups/$$(date +%Y%m%d_%H%M%S)
+        find /backups -type d -mtime +7 -exec rm -rf {} + 2>/dev/null || true
+        echo "Backup completed at $$(date)"
+        sleep 86400
+      done'
+
+networks:
+  board-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+    driver: local
+  mongodb_config:
+    driver: local
+  redis_data:
+    driver: local

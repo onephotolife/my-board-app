@@ -1,7 +1,7 @@
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 
-import { connectDB } from "@/lib/db/mongodb";
+import { connectDB } from "@/lib/db/mongodb-local";
 import User from "@/lib/models/User";
 
 // シンプルで確実に動作する設定

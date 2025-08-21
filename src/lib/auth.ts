@@ -2,7 +2,7 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 
-import { connectDB } from "@/lib/db/mongodb";
+import { connectDB } from "@/lib/db/mongodb-local";
 import User from "@/lib/models/User";
 
 // NextAuth v5対応の正しい設定

@@ -110,6 +110,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     maxAge: 30 * 24 * 60 * 60, // 30日
   },
   
+  // NextAuth v5必須設定
+  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
   debug: true,
   trustHost: true,
 });

@@ -54,15 +54,23 @@ export function AppReadyNotifier() {
       // Navigation Timing API を使用してメトリクス収集
       const navigationTiming = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
       if (navigationTiming) {
+        // 安全な値の取得（負の値やNaNを防ぐ）
+        const safeRound = (value: number): number => {
+          if (isNaN(value) || value < 0) return 0;
+          return Math.round(value);
+        };
+
         const metrics = {
-          dns: Math.round(navigationTiming.domainLookupEnd - navigationTiming.domainLookupStart),
-          tcp: Math.round(navigationTiming.connectEnd - navigationTiming.connectStart),
+          dns: safeRound(navigationTiming.domainLookupEnd - navigationTiming.domainLookupStart),
+          tcp: safeRound(navigationTiming.connectEnd - navigationTiming.connectStart),
           tls: navigationTiming.secureConnectionStart > 0 ? 
-               Math.round(navigationTiming.connectEnd - navigationTiming.secureConnectionStart) : 0,
-          ttfb: Math.round(navigationTiming.responseStart - navigationTiming.requestStart),
-          contentLoad: Math.round(navigationTiming.loadEventEnd - navigationTiming.responseStart),
-          domComplete: Math.round(navigationTiming.domComplete - navigationTiming.navigationStart),
-          appReady: Math.round(readyTime)
+               safeRound(navigationTiming.connectEnd - navigationTiming.secureConnectionStart) : 0,
+          ttfb: safeRound(navigationTiming.responseStart - navigationTiming.requestStart),
+          contentLoad: navigationTiming.loadEventEnd > 0 && navigationTiming.responseStart > 0 ?
+                       safeRound(navigationTiming.loadEventEnd - navigationTiming.responseStart) : 0,
+          domComplete: navigationTiming.domComplete > 0 && navigationTiming.navigationStart > 0 ?
+                       safeRound(navigationTiming.domComplete - navigationTiming.navigationStart) : 0,
+          appReady: safeRound(readyTime)
         };
 
         // カスタムイベントでメトリクスを送信

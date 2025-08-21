@@ -70,13 +70,13 @@ export default function RootLayout({
         {/* Progressive Web App */}
         <meta name="theme-color" content="#667eea" />
         <meta name="application-name" content="会員制掲示板" />
+        <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="掲示板" />
         
-        {/* セキュリティ強化 */}
+        {/* セキュリティ強化 - X-Frame-OptionsはHTTPヘッダーで設定済み（vercel.json） */}
         <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
-        <meta httpEquiv="X-Frame-Options" content="DENY" />
         <meta httpEquiv="X-XSS-Protection" content="1; mode=block" />
       </head>
       <body>

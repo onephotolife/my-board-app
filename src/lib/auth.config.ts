@@ -88,10 +88,18 @@ export const authConfig = {
   callbacks: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async signIn({ user, account }: any) {
+      console.log('🎯 signInコールバック開始:', {
+        provider: account?.provider,
+        userId: user?.id,
+        userEmail: user?.email,
+        timestamp: new Date().toISOString()
+      });
+      
       // Credentialsプロバイダーの場合、カスタムエラーを処理
       if (account?.provider === 'credentials') {
         // ユーザーオブジェクトがない場合は、認証失敗
         if (!user) {
+          console.log('❌ signIn: ユーザーオブジェクトなし');
           return false;
         }
         // メール未確認チェック
@@ -109,11 +117,13 @@ export const authConfig = {
               $inc: { loginCount: 1 },
               lastLogin: new Date()
             });
+            console.log('✅ ログイン統計更新完了');
           } catch (error) {
             console.error('Failed to update login stats:', error);
           }
         }
       }
+      console.log('✅ signInコールバック: trueを返します');
       return true;
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

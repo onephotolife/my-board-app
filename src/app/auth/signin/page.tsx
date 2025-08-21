@@ -40,6 +40,8 @@ function SignInForm() {
     setErrorAction('');
     setLoading(true);
 
+    console.log('🔐 ログイン試行開始:', { email, timestamp: new Date().toISOString() });
+
     try {
       const result = await signIn('credentials', {
         email,
@@ -47,32 +49,57 @@ function SignInForm() {
         redirect: false,
       });
 
+      console.log('📊 signIn結果:', {
+        ok: result?.ok,
+        error: result?.error,
+        status: result?.status,
+        url: result?.url,
+        fullResult: JSON.stringify(result),
+        timestamp: new Date().toISOString()
+      });
+
       if (result?.error) {
         // エラータイプに応じたメッセージを表示
+        console.log('❌ ログインエラー:', result.error);
         const errorInfo = getAuthErrorMessage(result.error);
         setError(errorInfo.title);
         setErrorDetail(errorInfo.message);
         setErrorAction(errorInfo.action || '');
       } else if (result?.ok) {
         // ログイン成功
-        console.log('✅ ログイン成功、リダイレクト中...');
-        
-        // セッションを更新
-        router.refresh();
+        console.log('✅ ログイン成功、リダイレクト準備中...');
         
         // callbackUrlがある場合はそこへ、なければダッシュボードへリダイレクト
         const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+        console.log('🎯 リダイレクト先:', callbackUrl);
         
-        // 少し遅延を入れてセッションが確実に更新されるのを待つ
+        // 複数の方法でリダイレクトを試みる
+        try {
+          // 方法1: Next.js router.push
+          console.log('🔄 方法1: router.push()実行中...');
+          await router.push(callbackUrl);
+          
+          // 方法2: router.refresh()とreplace
+          console.log('🔄 方法2: router.refresh()実行中...');
+          router.refresh();
+          await router.replace(callbackUrl);
+        } catch (error) {
+          console.log('⚠️ router操作エラー:', error);
+        }
+        
+        // 方法3: 確実にリダイレクトするためwindow.locationを使用
         setTimeout(() => {
+          console.log('🚀 方法3: window.location.href実行中...');
           window.location.href = callbackUrl;
-        }, 100);
+        }, 500);
       } else {
         // 予期しないエラー
+        console.log('⚠️ 予期しない結果:', result);
         setError('ログインに失敗しました');
         setErrorDetail('メールアドレスまたはパスワードが正しくありません。');
       }
-    } catch {
+    } catch (error) {
+      console.error('💥 例外エラー:', error);
       setError('ログイン中にエラーが発生しました');
       setErrorDetail('しばらく時間をおいて再度お試しください。');
     } finally {

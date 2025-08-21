@@ -14,16 +14,19 @@ interface RateLimitEntry {
 }
 
 // エンドポイント毎の設定
+const isDevelopment = process.env.NODE_ENV === 'development';
+const devMultiplier = isDevelopment ? 20 : 1; // 開発環境では20倍緩和
+
 export const RATE_LIMITS: Record<string, RateLimitConfig> = {
-  'GET:/api/posts': { windowMs: 60000, maxRequests: 5 },          // 1分間に5回（テスト用）
-  'POST:/api/posts': { windowMs: 60000, maxRequests: 5 },        // 1分間に5回
-  'POST:/api/auth/signin': { windowMs: 900000, maxRequests: 5 },  // 15分間に5回
-  'POST:/api/auth/signup': { windowMs: 3600000, maxRequests: 3 }, // 1時間に3回
-  'PUT:/api/posts/*': { windowMs: 60000, maxRequests: 10 },       // 1分間に10回
-  'DELETE:/api/posts/*': { windowMs: 60000, maxRequests: 5 },     // 1分間に5回
-  'POST:/api/auth/test-login': { windowMs: 60000, maxRequests: 10 }, // テスト用
-  'GET:/api/health': { windowMs: 60000, maxRequests: 50 },        // 1分間に50回（ヘルスチェック用）
-  'default': { windowMs: 60000, maxRequests: 100 }                // デフォルト
+  'GET:/api/posts': { windowMs: 60000, maxRequests: 100 * devMultiplier },          // 開発: 2000回/分, 本番: 100回/分
+  'POST:/api/posts': { windowMs: 60000, maxRequests: 30 * devMultiplier },         // 開発: 600回/分, 本番: 30回/分
+  'POST:/api/auth/signin': { windowMs: 900000, maxRequests: 5 * devMultiplier },   // 15分間
+  'POST:/api/auth/signup': { windowMs: 3600000, maxRequests: 3 * devMultiplier },  // 1時間
+  'PUT:/api/posts/*': { windowMs: 60000, maxRequests: 30 * devMultiplier },        // 1分間
+  'DELETE:/api/posts/*': { windowMs: 60000, maxRequests: 20 * devMultiplier },     // 1分間
+  'POST:/api/auth/test-login': { windowMs: 60000, maxRequests: 50 * devMultiplier }, // テスト用
+  'GET:/api/health': { windowMs: 60000, maxRequests: 200 * devMultiplier },        // ヘルスチェック用
+  'default': { windowMs: 60000, maxRequests: 200 * devMultiplier }                // デフォルト
 };
 
 export class RateLimiter {

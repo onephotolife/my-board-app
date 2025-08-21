@@ -5,6 +5,7 @@ import User from '@/lib/models/User';
 import { getUnifiedSession, getUserFromSession } from '@/lib/auth/session-helper';
 import { InputSanitizer } from '@/lib/security/sanitizer';
 import { z } from 'zod';
+import { postCache } from '@/lib/cache/memory-cache';
 
 // バリデーションスキーマ
 const PostCreateSchema = z.object({
@@ -26,23 +27,40 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status') || 'published';
 
     const skip = (page - 1) * limit;
+    
+    // キャッシュキーの生成
+    const cacheKey = `posts:${page}:${limit}:${sort}:${author || 'all'}:${status}`;
 
     // クエリ条件
     const query: any = { status };
     if (author) {
       query.author = author;
     }
+    
+    // キャッシュから取得を試みる
+    const cachedResult = postCache.get(cacheKey);
+    if (cachedResult) {
+      console.log('キャッシュヒット:', cacheKey);
+      return NextResponse.json(cachedResult);
+    }
 
     // セッション情報を取得（統合セッションヘルパー使用）
     const session = await getUnifiedSession(request);
     console.log('API Session:', session ? { userId: session.user?.id, email: session.user?.email } : 'No session');
 
-    // 投稿を取得
-    const posts = await Post.find(query)
+    // 投稿を取得（最適化済み）
+    const postsQuery = Post.find(query)
+      .select('title content author authorInfo status tags likes createdAt updatedAt') // 必要なフィールドのみ
       .sort(sort)
       .skip(skip)
       .limit(limit)
-      .lean();
+      .lean(); // プレーンオブジェクトで取得（パフォーマンス向上）
+    
+    // 環境変数でhintの使用を制御（本番環境での互換性のため）
+    const useHint = process.env.USE_DB_HINTS === 'true';
+    const posts = useHint
+      ? await postsQuery.hint({ status: 1, createdAt: -1 }) // インデックスヒント（有効時のみ）
+      : await postsQuery;
 
     // 権限情報を追加
     const postsWithPermissions = posts.map((post: any) => {
@@ -67,10 +85,13 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    // 総数を取得
-    const total = await Post.countDocuments(query);
+    // 総数を取得（最適化済み）
+    const countQuery = Post.countDocuments(query);
+    const total = useHint
+      ? await countQuery.hint({ status: 1, createdAt: -1 }) // インデックスヒント（有効時のみ）
+      : await countQuery;
 
-    return NextResponse.json({
+    const result = {
       posts: postsWithPermissions,
       pagination: {
         page,
@@ -79,7 +100,12 @@ export async function GET(request: NextRequest) {
         totalPages: Math.ceil(total / limit),
       },
       isAuthenticated: !!session,
-    });
+    };
+    
+    // キャッシュに保存（60秒間）
+    postCache.set(cacheKey, result, 60000);
+    
+    return NextResponse.json(result);
   } catch (error) {
     console.error('投稿一覧取得エラー:', error);
     return NextResponse.json(

@@ -110,6 +110,7 @@ export default function ClientHeader() {
             edge="end"
             onClick={() => setDrawerOpen(true)}
             sx={{ ml: 1 }}
+            data-testid="menu-button"
           >
             <MenuIcon />
           </IconButton>

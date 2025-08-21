@@ -44,14 +44,23 @@ export const authConfig = {
 
           // メール確認状態を厳格にチェック
           // MongoDBから最新データを再取得
-          const latestUser = await User.findById(user._id);
+          // Mongooseドキュメントを確実に取得
+          const latestUser = await User.findById(user._id).exec();
+          
+          // オブジェクトに変換して確実にフィールドを取得
+          const userObject = latestUser ? latestUser.toObject() : null;
+          
           console.log('🔄 最新ユーザーデータ:', {
-            emailVerified: latestUser?.emailVerified,
-            emailVerifiedType: typeof latestUser?.emailVerified
+            emailVerified: userObject?.emailVerified,
+            emailVerifiedType: typeof userObject?.emailVerified,
+            hasEmailVerified: 'emailVerified' in (userObject || {}),
+            allFields: Object.keys(userObject || {})
           });
           
           // メール確認は会員制掲示板の必須要件
-          if (latestUser?.emailVerified !== true) {
+          const skipEmailVerification = false; // 本番環境用に修正
+          
+          if (!skipEmailVerification && userObject?.emailVerified !== true) {
             console.log('⛔ メール未確認のためログイン拒否');
             // メール未確認の場合、特別なユーザーオブジェクトを返す
             return {
@@ -62,7 +71,7 @@ export const authConfig = {
             };
           }
 
-          const isPasswordValid = await latestUser.comparePassword(credentials.password as string);
+          const isPasswordValid = await latestUser?.comparePassword(credentials.password as string);
           console.log('🔑 パスワード検証:', isPasswordValid ? '✅ 成功' : '❌ 失敗');
 
           if (!isPasswordValid) {

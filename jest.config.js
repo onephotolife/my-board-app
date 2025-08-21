@@ -11,6 +11,16 @@ const customJestConfig = {
   testEnvironment: 'jest-environment-jsdom',
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    '^@auth/(.*)$': '<rootDir>/node_modules/@auth/$1',
+    '^(\\.{1,2}/.*)\\.js$': '$1',
+    // ESMモジュールのモック
+    '^next-auth/providers/credentials$': '<rootDir>/src/__mocks__/next-auth-credentials.js',
+    '^mongodb$': '<rootDir>/src/__mocks__/mongodb.js',
+    '^mongoose$': '<rootDir>/src/__mocks__/mongoose.js',
+    '^@/lib/db/mongodb$': '<rootDir>/src/__mocks__/db.js',
+    '^@/lib/db/mongodb-local$': '<rootDir>/src/__mocks__/db.js',
+    '^@/models/User$': '<rootDir>/src/__mocks__/User.js',
+    '^@/lib/models/User$': '<rootDir>/src/__mocks__/User.js',
   },
   testMatch: [
     '**/__tests__/**/*.[jt]s?(x)',
@@ -27,6 +37,24 @@ const customJestConfig = {
       functions: 50,
       lines: 50,
       statements: 50,
+    },
+  },
+  transformIgnorePatterns: [
+    '/node_modules/(?!(next-auth|@auth|@auth/core|bson|mongodb|mongoose|mongodb-memory-server|uuid)/)',
+  ],
+  testPathIgnorePatterns: [
+    '<rootDir>/.next/',
+    '<rootDir>/node_modules/',
+    '<rootDir>/e2e/',
+  ],
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'mjs'],
+  testEnvironmentOptions: {
+    url: 'http://localhost:3000'
+  },
+  extensionsToTreatAsEsm: ['.ts', '.tsx'],
+  globals: {
+    'ts-jest': {
+      useESM: true,
     },
   },
 }

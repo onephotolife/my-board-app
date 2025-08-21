@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { v4 as uuidv4 } from 'uuid';
 
 import { connectDB } from '@/lib/db/mongodb-local';
 import User from '@/lib/models/User';
 import { getEmailService } from '@/lib/email/mailer-fixed';
+import { generateEmailVerificationToken, generateTokenExpiry } from '@/lib/utils/token-generator';
 
 export async function POST(request: NextRequest) {
   try {
@@ -34,10 +34,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 新しいトークンを生成
-    const emailVerificationToken = uuidv4();
-    const tokenExpiry = new Date();
-    tokenExpiry.setHours(tokenExpiry.getHours() + 24); // 24時間有効
+    // 新しいトークンを生成（改善版：256ビットのエントロピー）
+    const emailVerificationToken = generateEmailVerificationToken();
+    const tokenExpiry = generateTokenExpiry(24); // 24時間有効
 
     // ユーザー情報を更新
     user.emailVerificationToken = emailVerificationToken;

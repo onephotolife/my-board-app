@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { connectDB } from '@/lib/db/mongodb-local';
 import User from '@/lib/models/User';
+import { getTokenType, isTokenValid } from '@/lib/utils/token-generator';
 
 export async function GET(request: NextRequest) {
   try {
@@ -23,13 +24,20 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    if (token.length !== 36) {
-      console.log('❌ トークンの形式が無効です:', { length: token.length });
+    // トークン形式の検証（UUIDとHex両方をサポート）
+    const tokenType = getTokenType(token);
+    if (tokenType === 'invalid') {
+      console.log('❌ トークンの形式が無効です:', { 
+        length: token.length,
+        type: tokenType 
+      });
       return NextResponse.json(
         { error: 'トークンの形式が無効です' },
         { status: 400 }
       );
     }
+    
+    console.log('🔍 トークンタイプ:', tokenType);
 
     console.log('🔍 メール確認トークン:', token);
 
@@ -76,19 +84,23 @@ export async function GET(request: NextRequest) {
       emailVerified: userWithToken.emailVerified 
     });
     
-    // 期限チェック
+    // 期限チェック（改善版ユーティリティを使用）
     const now = new Date();
     console.log('🕐 期限チェック:', {
       now: now.toISOString(),
       expiry: userWithToken.emailVerificationTokenExpiry?.toISOString(),
-      isExpired: userWithToken.emailVerificationTokenExpiry ? userWithToken.emailVerificationTokenExpiry < now : 'no expiry set'
+      isValid: isTokenValid(userWithToken.emailVerificationTokenExpiry)
     });
     
     // 期限が設定されていて、期限切れの場合
-    if (userWithToken.emailVerificationTokenExpiry && userWithToken.emailVerificationTokenExpiry < now) {
+    if (userWithToken.emailVerificationTokenExpiry && !isTokenValid(userWithToken.emailVerificationTokenExpiry)) {
       console.log('⚠️ トークンが期限切れです');
       return NextResponse.json(
-        { error: '確認リンクの有効期限が切れています。新規登録からやり直してください。' },
+        { 
+          error: '確認リンクの有効期限が切れています。',
+          suggestion: '再送信ボタンをクリックして新しい確認メールを受け取ってください。',
+          canResend: true
+        },
         { status: 400 }
       );
     }

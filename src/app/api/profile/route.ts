@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { auth } from '@/lib/auth';
 import dbConnect from '@/lib/mongodb';
-import User from '@/models/User';
+import User from '@/lib/models/User';
 
 // GET: プロフィール取得
 export async function GET(req: NextRequest) {

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
+import { generateEmailVerificationToken, generateTokenExpiry } from '@/lib/utils/token-generator';
 
 import { connectDB } from '@/lib/db/mongodb-local';
 import User from '@/lib/models/User';
@@ -188,10 +188,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // メール確認トークンの生成
-    const emailVerificationToken = uuidv4();
-    const tokenExpiry = new Date();
-    tokenExpiry.setHours(tokenExpiry.getHours() + 24); // 24時間有効
+    // メール確認トークンの生成（改善版：256ビットのエントロピー）
+    const emailVerificationToken = generateEmailVerificationToken();
+    const tokenExpiry = generateTokenExpiry(24); // 24時間有効
     
     console.log('📝 トークン生成:', {
       token: emailVerificationToken,

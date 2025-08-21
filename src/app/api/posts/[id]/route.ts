@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db/mongodb';
 import Post from '@/models/Post';
 import { getUnifiedSession } from '@/lib/auth/session-helper';
+import { EnhancedSanitizer } from '@/lib/security/enhanced-sanitizer';
 import { z } from 'zod';
 
 // バリデーションスキーマ
@@ -21,7 +22,17 @@ export async function GET(
     await connectDB();
     
     const { id } = await params;
-    const post = await Post.findById(id).lean();
+    
+    // IDのサニタイゼーションと検証
+    const sanitizedId = EnhancedSanitizer.sanitizeObjectId(id);
+    if (!sanitizedId) {
+      return NextResponse.json(
+        { error: '無効なIDフォーマット' },
+        { status: 400 }
+      );
+    }
+    
+    const post = await Post.findById(sanitizedId).lean();
 
     if (!post) {
       return NextResponse.json(
@@ -76,9 +87,18 @@ export async function PUT(
     await connectDB();
     
     const { id } = await params;
+    
+    // IDのサニタイゼーションと検証
+    const sanitizedId = EnhancedSanitizer.sanitizeObjectId(id);
+    if (!sanitizedId) {
+      return NextResponse.json(
+        { error: '無効なIDフォーマット' },
+        { status: 400 }
+      );
+    }
 
     // 投稿の存在確認
-    const post = await Post.findById(id);
+    const post = await Post.findById(sanitizedId);
     if (!post) {
       return NextResponse.json(
         { error: '投稿が見つかりません' },
@@ -102,7 +122,7 @@ export async function PUT(
 
     // 投稿を更新
     const updatedPost = await Post.findByIdAndUpdate(
-      id,
+      sanitizedId,
       validatedData,
       { new: true, runValidators: true }
     );
@@ -144,9 +164,18 @@ export async function DELETE(
     await connectDB();
     
     const { id } = await params;
+    
+    // IDのサニタイゼーションと検証
+    const sanitizedId = EnhancedSanitizer.sanitizeObjectId(id);
+    if (!sanitizedId) {
+      return NextResponse.json(
+        { error: '無効なIDフォーマット' },
+        { status: 400 }
+      );
+    }
 
     // 投稿の存在確認
-    const post = await Post.findById(id);
+    const post = await Post.findById(sanitizedId);
     if (!post) {
       return NextResponse.json(
         { error: '投稿が見つかりません' },
@@ -163,7 +192,7 @@ export async function DELETE(
     }
 
     // ソフトデリート（statusを'deleted'に変更）
-    await Post.findByIdAndUpdate(id, { status: 'deleted' });
+    await Post.findByIdAndUpdate(sanitizedId, { status: 'deleted' });
 
     return NextResponse.json({
       message: '投稿を削除しました',

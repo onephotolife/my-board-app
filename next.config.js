@@ -27,6 +27,9 @@ const nextConfig = {
   async headers() {
     const isDevelopment = process.env.NODE_ENV === 'development';
     
+    // CORS許可オリジン設定
+    const allowedOrigins = process.env.ALLOWED_ORIGINS || 'https://board.blankbrainai.com';
+    
     return [
       {
         // すべてのルートに適用
@@ -65,12 +68,42 @@ const nextConfig = {
         ]
       },
       {
-        // APIルートに追加のセキュリティヘッダー
+        // APIルートに追加のセキュリティヘッダーとCORS設定
         source: '/api/:path*',
         headers: [
           {
             key: 'Cache-Control',
             value: 'no-store, max-age=0, must-revalidate'
+          },
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: allowedOrigins
+          },
+          {
+            key: 'Access-Control-Allow-Methods',
+            value: 'GET, POST, PUT, DELETE, OPTIONS'
+          },
+          {
+            key: 'Access-Control-Allow-Headers',
+            value: 'Content-Type, Authorization, X-Requested-With'
+          },
+          {
+            key: 'Access-Control-Max-Age',
+            value: '86400'
+          },
+          {
+            key: 'Access-Control-Allow-Credentials',
+            value: 'true'
+          }
+        ]
+      },
+      {
+        // ヘルスチェックAPIのキャッシュ設定
+        source: '/api/health',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, s-maxage=10, stale-while-revalidate=60'
           }
         ]
       }

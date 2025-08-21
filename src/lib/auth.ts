@@ -1,12 +1,9 @@
 import NextAuth from "next-auth";
-import { authConfig } from "./auth.config";
+// import { authConfig } from "./auth.config";
+import { simpleAuthConfig } from "./auth-simple.config";
 
-// NextAuthインスタンスの作成（環境変数を確実に使用）
-const authInstance = NextAuth({
-  ...authConfig,
-  // 環境変数から直接設定（Vercelで確実に動作させるため）
-  secret: process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
-});
+// シンプルな設定で確実に動作させる
+const authInstance = NextAuth(simpleAuthConfig);
 
 export const { handlers, signIn, signOut, auth } = authInstance;
-export { authConfig as authOptions };
+export { simpleAuthConfig as authOptions };

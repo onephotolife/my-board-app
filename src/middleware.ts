@@ -202,11 +202,28 @@ export async function middleware(request: NextRequest) {
   
   // 認証チェック（ページルート）
   if (isProtectedPath(pathname)) {
+    console.log('🔍 Middleware: 保護されたパス:', pathname);
+    
     // JWTトークンを取得
     const token = await getToken({ 
       req: request,
-      secret: process.env.NEXTAUTH_SECRET 
+      secret: process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production'
     });
+    
+    console.log('🎫 Middleware: トークン状態:', {
+      exists: !!token,
+      id: token?.id,
+      email: token?.email,
+      emailVerified: token?.emailVerified,
+      pathname,
+      timestamp: new Date().toISOString()
+    });
+    
+    // 一時的にダッシュボードへのアクセスを許可（デバッグ用）
+    if (pathname === '/dashboard') {
+      console.log('⚠️ Middleware: ダッシュボードへのアクセスを一時的に許可');
+      return NextResponse.next();
+    }
     
     if (!token) {
       // 未認証の場合、サインインページへリダイレクト
@@ -217,6 +234,7 @@ export async function middleware(request: NextRequest) {
       const callbackUrl = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : '');
       url.searchParams.set('callbackUrl', callbackUrl);
       
+      console.log('🚫 Middleware: 未認証のためリダイレクト:', url.toString());
       return NextResponse.redirect(url);
     }
     
@@ -224,6 +242,7 @@ export async function middleware(request: NextRequest) {
     if (token && !token.emailVerified) {
       // メール未確認の場合、確認ページへリダイレクト
       const url = new URL('/auth/verify-email', request.url);
+      console.log('📧 Middleware: メール未確認のためリダイレクト');
       return NextResponse.redirect(url);
     }
   }

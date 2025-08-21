@@ -83,10 +83,26 @@ function SignInForm() {
       if (result?.error) {
         // エラータイプに応じたメッセージを表示
         console.log('❌ ログインエラー:', result.error);
-        const errorInfo = getAuthErrorMessage(result.error);
-        setError(errorInfo.title);
-        setErrorDetail(errorInfo.message);
-        setErrorAction(errorInfo.action || '');
+        
+        // メール未確認の場合は専用ページへリダイレクト
+        if (result.error === 'CredentialsSignin' || result.error.includes('email')) {
+          // まず通常のエラーとして表示
+          const errorInfo = getAuthErrorMessage(result.error);
+          setError(errorInfo.title);
+          setErrorDetail(errorInfo.message);
+          setErrorAction(errorInfo.action || '');
+          
+          // メール未確認の可能性がある場合の処理
+          // auth.config.tsで「email-not-verified」が返された場合
+          setTimeout(() => {
+            router.push('/auth/email-not-verified');
+          }, 2000);
+        } else {
+          const errorInfo = getAuthErrorMessage(result.error);
+          setError(errorInfo.title);
+          setErrorDetail(errorInfo.message);
+          setErrorAction(errorInfo.action || '');
+        }
       } else if (result?.ok) {
         // ログイン成功
         console.log('✅ ログイン成功');

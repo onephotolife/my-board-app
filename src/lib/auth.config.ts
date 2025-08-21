@@ -49,9 +49,7 @@ export const authConfig = {
             emailVerifiedType: typeof latestUser?.emailVerified
           });
           
-          // メール確認チェックを一時的に無効化（テスト用）
-          // TODO: 本番環境では有効化する
-          /*
+          // メール確認は会員制掲示板の必須要件
           if (latestUser?.emailVerified !== true) {
             console.log('⛔ メール未確認のためログイン拒否');
             // メール未確認の場合、特別なユーザーオブジェクトを返す
@@ -62,7 +60,6 @@ export const authConfig = {
               emailVerified: false
             };
           }
-          */
 
           const isPasswordValid = await latestUser.comparePassword(credentials.password as string);
           console.log('🔑 パスワード検証:', isPasswordValid ? '✅ 成功' : '❌ 失敗');

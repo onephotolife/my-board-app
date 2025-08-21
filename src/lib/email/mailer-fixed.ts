@@ -49,30 +49,48 @@ export class EmailService {
         from: config.from,
       });
 
-      // Create transporter with Gmail-specific optimizations
+      // さくらインターネットSMTPを確実に使用（Gmailは使用しない）
+      const sakuraHost = 'blankinai.sakura.ne.jp';
+      const sakuraPort = 587;
+      const sakuraUser = config.auth.user || 'noreply@blankinai.com';
+      const sakuraPass = config.auth.pass;
+
+      console.log('🌸 Forcing Sakura Internet SMTP:', {
+        host: sakuraHost,
+        port: sakuraPort,
+        user: sakuraUser,
+        hasPassword: !!sakuraPass,
+        timestamp: new Date().toISOString(),
+      });
+
+      // Create transporter with Sakura Internet SMTP settings
       this.transporter = createTransport({
-        service: 'gmail', // Use Gmail service directly
-        host: 'smtp.gmail.com',
-        port: 587,
+        // Gmailサービスは使用しない
+        host: sakuraHost, // さくらインターネットのSMTPサーバー
+        port: sakuraPort,
         secure: false, // Use STARTTLS
         auth: {
-          user: config.auth.user,
-          pass: config.auth.pass,
+          user: sakuraUser,
+          pass: sakuraPass,
         },
         tls: {
           rejectUnauthorized: false,
           minVersion: 'TLSv1.2',
         },
+        // さくらSMTP用の最適化設定
         pool: true, // Use pooled connections
-        maxConnections: 5,
-        maxMessages: 100,
-        rateDelta: 1000,
-        rateLimit: 5,
-        logger: process.env.NODE_ENV === 'development',
-        debug: process.env.NODE_ENV === 'development',
+        maxConnections: 3, // さくら用に削減
+        maxMessages: 50, // さくら用に削減
+        rateDelta: 2000, // レート制限を緩和
+        rateLimit: 3, // レート制限を緩和
+        logger: true, // 本番環境でもログを有効化（デバッグ用）
+        debug: true, // 本番環境でもデバッグを有効化
         connectionTimeout: 30000, // 30 seconds
         greetingTimeout: 30000,
         socketTimeout: 30000,
+        // さくら特有の設定
+        name: sakuraHost,
+        localAddress: undefined,
       });
 
       // Verify connection
@@ -217,10 +235,10 @@ export class EmailService {
         }
 
         // For auth errors, don't retry
-        if (error.code === 'EAUTH') {
+        if (error.code === 'EAUTH' || error.message?.includes('Invalid login') || error.message?.includes('authentication')) {
           throw new EmailError(
             EmailErrorType.AUTHENTICATION_FAILED,
-            'Gmail authentication failed. Please check your app password.',
+            'SMTP認証に失敗しました。メールサーバーの認証情報を確認してください。',
             error
           );
         }

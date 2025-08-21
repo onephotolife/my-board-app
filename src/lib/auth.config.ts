@@ -2,6 +2,9 @@ import Credentials from "next-auth/providers/credentials";
 import { connectDB } from "@/lib/db/mongodb";
 import User from "@/lib/models/User";
 export const authConfig = {
+  // 本番環境用の明示的な設定
+  secret: process.env.NEXTAUTH_SECRET,
+  trustHost: true, // Vercelでの動作を確実にする
   providers: [
     Credentials({
       name: "credentials",
@@ -178,9 +181,22 @@ export const authConfig = {
     maxAge: 30 * 24 * 60 * 60, // 30日間
   },
   
+  // ✅ Cookie設定（本番環境用）
+  cookies: {
+    sessionToken: {
+      name: `${process.env.NODE_ENV === "production" ? "__Secure-" : ""}authjs.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
+  },
+  
   // ✅ セキュリティ設定
   useSecureCookies: process.env.NODE_ENV === "production",
   
-  // ✅ デバッグ設定を完全に無効化（警告を防ぐ）
-  debug: false,
+  // ✅ デバッグ設定（問題解決のため一時的に有効化）
+  debug: true,
 };

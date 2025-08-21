@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
-import { signIn } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { modern2025Styles } from '@/styles/modern-2025';
@@ -10,6 +10,7 @@ import { getAuthErrorMessage } from '@/lib/auth-errors';
 function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { data: session, status } = useSession();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -22,6 +23,22 @@ function SignInForm() {
   
   const verified = searchParams.get('verified') === 'true';
   const urlError = searchParams.get('error');
+
+  // セッションがある場合は自動的にリダイレクト
+  useEffect(() => {
+    console.log('🔍 セッション状態変更:', { 
+      status, 
+      hasSession: !!session,
+      user: session?.user?.email,
+      timestamp: new Date().toISOString()
+    });
+    
+    if (status === 'authenticated' && session) {
+      console.log('✅ 既にログイン済み、リダイレクト実行');
+      const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+      window.location.href = callbackUrl;
+    }
+  }, [session, status, searchParams]);
 
   useEffect(() => {
     // URLパラメータからのエラー処理
@@ -43,6 +60,11 @@ function SignInForm() {
     console.log('🔐 ログイン試行開始:', { email, timestamp: new Date().toISOString() });
 
     try {
+      // セッションチェック（デバッグ用）
+      const sessionCheckBefore = await fetch('/api/debug/session');
+      const sessionDataBefore = await sessionCheckBefore.json();
+      console.log('🔍 ログイン前のセッション:', sessionDataBefore);
+      
       const result = await signIn('credentials', {
         email,
         password,
@@ -67,31 +89,25 @@ function SignInForm() {
         setErrorAction(errorInfo.action || '');
       } else if (result?.ok) {
         // ログイン成功
-        console.log('✅ ログイン成功、リダイレクト準備中...');
+        console.log('✅ ログイン成功');
         
-        // callbackUrlがある場合はそこへ、なければダッシュボードへリダイレクト
-        const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
-        console.log('🎯 リダイレクト先:', callbackUrl);
-        
-        // 複数の方法でリダイレクトを試みる
-        try {
-          // 方法1: Next.js router.push
-          console.log('🔄 方法1: router.push()実行中...');
-          await router.push(callbackUrl);
+        // セッション確認（ログイン後）
+        setTimeout(async () => {
+          const sessionCheckAfter = await fetch('/api/debug/session');
+          const sessionDataAfter = await sessionCheckAfter.json();
+          console.log('🔍 ログイン後のセッション:', sessionDataAfter);
           
-          // 方法2: router.refresh()とreplace
-          console.log('🔄 方法2: router.refresh()実行中...');
-          router.refresh();
-          await router.replace(callbackUrl);
-        } catch (error) {
-          console.log('⚠️ router操作エラー:', error);
-        }
-        
-        // 方法3: 確実にリダイレクトするためwindow.locationを使用
-        setTimeout(() => {
-          console.log('🚀 方法3: window.location.href実行中...');
+          // callbackUrlがある場合はそこへ、なければダッシュボードへリダイレクト
+          const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+          console.log('🎯 リダイレクト先:', callbackUrl);
+          
+          // 確実にリダイレクトするため、複数の方法を試みる
+          console.log('🚀 リダイレクト実行...');
+          
+          // ページ全体をリロードしてリダイレクト
           window.location.href = callbackUrl;
-        }, 500);
+        }, 1000); // セッションが確実に更新されるまで1秒待つ
+        
       } else {
         // 予期しないエラー
         console.log('⚠️ 予期しない結果:', result);

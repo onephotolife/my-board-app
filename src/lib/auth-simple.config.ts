@@ -113,27 +113,10 @@ export const simpleAuthConfig = {
     maxAge: 30 * 24 * 60 * 60, // 30日
   },
   
-  // 🔑 本番環境用Cookie設定（403エラー対策）
-  cookies: {
-    sessionToken: {
-      name: process.env.NODE_ENV === "production" 
-        ? "__Secure-authjs.session-token"
-        : "authjs.session-token",
-      options: {
-        httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        secure: process.env.NODE_ENV === "production",
-        domain: process.env.NODE_ENV === "production" 
-          ? ".blankbrainai.com" 
-          : undefined
-      }
-    }
-  },
+  // NextAuth v5自動Cookie設定を使用（手動設定を削除）
   
-  // 重要な設定
-  secret: process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
+  // NextAuth v5対応設定
+  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
   debug: true,
   trustHost: true,
-  useSecureCookies: process.env.NODE_ENV === "production",
 };

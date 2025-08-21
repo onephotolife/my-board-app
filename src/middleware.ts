@@ -205,16 +205,10 @@ export async function middleware(request: NextRequest) {
   if (isProtectedPath(pathname)) {
     console.log('🔍 Middleware: 保護されたパス:', pathname);
     
-    // JWTトークンを取得（環境に応じたcookieName）
-    const cookieName = process.env.NODE_ENV === 'production' 
-      ? '__Secure-authjs.session-token'
-      : 'authjs.session-token';
-      
+    // JWTトークンを取得（NextAuth v5自動検出）
     const token = await getToken({ 
       req: request,
-      secret: process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
-      cookieName,
-      secureCookie: process.env.NODE_ENV === 'production',
+      secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
     });
     
     console.log('🎫 Middleware: トークン状態:', {
@@ -257,15 +251,9 @@ export async function middleware(request: NextRequest) {
   
   // 認証チェック（APIエンドポイント）
   if (isProtectedApiPath(pathname)) {
-    const cookieName = process.env.NODE_ENV === 'production' 
-      ? '__Secure-authjs.session-token'
-      : 'authjs.session-token';
-      
     const token = await getToken({ 
       req: request,
-      secret: process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
-      cookieName,
-      secureCookie: process.env.NODE_ENV === 'production',
+      secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
     });
     
     console.log('🔍 [Middleware API] 認証チェック:', {
@@ -273,8 +261,9 @@ export async function middleware(request: NextRequest) {
       hasToken: !!token,
       userId: token?.id,
       emailVerified: token?.emailVerified,
-      cookieName,
-      environment: process.env.NODE_ENV
+      environment: process.env.NODE_ENV,
+      hasAuthSecret: !!process.env.AUTH_SECRET,
+      hasNextAuthSecret: !!process.env.NEXTAUTH_SECRET
     });
     
     if (!token) {
@@ -296,15 +285,9 @@ export async function middleware(request: NextRequest) {
   
   // 認証済みユーザーが認証ページにアクセスした場合
   if (pathname.startsWith('/auth/signin') || pathname.startsWith('/auth/signup')) {
-    const cookieName = process.env.NODE_ENV === 'production' 
-      ? '__Secure-authjs.session-token'
-      : 'authjs.session-token';
-      
     const token = await getToken({ 
       req: request,
-      secret: process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
-      cookieName,
-      secureCookie: process.env.NODE_ENV === 'production',
+      secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
     });
     
     if (token && token.emailVerified) {

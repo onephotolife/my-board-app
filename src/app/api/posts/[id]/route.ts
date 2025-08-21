@@ -12,10 +12,7 @@ async function getAuthenticatedUser(req: NextRequest): Promise<AuthUser | null> 
   try {
     const token = await getToken({
       req,
-      secret: process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
-      cookieName: process.env.NODE_ENV === 'production' 
-        ? '__Secure-authjs.session-token'
-        : 'authjs.session-token',
+      secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
     });
 
     if (!token) {

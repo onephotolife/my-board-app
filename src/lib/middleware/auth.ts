@@ -33,13 +33,10 @@ export async function withAuth(
 ) {
   return async (req: NextRequest) => {
     try {
-      // トークンの取得
+      // トークンの取得（NextAuth v5対応）
       const token = await getToken({
         req,
-        secret: process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
-        cookieName: process.env.NODE_ENV === 'production' 
-          ? '__Secure-authjs.session-token'
-          : 'authjs.session-token',
+        secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
       });
 
       if (!token) {

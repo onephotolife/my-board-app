@@ -16,13 +16,10 @@ const MAX_LIMIT = 50;
 // GET: 投稿一覧取得（認証必須）
 export async function GET(req: NextRequest) {
   try {
-    // 認証チェック
+    // 認証チェック（NextAuth v5対応）
     const token = await getToken({
       req,
-      secret: process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
-      cookieName: process.env.NODE_ENV === 'production' 
-        ? '__Secure-authjs.session-token'
-        : 'authjs.session-token',
+      secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
     });
 
     console.log('🔍 [API] 認証トークン確認:', {
@@ -30,7 +27,10 @@ export async function GET(req: NextRequest) {
       userId: token?.id || token?.sub,
       email: token?.email,
       emailVerified: token?.emailVerified,
-      tokenKeys: token ? Object.keys(token) : []
+      tokenKeys: token ? Object.keys(token) : [],
+      environment: process.env.NODE_ENV,
+      hasAuthSecret: !!process.env.AUTH_SECRET,
+      hasNextAuthSecret: !!process.env.NEXTAUTH_SECRET
     });
 
     if (!token) {
@@ -157,13 +157,10 @@ export async function GET(req: NextRequest) {
 // POST: 新規投稿作成（認証必須）
 export async function POST(req: NextRequest) {
   try {
-    // 認証チェック
+    // 認証チェック（NextAuth v5対応）
     const token = await getToken({
       req,
-      secret: process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
-      cookieName: process.env.NODE_ENV === 'production' 
-        ? '__Secure-authjs.session-token'
-        : 'authjs.session-token',
+      secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
     });
 
     console.log('🔍 [API] 認証トークン確認:', {
@@ -171,7 +168,10 @@ export async function POST(req: NextRequest) {
       userId: token?.id || token?.sub,
       email: token?.email,
       emailVerified: token?.emailVerified,
-      tokenKeys: token ? Object.keys(token) : []
+      tokenKeys: token ? Object.keys(token) : [],
+      environment: process.env.NODE_ENV,
+      hasAuthSecret: !!process.env.AUTH_SECRET,
+      hasNextAuthSecret: !!process.env.NEXTAUTH_SECRET
     });
 
     if (!token) {

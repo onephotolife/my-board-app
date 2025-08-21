@@ -241,13 +241,16 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(url);
     }
     
-    // メール未確認チェック
+    // メール未確認チェックを一時的に無効化（デバッグ用）
+    // TODO: 本番環境では有効化
+    /*
     if (token && !token.emailVerified) {
       // メール未確認の場合、確認ページへリダイレクト
       const url = new URL('/auth/verify-email', request.url);
       console.log('📧 Middleware: メール未確認のためリダイレクト');
       return NextResponse.redirect(url);
     }
+    */
   }
   
   // 認証チェック（APIエンドポイント）
@@ -285,7 +288,8 @@ export async function middleware(request: NextRequest) {
       secureCookie: true,
     });
     
-    if (token && token.emailVerified) {
+    if (token) {
+      // emailVerifiedチェックを一時的に無効化
       // callbackUrlがある場合はそこへ、なければダッシュボードへ
       const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
       return NextResponse.redirect(new URL(callbackUrl, request.url));

@@ -90,23 +90,15 @@ function SignInForm() {
       } else if (result?.ok) {
         // ログイン成功
         console.log('✅ ログイン成功');
+        setLoading(false);
         
-        // セッション確認（ログイン後）
-        setTimeout(async () => {
-          const sessionCheckAfter = await fetch('/api/debug/session');
-          const sessionDataAfter = await sessionCheckAfter.json();
-          console.log('🔍 ログイン後のセッション:', sessionDataAfter);
-          
-          // callbackUrlがある場合はそこへ、なければダッシュボードへリダイレクト
-          const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
-          console.log('🎯 リダイレクト先:', callbackUrl);
-          
-          // 確実にリダイレクトするため、複数の方法を試みる
-          console.log('🚀 リダイレクト実行...');
-          
-          // ページ全体をリロードしてリダイレクト
-          window.location.href = callbackUrl;
-        }, 1000); // セッションが確実に更新されるまで1秒待つ
+        // callbackUrlがある場合はそこへ、なければダッシュボードへリダイレクト
+        const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+        console.log('🎯 リダイレクト先:', callbackUrl);
+        
+        // 即座にリダイレクト実行
+        console.log('🚀 即座にリダイレクト実行...');
+        window.location.href = callbackUrl;
         
       } else {
         // 予期しないエラー

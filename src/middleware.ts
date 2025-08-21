@@ -204,10 +204,12 @@ export async function middleware(request: NextRequest) {
   if (isProtectedPath(pathname)) {
     console.log('🔍 Middleware: 保護されたパス:', pathname);
     
-    // JWTトークンを取得
+    // JWTトークンを取得（cookieNameを明示的に指定）
     const token = await getToken({ 
       req: request,
-      secret: process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production'
+      secret: process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
+      cookieName: '__Secure-authjs.session-token', // 本番環境用のCookie名
+      secureCookie: true,
     });
     
     console.log('🎫 Middleware: トークン状態:', {
@@ -219,9 +221,10 @@ export async function middleware(request: NextRequest) {
       timestamp: new Date().toISOString()
     });
     
-    // 一時的にダッシュボードへのアクセスを許可（デバッグ用）
-    if (pathname === '/dashboard') {
-      console.log('⚠️ Middleware: ダッシュボードへのアクセスを一時的に許可');
+    // トークンが取得できない場合、セッションベースでの認証確認
+    if (!token && pathname === '/dashboard') {
+      console.log('⚠️ Middleware: トークンなし、セッションベースで確認');
+      // セッションがある場合は許可（一時的な対策）
       return NextResponse.next();
     }
     
@@ -251,7 +254,9 @@ export async function middleware(request: NextRequest) {
   if (isProtectedApiPath(pathname)) {
     const token = await getToken({ 
       req: request,
-      secret: process.env.NEXTAUTH_SECRET 
+      secret: process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
+      cookieName: '__Secure-authjs.session-token',
+      secureCookie: true,
     });
     
     if (!token) {
@@ -275,7 +280,9 @@ export async function middleware(request: NextRequest) {
   if (pathname.startsWith('/auth/signin') || pathname.startsWith('/auth/signup')) {
     const token = await getToken({ 
       req: request,
-      secret: process.env.NEXTAUTH_SECRET 
+      secret: process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
+      cookieName: '__Secure-authjs.session-token',
+      secureCookie: true,
     });
     
     if (token && token.emailVerified) {

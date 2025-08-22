@@ -79,15 +79,18 @@ function SignInForm() {
     console.log('🔐 ログイン試行開始:', { email, timestamp: new Date().toISOString() });
 
     try {
-      // セッションチェック（デバッグ用）
-      const sessionCheckBefore = await fetch('/api/debug/session');
-      const sessionDataBefore = await sessionCheckBefore.json();
-      console.log('🔍 ログイン前のセッション:', sessionDataBefore);
+      // callbackUrlを事前に決定
+      const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+      const finalUrl = callbackUrl.includes('/auth/') ? '/dashboard' : callbackUrl;
       
+      console.log('🎯 ログイン試行:', { email, finalUrl });
+      
+      // 🔐 41人天才会議: redirect:falseでエラーハンドリングを維持
       const result = await signIn('credentials', {
         email,
         password,
-        redirect: false,
+        redirect: false, // 手動でリダイレクトを制御
+        callbackUrl: finalUrl, // NextAuthにcallbackUrlを渡す
       });
 
       console.log('📊 signIn結果:', {
@@ -95,7 +98,6 @@ function SignInForm() {
         error: result?.error,
         status: result?.status,
         url: result?.url,
-        fullResult: JSON.stringify(result),
         timestamp: new Date().toISOString()
       });
 
@@ -103,32 +105,16 @@ function SignInForm() {
         // エラータイプに応じたメッセージを表示
         console.log('❌ ログインエラー:', result.error);
         
-        // 25人天才エンジニア会議による改善 - 適切なエラー分岐処理
         if (result.error === 'EmailNotVerified') {
-          // メール未確認エラー: 専用ページへリダイレクト
           const errorInfo = getAuthErrorMessage(result.error);
           setError(errorInfo.title);
           setErrorDetail(errorInfo.message);
           setErrorAction(errorInfo.action || '');
           
-          // 2秒後にメール未確認ページへリダイレクト
           setTimeout(() => {
             window.location.href = '/auth/email-not-verified';
           }, 2000);
-        } else if (result.error === 'InvalidPassword') {
-          // パスワード間違いエラー: エラーメッセージ表示のみ（リダイレクトなし）
-          const errorInfo = getAuthErrorMessage(result.error);
-          setError(errorInfo.title);
-          setErrorDetail(errorInfo.message);
-          setErrorAction(errorInfo.action || '');
-        } else if (result.error === 'UserNotFound') {
-          // ユーザー不存在エラー: セキュリティ上、一般的なエラーメッセージ
-          const errorInfo = getAuthErrorMessage(result.error);
-          setError(errorInfo.title);
-          setErrorDetail(errorInfo.message);
-          setErrorAction(errorInfo.action || '');
         } else {
-          // その他のエラー: 汎用エラーメッセージ
           const errorInfo = getAuthErrorMessage(result.error);
           setError(errorInfo.title);
           setErrorDetail(errorInfo.message);
@@ -138,26 +124,26 @@ function SignInForm() {
         // ログイン成功
         console.log('✅ ログイン成功');
         
-        // 🔐 41人天才会議による修正: 確実なリダイレクト実装
-        const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+        // 成功メッセージを表示
+        setError('');
+        setErrorDetail('ログインに成功しました。リダイレクトしています...');
         
-        // 無限ループ防止: callbackUrlが認証ページの場合はダッシュボードへ
-        const finalUrl = callbackUrl.includes('/auth/') ? '/dashboard' : callbackUrl;
+        // 🔐 41人天才会議: 確実なリダイレクト実装
+        console.log('🚀 リダイレクト実行:', finalUrl);
         
-        console.log('🎯 リダイレクト準備:', {
-          callbackUrl,
-          finalUrl,
-          timestamp: new Date().toISOString()
-        });
+        // router.refreshを先に実行してセッションを更新
+        router.refresh();
         
-        // セッション確立のために短い待機後、強制的にリダイレクト
-        // router.pushではなくwindow.location.replaceを使用して履歴を置き換え
+        // 少し待ってからリダイレクト
         setTimeout(() => {
-          console.log('🚀 リダイレクト実行:', finalUrl);
-          // replaceを使用して履歴を置き換え、戻るボタンでの無限ループを防ぐ
-          window.location.replace(finalUrl);
-        }, 100); // 100msの短い待機のみ
-        
+          // router.pushを試行、失敗したらwindow.locationにフォールバック
+          try {
+            router.push(finalUrl);
+          } catch (e) {
+            console.warn('router.pushエラー、window.locationを使用:', e);
+            window.location.href = finalUrl;
+          }
+        }, 500);
       } else {
         // 予期しないエラー
         console.log('⚠️ 予期しない結果:', result);

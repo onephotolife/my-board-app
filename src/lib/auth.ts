@@ -142,6 +142,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     maxAge: 30 * 24 * 60 * 60, // 30日
   },
   
+  // 🔐 41人天才会議: 本番環境でのクッキー設定を最適化
   cookies: {
     sessionToken: {
       name: process.env.NODE_ENV === 'production' 
@@ -152,10 +153,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         sameSite: 'lax',
         path: '/',
         secure: process.env.NODE_ENV === 'production',
-        // 🔐 41人天才会議: クッキーのドメイン設定を明示的に指定
-        domain: process.env.NODE_ENV === 'production' && process.env.COOKIE_DOMAIN
-          ? process.env.COOKIE_DOMAIN // .envで設定可能
-          : undefined
+        // ドメインを明示的に指定しない（自動検出させる）
+        domain: undefined
       }
     },
     callbackUrl: {
@@ -167,15 +166,49 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         sameSite: 'lax',
         path: '/',
         secure: process.env.NODE_ENV === 'production',
-        domain: process.env.NODE_ENV === 'production' && process.env.COOKIE_DOMAIN
-          ? process.env.COOKIE_DOMAIN
-          : undefined
+        domain: undefined
       }
     },
     csrfToken: {
       name: process.env.NODE_ENV === 'production'
         ? '__Host-next-auth.csrf-token'
         : 'next-auth.csrf-token',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+        domain: undefined
+      }
+    },
+    pkceCodeVerifier: {
+      name: process.env.NODE_ENV === 'production'
+        ? '__Secure-next-auth.pkce.code_verifier'
+        : 'next-auth.pkce.code_verifier',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 60 * 15 // 15分
+      }
+    },
+    state: {
+      name: process.env.NODE_ENV === 'production'
+        ? '__Secure-next-auth.state'
+        : 'next-auth.state',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 60 * 15 // 15分
+      }
+    },
+    nonce: {
+      name: process.env.NODE_ENV === 'production'
+        ? '__Secure-next-auth.nonce'
+        : 'next-auth.nonce',
       options: {
         httpOnly: true,
         sameSite: 'lax',
@@ -189,4 +222,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
   debug: process.env.NODE_ENV === 'development',
   trustHost: true,
+  
+  // 🔐 41人天才会議: 本番環境でのセキュアクッキー設定
+  useSecureCookies: process.env.NODE_ENV === 'production',
 });

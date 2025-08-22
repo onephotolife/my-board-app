@@ -277,15 +277,16 @@ export async function middleware(request: NextRequest) {
     }
   }
   
-  // 認証済みユーザーが認証ページにアクセスした場合
+  // 🔐 41人天才会議による重要な修正:
+  // 認証済みユーザーが認証ページにアクセスしてもリダイレクトしない
+  // これにより無限ループを防止
   if (pathname.startsWith('/auth/signin') || pathname.startsWith('/auth/signup')) {
     const token = await getToken({ 
       req: request,
       secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
     });
     
-    // 🔐 41人天才会議による修正: トークン検証を強化
-    console.log('🔍 [Middleware] 認証ページアクセス時のトークン検証:', {
+    console.log('🔍 [Middleware] 認証ページアクセス:', {
       pathname,
       hasToken: !!token,
       tokenId: token?.id,
@@ -294,18 +295,12 @@ export async function middleware(request: NextRequest) {
       timestamp: new Date().toISOString()
     });
     
-    // トークンが有効でメール確認済みの場合のみリダイレクト
+    // 重要: 認証済みでもサインインページへのアクセスを許可
+    // リダイレクトはログイン処理後にクライアント側で実行
     if (token && token.id && token.emailVerified) {
-      const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
-      
-      // 無限ループ防止: callbackUrlが認証ページの場合はダッシュボードへ
-      if (callbackUrl.includes('/auth/')) {
-        console.log('⚠️ [Middleware] callbackUrlが認証ページのため、ダッシュボードへリダイレクト');
-        return NextResponse.redirect(new URL('/dashboard', request.url));
-      }
-      
-      console.log('✅ [Middleware] 認証済みユーザーをリダイレクト:', callbackUrl);
-      return NextResponse.redirect(new URL(callbackUrl, request.url));
+      console.log('ℹ️ [Middleware] 認証済みユーザーですが、サインインページへのアクセスを許可');
+      // リダイレクトせずにページを表示
+      return NextResponse.next();
     }
   }
   

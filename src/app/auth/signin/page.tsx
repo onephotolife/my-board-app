@@ -131,14 +131,34 @@ function SignInForm() {
           setErrorAction(errorInfo.action || '');
         }
       } else if (result?.ok) {
-        console.log('✅ ログイン成功、セッション更新後にリダイレクト');
+        console.log('✅ ログイン成功、即座にリダイレクト実行');
         
         // 成功メッセージを表示
         setError('');
         setErrorDetail('ログインに成功しました。リダイレクトしています...');
         
-        // セッションの更新を待ってからリダイレクト
-        // useEffectでセッション状態変化を検知してリダイレクトされる
+        // 🔐 41人天才会議: handleSubmit内で確実なリダイレクト実行
+        const finalUrl = callbackUrl.includes('/auth/') ? '/dashboard' : callbackUrl;
+        console.log('🚀 handleSubmit内リダイレクト実行:', finalUrl);
+        
+        // 1. sessionStorageフラグを設定
+        sessionStorage.setItem('auth-redirected', 'true');
+        
+        // 2. 複数の方法でリダイレクト実行（確実性向上）
+        setTimeout(() => {
+          console.log('🔄 window.location.replace実行:', finalUrl);
+          window.location.replace(finalUrl);
+        }, 100);
+        
+        // 3. フォールバック
+        setTimeout(() => {
+          if (window.location.pathname === '/auth/signin') {
+            console.log('🔄 フォールバック window.location.href実行:', finalUrl);
+            window.location.href = finalUrl;
+          }
+        }, 1000);
+        
+        // 4. useEffectでも検知される（二重保護）
       } else {
         console.log('⚠️ 予期しない結果:', result);
         setError('ログインに失敗しました');

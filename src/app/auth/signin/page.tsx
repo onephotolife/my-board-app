@@ -31,15 +31,27 @@ function SignInForm() {
       status, 
       hasSession: !!session,
       user: session?.user?.email,
+      emailVerified: session?.user?.emailVerified,
       timestamp: new Date().toISOString()
     });
     
-    if (status === 'authenticated' && session) {
-      console.log('✅ 既にログイン済み、リダイレクト実行');
+    // 🔐 41人天才会議による修正: メール確認済みの場合のみリダイレクト
+    if (status === 'authenticated' && session?.user?.emailVerified) {
+      console.log('✅ 認証済み&メール確認済み、リダイレクト実行');
       const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
-      window.location.href = callbackUrl;
+      
+      // 無限ループ防止: callbackUrlが認証ページの場合はダッシュボードへ
+      if (callbackUrl.includes('/auth/')) {
+        console.log('⚠️ callbackUrlが認証ページのため、ダッシュボードへリダイレクト');
+        router.push('/dashboard');
+      } else {
+        router.push(callbackUrl);
+      }
+    } else if (status === 'authenticated' && session && !session.user?.emailVerified) {
+      console.log('⚠️ 認証済みだがメール未確認、リダイレクトしない');
+      // メール未確認の場合はリダイレクトしない（ログインフォームを表示）
     }
-  }, [session, status, searchParams]);
+  }, [session, status, searchParams, router]);
 
   useEffect(() => {
     // URLパラメータからのエラー処理

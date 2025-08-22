@@ -26,8 +26,8 @@ function SignInForm() {
   const verified = searchParams.get('verified') === 'true';
   const urlError = searchParams.get('error');
 
-  // 🔐 41人天才会議による完全修正:
-  // 認証済みユーザーの適切なリダイレクト処理
+  // 🔐 41人天才会議による究極の修正:
+  // sessionStorageを完全クリアし、確実なリダイレクトを実装
   useEffect(() => {
     // デバッグ情報をローカルストレージに記録
     const debugInfo = {
@@ -44,69 +44,42 @@ function SignInForm() {
     localStorage.setItem('auth-session-debug', JSON.stringify(debugInfo));
     console.log('🔍 [SignIn] セッション状態:', debugInfo);
     
-    // 無限ループ防止フラグをチェック
-    const stopRedirect = sessionStorage.getItem('stop-redirect');
-    if (stopRedirect === 'true') {
-      console.warn('🛑 無限ループ防止: 自動リダイレクトを停止');
-      return;
-    }
-    
     // 認証済みユーザーは即座にリダイレクト
     if (status === 'authenticated' && session?.user?.emailVerified) {
       console.log('✅ 認証済みユーザーを検出、リダイレクト実行');
+      
+      // 重要: 認証済みの場合は必ずすべてのリダイレクト制限をクリア
+      sessionStorage.clear(); // すべてのsessionStorageをクリア
+      localStorage.removeItem('redirect-attempts'); // localStorageもクリア
+      
       const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
       const finalUrl = callbackUrl.includes('/auth/') ? '/dashboard' : callbackUrl;
       
-      // リダイレクトカウンターをチェック（無限ループ防止）
-      const redirectCount = parseInt(sessionStorage.getItem('redirect-count') || '0');
-      if (redirectCount > 2) {
-        console.error('❌ リダイレクト試行回数超過、停止');
-        sessionStorage.setItem('stop-redirect', 'true');
-        return;
-      }
+      console.log('🚀 即座にリダイレクト実行:', finalUrl);
       
-      // カウンターを更新
-      sessionStorage.setItem('redirect-count', String(redirectCount + 1));
+      // window.location.replaceで強制的にリダイレクト（最も確実）
+      window.location.replace(finalUrl);
       
-      // 確実なリダイレクト実装（3段階フォールバック）
-      console.log('🚀 認証済みリダイレクト実行:', finalUrl);
+      // バックアップ: replaceが動作しない場合
+      setTimeout(() => {
+        if (window.location.pathname === '/auth/signin') {
+          console.warn('⚠️ replaceが失敗、hrefを使用');
+          window.location.href = finalUrl;
+        }
+      }, 100);
       
-      // 方法1: router.pushを試行
-      try {
-        router.push(finalUrl);
-        
-        // 方法2: router.pushが失敗した場合、window.locationを使用
-        setTimeout(() => {
-          if (window.location.pathname === '/auth/signin') {
-            console.warn('⚠️ router.pushが機能しなかったため、window.locationを使用');
-            window.location.href = finalUrl;
-            
-            // 方法3: さらに失敗した場合、サーバーサイドリダイレクトAPIを使用
-            setTimeout(() => {
-              if (window.location.pathname === '/auth/signin') {
-                console.warn('⚠️ window.locationも失敗、サーバーサイドリダイレクトを使用');
-                window.location.href = `/api/auth/redirect?url=${encodeURIComponent(finalUrl)}`;
-              }
-            }, 500);
-          }
-        }, 200);
-      } catch (e) {
-        console.error('❌ リダイレクトエラー、フォールバック実行:', e);
-        // 即座にwindow.locationへフォールバック
-        window.location.href = finalUrl;
-      }
     } else if (status === 'authenticated' && !session?.user?.emailVerified) {
       // メール未確認の場合
       console.log('⚠️ メール未確認のユーザー');
-      router.push('/auth/email-not-verified');
+      sessionStorage.clear();
+      window.location.replace('/auth/email-not-verified');
     }
     
-    // ログインページアクセス時にリダイレクトカウンターをリセット
+    // 未認証の場合もクリア（クリーンな状態を保つ）
     if (status === 'unauthenticated') {
-      sessionStorage.removeItem('redirect-count');
-      sessionStorage.removeItem('stop-redirect');
+      sessionStorage.clear();
     }
-  }, [session, status, router, searchParams]);
+  }, [session, status, searchParams]);
 
   useEffect(() => {
     // URLパラメータからのエラー処理
@@ -177,42 +150,20 @@ function SignInForm() {
         setError('');
         setErrorDetail('ログインに成功しました。リダイレクトしています...');
         
-        // 🔐 41人天才会議: 確実なリダイレクト実装（3段階フォールバック）
+        // 🔐 41人天才会議: シンプルで確実なリダイレクト実装
         console.log('🚀 リダイレクト実行:', finalUrl);
+        
+        // すべてのsessionStorageをクリア（クリーンな状態を確保）
+        sessionStorage.clear();
+        localStorage.removeItem('redirect-attempts');
         
         // router.refreshを先に実行してセッションを更新
         router.refresh();
         
-        // リダイレクトカウンターをリセット
-        sessionStorage.removeItem('redirect-count');
-        sessionStorage.removeItem('stop-redirect');
-        
-        // 少し待ってからリダイレクト（セッション確立を待つ）
+        // 即座にwindow.location.replaceで強制リダイレクト
         setTimeout(() => {
-          // 方法1: router.pushを試行
-          try {
-            router.push(finalUrl);
-            
-            // 方法2: router.pushが動作しない場合のフォールバック
-            setTimeout(() => {
-              if (window.location.pathname === '/auth/signin') {
-                console.warn('⚠️ router.pushが機能しなかったため、window.locationを使用');
-                window.location.replace(finalUrl);
-                
-                // 方法3: サーバーサイドリダイレクトAPIを使用
-                setTimeout(() => {
-                  if (window.location.pathname === '/auth/signin') {
-                    console.warn('⚠️ クライアントサイドリダイレクト失敗、サーバーサイドを使用');
-                    window.location.href = `/api/auth/redirect?url=${encodeURIComponent(finalUrl)}`;
-                  }
-                }, 500);
-              }
-            }, 300);
-          } catch (e) {
-            console.warn('router.pushエラー、window.locationを使用:', e);
-            window.location.replace(finalUrl);
-          }
-        }, 500);
+          window.location.replace(finalUrl);
+        }, 100);
       } else {
         // 予期しないエラー
         console.log('⚠️ 予期しない結果:', result);

@@ -185,6 +185,12 @@ export const authOptions: AuthOptions = {
   // NextAuth v4設定
   secret: process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
   debug: process.env.NODE_ENV === 'development',
-};;
+};
+
+// NextAuth v4 compatibility: export auth function
+export async function auth() {
+  const { getServerSession } = await import('next-auth/next');
+  return await getServerSession(authOptions);
+}
 
 export default NextAuth(authOptions);

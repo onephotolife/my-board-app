@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 
 import { modern2025Styles } from '@/styles/modern-2025';
@@ -332,6 +333,37 @@ export default function SignUpPage() {
         }
       } else {
         setSuccess(data.message || '登録が完了しました！確認メールをご確認ください。');
+        
+        // 自動的にログインしてダッシュボードへリダイレクト
+        setSuccess('登録が完了しました！自動的にログインしています...');
+        
+        try {
+          // NextAuthを使用して自動ログイン
+          const signInResult = await signIn('credentials', {
+            email: formData.email.toLowerCase().trim(),
+            password: formData.password,
+            redirect: false,
+          });
+          
+          if (signInResult?.ok) {
+            // ログイン成功 - ダッシュボードへリダイレクト
+            router.push('/dashboard');
+          } else {
+            // ログイン失敗 - サインインページへ
+            setSuccess('登録が完了しました！ログインページからサインインしてください。');
+            setTimeout(() => {
+              router.push('/auth/signin');
+            }, 2000);
+          }
+        } catch (signInError) {
+          console.error('Auto sign-in error:', signInError);
+          // 自動ログイン失敗時はサインインページへ
+          setSuccess('登録が完了しました！ログインページからサインインしてください。');
+          setTimeout(() => {
+            router.push('/auth/signin');
+          }, 2000);
+        }
+        
         // フォームをクリア
         setFormData({
           name: '',
@@ -339,10 +371,6 @@ export default function SignUpPage() {
           password: '',
           confirmPassword: '',
         });
-        // 3秒後にサインインページへリダイレクト
-        setTimeout(() => {
-          router.push('/auth/signin');
-        }, 3000);
       }
     } catch (error) {
       console.error('Registration error:', error);

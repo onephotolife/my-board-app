@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
-  testDir: './tests/e2e',
+  testDir: './e2e',
   fullyParallel: false, // 順次実行で安定性向上
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 1,

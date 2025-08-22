@@ -88,3 +88,15 @@ cookies.txt
 *.swp
 *.swo
 .DS_Store
+
+# Debug and test scripts
+debug-*.js
+create-test-*.js
+create-*-test-*.js
+*-test.log
+*-output.log
+*-debug.png
+debug-selectors.js
+
+# Playwright outputs
+playwright-*.log

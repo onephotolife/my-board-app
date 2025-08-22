@@ -26,9 +26,8 @@ function SignInForm() {
   const verified = searchParams.get('verified') === 'true';
   const urlError = searchParams.get('error');
 
-  // 🔐 41人天才会議による重要な修正:
-  // 自動リダイレクトを完全に無効化し、無限ループを防止
-  // ログイン成功後のみリダイレクトを実行
+  // 🔐 41人天才会議による完全修正:
+  // 認証済みユーザーの適切なリダイレクト処理
   useEffect(() => {
     // デバッグ情報をローカルストレージに記録
     const debugInfo = {
@@ -52,12 +51,62 @@ function SignInForm() {
       return;
     }
     
-    // 重要: ここでは自動リダイレクトを行わない
-    // ログイン処理成功後のみリダイレクトする
+    // 認証済みユーザーは即座にリダイレクト
     if (status === 'authenticated' && session?.user?.emailVerified) {
-      console.log('ℹ️ セッション確立済みですが、自動リダイレクトは行いません');
+      console.log('✅ 認証済みユーザーを検出、リダイレクト実行');
+      const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+      const finalUrl = callbackUrl.includes('/auth/') ? '/dashboard' : callbackUrl;
+      
+      // リダイレクトカウンターをチェック（無限ループ防止）
+      const redirectCount = parseInt(sessionStorage.getItem('redirect-count') || '0');
+      if (redirectCount > 2) {
+        console.error('❌ リダイレクト試行回数超過、停止');
+        sessionStorage.setItem('stop-redirect', 'true');
+        return;
+      }
+      
+      // カウンターを更新
+      sessionStorage.setItem('redirect-count', String(redirectCount + 1));
+      
+      // 確実なリダイレクト実装（3段階フォールバック）
+      console.log('🚀 認証済みリダイレクト実行:', finalUrl);
+      
+      // 方法1: router.pushを試行
+      try {
+        router.push(finalUrl);
+        
+        // 方法2: router.pushが失敗した場合、window.locationを使用
+        setTimeout(() => {
+          if (window.location.pathname === '/auth/signin') {
+            console.warn('⚠️ router.pushが機能しなかったため、window.locationを使用');
+            window.location.href = finalUrl;
+            
+            // 方法3: さらに失敗した場合、サーバーサイドリダイレクトAPIを使用
+            setTimeout(() => {
+              if (window.location.pathname === '/auth/signin') {
+                console.warn('⚠️ window.locationも失敗、サーバーサイドリダイレクトを使用');
+                window.location.href = `/api/auth/redirect?url=${encodeURIComponent(finalUrl)}`;
+              }
+            }, 500);
+          }
+        }, 200);
+      } catch (e) {
+        console.error('❌ リダイレクトエラー、フォールバック実行:', e);
+        // 即座にwindow.locationへフォールバック
+        window.location.href = finalUrl;
+      }
+    } else if (status === 'authenticated' && !session?.user?.emailVerified) {
+      // メール未確認の場合
+      console.log('⚠️ メール未確認のユーザー');
+      router.push('/auth/email-not-verified');
     }
-  }, [session, status]);
+    
+    // ログインページアクセス時にリダイレクトカウンターをリセット
+    if (status === 'unauthenticated') {
+      sessionStorage.removeItem('redirect-count');
+      sessionStorage.removeItem('stop-redirect');
+    }
+  }, [session, status, router, searchParams]);
 
   useEffect(() => {
     // URLパラメータからのエラー処理
@@ -128,20 +177,40 @@ function SignInForm() {
         setError('');
         setErrorDetail('ログインに成功しました。リダイレクトしています...');
         
-        // 🔐 41人天才会議: 確実なリダイレクト実装
+        // 🔐 41人天才会議: 確実なリダイレクト実装（3段階フォールバック）
         console.log('🚀 リダイレクト実行:', finalUrl);
         
         // router.refreshを先に実行してセッションを更新
         router.refresh();
         
-        // 少し待ってからリダイレクト
+        // リダイレクトカウンターをリセット
+        sessionStorage.removeItem('redirect-count');
+        sessionStorage.removeItem('stop-redirect');
+        
+        // 少し待ってからリダイレクト（セッション確立を待つ）
         setTimeout(() => {
-          // router.pushを試行、失敗したらwindow.locationにフォールバック
+          // 方法1: router.pushを試行
           try {
             router.push(finalUrl);
+            
+            // 方法2: router.pushが動作しない場合のフォールバック
+            setTimeout(() => {
+              if (window.location.pathname === '/auth/signin') {
+                console.warn('⚠️ router.pushが機能しなかったため、window.locationを使用');
+                window.location.replace(finalUrl);
+                
+                // 方法3: サーバーサイドリダイレクトAPIを使用
+                setTimeout(() => {
+                  if (window.location.pathname === '/auth/signin') {
+                    console.warn('⚠️ クライアントサイドリダイレクト失敗、サーバーサイドを使用');
+                    window.location.href = `/api/auth/redirect?url=${encodeURIComponent(finalUrl)}`;
+                  }
+                }, 500);
+              }
+            }, 300);
           } catch (e) {
             console.warn('router.pushエラー、window.locationを使用:', e);
-            window.location.href = finalUrl;
+            window.location.replace(finalUrl);
           }
         }, 500);
       } else {

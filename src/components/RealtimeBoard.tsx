@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import AppLayout from '@/components/AppLayout';
 import {
   Container,
   Typography,
@@ -49,6 +50,7 @@ import { ja } from 'date-fns/locale';
 import RealtimeBoardWrapper from '@/components/RealtimeBoardWrapper';
 import ReportButton from '@/components/ReportButton';
 import { useSocket } from '@/lib/socket/client';
+import { modern2025Styles } from '@/styles/modern-2025';
 
 interface Post {
   _id: string;
@@ -231,9 +233,11 @@ export default function RealtimeBoard() {
 
   if (status === 'loading') {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
-        <CircularProgress />
-      </Box>
+      <AppLayout title="掲示板" subtitle="読み込み中...">
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
+          <CircularProgress size={60} />
+        </Box>
+      </AppLayout>
     );
   }
 
@@ -243,19 +247,30 @@ export default function RealtimeBoard() {
   }
 
   return (
-    <RealtimeBoardWrapper
-      onNewPost={handleNewPost}
-      onPostUpdated={handlePostUpdated}
-      onPostDeleted={handlePostDeleted}
-      onPostLiked={handlePostLiked}
+    <AppLayout 
+      title="掲示板" 
+      subtitle="リアルタイムで更新される投稿一覧"
     >
-      <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Box sx={{ mb: 4 }}>
-          <Typography variant="h4" sx={{ fontWeight: 700, mb: 2 }}>
-            リアルタイム掲示板
-          </Typography>
+      <RealtimeBoardWrapper
+        onNewPost={handleNewPost}
+        onPostUpdated={handlePostUpdated}
+        onPostDeleted={handlePostDeleted}
+        onPostLiked={handlePostLiked}
+      >
+        <Container maxWidth="lg">
+          <Box sx={{ mb: 4 }}>
           
-          <Paper sx={{ p: 2, mb: 3 }}>
+          <Paper 
+            elevation={0}
+            sx={{ 
+              p: 3, 
+              mb: 3,
+              borderRadius: '16px',
+              border: '1px solid',
+              borderColor: 'divider',
+              background: 'white',
+            }}
+          >
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={12} md={4}>
                 <TextField
@@ -323,7 +338,17 @@ export default function RealtimeBoard() {
                   onClick={() => router.push('/posts/new')}
                   data-testid="new-post-button"
                   sx={{
-                    background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    borderRadius: '12px',
+                    textTransform: 'none',
+                    fontWeight: 600,
+                    fontSize: '16px',
+                    boxShadow: '0 4px 14px rgba(99, 102, 241, 0.25)',
+                    '&:hover': {
+                      background: 'linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%)',
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 6px 20px rgba(99, 102, 241, 0.35)',
+                    },
                   }}
                 >
                   新規投稿
@@ -355,7 +380,17 @@ export default function RealtimeBoard() {
             ))}
           </Grid>
         ) : posts.length === 0 ? (
-          <Paper sx={{ p: 4, textAlign: 'center' }}>
+          <Paper 
+            elevation={0}
+            sx={{ 
+              p: 6, 
+              textAlign: 'center',
+              borderRadius: '16px',
+              border: '1px solid',
+              borderColor: 'divider',
+              background: 'white',
+            }}
+          >
             <Typography variant="h6" color="text.secondary">
               投稿がありません
             </Typography>
@@ -373,9 +408,20 @@ export default function RealtimeBoard() {
             {posts.map((post) => (
               <Grid item xs={12} key={post._id}>
                 <Card
+                  elevation={0}
                   sx={{
                     position: 'relative',
+                    borderRadius: '16px',
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    background: 'white',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                     animation: post.isNew ? 'pulse 1s ease-in-out' : 'none',
+                    '&:hover': {
+                      transform: 'translateY(-4px)',
+                      boxShadow: '0 12px 24px rgba(0, 0, 0, 0.08)',
+                      borderColor: modern2025Styles.colors.primary,
+                    },
                     '@keyframes pulse': {
                       '0%': { boxShadow: '0 0 0 0 rgba(102, 126, 234, 0.7)' },
                       '70%': { boxShadow: '0 0 0 10px rgba(102, 126, 234, 0)' },
@@ -511,7 +557,8 @@ export default function RealtimeBoard() {
             />
           </Box>
         )}
-      </Container>
-    </RealtimeBoardWrapper>
+        </Container>
+      </RealtimeBoardWrapper>
+    </AppLayout>
   );
 }

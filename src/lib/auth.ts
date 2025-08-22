@@ -53,6 +53,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             email: user.email,
             name: user.name || user.email,
             emailVerified: user.emailVerified,
+            role: user.role,
           };
         } catch (error) {
           console.error('❌ [Auth v5] 認証エラー:', error);
@@ -81,6 +82,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.email = user.email;
         token.name = user.name;
         token.emailVerified = user.emailVerified;
+        token.role = user.role;
       }
       return token;
     },
@@ -98,7 +100,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           id: token.id,
           email: token.email,
           name: token.name,
-          emailVerified: token.emailVerified
+          emailVerified: token.emailVerified,
+          role: token.role
         };
       }
       return session;

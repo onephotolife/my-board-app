@@ -27,16 +27,23 @@ function SignInForm() {
 
   // セッションがある場合は自動的にリダイレクト
   useEffect(() => {
+    // ログイン処理中は自動リダイレクトをスキップ
+    if (loading) {
+      console.log('⏸️ ログイン処理中のため、自動リダイレクトをスキップ');
+      return;
+    }
+    
     console.log('🔍 セッション状態変更:', { 
       status, 
       hasSession: !!session,
       user: session?.user?.email,
       emailVerified: session?.user?.emailVerified,
+      loading,
       timestamp: new Date().toISOString()
     });
     
     // 🔐 41人天才会議による修正: メール確認済みの場合のみリダイレクト
-    if (status === 'authenticated' && session?.user?.emailVerified) {
+    if (status === 'authenticated' && session?.user?.emailVerified && !loading) {
       console.log('✅ 認証済み&メール確認済み、リダイレクト実行');
       const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
       
@@ -51,7 +58,7 @@ function SignInForm() {
       console.log('⚠️ 認証済みだがメール未確認、リダイレクトしない');
       // メール未確認の場合はリダイレクトしない（ログインフォームを表示）
     }
-  }, [session, status, searchParams, router]);
+  }, [session, status, searchParams, loading, router]);
 
   useEffect(() => {
     // URLパラメータからのエラー処理
@@ -132,17 +139,64 @@ function SignInForm() {
         // ログイン成功
         console.log('✅ ログイン成功');
         
-        // callbackUrlがある場合はそこへ、なければダッシュボードへリダイレクト
-        const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
-        console.log('🎯 リダイレクト先:', callbackUrl);
+        // 🔐 41人天才会議による修正: セッション確立を確実に待つ
+        console.log('🚀 セッション確立を確認中...');
         
-        // 🔐 41人天才会議による修正: 本番環境対応のためwindow.locationを使用
-        console.log('🚀 セッション確立後、リダイレクト実行...');
-        // 本番環境での動作を保証するためwindow.location.hrefを使用
-        setTimeout(() => {
-          console.log('🎯 リダイレクト実行:', callbackUrl);
-          window.location.href = callbackUrl;
-        }, 500);
+        // セッション確立を確認するための待機処理
+        let retryCount = 0;
+        const maxRetries = 10;
+        
+        const checkSessionAndRedirect = async () => {
+          try {
+            // セッション状態を確認
+            const sessionResponse = await fetch('/api/auth/session');
+            const sessionData = await sessionResponse.json();
+            
+            console.log('🔍 セッション確認:', {
+              attempt: retryCount + 1,
+              hasSession: !!sessionData?.user,
+              emailVerified: sessionData?.user?.emailVerified,
+              timestamp: new Date().toISOString()
+            });
+            
+            if (sessionData?.user?.emailVerified) {
+              // セッションが確立され、メール確認済みの場合のみリダイレクト
+              const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+              
+              // 無限ループ防止: callbackUrlが認証ページの場合はダッシュボードへ
+              if (callbackUrl.includes('/auth/')) {
+                console.log('⚠️ callbackUrlが認証ページのため、ダッシュボードへリダイレクト');
+                window.location.href = '/dashboard';
+              } else {
+                console.log('🎯 リダイレクト実行:', callbackUrl);
+                window.location.href = callbackUrl;
+              }
+            } else if (retryCount < maxRetries) {
+              // まだセッションが確立されていない場合は再試行
+              retryCount++;
+              setTimeout(checkSessionAndRedirect, 500);
+            } else {
+              // 最大試行回数に達した場合
+              console.error('❌ セッション確立タイムアウト');
+              setError('ログイン処理に問題が発生しました');
+              setErrorDetail('しばらく待ってから再度お試しください。');
+              
+              // 手動でリダイレクトボタンを表示
+              setTimeout(() => {
+                window.location.reload();
+              }, 3000);
+            }
+          } catch (error) {
+            console.error('💥 セッション確認エラー:', error);
+            if (retryCount < maxRetries) {
+              retryCount++;
+              setTimeout(checkSessionAndRedirect, 500);
+            }
+          }
+        };
+        
+        // セッション確認を開始
+        setTimeout(checkSessionAndRedirect, 1000); // 初回は1秒待機
         
       } else {
         // 予期しないエラー

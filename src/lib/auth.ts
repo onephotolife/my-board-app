@@ -136,16 +136,53 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     updateAge: 24 * 60 * 60, // 24時間ごとにセッションを更新
   },
   
+  // 🔐 41人天才会議: 本番環境でのセッション同期を改善
+  jwt: {
+    secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
+    maxAge: 30 * 24 * 60 * 60, // 30日
+  },
+  
   cookies: {
     sessionToken: {
-      name: `next-auth.session-token`,
+      name: process.env.NODE_ENV === 'production' 
+        ? '__Secure-next-auth.session-token'
+        : 'next-auth.session-token',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+        // 🔐 41人天才会議: クッキーのドメイン設定を明示的に指定
+        domain: process.env.NODE_ENV === 'production' && process.env.COOKIE_DOMAIN
+          ? process.env.COOKIE_DOMAIN // .envで設定可能
+          : undefined
+      }
+    },
+    callbackUrl: {
+      name: process.env.NODE_ENV === 'production'
+        ? '__Secure-next-auth.callback-url'
+        : 'next-auth.callback-url',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+        domain: process.env.NODE_ENV === 'production' && process.env.COOKIE_DOMAIN
+          ? process.env.COOKIE_DOMAIN
+          : undefined
+      }
+    },
+    csrfToken: {
+      name: process.env.NODE_ENV === 'production'
+        ? '__Host-next-auth.csrf-token'
+        : 'next-auth.csrf-token',
       options: {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
         secure: process.env.NODE_ENV === 'production'
       }
-    },
+    }
   },
   
   // NextAuth v5必須設定

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import { requireEmailVerifiedSession, ApiAuthError, createApiErrorResponse } from '@/lib/api-auth';
 import { connectDB } from '@/lib/db/mongodb';
 import Post from '@/lib/models/Post';
 import { auth } from '@/lib/auth';
@@ -18,14 +19,8 @@ export async function POST(
   // レート制限を適用（1分間に30回まで）
   return withRateLimit(request, async (req) => {
     try {
-      // 認証チェック
-      const session = await auth();
-      if (!session?.user?.id) {
-        return NextResponse.json(
-          { error: 'ログインが必要です' },
-          { status: 401 }
-        );
-      }
+      // 🔒 25人天才エンジニア会議による緊急修正: メール確認済みセッション必須
+      const session = await requireEmailVerifiedSession();
 
       await connectDB();
       
@@ -82,6 +77,11 @@ export async function POST(
       });
 
     } catch (error: any) {
+      // 🔒 API認証エラーの適切なハンドリング
+      if (error instanceof ApiAuthError) {
+        return createApiErrorResponse(error);
+      }
+      
       console.error('Like toggle error:', error);
       return NextResponse.json(
         { error: 'いいねの処理に失敗しました' },
@@ -102,6 +102,7 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
+    // 🔒 25人天才エンジニア会議による修正: 未認証/メール未確認でも基本情報は取得可能
     const session = await auth();
 
     // キャッシュから取得を試みる
@@ -122,10 +123,13 @@ export async function GET(
       );
     }
 
+    // 🔒 メール確認状態を考慮したレスポンス
+    const isAuthenticated = session?.user?.id && session?.user?.emailVerified;
     const response = {
       likeCount: post.likes.length,
-      isLiked: session?.user?.id ? post.likes.includes(session.user.id) : false,
-      requiresAuth: !session?.user?.id
+      isLiked: isAuthenticated ? post.likes.includes(session.user.id) : false,
+      requiresAuth: !isAuthenticated,
+      emailVerified: session?.user?.emailVerified || false
     };
 
     // キャッシュに保存（30秒）

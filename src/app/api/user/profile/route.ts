@@ -1,21 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { auth } from '@/lib/auth';
+import { requireEmailVerifiedSession, ApiAuthError, createApiErrorResponse } from '@/lib/api-auth';
 import { connectDB } from '@/lib/db/mongodb';
 import User from '@/lib/models/User';
 
 // PUT /api/user/profile - プロフィール更新
 export async function PUT(request: NextRequest) {
   try {
-    // 認証チェック
-    const session = await auth();
-    
-    if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: '認証が必要です' },
-        { status: 401 }
-      );
-    }
+    // 🔒 25人天才エンジニア会議による緊急修正: メール確認済みセッション必須
+    const session = await requireEmailVerifiedSession();
 
     // リクエストボディを取得
     const body = await request.json();
@@ -55,6 +48,11 @@ export async function PUT(request: NextRequest) {
       updatedAt: updatedUser.updatedAt,
     });
   } catch (error) {
+    // 🔒 API認証エラーの適切なハンドリング
+    if (error instanceof ApiAuthError) {
+      return createApiErrorResponse(error);
+    }
+    
     console.error('Profile update error:', error);
     return NextResponse.json(
       { error: 'プロフィールの更新に失敗しました' },
@@ -66,15 +64,8 @@ export async function PUT(request: NextRequest) {
 // GET /api/user/profile - プロフィール取得
 export async function GET(request: NextRequest) {
   try {
-    // 認証チェック
-    const session = await auth();
-    
-    if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: '認証が必要です' },
-        { status: 401 }
-      );
-    }
+    // 🔒 25人天才エンジニア会議による緊急修正: メール確認済みセッション必須
+    const session = await requireEmailVerifiedSession();
 
     // データベース接続
     await connectDB();
@@ -102,6 +93,11 @@ export async function GET(request: NextRequest) {
       updatedAt: user.updatedAt,
     });
   } catch (error) {
+    // 🔒 API認証エラーの適切なハンドリング
+    if (error instanceof ApiAuthError) {
+      return createApiErrorResponse(error);
+    }
+    
     console.error('Profile fetch error:', error);
     return NextResponse.json(
       { error: 'プロフィールの取得に失敗しました' },

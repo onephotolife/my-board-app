@@ -220,12 +220,6 @@ export async function middleware(request: NextRequest) {
       timestamp: new Date().toISOString()
     });
     
-    // トークンが取得できない場合、セッションベースでの認証確認
-    if (!token && pathname === '/dashboard') {
-      console.log('⚠️ Middleware: トークンなし、セッションベースで確認');
-      // セッションがある場合は許可（一時的な対策）
-      return NextResponse.next();
-    }
     
     if (!token) {
       // 未認証の場合、サインインページへリダイレクト
@@ -243,7 +237,7 @@ export async function middleware(request: NextRequest) {
     // メール確認チェック（会員制掲示板として必須）
     if (token && !token.emailVerified) {
       // メール未確認の場合、確認ページへリダイレクト
-      const url = new URL('/auth/verify-email', request.url);
+      const url = new URL('/auth/email-not-verified', request.url);
       console.log('📧 Middleware: メール未確認のためリダイレクト');
       return NextResponse.redirect(url);
     }

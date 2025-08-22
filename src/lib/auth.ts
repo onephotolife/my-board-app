@@ -81,9 +81,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       });
       
       // NextAuth v5での適切なエラーハンドリング
+      // メール未確認ユーザーもセッション作成を許可し、ミドルウェア/サーバーコンポーネントで制御
       if (user && !user.emailVerified) {
-        console.log('⛔ [signIn callback] メール未確認のためログイン拒否');
-        return '/auth/signin?error=EmailNotVerified';  // カスタムリダイレクト
+        console.log('⚠️ [signIn callback] メール未確認ユーザーのログイン（セッション作成許可）');
+        // セッションは作成するが、後段の保護層で /auth/email-not-verified にリダイレクト
       }
       
       return true;

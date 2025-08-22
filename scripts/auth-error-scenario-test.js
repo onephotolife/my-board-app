@@ -137,9 +137,10 @@ async function main() {
     
     // シナリオ3: 存在しないユーザー
     await runTest('シナリオ3: 存在しないユーザー → エラーメッセージ表示のみ', async () => {
-      // ページをクリア
+      // ページとセッションをクリア（25人エンジニア会議による改善）
+      await page.context().clearCookies();
       await page.goto(`${BASE_URL}/auth/signin`);
-      await page.waitForSelector('input[name="email"]');
+      await page.waitForSelector('input[name="email"]', { timeout: 10000 });
       
       // 存在しないユーザーでのログイン試行
       await page.fill('input[name="email"]', 'nonexistent@example.com');
@@ -179,9 +180,10 @@ async function main() {
     
     // シナリオ4: 正常ログイン（ベースライン確認）
     await runTest('シナリオ4: verified@test.com + 正パスワード → ダッシュボード遷移', async () => {
-      // ページをクリア
+      // ページとセッションをクリア（25人エンジニア会議による改善）
+      await page.context().clearCookies();
       await page.goto(`${BASE_URL}/auth/signin`);
-      await page.waitForSelector('input[name="email"]');
+      await page.waitForSelector('input[name="email"]', { timeout: 10000 });
       
       // 正常ログイン
       await page.fill('input[name="email"]', 'verified@test.com');

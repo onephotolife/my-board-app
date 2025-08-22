@@ -1,19 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { auth } from '@/lib/auth';
+import { requireEmailVerifiedSession, ApiAuthError, createApiErrorResponse } from '@/lib/api-auth';
 import { connectDB } from '@/lib/db/mongodb';
 import User from '@/lib/models/User';
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth();
-    
-    if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
+    // 🔒 25人天才エンジニア会議による緊急修正: メール確認済みセッション必須
+    const session = await requireEmailVerifiedSession();
 
     await connectDB();
 
@@ -34,6 +28,11 @@ export async function GET(request: NextRequest) {
       accountCreatedDate: user.createdAt
     });
   } catch (error) {
+    // 🔒 API認証エラーの適切なハンドリング
+    if (error instanceof ApiAuthError) {
+      return createApiErrorResponse(error);
+    }
+    
     console.error('Error fetching user activity:', error);
     return NextResponse.json(
       { error: 'Internal server error' },

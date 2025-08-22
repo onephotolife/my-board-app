@@ -1,20 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { auth } from '@/lib/auth';
+import { requireEmailVerifiedSession, ApiAuthError, createApiErrorResponse } from '@/lib/api-auth';
 import { connectDB } from '@/lib/db/mongodb';
 import User from '@/lib/models/User';
 
 // PUT: パスワード変更
 export async function PUT(req: NextRequest) {
   try {
-    // セッション確認
-    const session = await auth();
-    if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: '認証が必要です' },
-        { status: 401 }
-      );
-    }
+    // 🔒 25人天才エンジニア会議による緊急修正: メール確認済みセッション必須
+    // パスワード変更は特に重要なセキュリティ操作のため、メール確認必須
+    const session = await requireEmailVerifiedSession();
 
     // リクエストボディを取得
     const body = await req.json();
@@ -96,6 +91,11 @@ export async function PUT(req: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
+    // 🔒 API認証エラーの適切なハンドリング
+    if (error instanceof ApiAuthError) {
+      return createApiErrorResponse(error);
+    }
+    
     console.error('Password change error:', error);
     return NextResponse.json(
       { error: 'パスワードの変更に失敗しました' },

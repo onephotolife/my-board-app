@@ -131,15 +131,17 @@ function SignInForm() {
       } else if (result?.ok) {
         // ログイン成功
         console.log('✅ ログイン成功');
-        setLoading(false);
         
         // callbackUrlがある場合はそこへ、なければダッシュボードへリダイレクト
         const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
         console.log('🎯 リダイレクト先:', callbackUrl);
         
-        // 即座にリダイレクト実行
-        console.log('🚀 即座にリダイレクト実行...');
-        window.location.href = callbackUrl;
+        // 🔐 41人天才会議による修正: セッション確立を待つ
+        console.log('🚀 セッション確立待機後、リダイレクト実行...');
+        // Next.jsのruoterを使用して安全にリダイレクト
+        setTimeout(() => {
+          router.push(callbackUrl);
+        }, 500);
         
       } else {
         // 予期しないエラー

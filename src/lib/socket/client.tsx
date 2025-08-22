@@ -21,7 +21,14 @@ const SocketContext = createContext<SocketContextType>({
 export function useSocket() {
   const context = useContext(SocketContext);
   if (!context) {
-    throw new Error('useSocket must be used within SocketProvider');
+    // 🔐 41人天才会議による修正: Socketが無効の場合のフォールバック
+    console.warn('useSocket: SocketProvider not found, returning dummy context');
+    return {
+      socket: null,
+      isConnected: false,
+      onlineUsers: [],
+      typingUsers: new Map(),
+    };
   }
   return context;
 }
@@ -38,12 +45,25 @@ export function SocketProvider({ children }: SocketProviderProps) {
   const [typingUsers, setTypingUsers] = useState<Map<string, string>>(new Map());
 
   useEffect(() => {
+    // 🔐 41人天才会議による修正: Socket.ioを条件付きで有効化
+    const isSocketEnabled = process.env.NEXT_PUBLIC_ENABLE_SOCKET !== 'false';
+    
+    if (!isSocketEnabled) {
+      console.log('🔌 Socket.io is disabled');
+      return;
+    }
+    
     if (status === 'authenticated' && session?.user) {
-      const socketInstance = io(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000', {
-        path: '/socket.io',
-        withCredentials: true,
-        transports: ['websocket', 'polling'],
-      });
+      try {
+        const socketInstance = io(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000', {
+          path: '/socket.io',
+          withCredentials: true,
+          transports: ['websocket', 'polling'],
+          reconnection: true,
+          reconnectionAttempts: 3,
+          reconnectionDelay: 1000,
+          timeout: 10000,
+        });
 
       socketInstance.on('connect', () => {
         console.log('🔌 Connected to Socket.io server');
@@ -95,11 +115,24 @@ export function SocketProvider({ children }: SocketProviderProps) {
         console.error('Socket error:', error);
       });
 
+      socketInstance.on('connect_error', (error) => {
+        console.warn('⚠️ Socket connection error:', error.message);
+        // エラーが発生してもアプリを続行
+      });
+
+      socketInstance.on('connect_timeout', () => {
+        console.warn('⚠️ Socket connection timeout');
+      });
+
       setSocket(socketInstance);
 
       return () => {
         socketInstance.disconnect();
       };
+      } catch (error) {
+        console.error('🔴 Failed to initialize Socket.io:', error);
+        // Socket.ioの初期化が失敗してもアプリを続行
+      }
     }
   }, [session, status]);
 

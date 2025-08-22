@@ -84,18 +84,29 @@ const theme = createTheme({
   },
 });
 
+// 🔒 41人天才会議による修正: Socket.ioを条件付きで有効化
+function ConditionalSocketProvider({ children }: { children: React.ReactNode }) {
+  const isSocketEnabled = process.env.NEXT_PUBLIC_ENABLE_SOCKET !== 'false';
+  
+  if (isSocketEnabled) {
+    return <SocketProvider>{children}</SocketProvider>;
+  }
+  
+  return <>{children}</>;
+}
+
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <SessionProvider refetchInterval={5 * 60} refetchOnWindowFocus={true}>
       <UserProvider>
         <PermissionProvider>
           <CSRFProvider>
-            <SocketProvider>
+            <ConditionalSocketProvider>
               <ThemeProvider theme={theme}>
                 <CssBaseline />
                 {children}
               </ThemeProvider>
-            </SocketProvider>
+            </ConditionalSocketProvider>
           </CSRFProvider>
         </PermissionProvider>
       </UserProvider>

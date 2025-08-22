@@ -85,20 +85,32 @@ function SignInForm() {
         // エラータイプに応じたメッセージを表示
         console.log('❌ ログインエラー:', result.error);
         
-        // メール未確認の場合は専用ページへリダイレクト
-        if (result.error === 'CredentialsSignin' || result.error.includes('email')) {
-          // まず通常のエラーとして表示
+        // 25人天才エンジニア会議による改善 - 適切なエラー分岐処理
+        if (result.error === 'EmailNotVerified') {
+          // メール未確認エラー: 専用ページへリダイレクト
           const errorInfo = getAuthErrorMessage(result.error);
           setError(errorInfo.title);
           setErrorDetail(errorInfo.message);
           setErrorAction(errorInfo.action || '');
           
-          // メール未確認の可能性がある場合の処理
-          // auth.config.tsで「email-not-verified」が返された場合
+          // 2秒後にメール未確認ページへリダイレクト
           setTimeout(() => {
             router.push('/auth/email-not-verified');
           }, 2000);
+        } else if (result.error === 'InvalidPassword') {
+          // パスワード間違いエラー: エラーメッセージ表示のみ（リダイレクトなし）
+          const errorInfo = getAuthErrorMessage(result.error);
+          setError(errorInfo.title);
+          setErrorDetail(errorInfo.message);
+          setErrorAction(errorInfo.action || '');
+        } else if (result.error === 'UserNotFound') {
+          // ユーザー不存在エラー: セキュリティ上、一般的なエラーメッセージ
+          const errorInfo = getAuthErrorMessage(result.error);
+          setError(errorInfo.title);
+          setErrorDetail(errorInfo.message);
+          setErrorAction(errorInfo.action || '');
         } else {
+          // その他のエラー: 汎用エラーメッセージ
           const errorInfo = getAuthErrorMessage(result.error);
           setError(errorInfo.title);
           setErrorDetail(errorInfo.message);

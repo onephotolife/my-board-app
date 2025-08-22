@@ -1,0 +1,503 @@
+'use client';
+
+import { useState, useEffect, useCallback } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import {
+  Container,
+  Typography,
+  Box,
+  Button,
+  TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Grid,
+  Card,
+  CardContent,
+  CardActions,
+  IconButton,
+  Chip,
+  Alert,
+  CircularProgress,
+  Paper,
+  Stack,
+  Divider,
+  InputAdornment,
+  Pagination,
+  Skeleton,
+  Badge,
+} from '@mui/material';
+import {
+  Add as AddIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  Favorite as FavoriteIcon,
+  FavoriteBorder as FavoriteBorderIcon,
+  Search as SearchIcon,
+  Refresh as RefreshIcon,
+  Visibility as VisibilityIcon,
+  Person as PersonIcon,
+  CalendarToday as CalendarIcon,
+  Category as CategoryIcon,
+  Clear as ClearIcon,
+  NewReleases as NewReleasesIcon,
+} from '@mui/icons-material';
+import { format } from 'date-fns';
+import { ja } from 'date-fns/locale';
+import RealtimeBoardWrapper from '@/components/RealtimeBoardWrapper';
+import ReportButton from '@/components/ReportButton';
+import { useSocket } from '@/lib/socket/client';
+
+interface Post {
+  _id: string;
+  title: string;
+  content: string;
+  author: {
+    _id: string;
+    name: string;
+    email: string;
+  };
+  category: string;
+  tags: string[];
+  likes: string[];
+  views: number;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  canEdit?: boolean;
+  canDelete?: boolean;
+  isLikedByUser?: boolean;
+  isNew?: boolean;
+}
+
+export default function RealtimeBoard() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const { socket } = useSocket();
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [category, setCategory] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState('-createdAt');
+
+  const fetchPosts = useCallback(async () => {
+    setLoading(true);
+    setError('');
+
+    try {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: '10',
+        sort: sortBy,
+      });
+
+      if (category && category !== 'all') {
+        params.append('category', category);
+      }
+
+      if (searchQuery) {
+        params.append('search', searchQuery);
+      }
+
+      const response = await fetch(`/api/posts?${params}`);
+      const data = await response.json();
+
+      if (data.success) {
+        setPosts(data.data);
+        setTotalPages(data.pagination.totalPages);
+      } else {
+        setError(data.error?.message || '投稿の取得に失敗しました');
+      }
+    } catch (err) {
+      setError('ネットワークエラーが発生しました');
+    } finally {
+      setLoading(false);
+    }
+  }, [page, category, searchQuery, sortBy]);
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      fetchPosts();
+    }
+  }, [status, fetchPosts]);
+
+  const handleNewPost = useCallback((newPost: Post) => {
+    setPosts(prevPosts => {
+      const updatedPost = { ...newPost, isNew: true };
+      const filteredPosts = prevPosts.filter(p => p._id !== newPost._id);
+      
+      if (sortBy === '-createdAt') {
+        return [updatedPost, ...filteredPosts].slice(0, 10);
+      }
+      return [...filteredPosts, updatedPost].slice(0, 10);
+    });
+
+    setTimeout(() => {
+      setPosts(prevPosts =>
+        prevPosts.map(p =>
+          p._id === newPost._id ? { ...p, isNew: false } : p
+        )
+      );
+    }, 3000);
+  }, [sortBy]);
+
+  const handlePostUpdated = useCallback((updatedPost: Post) => {
+    setPosts(prevPosts =>
+      prevPosts.map(p =>
+        p._id === updatedPost._id
+          ? { ...updatedPost, isNew: true }
+          : p
+      )
+    );
+
+    setTimeout(() => {
+      setPosts(prevPosts =>
+        prevPosts.map(p =>
+          p._id === updatedPost._id ? { ...p, isNew: false } : p
+        )
+      );
+    }, 3000);
+  }, []);
+
+  const handlePostDeleted = useCallback((postId: string) => {
+    setPosts(prevPosts => prevPosts.filter(p => p._id !== postId));
+  }, []);
+
+  const handlePostLiked = useCallback((data: any) => {
+    setPosts(prevPosts =>
+      prevPosts.map(p =>
+        p._id === data.postId
+          ? {
+              ...p,
+              likes: data.action === 'liked'
+                ? [...(p.likes || []), data.userId]
+                : (p.likes || []).filter(id => id !== data.userId),
+              isLikedByUser: data.userId === session?.user?.id
+                ? data.action === 'liked'
+                : p.isLikedByUser,
+            }
+          : p
+      )
+    );
+  }, [session]);
+
+  const handleLike = async (postId: string) => {
+    try {
+      const response = await fetch(`/api/posts/${postId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action: 'toggle_like' }),
+      });
+
+      const data = await response.json();
+
+      if (data.success && socket) {
+        socket.emit('post:like', {
+          postId,
+          action: data.data.isLiked ? 'liked' : 'unliked',
+        });
+      }
+    } catch (err) {
+      console.error('いいねエラー:', err);
+    }
+  };
+
+  const handleDelete = async (postId: string) => {
+    if (!window.confirm('この投稿を削除してもよろしいですか？')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/posts/${postId}`, {
+        method: 'DELETE',
+      });
+
+      const data = await response.json();
+
+      if (data.success && socket) {
+        socket.emit('post:delete', { postId });
+      }
+    } catch (err) {
+      console.error('削除エラー:', err);
+    }
+  };
+
+  if (status === 'loading') {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (status === 'unauthenticated') {
+    router.push('/auth/signin');
+    return null;
+  }
+
+  return (
+    <RealtimeBoardWrapper
+      onNewPost={handleNewPost}
+      onPostUpdated={handlePostUpdated}
+      onPostDeleted={handlePostDeleted}
+      onPostLiked={handlePostLiked}
+    >
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h4" sx={{ fontWeight: 700, mb: 2 }}>
+            リアルタイム掲示板
+          </Typography>
+          
+          <Paper sx={{ p: 2, mb: 3 }}>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={12} md={4}>
+                <TextField
+                  fullWidth
+                  size="small"
+                  placeholder="投稿を検索..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon />
+                      </InputAdornment>
+                    ),
+                    endAdornment: searchQuery && (
+                      <InputAdornment position="end">
+                        <IconButton size="small" onClick={() => setSearchQuery('')}>
+                          <ClearIcon />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
+              
+              <Grid item xs={6} md={3}>
+                <FormControl fullWidth size="small">
+                  <InputLabel>カテゴリー</InputLabel>
+                  <Select
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    label="カテゴリー"
+                  >
+                    <MenuItem value="all">すべて</MenuItem>
+                    <MenuItem value="general">一般</MenuItem>
+                    <MenuItem value="tech">技術</MenuItem>
+                    <MenuItem value="question">質問</MenuItem>
+                    <MenuItem value="discussion">議論</MenuItem>
+                    <MenuItem value="announcement">お知らせ</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              
+              <Grid item xs={6} md={3}>
+                <FormControl fullWidth size="small">
+                  <InputLabel>並び順</InputLabel>
+                  <Select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    label="並び順"
+                  >
+                    <MenuItem value="-createdAt">新しい順</MenuItem>
+                    <MenuItem value="createdAt">古い順</MenuItem>
+                    <MenuItem value="-views">閲覧数順</MenuItem>
+                    <MenuItem value="-likes">いいね順</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              
+              <Grid item xs={12} md={2}>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  startIcon={<AddIcon />}
+                  onClick={() => router.push('/posts/new')}
+                  sx={{
+                    background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
+                  }}
+                >
+                  新規投稿
+                </Button>
+              </Grid>
+            </Grid>
+          </Paper>
+        </Box>
+
+        {error && (
+          <Alert severity="error" sx={{ mb: 3 }}>
+            {error}
+          </Alert>
+        )}
+
+        {loading ? (
+          <Grid container spacing={3}>
+            {[...Array(3)].map((_, index) => (
+              <Grid item xs={12} key={index}>
+                <Card>
+                  <CardContent>
+                    <Skeleton variant="text" width="60%" height={32} />
+                    <Skeleton variant="text" width="100%" />
+                    <Skeleton variant="text" width="100%" />
+                    <Skeleton variant="text" width="80%" />
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        ) : posts.length === 0 ? (
+          <Paper sx={{ p: 4, textAlign: 'center' }}>
+            <Typography variant="h6" color="text.secondary">
+              投稿がありません
+            </Typography>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => router.push('/posts/new')}
+              sx={{ mt: 2 }}
+            >
+              最初の投稿を作成
+            </Button>
+          </Paper>
+        ) : (
+          <Grid container spacing={3}>
+            {posts.map((post) => (
+              <Grid item xs={12} key={post._id}>
+                <Card
+                  sx={{
+                    position: 'relative',
+                    animation: post.isNew ? 'pulse 1s ease-in-out' : 'none',
+                    '@keyframes pulse': {
+                      '0%': { boxShadow: '0 0 0 0 rgba(102, 126, 234, 0.7)' },
+                      '70%': { boxShadow: '0 0 0 10px rgba(102, 126, 234, 0)' },
+                      '100%': { boxShadow: '0 0 0 0 rgba(102, 126, 234, 0)' },
+                    },
+                  }}
+                >
+                  {post.isNew && (
+                    <Chip
+                      icon={<NewReleasesIcon />}
+                      label="新着"
+                      color="error"
+                      size="small"
+                      sx={{ position: 'absolute', top: 10, right: 10, zIndex: 1 }}
+                    />
+                  )}
+                  
+                  <CardContent>
+                    <Box sx={{ mb: 2 }}>
+                      <Typography variant="h6" gutterBottom>
+                        {post.title}
+                      </Typography>
+                      
+                      <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
+                        <Chip
+                          label={post.category}
+                          size="small"
+                          color="primary"
+                          variant="outlined"
+                        />
+                        {post.tags.map((tag) => (
+                          <Chip
+                            key={tag}
+                            label={`#${tag}`}
+                            size="small"
+                            variant="outlined"
+                          />
+                        ))}
+                      </Stack>
+                    </Box>
+                    
+                    <Typography variant="body1" sx={{ mb: 2, whiteSpace: 'pre-wrap' }}>
+                      {post.content}
+                    </Typography>
+                    
+                    <Divider sx={{ my: 2 }} />
+                    
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Stack direction="row" spacing={2} alignItems="center">
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                          <PersonIcon sx={{ fontSize: 16, mr: 0.5 }} />
+                          <Typography variant="caption">
+                            {post.author.name}
+                          </Typography>
+                        </Box>
+                        
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                          <CalendarIcon sx={{ fontSize: 16, mr: 0.5 }} />
+                          <Typography variant="caption">
+                            {format(new Date(post.createdAt), 'yyyy/MM/dd HH:mm', { locale: ja })}
+                          </Typography>
+                        </Box>
+                        
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                          <VisibilityIcon sx={{ fontSize: 16, mr: 0.5 }} />
+                          <Typography variant="caption">
+                            {post.views}
+                          </Typography>
+                        </Box>
+                      </Stack>
+                      
+                      <Stack direction="row" spacing={1}>
+                        <IconButton
+                          onClick={() => handleLike(post._id)}
+                          color={post.isLikedByUser ? 'error' : 'default'}
+                        >
+                          <Badge badgeContent={post.likes?.length || 0} color="error">
+                            {post.isLikedByUser ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                          </Badge>
+                        </IconButton>
+                        
+                        {post.canEdit && (
+                          <IconButton
+                            onClick={() => router.push(`/posts/${post._id}/edit`)}
+                            color="primary"
+                          >
+                            <EditIcon />
+                          </IconButton>
+                        )}
+                        
+                        {post.canDelete && (
+                          <IconButton
+                            onClick={() => handleDelete(post._id)}
+                            color="error"
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        )}
+                        
+                        {!post.canEdit && !post.canDelete && (
+                          <ReportButton postId={post._id} />
+                        )}
+                      </Stack>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        )}
+
+        {totalPages > 1 && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+            <Pagination
+              count={totalPages}
+              page={page}
+              onChange={(_, value) => setPage(value)}
+              color="primary"
+              size="large"
+            />
+          </Box>
+        )}
+      </Container>
+    </RealtimeBoardWrapper>
+  );
+}

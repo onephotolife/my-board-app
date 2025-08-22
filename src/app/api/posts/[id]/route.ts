@@ -6,6 +6,7 @@ import { connectDB } from '@/lib/db/mongodb-local';
 import Post from '@/lib/models/Post';
 import { checkPostOwnership, createErrorResponse, AuthUser } from '@/lib/middleware/auth';
 import { updatePostSchema, formatValidationErrors } from '@/lib/validations/post';
+import { broadcastEvent } from '@/lib/socket/socket-manager';
 
 // 認証チェックヘルパー
 async function getAuthenticatedUser(req: NextRequest): Promise<AuthUser | null> {
@@ -138,6 +139,12 @@ export async function PUT(
       return createErrorResponse('投稿の更新に失敗しました', 500, 'UPDATE_ERROR');
     }
     
+    // Socket.ioで投稿更新をブロードキャスト
+    broadcastEvent('post:updated', {
+      post: updatedPost.toJSON(),
+      author: user,
+    });
+    
     return NextResponse.json({
       success: true,
       data: updatedPost,
@@ -196,6 +203,12 @@ export async function DELETE(
       await deletedPost.softDelete();
     }
     
+    // Socket.ioで投稿削除をブロードキャスト
+    broadcastEvent('post:deleted', {
+      postId: id,
+      author: user,
+    });
+    
     return NextResponse.json({
       success: true,
       message: '投稿が削除されました',
@@ -243,6 +256,14 @@ export async function PATCH(
     const updatedPost = await post.toggleLike(user.id);
     
     const isLiked = updatedPost.likes.includes(user.id);
+    
+    // Socket.ioでいいね更新をブロードキャスト
+    broadcastEvent('post:liked', {
+      postId: id,
+      likeCount: updatedPost.likes.length,
+      userId: user.id,
+      action: isLiked ? 'liked' : 'unliked',
+    });
     
     return NextResponse.json({
       success: true,

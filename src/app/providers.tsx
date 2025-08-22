@@ -7,6 +7,7 @@ import { SessionProvider } from 'next-auth/react';
 import { UserProvider } from '@/contexts/UserContext';
 import { PermissionProvider } from '@/contexts/PermissionContext';
 import { CSRFProvider } from '@/components/CSRFProvider';
+import { SocketProvider } from '@/lib/socket/client';
 
 // CSP準拠のテーマ設定
 const theme = createTheme({
@@ -89,10 +90,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <UserProvider>
         <PermissionProvider>
           <CSRFProvider>
-            <ThemeProvider theme={theme}>
-              <CssBaseline />
-              {children}
-            </ThemeProvider>
+            <SocketProvider>
+              <ThemeProvider theme={theme}>
+                <CssBaseline />
+                {children}
+              </ThemeProvider>
+            </SocketProvider>
           </CSRFProvider>
         </PermissionProvider>
       </UserProvider>

@@ -43,9 +43,9 @@ function SignInForm() {
       // 無限ループ防止: callbackUrlが認証ページの場合はダッシュボードへ
       if (callbackUrl.includes('/auth/')) {
         console.log('⚠️ callbackUrlが認証ページのため、ダッシュボードへリダイレクト');
-        router.push('/dashboard');
+        window.location.href = '/dashboard';
       } else {
-        router.push(callbackUrl);
+        window.location.href = callbackUrl;
       }
     } else if (status === 'authenticated' && session && !session.user?.emailVerified) {
       console.log('⚠️ 認証済みだがメール未確認、リダイレクトしない');
@@ -107,7 +107,7 @@ function SignInForm() {
           
           // 2秒後にメール未確認ページへリダイレクト
           setTimeout(() => {
-            router.push('/auth/email-not-verified');
+            window.location.href = '/auth/email-not-verified';
           }, 2000);
         } else if (result.error === 'InvalidPassword') {
           // パスワード間違いエラー: エラーメッセージ表示のみ（リダイレクトなし）
@@ -136,11 +136,12 @@ function SignInForm() {
         const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
         console.log('🎯 リダイレクト先:', callbackUrl);
         
-        // 🔐 41人天才会議による修正: セッション確立を待つ
-        console.log('🚀 セッション確立待機後、リダイレクト実行...');
-        // Next.jsのruoterを使用して安全にリダイレクト
+        // 🔐 41人天才会議による修正: 本番環境対応のためwindow.locationを使用
+        console.log('🚀 セッション確立後、リダイレクト実行...');
+        // 本番環境での動作を保証するためwindow.location.hrefを使用
         setTimeout(() => {
-          router.push(callbackUrl);
+          console.log('🎯 リダイレクト実行:', callbackUrl);
+          window.location.href = callbackUrl;
         }, 500);
         
       } else {

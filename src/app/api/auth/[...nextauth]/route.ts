@@ -1,3 +1,6 @@
-import { handlers } from "@/lib/auth";
+import NextAuth from "@/lib/auth";
 
-export const { GET, POST } = handlers;
+// Next.js 15 App Router用のnamed export（default exportを削除）
+const handler = NextAuth;
+
+export { handler as GET, handler as POST };

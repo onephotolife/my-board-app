@@ -33,7 +33,7 @@ function SignInForm() {
   // 🔐 41人天才会議による最終修正:
   // 無限ループを完全に防止し、確実なリダイレクトを実装
   useEffect(() => {
-    // デバッグ情報をローカルストレージに記録
+    // セッション状態のログ記録（デバッグ用）
     const debugInfo = {
       status,
       hasSession: !!session,
@@ -43,11 +43,23 @@ function SignInForm() {
       pathname: window.location.pathname,
       search: window.location.search,
       hasRedirected: hasRedirected.current,
+      sessionStorageFlag: sessionStorage.getItem('auth-redirecting'),
       timestamp: new Date().toISOString()
     };
     
-    localStorage.setItem('auth-session-debug', JSON.stringify(debugInfo));
     console.log('🔍 [SignIn] セッション状態:', debugInfo);
+    
+    // セッションローディング中は何もしない
+    if (status === 'loading') {
+      console.log('⏳ セッションローディング中...');
+      return;
+    }
+    
+    // 既にリダイレクト処理中の場合はスキップ
+    if (sessionStorage.getItem('auth-redirecting') === 'true') {
+      console.log('🛡️ リダイレクト処理中...');
+      return;
+    }
     
     // 既にリダイレクト済みの場合は何もしない
     if (hasRedirected.current) {
@@ -59,12 +71,13 @@ function SignInForm() {
     if (status === 'authenticated' && session?.user?.emailVerified) {
       console.log('✅ 認証済みユーザーを検出、リダイレクト実行');
       
-      // リダイレクトフラグを設定
+      // リダイレクトフラグを設定（複数の防御層）
       hasRedirected.current = true;
+      sessionStorage.setItem('auth-redirecting', 'true');
       
-      // すべてのストレージをクリア
-      sessionStorage.clear();
+      // クリーンアップ
       localStorage.removeItem('redirect-attempts');
+      localStorage.removeItem('auth-session-debug');
       
       const finalUrl = callbackUrl.includes('/auth/') ? '/dashboard' : callbackUrl;
       
@@ -73,20 +86,28 @@ function SignInForm() {
       // 即座にwindow.location.replaceで強制リダイレクト
       window.location.replace(finalUrl);
       
+      // フォールバック（念のため）
+      setTimeout(() => {
+        window.location.href = finalUrl;
+      }, 100);
+      
+      return; // これ以上の処理を防ぐ
+      
     } else if (status === 'authenticated' && !session?.user?.emailVerified) {
       // メール未確認の場合
       console.log('⚠️ メール未確認のユーザー');
       hasRedirected.current = true;
-      sessionStorage.clear();
+      sessionStorage.setItem('auth-redirecting', 'true');
       window.location.replace('/auth/email-not-verified');
+      return;
     }
     
-    // 未認証の場合はストレージをクリア
+    // 未認証の場合はリダイレクトフラグをクリア（ただしhasRedirectはリセットしない）
     if (status === 'unauthenticated') {
-      sessionStorage.clear();
-      hasRedirected.current = false; // 未認証の場合はフラグをリセット
+      sessionStorage.removeItem('auth-redirecting');
+      // hasRedirected.current はリセットしない（重要）
     }
-  }, [session, status, callbackUrl]); // searchParamsを削除、callbackUrlのみ使用
+  }, [session, status]); // callbackUrlを依存配列から削除
 
   useEffect(() => {
     // URLパラメータからのエラー処理
@@ -113,12 +134,12 @@ function SignInForm() {
       
       console.log('🎯 ログイン試行:', { email, finalUrl });
       
-      // 🔐 41人天才会議: redirect:falseでエラーハンドリングを維持
+      // 🔐 41人天才会議: NextAuth v4でのsignIn関数の使用
       const result = await signIn('credentials', {
         email,
         password,
         redirect: false, // 手動でリダイレクトを制御
-        callbackUrl: finalUrl, // NextAuthにcallbackUrlを渡す
+        callbackUrl: finalUrl, // v4ではcallbackUrlを使用
       });
 
       console.log('📊 signIn結果:', {

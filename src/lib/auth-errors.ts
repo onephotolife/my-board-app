@@ -1,10 +1,8 @@
 /**
  * 認証エラーの定義
  * セキュリティを考慮しつつ、ユーザーフレンドリーなメッセージを提供
- * 25人天才エンジニア会議による改善 - NextAuth v5カスタムエラー対応
+ * NextAuth v4対応版
  */
-
-import { AuthError } from "next-auth";
 
 export const AUTH_ERRORS = {
   // メール未確認エラー
@@ -20,10 +18,10 @@ export const AUTH_ERRORS = {
 } as const;
 
 /**
- * NextAuth v5 カスタムエラークラス
+ * NextAuth v4対応 カスタムエラークラス（標準Errorクラスを継承）
  */
-export class EmailNotVerifiedError extends AuthError {
-  static override type = "EmailNotVerified";
+export class EmailNotVerifiedError extends Error {
+  static type = "EmailNotVerified";
   
   constructor(message?: string) {
     super(message || "メールアドレスが確認されていません");
@@ -31,8 +29,8 @@ export class EmailNotVerifiedError extends AuthError {
   }
 }
 
-export class InvalidPasswordError extends AuthError {
-  static override type = "InvalidPassword";
+export class InvalidPasswordError extends Error {
+  static type = "InvalidPassword";
   
   constructor(message?: string) {
     super(message || "パスワードが正しくありません");
@@ -40,8 +38,8 @@ export class InvalidPasswordError extends AuthError {
   }
 }
 
-export class UserNotFoundError extends AuthError {
-  static override type = "UserNotFound";
+export class UserNotFoundError extends Error {
+  static type = "UserNotFound";
   
   constructor(message?: string) {
     super(message || "ユーザーが見つかりません");
@@ -79,14 +77,14 @@ export function getAuthErrorMessage(error: string | null): {
     case 'UserNotFound':
     case AUTH_ERRORS.USER_NOT_FOUND:
       return {
-        title: 'ログインできませんでした',
-        message: 'メールアドレスまたはパスワードが正しくありません。',
-        action: 'パスワードをお忘れの場合は、パスワードリセットをご利用ください。',
+        title: 'ユーザーが見つかりません',
+        message: 'そのメールアドレスは登録されていません。',
+        action: 'メールアドレスを確認するか、新規登録をお試しください。',
       };
     
     case AUTH_ERRORS.INVALID_CREDENTIALS:
       return {
-        title: 'ログインできませんでした',
+        title: 'ログインに失敗しました',
         message: 'メールアドレスまたはパスワードが正しくありません。',
         action: 'パスワードをお忘れの場合は、パスワードリセットをご利用ください。',
       };
@@ -94,7 +92,7 @@ export function getAuthErrorMessage(error: string | null): {
     case 'CredentialsSignin':
       // NextAuthのデフォルトエラー（メールアドレスまたはパスワードが正しくない）
       return {
-        title: 'ログインできませんでした',
+        title: 'ログインに失敗しました',
         message: 'メールアドレスまたはパスワードが正しくありません。',
         action: 'パスワードをお忘れの場合は、パスワードリセットをご利用ください。',
       };
@@ -116,6 +114,13 @@ export function getAuthErrorMessage(error: string | null): {
       return {
         title: '確認エラー',
         message: 'トークンの検証に失敗しました。リンクの有効期限が切れている可能性があります。',
+      };
+    
+    case 'MissingCSRF':
+      return {
+        title: 'セキュリティエラー',
+        message: 'セキュリティトークンが無効です。',
+        action: 'ページを再読み込みして再度お試しください。',
       };
     
     default:

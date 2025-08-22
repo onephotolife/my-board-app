@@ -1,51 +1,62 @@
-import NextAuth from "next-auth";
+import NextAuth, { AuthOptions, Session, User } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
+import { JWT } from "next-auth/jwt";
 
 import { connectDB } from "@/lib/db/mongodb-local";
-import User from "@/lib/models/User";
+import UserModel from "@/lib/models/User";
 import { EmailNotVerifiedError, InvalidPasswordError, UserNotFoundError } from "@/lib/auth-errors";
 
-// NextAuth v5対応の正しい設定
-export const { handlers, signIn, signOut, auth } = NextAuth({
+// NextAuth v4の設定
+export const authOptions: AuthOptions = {
   providers: [
     Credentials({
       id: "credentials",
-      name: "credentials",
+      name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        console.log('🔐 [Auth v5] 認証開始:', credentials?.email);
+        console.log('🔐 [Auth v4] 認証開始:', {
+          email: credentials?.email,
+          hasPassword: !!credentials?.password,
+          timestamp: new Date().toISOString()
+        });
         
         if (!credentials?.email || !credentials?.password) {
-          console.log('❌ [Auth v5] 認証情報不足');
+          console.log('❌ [Auth v4] 認証情報不足');
           return null;
         }
 
         try {
           await connectDB();
+          console.log('✅ [Auth v4] DB接続成功');
           
-          const user = await User.findOne({ email: credentials.email });
+          const user = await UserModel.findOne({ email: credentials.email });
+          console.log('🔍 [Auth v4] ユーザー検索結果:', {
+            found: !!user,
+            email: user?.email,
+            hasPassword: !!user?.password,
+            emailVerified: user?.emailVerified
+          });
           
           if (!user) {
-            console.log('❌ [Auth v5] ユーザーが見つかりません');
-            throw new UserNotFoundError('ユーザーが見つかりません');
+            console.log('❌ [Auth v4] ユーザーが見つかりません');
+            return null;
           }
 
           // パスワード検証
+          console.log('🔑 [Auth v4] パスワード検証開始');
           const isValidPassword = await bcrypt.compare(credentials.password, user.password);
+          console.log('🔐 [Auth v4] パスワード検証結果:', isValidPassword);
           
           if (!isValidPassword) {
-            console.log('❌ [Auth v5] パスワードが一致しません');
-            throw new InvalidPasswordError('パスワードが正しくありません');
+            console.log('❌ [Auth v4] パスワードが一致しません');
+            return null;
           }
 
-          // メール確認チェックは signIn callback で実行
-          // ここでは認証情報が正しければユーザーオブジェクトを返す
-
-          console.log('✅ [Auth v5] 認証成功:', user.email);
+          console.log('✅ [Auth v4] 認証成功:', user.email);
           
           return {
             id: user._id.toString(),
@@ -55,7 +66,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             role: user.role,
           };
         } catch (error) {
-          console.error('❌ [Auth v5] 認証エラー:', error);
+          console.error('❌ [Auth v4] 認証エラー:', error);
           return null;
         }
       }
@@ -68,31 +79,33 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   
   events: {
-    async signIn({ user, account, profile, isNewUser }) {
-      console.log('🎉 [Auth v5] signIn event:', { user: user?.email, account: account?.provider });
+    async signIn({ user, account }) {
+      console.log('🎉 [Auth v4] signIn event:', { 
+        user: user?.email, 
+        account: account?.provider 
+      });
     },
   },
   
   callbacks: {
-    async signIn({ user, account, profile }) {
-      console.log('🔍 [signIn callback]:', { 
+    async signIn({ user, account }) {
+      console.log('🔍 [signIn callback v4]:', { 
         user: user?.email, 
         emailVerified: user?.emailVerified,
         account: account?.provider 
       });
       
-      // NextAuth v5での適切なエラーハンドリング
-      // メール未確認ユーザーもセッション作成を許可し、ミドルウェア/サーバーコンポーネントで制御
+      // メール未確認でもセッション作成を許可
+      // クライアントサイドで制御
       if (user && !user.emailVerified) {
-        console.log('⚠️ [signIn callback] メール未確認ユーザーのログイン（セッション作成許可）');
-        // セッションは作成するが、後段の保護層で /auth/email-not-verified にリダイレクト
+        console.log('⚠️ [signIn callback v4] メール未確認ユーザー（セッション作成許可）');
       }
       
       return true;
     },
     
-    async jwt({ token, user }) {
-      console.log('🎫 [JWT v5]:', {
+    async jwt({ token, user }: { token: JWT; user?: User }) {
+      console.log('🎫 [JWT v4]:', {
         hasUser: !!user,
         hasToken: !!token,
         userId: user?.id,
@@ -109,22 +122,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return token;
     },
     
-    async session({ session, token }) {
-      console.log('📊 [Session v5]:', {
+    async session({ session, token }: { session: Session; token: JWT }) {
+      console.log('📊 [Session v4]:', {
         hasSession: !!session,
         hasToken: !!token,
         tokenId: token?.id,
         emailVerified: token?.emailVerified
       });
       
-      if (token) {
-        session.user = {
-          id: token.id,
-          email: token.email,
-          name: token.name,
-          emailVerified: token.emailVerified,
-          role: token.role
-        };
+      if (token && session.user) {
+        session.user.id = token.id;
+        session.user.email = token.email;
+        session.user.name = token.name;
+        session.user.emailVerified = token.emailVerified;
+        session.user.role = token.role;
       }
       return session;
     }
@@ -136,93 +147,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     updateAge: 24 * 60 * 60, // 24時間ごとにセッションを更新
   },
   
-  // 🔐 41人天才会議: 本番環境でのセッション同期を改善
   jwt: {
-    secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
+    secret: process.env.NEXTAUTH_SECRET,
     maxAge: 30 * 24 * 60 * 60, // 30日
   },
   
-  // 🔐 41人天才会議: 本番環境でのクッキー設定を最適化
-  cookies: {
-    sessionToken: {
-      name: process.env.NODE_ENV === 'production' 
-        ? '__Secure-next-auth.session-token'
-        : 'next-auth.session-token',
-      options: {
-        httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
-        secure: process.env.NODE_ENV === 'production',
-        // ドメインを明示的に指定しない（自動検出させる）
-        domain: undefined
-      }
-    },
-    callbackUrl: {
-      name: process.env.NODE_ENV === 'production'
-        ? '__Secure-next-auth.callback-url'
-        : 'next-auth.callback-url',
-      options: {
-        httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
-        secure: process.env.NODE_ENV === 'production',
-        domain: undefined
-      }
-    },
-    csrfToken: {
-      name: process.env.NODE_ENV === 'production'
-        ? '__Host-next-auth.csrf-token'
-        : 'next-auth.csrf-token',
-      options: {
-        httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
-        secure: process.env.NODE_ENV === 'production',
-        domain: undefined
-      }
-    },
-    pkceCodeVerifier: {
-      name: process.env.NODE_ENV === 'production'
-        ? '__Secure-next-auth.pkce.code_verifier'
-        : 'next-auth.pkce.code_verifier',
-      options: {
-        httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: 60 * 15 // 15分
-      }
-    },
-    state: {
-      name: process.env.NODE_ENV === 'production'
-        ? '__Secure-next-auth.state'
-        : 'next-auth.state',
-      options: {
-        httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: 60 * 15 // 15分
-      }
-    },
-    nonce: {
-      name: process.env.NODE_ENV === 'production'
-        ? '__Secure-next-auth.nonce'
-        : 'next-auth.nonce',
-      options: {
-        httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
-        secure: process.env.NODE_ENV === 'production'
-      }
-    }
-  },
-  
-  // NextAuth v5必須設定
-  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
+  // NextAuth v4設定
+  secret: process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
   debug: process.env.NODE_ENV === 'development',
-  trustHost: true,
-  
-  // 🔐 41人天才会議: 本番環境でのセキュアクッキー設定
-  useSecureCookies: process.env.NODE_ENV === 'production',
-});
+};
+
+export default NextAuth(authOptions);

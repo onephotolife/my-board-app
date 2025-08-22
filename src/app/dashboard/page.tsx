@@ -94,6 +94,12 @@ export default function DashboardPage() {
       timestamp: new Date().toISOString()
     });
 
+    // ダッシュボードに到達したら、リダイレクトフラグをクリア
+    if (typeof window !== 'undefined' && sessionStorage.getItem('auth-redirecting') === 'true') {
+      console.log('✅ ダッシュボードに到達、リダイレクトフラグをクリア');
+      sessionStorage.removeItem('auth-redirecting');
+    }
+
     if (status === 'loading') {
       return;
     }

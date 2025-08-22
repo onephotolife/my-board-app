@@ -205,10 +205,17 @@ export async function middleware(request: NextRequest) {
   if (isProtectedPath(pathname)) {
     console.log('🔍 Middleware: 保護されたパス:', pathname);
     
-    // JWTトークンを取得（NextAuth v5自動検出）
+    // JWTトークンを取得（NextAuth v4対応）
+    // デバッグ情報を追加
+    const cookieHeader = request.headers.get('cookie');
+    console.log('🍪 [Middleware Debug] クッキーヘッダー:', cookieHeader);
+    
     const token = await getToken({ 
       req: request,
-      secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
+      secret: process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
+      // NextAuth v4用の追加設定
+      secureCookie: process.env.NODE_ENV === 'production',
+      cookieName: process.env.NODE_ENV === 'production' ? '__Secure-next-auth.session-token' : 'next-auth.session-token'
     });
     
     console.log('🎫 Middleware: トークン状態:', {
@@ -245,9 +252,14 @@ export async function middleware(request: NextRequest) {
   
   // 認証チェック（APIエンドポイント）
   if (isProtectedApiPath(pathname)) {
+    const cookieHeader = request.headers.get('cookie');
+    console.log('🍪 [Middleware API Debug] クッキーヘッダー:', cookieHeader);
+    
     const token = await getToken({ 
       req: request,
-      secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
+      secret: process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
+      secureCookie: process.env.NODE_ENV === 'production',
+      cookieName: process.env.NODE_ENV === 'production' ? '__Secure-next-auth.session-token' : 'next-auth.session-token'
     });
     
     console.log('🔍 [Middleware API] 認証チェック:', {
@@ -281,9 +293,14 @@ export async function middleware(request: NextRequest) {
   // 認証済みユーザーが認証ページにアクセスしてもリダイレクトしない
   // これにより無限ループを防止
   if (pathname.startsWith('/auth/signin') || pathname.startsWith('/auth/signup')) {
+    const cookieHeader = request.headers.get('cookie');
+    console.log('🍪 [Middleware Auth Debug] クッキーヘッダー:', cookieHeader);
+    
     const token = await getToken({ 
       req: request,
-      secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
+      secret: process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
+      secureCookie: process.env.NODE_ENV === 'production',
+      cookieName: process.env.NODE_ENV === 'production' ? '__Secure-next-auth.session-token' : 'next-auth.session-token'
     });
     
     console.log('🔍 [Middleware] 認証ページアクセス:', {

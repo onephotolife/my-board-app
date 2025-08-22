@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
 
 /**
  * API認証エラーレスポンス
@@ -27,8 +28,8 @@ export async function requireEmailVerifiedSession() {
   console.log('🔐 [API Security] メール確認済みセッションチェック開始');
   
   try {
-    // NextAuth v5 セッション取得
-    const session = await auth();
+    // NextAuth v4 セッション取得
+    const session = await getServerSession(authOptions);
     
     console.log('🔍 [API Security] セッション状態:', {
       hasSession: !!session,
@@ -85,7 +86,7 @@ export async function getOptionalSession() {
   console.log('🔓 [API Security] オプショナル認証チェック開始');
   
   try {
-    const session = await auth();
+    const session = await getServerSession(authOptions);
     
     console.log('🔍 [API Security] オプショナルセッション状態:', {
       hasSession: !!session,

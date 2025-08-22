@@ -1,4 +1,5 @@
-import { auth } from '@/lib/auth';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 
 /**
@@ -19,8 +20,8 @@ export default async function DashboardLayout({
   console.log('🛡️ [Server] ダッシュボード サーバーサイド認証チェック開始');
   
   try {
-    // NextAuth v5 サーバーサイド認証チェック
-    const session = await auth();
+    // NextAuth v4 サーバーサイド認証チェック
+    const session = await getServerSession(authOptions);
     
     console.log('🔍 [Server] セッション状態:', {
       hasSession: !!session,

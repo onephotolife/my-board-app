@@ -115,6 +115,15 @@ export default function RealtimeBoard() {
       const data = await response.json();
 
       if (data.success) {
+        console.log('📊 投稿データ取得成功:', {
+          count: data.data.length,
+          firstPost: data.data[0] ? {
+            title: data.data[0].title,
+            tags: data.data[0].tags,
+            hasTags: Array.isArray(data.data[0].tags),
+            tagsLength: data.data[0].tags?.length
+          } : null
+        });
         setPosts(data.data);
         setTotalPages(data.pagination.totalPages);
       } else {
@@ -626,7 +635,7 @@ export default function RealtimeBoard() {
                           variant="outlined"
                           data-testid={`post-category-${post._id}`}
                         />
-                        {post.tags.map((tag) => (
+                        {post.tags && post.tags.length > 0 && post.tags.map((tag) => (
                           <Chip
                             key={tag}
                             label={`#${tag}`}

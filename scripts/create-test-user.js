@@ -1,80 +1,65 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
-// MongoDB接続
+// MongoDBに接続
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/board-app';
 
-// ユーザースキーマ定義
+// Userスキーマの定義
 const userSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    lowercase: true,
-    trim: true
-  },
-  password: {
-    type: String,
-    required: true
-  },
-  name: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  emailVerified: {
-    type: Boolean,
-    default: false
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now
-  }
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  name: { type: String },
+  emailVerified: { type: Date },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
 });
 
 const User = mongoose.models.User || mongoose.model('User', userSchema);
 
 async function createTestUser() {
   try {
+    console.log('🔌 MongoDBに接続中...');
     await mongoose.connect(MONGODB_URI);
-    console.log('✅ MongoDBに接続しました');
-    
+    console.log('✅ MongoDB接続成功');
+
     // 既存のテストユーザーを削除
     await User.deleteOne({ email: 'test@example.com' });
-    console.log('🗑️ 既存のテストユーザーを削除しました');
-    
+    console.log('🗑️  既存のテストユーザーを削除');
+
     // パスワードをハッシュ化
-    const hashedPassword = await bcrypt.hash('TestPassword123!', 12);
+    const plainPassword = 'TestPassword123!';
+    const hashedPassword = await bcrypt.hash(plainPassword, 12);
     
+    // ハッシュを検証
+    const isHashValid = await bcrypt.compare(plainPassword, hashedPassword);
+    console.log('🔐 ハッシュ検証:', isHashValid);
+    console.log('🔑 平文パスワード:', plainPassword);
+    console.log('🔒 ハッシュ:', hashedPassword);
+
     // テストユーザーを作成
     const testUser = await User.create({
       email: 'test@example.com',
       password: hashedPassword,
-      name: 'テストユーザー',
-      emailVerified: true  // テスト用にメール確認済みに設定
+      name: 'Test User',
+      emailVerified: new Date() // メール確認済みとして作成
     });
-    
+
     console.log('✅ テストユーザーを作成しました:');
     console.log({
-      id: testUser._id,
       email: testUser.email,
       name: testUser.name,
-      emailVerified: testUser.emailVerified
+      emailVerified: testUser.emailVerified,
+      id: testUser._id
     });
+
+    // 接続を閉じる
+    await mongoose.connection.close();
+    console.log('🔌 MongoDB接続を閉じました');
     
-    // 確認のため再取得
-    const verifyUser = await User.findOne({ email: 'test@example.com' });
-    console.log('🔍 確認: emailVerified =', verifyUser.emailVerified);
-    
+    process.exit(0);
   } catch (error) {
-    console.error('❌ エラー:', error);
-  } finally {
-    await mongoose.disconnect();
-    console.log('👋 MongoDBから切断しました');
+    console.error('❌ エラーが発生しました:', error);
+    process.exit(1);
   }
 }
 

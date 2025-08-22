@@ -348,6 +348,7 @@ export default function PostDetailPage() {
               size="small"
               color={post.category === 'announcement' ? 'error' : post.category === 'tech' ? 'primary' : 'default'}
               sx={{ mr: 1 }}
+              data-testid={`post-detail-category-${post._id}`}
             />
             {post.tags && post.tags.map((tag) => (
               <Chip
@@ -356,6 +357,7 @@ export default function PostDetailPage() {
                 size="small"
                 variant="outlined"
                 sx={{ mr: 1 }}
+                data-testid={`post-detail-tag-${post._id}-${tag}`}
               />
             ))}
           </Box>
@@ -376,7 +378,12 @@ export default function PostDetailPage() {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, mb: 3, color: 'text.secondary' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
               <VisibilityIcon sx={{ fontSize: 18 }} />
-              <Typography variant="body2">{post.views} 閲覧</Typography>
+              <Typography 
+                variant="body2"
+                data-testid={`post-detail-views-${post._id}`}
+              >
+                {post.views} 閲覧
+              </Typography>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
               <ThumbUpIcon sx={{ fontSize: 18 }} />
@@ -392,6 +399,7 @@ export default function PostDetailPage() {
               variant={post.isLikedByUser ? 'contained' : 'outlined'}
               size="small"
               disabled={likingPost}
+              data-testid={`post-detail-like-button-${post._id}`}
             >
               {likingPost ? '処理中...' : 'いいね'} {post.likes.length}
             </Button>

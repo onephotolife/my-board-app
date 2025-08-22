@@ -599,6 +599,7 @@ export default function AdvancedSearch() {
                               icon={<CategoryIcon />}
                               label={post.category}
                               size="small"
+                              data-testid={`search-post-category-${post._id}`}
                             />
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                               <PersonIcon fontSize="small" />
@@ -606,7 +607,12 @@ export default function AdvancedSearch() {
                             </Box>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                               <VisibilityIcon fontSize="small" />
-                              <Typography variant="caption">{post.views}</Typography>
+                              <Typography 
+                                variant="caption"
+                                data-testid={`search-post-views-${post._id}`}
+                              >
+                                {post.views}
+                              </Typography>
                             </Box>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                               <FavoriteIcon fontSize="small" />

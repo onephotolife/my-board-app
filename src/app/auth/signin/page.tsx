@@ -283,6 +283,7 @@ function SignInForm() {
                 placeholder="example@gmail.com"
                 autoComplete="email"
                 autoFocus
+                data-testid="email-input"
               />
             </div>
 
@@ -304,6 +305,7 @@ function SignInForm() {
                 style={getFieldStyle('password')}
                 placeholder="パスワードを入力"
                 autoComplete="current-password"
+                data-testid="password-input"
               />
             </div>
 
@@ -319,6 +321,7 @@ function SignInForm() {
               onMouseEnter={() => !loading && setButtonHovered(true)}
               onMouseLeave={() => setButtonHovered(false)}
               disabled={loading}
+              data-testid="signin-button"
             >
               {loading ? 'ログイン中...' : 'ログイン'}
             </button>

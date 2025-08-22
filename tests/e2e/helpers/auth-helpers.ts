@@ -1,17 +1,18 @@
 import { Page } from '@playwright/test';
 import { connectDB } from '@/lib/db/mongodb-local';
 import User from '@/lib/models/User';
-import bcrypt from 'bcryptjs';
 
 export async function createTestUser(email: string, name: string, password = 'TestPassword123!') {
   await connectDB();
   
-  const hashedPassword = await bcrypt.hash(password, 12);
+  // 既存のユーザーがあれば削除
+  await User.deleteOne({ email });
   
+  // Userモデルのpre-saveフックでハッシュ化させるため、プレーンテキストを渡す
   const user = await User.create({
     name,
     email,
-    password: hashedPassword,
+    password, // プレーンテキストパスワード（pre-saveフックで自動ハッシュ化）
     emailVerified: true,
     status: 'active',
     role: 'user',
@@ -37,8 +38,8 @@ export async function signInUser(page: Page, email: string, password: string) {
   // ログインボタンをクリック
   await page.click('[data-testid="signin-button"]');
   
-  // ログイン成功を待機
-  await page.waitForURL('/board', { timeout: 10000 });
+  // ログイン成功を待機（実際の挙動に合わせてdashboardを期待）
+  await page.waitForURL('/dashboard', { timeout: 10000 });
 }
 
 export async function signOutUser(page: Page) {

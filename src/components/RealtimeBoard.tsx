@@ -321,6 +321,7 @@ export default function RealtimeBoard() {
                   variant="contained"
                   startIcon={<AddIcon />}
                   onClick={() => router.push('/posts/new')}
+                  data-testid="new-post-button"
                   sx={{
                     background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
                   }}
@@ -381,6 +382,7 @@ export default function RealtimeBoard() {
                       '100%': { boxShadow: '0 0 0 0 rgba(102, 126, 234, 0)' },
                     },
                   }}
+                  data-testid={`post-card-${post._id}`}
                 >
                   {post.isNew && (
                     <Chip
@@ -394,7 +396,7 @@ export default function RealtimeBoard() {
                   
                   <CardContent>
                     <Box sx={{ mb: 2 }}>
-                      <Typography variant="h6" gutterBottom>
+                      <Typography variant="h6" gutterBottom data-testid={`post-title-${post._id}`}>
                         {post.title}
                       </Typography>
                       
@@ -404,6 +406,7 @@ export default function RealtimeBoard() {
                           size="small"
                           color="primary"
                           variant="outlined"
+                          data-testid={`post-category-${post._id}`}
                         />
                         {post.tags.map((tag) => (
                           <Chip
@@ -411,12 +414,13 @@ export default function RealtimeBoard() {
                             label={`#${tag}`}
                             size="small"
                             variant="outlined"
+                            data-testid={`post-tag-${post._id}-${tag}`}
                           />
                         ))}
                       </Stack>
                     </Box>
                     
-                    <Typography variant="body1" sx={{ mb: 2, whiteSpace: 'pre-wrap' }}>
+                    <Typography variant="body1" sx={{ mb: 2, whiteSpace: 'pre-wrap' }} data-testid={`post-content-${post._id}`}>
                       {post.content}
                     </Typography>
                     
@@ -426,21 +430,24 @@ export default function RealtimeBoard() {
                       <Stack direction="row" spacing={2} alignItems="center">
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                           <PersonIcon sx={{ fontSize: 16, mr: 0.5 }} />
-                          <Typography variant="caption">
+                          <Typography variant="caption" data-testid={`post-author-${post._id}`}>
                             {post.author.name}
                           </Typography>
                         </Box>
                         
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                           <CalendarIcon sx={{ fontSize: 16, mr: 0.5 }} />
-                          <Typography variant="caption">
+                          <Typography variant="caption" data-testid={`post-date-${post._id}`}>
                             {format(new Date(post.createdAt), 'yyyy/MM/dd HH:mm', { locale: ja })}
                           </Typography>
                         </Box>
                         
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                           <VisibilityIcon sx={{ fontSize: 16, mr: 0.5 }} />
-                          <Typography variant="caption">
+                          <Typography 
+                            variant="caption"
+                            data-testid={`post-views-${post._id}`}
+                          >
                             {post.views}
                           </Typography>
                         </Box>
@@ -450,8 +457,13 @@ export default function RealtimeBoard() {
                         <IconButton
                           onClick={() => handleLike(post._id)}
                           color={post.isLikedByUser ? 'error' : 'default'}
+                          data-testid={`like-button-${post._id}`}
                         >
-                          <Badge badgeContent={post.likes?.length || 0} color="error">
+                          <Badge 
+                            badgeContent={post.likes?.length || 0} 
+                            color="error"
+                            data-testid={`like-count-${post._id}`}
+                          >
                             {post.isLikedByUser ? <FavoriteIcon /> : <FavoriteBorderIcon />}
                           </Badge>
                         </IconButton>
@@ -460,6 +472,7 @@ export default function RealtimeBoard() {
                           <IconButton
                             onClick={() => router.push(`/posts/${post._id}/edit`)}
                             color="primary"
+                            data-testid={`edit-button-${post._id}`}
                           >
                             <EditIcon />
                           </IconButton>
@@ -469,6 +482,7 @@ export default function RealtimeBoard() {
                           <IconButton
                             onClick={() => handleDelete(post._id)}
                             color="error"
+                            data-testid={`delete-button-${post._id}`}
                           >
                             <DeleteIcon />
                           </IconButton>

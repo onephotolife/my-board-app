@@ -10,6 +10,7 @@ import { EmailNotVerifiedError, InvalidPasswordError, UserNotFoundError } from "
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Credentials({
+      id: "credentials",
       name: "credentials",
       credentials: {
         email: { label: "Email", type: "email" },
@@ -136,6 +137,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   
   // NextAuth v5必須設定
   secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
-  debug: true,
+  debug: process.env.NODE_ENV === 'development',
   trustHost: true,
 });

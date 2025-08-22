@@ -86,6 +86,7 @@ export default function RealtimeBoard() {
   const [category, setCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('-createdAt');
+  const [selectedTag, setSelectedTag] = useState<string>('');
 
   const fetchPosts = useCallback(async () => {
     setLoading(true);
@@ -106,6 +107,10 @@ export default function RealtimeBoard() {
         params.append('search', searchQuery);
       }
 
+      if (selectedTag) {
+        params.append('tag', selectedTag);
+      }
+
       const response = await fetch(`/api/posts?${params}`);
       const data = await response.json();
 
@@ -120,7 +125,7 @@ export default function RealtimeBoard() {
     } finally {
       setLoading(false);
     }
-  }, [page, category, searchQuery, sortBy]);
+  }, [page, category, searchQuery, sortBy, selectedTag]);
 
   useEffect(() => {
     if (status === 'authenticated') {
@@ -259,6 +264,15 @@ export default function RealtimeBoard() {
       >
         <Container maxWidth="lg">
           <Box sx={{ mb: 4 }}>
+            {selectedTag && (
+              <Alert 
+                severity="info" 
+                onClose={() => setSelectedTag('')}
+                sx={{ mb: 2 }}
+              >
+                タグ「#{selectedTag}」でフィルタリング中
+              </Alert>
+            )}
           
           <Paper 
             elevation={0}
@@ -617,8 +631,28 @@ export default function RealtimeBoard() {
                             key={tag}
                             label={`#${tag}`}
                             size="small"
-                            variant="outlined"
+                            variant={selectedTag === tag ? "filled" : "outlined"}
+                            color={selectedTag === tag ? "secondary" : "default"}
                             data-testid={`post-tag-${post._id}-${tag}`}
+                            onClick={() => {
+                              if (selectedTag === tag) {
+                                setSelectedTag('');
+                              } else {
+                                setSelectedTag(tag);
+                                setPage(1); // Reset to first page when filtering
+                              }
+                            }}
+                            sx={{
+                              cursor: 'pointer',
+                              transition: 'all 0.2s',
+                              '&:hover': {
+                                backgroundColor: selectedTag === tag 
+                                  ? modern2025Styles.colors.secondary 
+                                  : 'rgba(99, 102, 241, 0.08)',
+                                borderColor: modern2025Styles.colors.primary,
+                                transform: 'scale(1.05)',
+                              },
+                            }}
                           />
                         ))}
                       </Stack>

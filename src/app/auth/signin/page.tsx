@@ -102,21 +102,22 @@ function SignInForm() {
       
       console.log('🎯 ログイン試行:', { email, callbackUrl: finalUrl });
       
-      // NextAuth v4でのsignIn関数を使用
+      // 🚀 41人天才会議：NextAuth v4サーバーサイドリダイレクト使用
+      console.log('🌐 NextAuthサーバーサイドリダイレクト実行:', finalUrl);
+      
+      // NextAuth v4でのsignIn関数を使用（サーバーサイドリダイレクト有効）
       const result = await signIn('credentials', {
         email,
         password,
-        redirect: false,
+        redirect: true, // 🔄 サーバーサイドリダイレクトを有効化
         callbackUrl: finalUrl,
       });
 
-      console.log('📊 signIn結果:', {
-        ok: result?.ok,
-        error: result?.error,
-        status: result?.status,
-        url: result?.url
-      });
-
+      // redirect: true の場合、成功時は自動的にリダイレクトされるため
+      // このコードは通常実行されない（エラー時のみ）
+      console.log('📊 signIn結果 (エラー時のみ実行):', result);
+      
+      // エラーの場合のみここに到達
       if (result?.error) {
         console.log('❌ ログインエラー:', result.error);
         
@@ -136,33 +137,6 @@ function SignInForm() {
           setErrorDetail(errorInfo.message);
           setErrorAction(errorInfo.action || '');
         }
-      } else if (result?.ok) {
-        console.log('✅ ログイン成功、即座にリダイレクト実行');
-        
-        // 成功メッセージを表示
-        setError('');
-        setErrorDetail('ログインに成功しました。リダイレクトしています...');
-        
-        // 🔐 41人天才会議: 最終決定的リダイレクト実行（即座実行）
-        const finalUrl = callbackUrl.includes('/auth/') ? '/dashboard' : callbackUrl;
-        console.log('🚀 handleSubmit内即座リダイレクト実行:', finalUrl);
-        
-        // 1. 即座にwindow.location.hrefで確実リダイレクト
-        console.log('🔄 即座にwindow.location.href実行:', finalUrl);
-        window.location.href = finalUrl;
-        
-        // 2. 念のためのフォールバック処理
-        console.log('🔄 フォールバック window.location.replace実行:', finalUrl);
-        window.location.replace(finalUrl);
-        
-        // 3. sessionStorageフラグを設定（無限ループ防止）
-        sessionStorage.setItem('auth-redirected', 'true');
-        
-        // 4. useEffectでも検知される（二重保護）
-      } else {
-        console.log('⚠️ 予期しない結果:', result);
-        setError('ログインに失敗しました');
-        setErrorDetail('メールアドレスまたはパスワードが正しくありません。');
       }
     } catch (error) {
       console.error('💥 例外エラー:', error);

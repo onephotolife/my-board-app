@@ -104,6 +104,36 @@ export const authOptions: AuthOptions = {
       return true;
     },
     
+    // 🚀 41人天才会議：サーバーサイド確実リダイレクト実装
+    async redirect({ url, baseUrl }) {
+      console.log('🌐 [Redirect callback v4]:', { url, baseUrl });
+      
+      // 認証関連のURLの場合はダッシュボードにリダイレクト
+      if (url.includes('/auth/signin') || url.includes('/auth/')) {
+        const dashboardUrl = `${baseUrl}/dashboard`;
+        console.log('🔄 [Server Redirect] auth URL detected, redirecting to:', dashboardUrl);
+        return dashboardUrl;
+      }
+      
+      // デフォルトでダッシュボードに
+      if (url.startsWith('/')) {
+        const fullUrl = `${baseUrl}${url}`;
+        console.log('🔄 [Server Redirect] relative URL to full URL:', fullUrl);
+        return fullUrl;
+      }
+      
+      // 外部URLチェック
+      if (url.startsWith(baseUrl)) {
+        console.log('🔄 [Server Redirect] same origin URL:', url);
+        return url;
+      }
+      
+      // フォールバック：ダッシュボード
+      const fallbackUrl = `${baseUrl}/dashboard`;
+      console.log('🔄 [Server Redirect] fallback to dashboard:', fallbackUrl);
+      return fallbackUrl;
+    },
+    
     async jwt({ token, user }: { token: JWT; user?: User }) {
       console.log('🎫 [JWT v4]:', {
         hasUser: !!user,
@@ -155,6 +185,6 @@ export const authOptions: AuthOptions = {
   // NextAuth v4設定
   secret: process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
   debug: process.env.NODE_ENV === 'development',
-};
+};;
 
 export default NextAuth(authOptions);

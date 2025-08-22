@@ -1,0 +1,801 @@
+
+Running 3 tests using 1 worker
+
+[1A[2K[1/3] [chromium] › tests/e2e/production-tag-test.spec.ts:29:7 › 本番環境タグ機能検証 › タグの表示確認
+[1A[2K[chromium] › tests/e2e/production-tag-test.spec.ts:29:7 › 本番環境タグ機能検証 › タグの表示確認
+📍 本番環境テスト開始: https://board.blankbrainai.com
+
+[1A[2K✅ ログイン成功
+
+[1A[2K📊 投稿数: 3件
+
+[1A[2K[2/3] [chromium] › tests/e2e/production-tag-test.spec.ts:29:7 › 本番環境タグ機能検証 › タグの表示確認 (retry #1)
+[1A[2K📍 本番環境テスト開始: https://board.blankbrainai.com
+
+[1A[2K✅ ログイン成功
+
+[1A[2K📊 投稿数: 3件
+
+[1A[2K  1) [chromium] › tests/e2e/production-tag-test.spec.ts:29:7 › 本番環境タグ機能検証 › タグの表示確認 ────────────────
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBeTruthy[2m()[22m
+
+    Received: [31mfalse[39m
+
+      84 |     
+      85 |     // タグが見つかったか確認
+    > 86 |     expect(tagsFound).toBeTruthy();
+         |                       ^
+      87 |     expect(tagTexts.length).toBeGreaterThan(0);
+      88 |     console.log(`✅ タグ総数: ${tagTexts.length}個`);
+      89 |   });
+        at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/production-tag-test.spec.ts:86:23
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/production-tag-test-本番環境タグ機能検証-タグの表示確認-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/production-tag-test-本番環境タグ機能検証-タグの表示確認-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/production-tag-test-本番環境タグ機能検証-タグの表示確認-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/production-tag-test-本番環境タグ機能検証-タグの表示確認-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBeTruthy[2m()[22m
+
+    Received: [31mfalse[39m
+
+      84 |     
+      85 |     // タグが見つかったか確認
+    > 86 |     expect(tagsFound).toBeTruthy();
+         |                       ^
+      87 |     expect(tagTexts.length).toBeGreaterThan(0);
+      88 |     console.log(`✅ タグ総数: ${tagTexts.length}個`);
+      89 |   });
+        at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/production-tag-test.spec.ts:86:23
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/production-tag-test-本番環境タグ機能検証-タグの表示確認-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/production-tag-test-本番環境タグ機能検証-タグの表示確認-chromium-retry1/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/production-tag-test-本番環境タグ機能検証-タグの表示確認-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/production-tag-test-本番環境タグ機能検証-タグの表示確認-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K[3/3] [chromium] › tests/e2e/production-tag-test.spec.ts:91:7 › 本番環境タグ機能検証 › タグクリックによるフィルタリング
+[1A[2K[chromium] › tests/e2e/production-tag-test.spec.ts:91:7 › 本番環境タグ機能検証 › タグクリックによるフィルタリング
+📍 本番環境テスト開始: https://board.blankbrainai.com
+
+[1A[2K✅ ログイン成功
+
+[1A[2K📊 初期投稿数: 3件
+
+[1A[2K❌ クリック可能なタグが見つかりません
+
+[1A[2KHTML snippet: <!DOCTYPE html><html lang="ja" data-page-loaded="true" data-app-ready="true" data-ready-time="236.79999995231628"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5"><link rel="stylesheet" href="/_next/static/css/9fded9230d317939.css" data-precedence="next"><link rel="preload" as="script" fetchpriority="low" href="/_next/static/chunks/webpack-7067ed171859ac78.js"><script src="/_next/static/chunks/4bd1b696-cc729d47eba2cee4.js" async=""></script><script src="/_next/static/chunks/5964-40978821a2ce41e4.js" async=""></script><script src="/_next/static/chunks/main-app-1752470139d2f8a3.js" async=""></script><script src="/_next/static/chunks/6416-c2add152d97aa653.js" async=""></script><script src="/_next/static/chunks/2108-17aede3e8aad3233.js" async=""></script><script src="/_next/static/chunks/4298-2c4da2f6a046cddc.js" async=""></script><script src="/_next/static/chunks/361-e28c381517cbddc5.js" async=""></script><script src="/_next/
+
+[1A[2K[4/3] (retries) [chromium] › tests/e2e/production-tag-test.spec.ts:91:7 › 本番環境タグ機能検証 › タグクリックによるフィルタリング (retry #1)
+[1A[2K📍 本番環境テスト開始: https://board.blankbrainai.com
+
+[1A[2K✅ ログイン成功
+
+[1A[2K📊 初期投稿数: 3件
+
+[1A[2K❌ クリック可能なタグが見つかりません
+
+[1A[2KHTML snippet: <!DOCTYPE html><html lang="ja" data-page-loaded="true" data-app-ready="true" data-ready-time="167.19999998807907"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5"><link rel="stylesheet" href="/_next/static/css/9fded9230d317939.css" data-precedence="next"><link rel="preload" as="script" fetchpriority="low" href="/_next/static/chunks/webpack-7067ed171859ac78.js"><script src="/_next/static/chunks/4bd1b696-cc729d47eba2cee4.js" async=""></script><script src="/_next/static/chunks/5964-40978821a2ce41e4.js" async=""></script><script src="/_next/static/chunks/main-app-1752470139d2f8a3.js" async=""></script><script src="/_next/static/chunks/6416-c2add152d97aa653.js" async=""></script><script src="/_next/static/chunks/2108-17aede3e8aad3233.js" async=""></script><script src="/_next/static/chunks/4298-2c4da2f6a046cddc.js" async=""></script><script src="/_next/static/chunks/361-e28c381517cbddc5.js" async=""></script><script src="/_next/
+
+[1A[2K  2) [chromium] › tests/e2e/production-tag-test.spec.ts:91:7 › 本番環境タグ機能検証 › タグクリックによるフィルタリング ───────
+
+    Error: No clickable tags found
+
+      123 |       const htmlContent = await page.content();
+      124 |       console.log('HTML snippet:', htmlContent.substring(0, 1000));
+    > 125 |       throw new Error('No clickable tags found');
+          |             ^
+      126 |     }
+      127 |     
+      128 |     // タグをクリック
+        at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/production-tag-test.spec.ts:125:13
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/production-tag-test-本番環境タグ機能検証-タグクリックによるフィルタリング-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/production-tag-test-本番環境タグ機能検証-タグクリックによるフィルタリング-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/production-tag-test-本番環境タグ機能検証-タグクリックによるフィルタリング-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/production-tag-test-本番環境タグ機能検証-タグクリックによるフィルタリング-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: No clickable tags found
+
+      123 |       const htmlContent = await page.content();
+      124 |       console.log('HTML snippet:', htmlContent.substring(0, 1000));
+    > 125 |       throw new Error('No clickable tags found');
+          |             ^
+      126 |     }
+      127 |     
+      128 |     // タグをクリック
+        at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/production-tag-test.spec.ts:125:13
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/production-tag-test-本番環境タグ機能検証-タグクリックによるフィルタリング-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/production-tag-test-本番環境タグ機能検証-タグクリックによるフィルタリング-chromium-retry1/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/production-tag-test-本番環境タグ機能検証-タグクリックによるフィルタリング-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/production-tag-test-本番環境タグ機能検証-タグクリックによるフィルタリング-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K[5/3] (retries) [chromium] › tests/e2e/production-tag-test.spec.ts:193:7 › 本番環境タグ機能検証 › 選択中タグのビジュアルフィードバック
+[1A[2K[chromium] › tests/e2e/production-tag-test.spec.ts:193:7 › 本番環境タグ機能検証 › 選択中タグのビジュアルフィードバック
+📍 本番環境テスト開始: https://board.blankbrainai.com
+
+[1A[2K✅ ログイン成功
+
+[1A[2K⚠️ タグが見つかりません - スキップ
+
+[1A[2K  2 failed
+    [chromium] › tests/e2e/production-tag-test.spec.ts:29:7 › 本番環境タグ機能検証 › タグの表示確認 ─────────────────
+    [chromium] › tests/e2e/production-tag-test.spec.ts:91:7 › 本番環境タグ機能検証 › タグクリックによるフィルタリング ────────
+  1 passed (25.8s)
+{
+  "config": {
+    "configFile": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/playwright.config.ts",
+    "rootDir": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "line"
+      ],
+      [
+        "json"
+      ],
+      [
+        "junit"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.55.0",
+    "workers": 1,
+    "webServer": {
+      "command": "npm run dev",
+      "url": "http://localhost:3000",
+      "reuseExistingServer": true,
+      "timeout": 60000,
+      "stdout": "ignore",
+      "stderr": "pipe"
+    }
+  },
+  "suites": [
+    {
+      "title": "production-tag-test.spec.ts",
+      "file": "production-tag-test.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "本番環境タグ機能検証",
+          "file": "production-tag-test.spec.ts",
+          "line": 7,
+          "column": 6,
+          "specs": [
+            {
+              "title": "タグの表示確認",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 6207,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m\n    at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/production-tag-test.spec.ts:86:23",
+                        "location": {
+                          "file": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/production-tag-test.spec.ts",
+                          "column": 23,
+                          "line": 86
+                        },
+                        "snippet": "  84 |     \n  85 |     // タグが見つかったか確認\n> 86 |     expect(tagsFound).toBeTruthy();\n     |                       ^\n  87 |     expect(tagTexts.length).toBeGreaterThan(0);\n  88 |     console.log(`✅ タグ総数: ${tagTexts.length}個`);\n  89 |   });"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/production-tag-test.spec.ts",
+                            "column": 23,
+                            "line": 86
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m\n\n  84 |     \n  85 |     // タグが見つかったか確認\n> 86 |     expect(tagsFound).toBeTruthy();\n     |                       ^\n  87 |     expect(tagTexts.length).toBeGreaterThan(0);\n  88 |     console.log(`✅ タグ総数: ${tagTexts.length}個`);\n  89 |   });\n    at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/production-tag-test.spec.ts:86:23"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "📍 本番環境テスト開始: https://board.blankbrainai.com\n"
+                        },
+                        {
+                          "text": "✅ ログイン成功\n"
+                        },
+                        {
+                          "text": "📊 投稿数: 3件\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-22T13:16:36.021Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/production-tag-test-本番環境タグ機能検証-タグの表示確認-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/production-tag-test-本番環境タグ機能検証-タグの表示確認-chromium/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/production-tag-test-本番環境タグ機能検証-タグの表示確認-chromium/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/production-tag-test.spec.ts",
+                        "column": 23,
+                        "line": 86
+                      }
+                    },
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 4167,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m\n    at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/production-tag-test.spec.ts:86:23",
+                        "location": {
+                          "file": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/production-tag-test.spec.ts",
+                          "column": 23,
+                          "line": 86
+                        },
+                        "snippet": "  84 |     \n  85 |     // タグが見つかったか確認\n> 86 |     expect(tagsFound).toBeTruthy();\n     |                       ^\n  87 |     expect(tagTexts.length).toBeGreaterThan(0);\n  88 |     console.log(`✅ タグ総数: ${tagTexts.length}個`);\n  89 |   });"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/production-tag-test.spec.ts",
+                            "column": 23,
+                            "line": 86
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m\n\n  84 |     \n  85 |     // タグが見つかったか確認\n> 86 |     expect(tagsFound).toBeTruthy();\n     |                       ^\n  87 |     expect(tagTexts.length).toBeGreaterThan(0);\n  88 |     console.log(`✅ タグ総数: ${tagTexts.length}個`);\n  89 |   });\n    at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/production-tag-test.spec.ts:86:23"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "📍 本番環境テスト開始: https://board.blankbrainai.com\n"
+                        },
+                        {
+                          "text": "✅ ログイン成功\n"
+                        },
+                        {
+                          "text": "📊 投稿数: 3件\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2025-08-22T13:16:42.969Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/production-tag-test-本番環境タグ機能検証-タグの表示確認-chromium-retry1/test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/production-tag-test-本番環境タグ機能検証-タグの表示確認-chromium-retry1/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/production-tag-test-本番環境タグ機能検証-タグの表示確認-chromium-retry1/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/production-tag-test.spec.ts",
+                        "column": 23,
+                        "line": 86
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "454ee242956e5d3e14c0-8992d8d3f51916db4754",
+              "file": "production-tag-test.spec.ts",
+              "line": 29,
+              "column": 7
+            },
+            {
+              "title": "タグクリックによるフィルタリング",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 3922,
+                      "error": {
+                        "message": "Error: No clickable tags found",
+                        "stack": "Error: No clickable tags found\n    at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/production-tag-test.spec.ts:125:13",
+                        "location": {
+                          "file": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/production-tag-test.spec.ts",
+                          "column": 13,
+                          "line": 125
+                        },
+                        "snippet": "  123 |       const htmlContent = await page.content();\n  124 |       console.log('HTML snippet:', htmlContent.substring(0, 1000));\n> 125 |       throw new Error('No clickable tags found');\n      |             ^\n  126 |     }\n  127 |     \n  128 |     // タグをクリック"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/production-tag-test.spec.ts",
+                            "column": 13,
+                            "line": 125
+                          },
+                          "message": "Error: No clickable tags found\n\n  123 |       const htmlContent = await page.content();\n  124 |       console.log('HTML snippet:', htmlContent.substring(0, 1000));\n> 125 |       throw new Error('No clickable tags found');\n      |             ^\n  126 |     }\n  127 |     \n  128 |     // タグをクリック\n    at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/production-tag-test.spec.ts:125:13"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "📍 本番環境テスト開始: https://board.blankbrainai.com\n"
+                        },
+                        {
+                          "text": "✅ ログイン成功\n"
+                        },
+                        {
+                          "text": "📊 初期投稿数: 3件\n"
+                        },
+                        {
+                          "text": "HTML snippet: <!DOCTYPE html><html lang=\"ja\" data-page-loaded=\"true\" data-app-ready=\"true\" data-ready-time=\"236.79999995231628\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=5\"><link rel=\"stylesheet\" href=\"/_next/static/css/9fded9230d317939.css\" data-precedence=\"next\"><link rel=\"preload\" as=\"script\" fetchpriority=\"low\" href=\"/_next/static/chunks/webpack-7067ed171859ac78.js\"><script src=\"/_next/static/chunks/4bd1b696-cc729d47eba2cee4.js\" async=\"\"></script><script src=\"/_next/static/chunks/5964-40978821a2ce41e4.js\" async=\"\"></script><script src=\"/_next/static/chunks/main-app-1752470139d2f8a3.js\" async=\"\"></script><script src=\"/_next/static/chunks/6416-c2add152d97aa653.js\" async=\"\"></script><script src=\"/_next/static/chunks/2108-17aede3e8aad3233.js\" async=\"\"></script><script src=\"/_next/static/chunks/4298-2c4da2f6a046cddc.js\" async=\"\"></script><script src=\"/_next/static/chunks/361-e28c381517cbddc5.js\" async=\"\"></script><script src=\"/_next/\n"
+                        }
+                      ],
+                      "stderr": [
+                        {
+                          "text": "❌ クリック可能なタグが見つかりません\n"
+                        }
+                      ],
+                      "retry": 0,
+                      "startTime": "2025-08-22T13:16:47.852Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/production-tag-test-本番環境タグ機能検証-タグクリックによるフィルタリング-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/production-tag-test-本番環境タグ機能検証-タグクリックによるフィルタリング-chromium/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/production-tag-test-本番環境タグ機能検証-タグクリックによるフィルタリング-chromium/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/production-tag-test.spec.ts",
+                        "column": 13,
+                        "line": 125
+                      }
+                    },
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 3806,
+                      "error": {
+                        "message": "Error: No clickable tags found",
+                        "stack": "Error: No clickable tags found\n    at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/production-tag-test.spec.ts:125:13",
+                        "location": {
+                          "file": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/production-tag-test.spec.ts",
+                          "column": 13,
+                          "line": 125
+                        },
+                        "snippet": "  123 |       const htmlContent = await page.content();\n  124 |       console.log('HTML snippet:', htmlContent.substring(0, 1000));\n> 125 |       throw new Error('No clickable tags found');\n      |             ^\n  126 |     }\n  127 |     \n  128 |     // タグをクリック"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/production-tag-test.spec.ts",
+                            "column": 13,
+                            "line": 125
+                          },
+                          "message": "Error: No clickable tags found\n\n  123 |       const htmlContent = await page.content();\n  124 |       console.log('HTML snippet:', htmlContent.substring(0, 1000));\n> 125 |       throw new Error('No clickable tags found');\n      |             ^\n  126 |     }\n  127 |     \n  128 |     // タグをクリック\n    at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/production-tag-test.spec.ts:125:13"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "📍 本番環境テスト開始: https://board.blankbrainai.com\n"
+                        },
+                        {
+                          "text": "✅ ログイン成功\n"
+                        },
+                        {
+                          "text": "📊 初期投稿数: 3件\n"
+                        },
+                        {
+                          "text": "HTML snippet: <!DOCTYPE html><html lang=\"ja\" data-page-loaded=\"true\" data-app-ready=\"true\" data-ready-time=\"167.19999998807907\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=5\"><link rel=\"stylesheet\" href=\"/_next/static/css/9fded9230d317939.css\" data-precedence=\"next\"><link rel=\"preload\" as=\"script\" fetchpriority=\"low\" href=\"/_next/static/chunks/webpack-7067ed171859ac78.js\"><script src=\"/_next/static/chunks/4bd1b696-cc729d47eba2cee4.js\" async=\"\"></script><script src=\"/_next/static/chunks/5964-40978821a2ce41e4.js\" async=\"\"></script><script src=\"/_next/static/chunks/main-app-1752470139d2f8a3.js\" async=\"\"></script><script src=\"/_next/static/chunks/6416-c2add152d97aa653.js\" async=\"\"></script><script src=\"/_next/static/chunks/2108-17aede3e8aad3233.js\" async=\"\"></script><script src=\"/_next/static/chunks/4298-2c4da2f6a046cddc.js\" async=\"\"></script><script src=\"/_next/static/chunks/361-e28c381517cbddc5.js\" async=\"\"></script><script src=\"/_next/\n"
+                        }
+                      ],
+                      "stderr": [
+                        {
+                          "text": "❌ クリック可能なタグが見つかりません\n"
+                        }
+                      ],
+                      "retry": 1,
+                      "startTime": "2025-08-22T13:16:52.524Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/production-tag-test-本番環境タグ機能検証-タグクリックによるフィルタリング-chromium-retry1/test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/production-tag-test-本番環境タグ機能検証-タグクリックによるフィルタリング-chromium-retry1/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/production-tag-test-本番環境タグ機能検証-タグクリックによるフィルタリング-chromium-retry1/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/production-tag-test.spec.ts",
+                        "column": 13,
+                        "line": 125
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "454ee242956e5d3e14c0-b432f7b28640e1db0440",
+              "file": "production-tag-test.spec.ts",
+              "line": 91,
+              "column": 7
+            },
+            {
+              "title": "選択中タグのビジュアルフィードバック",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3924,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "📍 本番環境テスト開始: https://board.blankbrainai.com\n"
+                        },
+                        {
+                          "text": "✅ ログイン成功\n"
+                        },
+                        {
+                          "text": "⚠️ タグが見つかりません - スキップ\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-22T13:16:57.004Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/production-tag-test-本番環境タグ機能検証-選択中タグのビジュアルフィードバック-chromium/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "454ee242956e5d3e14c0-1dad27e6ac82fbc6029c",
+              "file": "production-tag-test.spec.ts",
+              "line": 193,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-08-22T13:16:35.333Z",
+    "duration": 25838.100000000002,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}
+<testsuites id="" name="" tests="3" failures="2" skipped="0" errors="0" time="25.8381">
+<testsuite name="production-tag-test.spec.ts" timestamp="2025-08-22T13:16:35.572Z" hostname="chromium" tests="3" failures="2" skipped="0" time="22.026" errors="0">
+<testcase name="本番環境タグ機能検証 › タグの表示確認" classname="production-tag-test.spec.ts" time="10.374">
+<failure message="production-tag-test.spec.ts:29:7 タグの表示確認" type="FAILURE">
+<![CDATA[  [chromium] › production-tag-test.spec.ts:29:7 › 本番環境タグ機能検証 › タグの表示確認 ─────────────────────────────
+
+    Error: expect(received).toBeTruthy()
+
+    Received: false
+
+      84 |     
+      85 |     // タグが見つかったか確認
+    > 86 |     expect(tagsFound).toBeTruthy();
+         |                       ^
+      87 |     expect(tagTexts.length).toBeGreaterThan(0);
+      88 |     console.log(`✅ タグ総数: ${tagTexts.length}個`);
+      89 |   });
+        at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/production-tag-test.spec.ts:86:23
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/production-tag-test-本番環境タグ機能検証-タグの表示確認-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../test-results/production-tag-test-本番環境タグ機能検証-タグの表示確認-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../test-results/production-tag-test-本番環境タグ機能検証-タグの表示確認-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../test-results/production-tag-test-本番環境タグ機能検証-タグの表示確認-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: expect(received).toBeTruthy()
+
+    Received: false
+
+      84 |     
+      85 |     // タグが見つかったか確認
+    > 86 |     expect(tagsFound).toBeTruthy();
+         |                       ^
+      87 |     expect(tagTexts.length).toBeGreaterThan(0);
+      88 |     console.log(`✅ タグ総数: ${tagTexts.length}個`);
+      89 |   });
+        at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/production-tag-test.spec.ts:86:23
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/production-tag-test-本番環境タグ機能検証-タグの表示確認-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../test-results/production-tag-test-本番環境タグ機能検証-タグの表示確認-chromium-retry1/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../test-results/production-tag-test-本番環境タグ機能検証-タグの表示確認-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../test-results/production-tag-test-本番環境タグ機能検証-タグの表示確認-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[📍 本番環境テスト開始: https://board.blankbrainai.com
+✅ ログイン成功
+📊 投稿数: 3件
+
+[[ATTACHMENT|test-results/production-tag-test-本番環境タグ機能検証-タグの表示確認-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|test-results/production-tag-test-本番環境タグ機能検証-タグの表示確認-chromium/error-context.md]]
+
+[[ATTACHMENT|test-results/production-tag-test-本番環境タグ機能検証-タグの表示確認-chromium/trace.zip]]
+📍 本番環境テスト開始: https://board.blankbrainai.com
+✅ ログイン成功
+📊 投稿数: 3件
+
+[[ATTACHMENT|test-results/production-tag-test-本番環境タグ機能検証-タグの表示確認-chromium-retry1/test-failed-1.png]]
+
+[[ATTACHMENT|test-results/production-tag-test-本番環境タグ機能検証-タグの表示確認-chromium-retry1/error-context.md]]
+
+[[ATTACHMENT|test-results/production-tag-test-本番環境タグ機能検証-タグの表示確認-chromium-retry1/trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="本番環境タグ機能検証 › タグクリックによるフィルタリング" classname="production-tag-test.spec.ts" time="7.728">
+<failure message="production-tag-test.spec.ts:91:7 タグクリックによるフィルタリング" type="FAILURE">
+<![CDATA[  [chromium] › production-tag-test.spec.ts:91:7 › 本番環境タグ機能検証 › タグクリックによるフィルタリング ────────────────────
+
+    Error: No clickable tags found
+
+      123 |       const htmlContent = await page.content();
+      124 |       console.log('HTML snippet:', htmlContent.substring(0, 1000));
+    > 125 |       throw new Error('No clickable tags found');
+          |             ^
+      126 |     }
+      127 |     
+      128 |     // タグをクリック
+        at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/production-tag-test.spec.ts:125:13
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/production-tag-test-本番環境タグ機能検証-タグクリックによるフィルタリング-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../test-results/production-tag-test-本番環境タグ機能検証-タグクリックによるフィルタリング-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../test-results/production-tag-test-本番環境タグ機能検証-タグクリックによるフィルタリング-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../test-results/production-tag-test-本番環境タグ機能検証-タグクリックによるフィルタリング-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: No clickable tags found
+
+      123 |       const htmlContent = await page.content();
+      124 |       console.log('HTML snippet:', htmlContent.substring(0, 1000));
+    > 125 |       throw new Error('No clickable tags found');
+          |             ^
+      126 |     }
+      127 |     
+      128 |     // タグをクリック
+        at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/production-tag-test.spec.ts:125:13
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/production-tag-test-本番環境タグ機能検証-タグクリックによるフィルタリング-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../test-results/production-tag-test-本番環境タグ機能検証-タグクリックによるフィルタリング-chromium-retry1/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../test-results/production-tag-test-本番環境タグ機能検証-タグクリックによるフィルタリング-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../test-results/production-tag-test-本番環境タグ機能検証-タグクリックによるフィルタリング-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[📍 本番環境テスト開始: https://board.blankbrainai.com
+✅ ログイン成功
+📊 初期投稿数: 3件
+HTML snippet: <!DOCTYPE html><html lang="ja" data-page-loaded="true" data-app-ready="true" data-ready-time="236.79999995231628"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5"><link rel="stylesheet" href="/_next/static/css/9fded9230d317939.css" data-precedence="next"><link rel="preload" as="script" fetchpriority="low" href="/_next/static/chunks/webpack-7067ed171859ac78.js"><script src="/_next/static/chunks/4bd1b696-cc729d47eba2cee4.js" async=""></script><script src="/_next/static/chunks/5964-40978821a2ce41e4.js" async=""></script><script src="/_next/static/chunks/main-app-1752470139d2f8a3.js" async=""></script><script src="/_next/static/chunks/6416-c2add152d97aa653.js" async=""></script><script src="/_next/static/chunks/2108-17aede3e8aad3233.js" async=""></script><script src="/_next/static/chunks/4298-2c4da2f6a046cddc.js" async=""></script><script src="/_next/static/chunks/361-e28c381517cbddc5.js" async=""></script><script src="/_next/
+
+[[ATTACHMENT|test-results/production-tag-test-本番環境タグ機能検証-タグクリックによるフィルタリング-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|test-results/production-tag-test-本番環境タグ機能検証-タグクリックによるフィルタリング-chromium/error-context.md]]
+
+[[ATTACHMENT|test-results/production-tag-test-本番環境タグ機能検証-タグクリックによるフィルタリング-chromium/trace.zip]]
+📍 本番環境テスト開始: https://board.blankbrainai.com
+✅ ログイン成功
+📊 初期投稿数: 3件
+HTML snippet: <!DOCTYPE html><html lang="ja" data-page-loaded="true" data-app-ready="true" data-ready-time="167.19999998807907"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5"><link rel="stylesheet" href="/_next/static/css/9fded9230d317939.css" data-precedence="next"><link rel="preload" as="script" fetchpriority="low" href="/_next/static/chunks/webpack-7067ed171859ac78.js"><script src="/_next/static/chunks/4bd1b696-cc729d47eba2cee4.js" async=""></script><script src="/_next/static/chunks/5964-40978821a2ce41e4.js" async=""></script><script src="/_next/static/chunks/main-app-1752470139d2f8a3.js" async=""></script><script src="/_next/static/chunks/6416-c2add152d97aa653.js" async=""></script><script src="/_next/static/chunks/2108-17aede3e8aad3233.js" async=""></script><script src="/_next/static/chunks/4298-2c4da2f6a046cddc.js" async=""></script><script src="/_next/static/chunks/361-e28c381517cbddc5.js" async=""></script><script src="/_next/
+
+[[ATTACHMENT|test-results/production-tag-test-本番環境タグ機能検証-タグクリックによるフィルタリング-chromium-retry1/test-failed-1.png]]
+
+[[ATTACHMENT|test-results/production-tag-test-本番環境タグ機能検証-タグクリックによるフィルタリング-chromium-retry1/error-context.md]]
+
+[[ATTACHMENT|test-results/production-tag-test-本番環境タグ機能検証-タグクリックによるフィルタリング-chromium-retry1/trace.zip]]
+]]>
+</system-out>
+<system-err>
+<![CDATA[❌ クリック可能なタグが見つかりません
+❌ クリック可能なタグが見つかりません
+]]>
+</system-err>
+</testcase>
+<testcase name="本番環境タグ機能検証 › 選択中タグのビジュアルフィードバック" classname="production-tag-test.spec.ts" time="3.924">
+<system-out>
+<![CDATA[📍 本番環境テスト開始: https://board.blankbrainai.com
+✅ ログイン成功
+⚠️ タグが見つかりません - スキップ
+
+[[ATTACHMENT|test-results/production-tag-test-本番環境タグ機能検証-選択中タグのビジュアルフィードバック-chromium/trace.zip]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+</testsuites>

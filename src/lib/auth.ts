@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 
 import { connectDB } from "@/lib/db/mongodb-local";
 import User from "@/lib/models/User";
+import { EmailNotVerifiedError, InvalidPasswordError, UserNotFoundError } from "@/lib/auth-errors";
 
 // NextAuth v5対応の正しい設定
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -29,7 +30,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           
           if (!user) {
             console.log('❌ [Auth v5] ユーザーが見つかりません');
-            return null;
+            throw new UserNotFoundError('ユーザーが見つかりません');
           }
 
           // パスワード検証
@@ -37,14 +38,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           
           if (!isValidPassword) {
             console.log('❌ [Auth v5] パスワードが一致しません');
-            return null;
+            throw new InvalidPasswordError('パスワードが正しくありません');
           }
 
-          // メール確認は会員制掲示板の必須要件
-          if (!user.emailVerified) {
-            console.log('⛔ [Auth v5] メール未確認のためログイン拒否');
-            return null;
-          }
+          // メール確認チェックは signIn callback で実行
+          // ここでは認証情報が正しければユーザーオブジェクトを返す
 
           console.log('✅ [Auth v5] 認証成功:', user.email);
           
@@ -68,7 +66,29 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     error: "/auth/error",
   },
   
+  events: {
+    async signIn({ user, account, profile, isNewUser }) {
+      console.log('🎉 [Auth v5] signIn event:', { user: user?.email, account: account?.provider });
+    },
+  },
+  
   callbacks: {
+    async signIn({ user, account, profile }) {
+      console.log('🔍 [signIn callback]:', { 
+        user: user?.email, 
+        emailVerified: user?.emailVerified,
+        account: account?.provider 
+      });
+      
+      // NextAuth v5での適切なエラーハンドリング
+      if (user && !user.emailVerified) {
+        console.log('⛔ [signIn callback] メール未確認のためログイン拒否');
+        return '/auth/signin?error=EmailNotVerified';  // カスタムリダイレクト
+      }
+      
+      return true;
+    },
+    
     async jwt({ token, user }) {
       console.log('🎫 [JWT v5]:', {
         hasUser: !!user,

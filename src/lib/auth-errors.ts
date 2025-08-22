@@ -1,16 +1,53 @@
 /**
  * 認証エラーの定義
  * セキュリティを考慮しつつ、ユーザーフレンドリーなメッセージを提供
+ * 25人天才エンジニア会議による改善 - NextAuth v5カスタムエラー対応
  */
+
+import { AuthError } from "next-auth";
 
 export const AUTH_ERRORS = {
   // メール未確認エラー
   EMAIL_NOT_VERIFIED: 'EmailNotVerified',
   // 認証情報不正（ユーザー不在またはパスワード不正）
   INVALID_CREDENTIALS: 'InvalidCredentials',
+  // パスワード間違い（セキュリティ上、一般的にはINVALID_CREDENTIALSと同じ扱い）
+  INVALID_PASSWORD: 'InvalidPassword',
+  // ユーザー不存在（セキュリティ上、一般的にはINVALID_CREDENTIALSと同じ扱い）
+  USER_NOT_FOUND: 'UserNotFound',
   // その他のエラー
   UNKNOWN_ERROR: 'UnknownError',
 } as const;
+
+/**
+ * NextAuth v5 カスタムエラークラス
+ */
+export class EmailNotVerifiedError extends AuthError {
+  static override type = "EmailNotVerified";
+  
+  constructor(message?: string) {
+    super(message || "メールアドレスが確認されていません");
+    this.name = "EmailNotVerifiedError";
+  }
+}
+
+export class InvalidPasswordError extends AuthError {
+  static override type = "InvalidPassword";
+  
+  constructor(message?: string) {
+    super(message || "パスワードが正しくありません");
+    this.name = "InvalidPasswordError";
+  }
+}
+
+export class UserNotFoundError extends AuthError {
+  static override type = "UserNotFound";
+  
+  constructor(message?: string) {
+    super(message || "ユーザーが見つかりません");
+    this.name = "UserNotFoundError";
+  }
+}
 
 export type AuthErrorType = typeof AUTH_ERRORS[keyof typeof AUTH_ERRORS];
 
@@ -29,6 +66,22 @@ export function getAuthErrorMessage(error: string | null): {
         title: 'メールアドレスの確認が必要です',
         message: 'アカウントを有効化するため、登録時に送信された確認メールをご確認ください。',
         action: 'メールが届いていない場合は、迷惑メールフォルダもご確認ください。',
+      };
+    
+    case 'InvalidPassword':
+    case AUTH_ERRORS.INVALID_PASSWORD:
+      return {
+        title: 'パスワードが間違っています',
+        message: '入力されたパスワードが正しくありません。',
+        action: 'パスワードを確認して再度入力してください。パスワードをお忘れの場合は、パスワードリセットをご利用ください。',
+      };
+    
+    case 'UserNotFound':
+    case AUTH_ERRORS.USER_NOT_FOUND:
+      return {
+        title: 'ログインできませんでした',
+        message: 'メールアドレスまたはパスワードが正しくありません。',
+        action: 'パスワードをお忘れの場合は、パスワードリセットをご利用ください。',
       };
     
     case AUTH_ERRORS.INVALID_CREDENTIALS:

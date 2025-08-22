@@ -27,7 +27,7 @@ function SignInForm() {
   const urlError = searchParams.get('error');
   const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
 
-  // 🔐 41人天才会議: シンプルで確実なリダイレクト処理（無限ループ完全解決版）
+  // 🔐 41人天才会議: 確実なリダイレクト処理（window.location.replace使用）
   useEffect(() => {
     console.log('🔍 [SignIn] セッション状態チェック:', {
       status,
@@ -41,23 +41,36 @@ function SignInForm() {
       return;
     }
 
+    // 一度でもリダイレクトフラグがあるかチェック
+    const hasRedirectedFlag = sessionStorage.getItem('auth-redirected');
+    if (hasRedirectedFlag) {
+      console.log('🛡️ 既にリダイレクト実行済み、処理をスキップ');
+      return;
+    }
+
     // 認証済みかつメール確認済みの場合のみリダイレクト
     if (status === 'authenticated' && session?.user?.emailVerified) {
-      console.log('✅ 認証済み・確認済みユーザー、ダッシュボードへリダイレクト');
+      console.log('✅ 認証済み・確認済みユーザー、window.location.replaceでリダイレクト');
       const finalUrl = callbackUrl.includes('/auth/') ? '/dashboard' : callbackUrl;
-      router.replace(finalUrl);
+      
+      // リダイレクトフラグを設定して無限ループを防止
+      sessionStorage.setItem('auth-redirected', 'true');
+      
+      // 確実なリダイレクト実行
+      window.location.replace(finalUrl);
       return;
     }
 
     // 認証済みだがメール未確認の場合
     if (status === 'authenticated' && !session?.user?.emailVerified) {
       console.log('⚠️ メール未確認ユーザー、確認ページへリダイレクト');
-      router.replace('/auth/email-not-verified');
+      sessionStorage.setItem('auth-redirected', 'true');
+      window.location.replace('/auth/email-not-verified');
       return;
     }
 
     // その他の場合（未認証等）は何もしない
-  }, [session, status, router, callbackUrl]);
+  }, [session, status, callbackUrl]);
 
   useEffect(() => {
     // URLパラメータからのエラー処理

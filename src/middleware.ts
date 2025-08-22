@@ -28,20 +28,20 @@ const protectedApiPaths = [
 ];
 
 // 公開パス（認証不要）
-const publicPaths = [
-  '/',
-  '/auth/signin',
-  '/auth/signup',
-  '/auth/verify-email',
-  '/auth/reset-password',
-  '/auth/error',
-  '/api/auth',
-  '/api/register',
-  '/api/verify-email',
-  '/api/request-reset',
-  '/api/reset-password',
-  '/api/health',
-];
+// const publicPaths = [
+//   '/',
+//   '/auth/signin',
+//   '/auth/signup',
+//   '/auth/verify-email',
+//   '/auth/reset-password',
+//   '/auth/error',
+//   '/api/auth',
+//   '/api/register',
+//   '/api/verify-email',
+//   '/api/request-reset',
+//   '/api/reset-password',
+//   '/api/health',
+// ];
 
 // パスが保護されているかチェック
 function isProtectedPath(pathname: string): boolean {

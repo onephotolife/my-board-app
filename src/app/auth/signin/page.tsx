@@ -50,14 +50,20 @@ function SignInForm() {
 
     // 認証済みかつメール確認済みの場合のみリダイレクト
     if (status === 'authenticated' && session?.user?.emailVerified) {
-      console.log('✅ 認証済み・確認済みユーザー、window.location.replaceでリダイレクト');
+      console.log('✅ 認証済み・確認済みユーザー、useEffect内即座リダイレクト');
       const finalUrl = callbackUrl.includes('/auth/') ? '/dashboard' : callbackUrl;
       
-      // リダイレクトフラグを設定して無限ループを防止
+      console.log('🔄 useEffect内即座にwindow.location.href実行:', finalUrl);
+      
+      // 1. 即座にwindow.location.hrefで確実リダイレクト
+      window.location.href = finalUrl;
+      
+      // 2. フォールバック処理
+      window.location.replace(finalUrl);
+      
+      // 3. リダイレクトフラグを設定して無限ループを防止
       sessionStorage.setItem('auth-redirected', 'true');
       
-      // 確実なリダイレクト実行
-      window.location.replace(finalUrl);
       return;
     }
 
@@ -137,26 +143,20 @@ function SignInForm() {
         setError('');
         setErrorDetail('ログインに成功しました。リダイレクトしています...');
         
-        // 🔐 41人天才会議: handleSubmit内で確実なリダイレクト実行
+        // 🔐 41人天才会議: 最終決定的リダイレクト実行（即座実行）
         const finalUrl = callbackUrl.includes('/auth/') ? '/dashboard' : callbackUrl;
-        console.log('🚀 handleSubmit内リダイレクト実行:', finalUrl);
+        console.log('🚀 handleSubmit内即座リダイレクト実行:', finalUrl);
         
-        // 1. sessionStorageフラグを設定
+        // 1. 即座にwindow.location.hrefで確実リダイレクト
+        console.log('🔄 即座にwindow.location.href実行:', finalUrl);
+        window.location.href = finalUrl;
+        
+        // 2. 念のためのフォールバック処理
+        console.log('🔄 フォールバック window.location.replace実行:', finalUrl);
+        window.location.replace(finalUrl);
+        
+        // 3. sessionStorageフラグを設定（無限ループ防止）
         sessionStorage.setItem('auth-redirected', 'true');
-        
-        // 2. 複数の方法でリダイレクト実行（確実性向上）
-        setTimeout(() => {
-          console.log('🔄 window.location.replace実行:', finalUrl);
-          window.location.replace(finalUrl);
-        }, 100);
-        
-        // 3. フォールバック
-        setTimeout(() => {
-          if (window.location.pathname === '/auth/signin') {
-            console.log('🔄 フォールバック window.location.href実行:', finalUrl);
-            window.location.href = finalUrl;
-          }
-        }, 1000);
         
         // 4. useEffectでも検知される（二重保護）
       } else {

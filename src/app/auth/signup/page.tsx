@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { signIn } from 'next-auth/react';
+import { signIn, signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 
 import { modern2025Styles } from '@/styles/modern-2025';
@@ -25,6 +25,7 @@ interface FormErrors {
 
 export default function SignUpPage() {
   const router = useRouter();
+  const { data: session, status } = useSession();
   const [mounted, setMounted] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -49,7 +50,20 @@ export default function SignUpPage() {
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    
+    // 新規登録ページアクセス時に既存セッションをクリア
+    // これにより前のユーザーのセッションが残っていても自動ログインしない
+    const clearExistingSession = async () => {
+      if (status === 'authenticated' && session) {
+        console.log('📝 新規登録ページ: 既存セッションをクリア');
+        await signOut({ redirect: false });
+      }
+    };
+    
+    if (status !== 'loading') {
+      clearExistingSession();
+    }
+  }, [status, session]);
 
   // フォームエラーを監視し、HTML5バリデーションAPIを使用
   useEffect(() => {
@@ -332,37 +346,18 @@ export default function SignUpPage() {
           setError(data.error || '登録に失敗しました');
         }
       } else {
-        setSuccess(data.message || '登録が完了しました！確認メールをご確認ください。');
-        
-        // 自動的にログインしてダッシュボードへリダイレクト
-        setSuccess('登録が完了しました！自動的にログインしています...');
-        
-        try {
-          // NextAuthを使用して自動ログイン
-          const signInResult = await signIn('credentials', {
-            email: formData.email.toLowerCase().trim(),
-            password: formData.password,
-            redirect: false,
-          });
-          
-          if (signInResult?.ok) {
-            // ログイン成功 - ダッシュボードへリダイレクト
-            router.push('/dashboard');
-          } else {
-            // ログイン失敗 - サインインページへ
-            setSuccess('登録が完了しました！ログインページからサインインしてください。');
-            setTimeout(() => {
-              router.push('/auth/signin');
-            }, 2000);
-          }
-        } catch (signInError) {
-          console.error('Auto sign-in error:', signInError);
-          // 自動ログイン失敗時はサインインページへ
-          setSuccess('登録が完了しました！ログインページからサインインしてください。');
-          setTimeout(() => {
-            router.push('/auth/signin');
-          }, 2000);
+        // 登録成功時も念のためセッションをクリア（自動ログイン防止）
+        if (status === 'authenticated') {
+          console.log('📝 登録成功: セッションをクリア');
+          await signOut({ redirect: false });
         }
+        
+        // 登録成功メッセージを表示
+        setSuccess(
+          '登録が完了しました！\n' +
+          'ご登録いただいたメールアドレスに確認メールを送信しました。\n' +
+          'メール内のリンクをクリックしてアカウントを有効化してください。'
+        );
         
         // フォームをクリア
         setFormData({
@@ -371,6 +366,11 @@ export default function SignUpPage() {
           password: '',
           confirmPassword: '',
         });
+        
+        // 3秒後にサインインページへリダイレクト
+        setTimeout(() => {
+          router.push('/auth/signin?message=verify-email');
+        }, 3000);
       }
     } catch (error) {
       console.error('Registration error:', error);

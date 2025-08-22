@@ -22,9 +22,11 @@ function SignInForm() {
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [hoveredField, setHoveredField] = useState<string | null>(null);
   const [buttonHovered, setButtonHovered] = useState(false);
+  const [infoMessage, setInfoMessage] = useState('');
   
   const verified = searchParams.get('verified') === 'true';
   const urlError = searchParams.get('error');
+  const message = searchParams.get('message');
   const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
 
   // 🔐 41人天才会議: 確実なリダイレクト処理（window.location.replace使用）
@@ -33,7 +35,9 @@ function SignInForm() {
       status,
       hasSession: !!session,
       emailVerified: session?.user?.emailVerified,
-      pathname: window.location.pathname
+      pathname: window.location.pathname,
+      message,
+      verified
     });
 
     // セッションローディング中は待機
@@ -41,10 +45,17 @@ function SignInForm() {
       return;
     }
 
+    // メール確認を促すメッセージが表示されている場合は自動リダイレクトをスキップ
+    if (message === 'verify-email') {
+      console.log('📧 メール確認メッセージ表示中、自動リダイレクトをスキップ');
+      return;
+    }
+
     // 一度でもリダイレクトフラグがあるかチェック
     const hasRedirectedFlag = sessionStorage.getItem('auth-redirected');
     if (hasRedirectedFlag) {
       console.log('🛡️ 既にリダイレクト実行済み、処理をスキップ');
+      sessionStorage.removeItem('auth-redirected'); // フラグをクリア
       return;
     }
 
@@ -76,7 +87,7 @@ function SignInForm() {
     }
 
     // その他の場合（未認証等）は何もしない
-  }, [session, status, callbackUrl]);
+  }, [session, status, callbackUrl, message, verified]);
 
   useEffect(() => {
     // URLパラメータからのエラー処理
@@ -86,7 +97,12 @@ function SignInForm() {
       setErrorDetail(errorInfo.message);
       setErrorAction(errorInfo.action || '');
     }
-  }, [urlError]);
+    
+    // メッセージパラメータの処理
+    if (message === 'verify-email') {
+      setInfoMessage('登録が完了しました！メールを確認してアカウントを有効化してください。');
+    }
+  }, [urlError, message]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -240,6 +256,21 @@ function SignInForm() {
           {verified && (
             <div style={{ ...modern2025Styles.alert.success, animation: 'slideUp 0.3s ease-out', marginBottom: '20px' }}>
               メールアドレスが確認されました。ログインしてください。
+            </div>
+          )}
+          
+          {infoMessage && (
+            <div style={{ 
+              ...modern2025Styles.alert.info, 
+              animation: 'slideUp 0.3s ease-out', 
+              marginBottom: '20px',
+              backgroundColor: '#dbeafe',
+              border: '1px solid #60a5fa',
+              color: '#1e40af',
+              padding: '12px 16px',
+              borderRadius: '8px'
+            }}>
+              {infoMessage}
             </div>
           )}
           

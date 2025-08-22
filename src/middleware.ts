@@ -62,9 +62,9 @@ function isProtectedApiPath(pathname: string): boolean {
 }
 
 // パスが公開されているかチェック
-function isPublicPath(pathname: string): boolean {
-  return publicPaths.some(path => pathname.startsWith(path));
-}
+// function isPublicPath(pathname: string): boolean {
+//   return publicPaths.some(path => pathname.startsWith(path));
+// }
 
 export async function middleware(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl;
@@ -98,7 +98,7 @@ export async function middleware(request: NextRequest) {
       limitResponse.headers.set('X-RateLimit-Reset', String(rateLimitResult.resetTime));
       limitResponse.headers.set('Retry-After', String(Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000)));
       
-      console.warn(`Rate limit exceeded: ${request.ip} - ${pathname}`);
+      console.warn(`Rate limit exceeded: ${request.headers.get('x-forwarded-for') || 'unknown'} - ${pathname}`);
       return limitResponse;
     }
     

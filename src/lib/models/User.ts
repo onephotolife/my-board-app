@@ -18,6 +18,14 @@ export interface IUser extends Document {
   }>;
   lastPasswordChange?: Date;
   passwordResetCount?: number;
+  // プロフィール関連フィールド（新規追加）
+  bio?: string;           // 自己紹介（最大200文字）
+  avatar?: string;        // アバター画像URL
+  location?: string;      // 居住地
+  occupation?: string;    // 職業
+  education?: string;     // 学歴
+  website?: string;       // ウェブサイト
+  lastProfileUpdate?: Date;
   createdAt: Date;
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
@@ -83,6 +91,51 @@ const UserSchema = new Schema<IUser>(
     passwordResetCount: {
       type: Number,
       default: 0,
+    },
+    // プロフィール関連フィールド（新規追加）
+    bio: {
+      type: String,
+      maxlength: [200, '自己紹介は200文字以内で入力してください'],
+      default: '',
+      trim: true,
+    },
+    avatar: {
+      type: String,
+      default: '',
+      validate: {
+        validator: function(v: string) {
+          return !v || /^https?:\/\/.+/.test(v);
+        },
+        message: '有効なURLを入力してください',
+      },
+    },
+    location: {
+      type: String,
+      maxlength: [100, '場所は100文字以内で入力してください'],
+      trim: true,
+    },
+    occupation: {
+      type: String,
+      maxlength: [100, '職業は100文字以内で入力してください'],
+      trim: true,
+    },
+    education: {
+      type: String,
+      maxlength: [100, '学歴は100文字以内で入力してください'],
+      trim: true,
+    },
+    website: {
+      type: String,
+      validate: {
+        validator: function(v: string) {
+          return !v || /^https?:\/\/.+/.test(v);
+        },
+        message: '有効なURLを入力してください',
+      },
+    },
+    lastProfileUpdate: {
+      type: Date,
+      default: Date.now,
     },
   },
   {

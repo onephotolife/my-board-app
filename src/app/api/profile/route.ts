@@ -32,7 +32,12 @@ export async function GET(req: NextRequest) {
       name: user.name,
       bio: user.bio || '',
       avatar: user.avatar || '',
+      location: user.location || '',
+      occupation: user.occupation || '',
+      education: user.education || '',
+      website: user.website || '',
       emailVerified: user.emailVerified,
+      lastProfileUpdate: user.lastProfileUpdate,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };
@@ -60,7 +65,7 @@ export async function PUT(req: NextRequest) {
 
     // リクエストボディを取得
     const body = await req.json();
-    const { name, bio } = body;
+    const { name, bio, location, occupation, education, website } = body;
     
 
     // バリデーション
@@ -99,29 +104,101 @@ export async function PUT(req: NextRequest) {
       );
     }
 
+    // 追加フィールドのバリデーション
+    if (location && typeof location !== 'string') {
+      return NextResponse.json(
+        { error: '場所の形式が正しくありません' },
+        { status: 400 }
+      );
+    }
+
+    if (location && location.length > 100) {
+      return NextResponse.json(
+        { error: '場所は100文字以内で入力してください' },
+        { status: 400 }
+      );
+    }
+
+    if (occupation && typeof occupation !== 'string') {
+      return NextResponse.json(
+        { error: '職業の形式が正しくありません' },
+        { status: 400 }
+      );
+    }
+
+    if (occupation && occupation.length > 100) {
+      return NextResponse.json(
+        { error: '職業は100文字以内で入力してください' },
+        { status: 400 }
+      );
+    }
+
+    if (education && typeof education !== 'string') {
+      return NextResponse.json(
+        { error: '学歴の形式が正しくありません' },
+        { status: 400 }
+      );
+    }
+
+    if (education && education.length > 100) {
+      return NextResponse.json(
+        { error: '学歴は100文字以内で入力してください' },
+        { status: 400 }
+      );
+    }
+
+    if (website && typeof website !== 'string') {
+      return NextResponse.json(
+        { error: 'ウェブサイトの形式が正しくありません' },
+        { status: 400 }
+      );
+    }
+
+    if (website && website.length > 0 && !/^https?:\/\/.+/.test(website)) {
+      return NextResponse.json(
+        { error: '有効なURLを入力してください' },
+        { status: 400 }
+      );
+    }
+
     // データベース接続
     await dbConnect();
 
-    // bioの値を適切に処理
+    // 各フィールドの値を適切に処理
     const bioValue = bio !== undefined && bio !== null ? String(bio).trim() : '';
+    const locationValue = location !== undefined && location !== null ? String(location).trim() : undefined;
+    const occupationValue = occupation !== undefined && occupation !== null ? String(occupation).trim() : undefined;
+    const educationValue = education !== undefined && education !== null ? String(education).trim() : undefined;
+    const websiteValue = website !== undefined && website !== null ? String(website).trim() : undefined;
     
     console.log('[DEBUG] Update request:', {
       email: session.user.email,
       name: name.trim(),
       bio: bioValue,
-      bioLength: bioValue.length
+      location: locationValue,
+      occupation: occupationValue,
+      education: educationValue,
+      website: websiteValue
     });
 
-    // ユーザー情報を更新 - 別の方法を試す
+    // 更新するフィールドを動的に構築
+    const updateFields: any = {
+      name: name.trim(),
+      bio: bioValue,
+      lastProfileUpdate: new Date(),
+      updatedAt: new Date(),
+    };
+
+    // オプションフィールドは値がある場合のみ更新
+    if (locationValue !== undefined) updateFields.location = locationValue;
+    if (occupationValue !== undefined) updateFields.occupation = occupationValue;
+    if (educationValue !== undefined) updateFields.education = educationValue;
+    if (websiteValue !== undefined) updateFields.website = websiteValue;
+
+    // ユーザー情報を更新
     const result = await User.updateOne(
       { email: session.user.email },
-      {
-        $set: {
-          name: name.trim(),
-          bio: bioValue,
-          updatedAt: new Date(),
-        },
-      }
+      { $set: updateFields }
     );
     
     console.log('[DEBUG] MongoDB update result:', {
@@ -150,7 +227,12 @@ export async function PUT(req: NextRequest) {
       name: updatedUser.name,
       bio: updatedUser.bio !== undefined && updatedUser.bio !== null ? updatedUser.bio : '',
       avatar: updatedUser.avatar || '',
+      location: updatedUser.location || '',
+      occupation: updatedUser.occupation || '',
+      education: updatedUser.education || '',
+      website: updatedUser.website || '',
       emailVerified: updatedUser.emailVerified,
+      lastProfileUpdate: updatedUser.lastProfileUpdate,
       createdAt: updatedUser.createdAt,
       updatedAt: updatedUser.updatedAt,
     };

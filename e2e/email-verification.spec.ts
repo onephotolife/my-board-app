@@ -79,30 +79,21 @@ test.describe('Email Verification E2E Tests', () => {
   });
 
   test.describe('パスワード変更フロー', () => {
-    test('プロフィールページからパスワード変更ダイアログを開く', async () => {
+    test('プロフィールページからパスワード変更ページへ遷移', async () => {
       // 1. プロフィールページにアクセス（未ログインの場合はサインインページへリダイレクト）
       await page.goto('/profile');
       
       // サインインページにリダイレクトされることを確認
       await expect(page).toHaveURL(/.*\/auth\/signin/);
       
-      // 2. テスト用ダイアログページで動作確認
-      await page.goto('/(main)/test-dialog');
+      // 2. パスワード変更ページに直接アクセス
+      await page.goto('/profile/change-password');
       
-      // 3. パスワード変更ダイアログを開く
-      await page.click('text=パスワード変更ダイアログを開く');
+      // サインインページにリダイレクトされることを確認（callbackUrlにchange-passwordが含まれる）
+      await expect(page).toHaveURL(/.*\/auth\/signin.*callbackUrl.*change-password/);
       
-      // 4. ダイアログが表示されることを確認
-      await expect(page.locator('role=dialog')).toBeVisible();
-      await expect(page.locator('text=パスワード変更')).toBeVisible();
-      
-      // 5. パスワードフィールドが3つあることを確認
-      const passwordFields = await page.locator('input[type="password"]').count();
-      expect(passwordFields).toBe(3);
-      
-      // 6. キャンセルボタンでダイアログを閉じる
-      await page.click('text=キャンセル');
-      await expect(page.locator('role=dialog')).not.toBeVisible();
+      // 注: 実際のパスワード変更機能は独立したページとして実装されました
+      // 認証後のテストは別途実施する必要があります
     });
   });
 

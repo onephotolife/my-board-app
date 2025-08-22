@@ -263,32 +263,75 @@ export default function RealtimeBoard() {
           <Paper 
             elevation={0}
             sx={{ 
-              p: 3, 
-              mb: 3,
-              borderRadius: '16px',
+              p: 4, 
+              mb: 4,
+              borderRadius: '20px',
+              background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
               border: '1px solid',
-              borderColor: 'divider',
-              background: 'white',
+              borderColor: 'rgba(99, 102, 241, 0.08)',
+              boxShadow: '0 4px 24px rgba(0, 0, 0, 0.03)',
             }}
           >
-            <Grid container spacing={2} alignItems="center">
+            <Grid container spacing={3} alignItems="center">
               <Grid item xs={12} md={4}>
                 <TextField
                   fullWidth
-                  size="small"
                   placeholder="投稿を検索..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '12px',
+                      backgroundColor: 'white',
+                      fontSize: '15px',
+                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                      '& fieldset': {
+                        borderColor: 'rgba(0, 0, 0, 0.08)',
+                        borderWidth: '1.5px',
+                      },
+                      '&:hover': {
+                        backgroundColor: '#fafbfc',
+                        '& fieldset': {
+                          borderColor: modern2025Styles.colors.primary,
+                        },
+                      },
+                      '&.Mui-focused': {
+                        backgroundColor: 'white',
+                        boxShadow: '0 0 0 3px rgba(99, 102, 241, 0.1)',
+                        '& fieldset': {
+                          borderColor: modern2025Styles.colors.primary,
+                          borderWidth: '2px',
+                        },
+                      },
+                    },
+                    '& .MuiInputBase-input': {
+                      padding: '14px',
+                      fontWeight: 500,
+                      color: modern2025Styles.colors.text.primary,
+                      '&::placeholder': {
+                        color: modern2025Styles.colors.text.secondary,
+                        opacity: 0.6,
+                      },
+                    },
+                  }}
                   InputProps={{
                     startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon />
+                      <InputAdornment position="start" sx={{ ml: 0.5 }}>
+                        <SearchIcon sx={{ color: modern2025Styles.colors.text.secondary }} />
                       </InputAdornment>
                     ),
                     endAdornment: searchQuery && (
                       <InputAdornment position="end">
-                        <IconButton size="small" onClick={() => setSearchQuery('')}>
-                          <ClearIcon />
+                        <IconButton 
+                          size="small" 
+                          onClick={() => setSearchQuery('')}
+                          sx={{ 
+                            '&:hover': { 
+                              backgroundColor: 'rgba(0, 0, 0, 0.04)' 
+                            } 
+                          }}
+                        >
+                          <ClearIcon fontSize="small" />
                         </IconButton>
                       </InputAdornment>
                     ),
@@ -297,35 +340,145 @@ export default function RealtimeBoard() {
               </Grid>
               
               <Grid item xs={6} md={3}>
-                <FormControl fullWidth size="small">
-                  <InputLabel>カテゴリー</InputLabel>
+                <FormControl fullWidth>
+                  <InputLabel 
+                    sx={{ 
+                      backgroundColor: 'white',
+                      px: 0.5,
+                      '&.Mui-focused': {
+                        color: modern2025Styles.colors.primary,
+                      },
+                    }}
+                  >
+                    カテゴリー
+                  </InputLabel>
                   <Select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
                     label="カテゴリー"
+                    MenuProps={{
+                      PaperProps: {
+                        sx: {
+                          borderRadius: '12px',
+                          mt: 1,
+                          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+                        },
+                      },
+                    }}
+                    sx={{
+                      borderRadius: '12px',
+                      backgroundColor: 'white',
+                      fontSize: '15px',
+                      '& .MuiSelect-select': {
+                        padding: '14px',
+                        fontWeight: 500,
+                        color: modern2025Styles.colors.text.primary,
+                      },
+                      '& fieldset': {
+                        borderColor: 'rgba(0, 0, 0, 0.08)',
+                        borderWidth: '1.5px',
+                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                      },
+                      '&:hover': {
+                        backgroundColor: '#fafbfc',
+                        '& fieldset': {
+                          borderColor: modern2025Styles.colors.primary,
+                        },
+                      },
+                      '&.Mui-focused': {
+                        backgroundColor: 'white',
+                        boxShadow: '0 0 0 3px rgba(99, 102, 241, 0.1)',
+                        '& fieldset': {
+                          borderColor: modern2025Styles.colors.primary,
+                          borderWidth: '2px',
+                        },
+                      },
+                      '& .MuiSelect-icon': {
+                        color: modern2025Styles.colors.text.secondary,
+                        transition: 'transform 0.3s',
+                      },
+                      '&.Mui-expanded .MuiSelect-icon': {
+                        transform: 'rotate(180deg)',
+                      },
+                    }}
                   >
-                    <MenuItem value="all">すべて</MenuItem>
-                    <MenuItem value="general">一般</MenuItem>
-                    <MenuItem value="tech">技術</MenuItem>
-                    <MenuItem value="question">質問</MenuItem>
-                    <MenuItem value="discussion">議論</MenuItem>
-                    <MenuItem value="announcement">お知らせ</MenuItem>
+                    <MenuItem value="all" sx={{ py: 1.5, fontWeight: 500 }}>すべて</MenuItem>
+                    <MenuItem value="general" sx={{ py: 1.5 }}>一般</MenuItem>
+                    <MenuItem value="tech" sx={{ py: 1.5 }}>技術</MenuItem>
+                    <MenuItem value="question" sx={{ py: 1.5 }}>質問</MenuItem>
+                    <MenuItem value="discussion" sx={{ py: 1.5 }}>議論</MenuItem>
+                    <MenuItem value="announcement" sx={{ py: 1.5 }}>お知らせ</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
               
               <Grid item xs={6} md={3}>
-                <FormControl fullWidth size="small">
-                  <InputLabel>並び順</InputLabel>
+                <FormControl fullWidth>
+                  <InputLabel 
+                    sx={{ 
+                      backgroundColor: 'white',
+                      px: 0.5,
+                      '&.Mui-focused': {
+                        color: modern2025Styles.colors.primary,
+                      },
+                    }}
+                  >
+                    並び順
+                  </InputLabel>
                   <Select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
                     label="並び順"
+                    MenuProps={{
+                      PaperProps: {
+                        sx: {
+                          borderRadius: '12px',
+                          mt: 1,
+                          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+                        },
+                      },
+                    }}
+                    sx={{
+                      borderRadius: '12px',
+                      backgroundColor: 'white',
+                      fontSize: '15px',
+                      '& .MuiSelect-select': {
+                        padding: '14px',
+                        fontWeight: 500,
+                        color: modern2025Styles.colors.text.primary,
+                      },
+                      '& fieldset': {
+                        borderColor: 'rgba(0, 0, 0, 0.08)',
+                        borderWidth: '1.5px',
+                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                      },
+                      '&:hover': {
+                        backgroundColor: '#fafbfc',
+                        '& fieldset': {
+                          borderColor: modern2025Styles.colors.primary,
+                        },
+                      },
+                      '&.Mui-focused': {
+                        backgroundColor: 'white',
+                        boxShadow: '0 0 0 3px rgba(99, 102, 241, 0.1)',
+                        '& fieldset': {
+                          borderColor: modern2025Styles.colors.primary,
+                          borderWidth: '2px',
+                        },
+                      },
+                      '& .MuiSelect-icon': {
+                        color: modern2025Styles.colors.text.secondary,
+                        transition: 'transform 0.3s',
+                      },
+                      '&.Mui-expanded .MuiSelect-icon': {
+                        transform: 'rotate(180deg)',
+                      },
+                    }}
                   >
-                    <MenuItem value="-createdAt">新しい順</MenuItem>
-                    <MenuItem value="createdAt">古い順</MenuItem>
-                    <MenuItem value="-views">閲覧数順</MenuItem>
-                    <MenuItem value="-likes">いいね順</MenuItem>
+                    <MenuItem value="-createdAt" sx={{ py: 1.5, fontWeight: 500 }}>新しい順</MenuItem>
+                    <MenuItem value="createdAt" sx={{ py: 1.5 }}>古い順</MenuItem>
+                    <MenuItem value="-views" sx={{ py: 1.5 }}>閲覧数順</MenuItem>
+                    <MenuItem value="-likes" sx={{ py: 1.5 }}>いいね順</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
@@ -342,12 +495,17 @@ export default function RealtimeBoard() {
                     borderRadius: '12px',
                     textTransform: 'none',
                     fontWeight: 600,
-                    fontSize: '16px',
+                    fontSize: '15px',
+                    padding: '12px 24px',
                     boxShadow: '0 4px 14px rgba(99, 102, 241, 0.25)',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                     '&:hover': {
                       background: 'linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%)',
                       transform: 'translateY(-2px)',
                       boxShadow: '0 6px 20px rgba(99, 102, 241, 0.35)',
+                    },
+                    '& .MuiButton-startIcon': {
+                      mr: 1,
                     },
                   }}
                 >

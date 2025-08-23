@@ -46,6 +46,12 @@ export const authOptions: AuthOptions = {
             return null;
           }
 
+          // メール確認状態をチェック
+          if (!user.emailVerified) {
+            console.log('❌ [Auth v4] メール未確認のユーザー:', user.email);
+            throw new EmailNotVerifiedError('メールアドレスが確認されていません。確認メールをご確認ください。');
+          }
+
           // パスワード検証
           console.log('🔑 [Auth v4] パスワード検証開始');
           const isValidPassword = await bcrypt.compare(credentials.password, user.password);
@@ -95,10 +101,10 @@ export const authOptions: AuthOptions = {
         account: account?.provider 
       });
       
-      // メール未確認でもセッション作成を許可
-      // クライアントサイドで制御
+      // メール未確認ユーザーはサインインを拒否
       if (user && !user.emailVerified) {
-        console.log('⚠️ [signIn callback v4] メール未確認ユーザー（セッション作成許可）');
+        console.log('❌ [signIn callback v4] メール未確認ユーザーのサインインを拒否');
+        return false;
       }
       
       return true;

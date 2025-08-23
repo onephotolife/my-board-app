@@ -102,7 +102,7 @@ export default function ProfilePage() {
         display: 'flex', 
         alignItems: 'center', 
         justifyContent: 'center',
-        pt: { xs: 8, md: 0 }  // モバイル時はAppBarの高さ分のpadding-topを追加
+        pt: { xs: 7, md: 0 }  // モバイル時はAppBarの高さ分のpadding-topを追加（56px）
       }}>
           <CircularProgress />
         </Box>
@@ -120,7 +120,8 @@ export default function ProfilePage() {
       
       <Box sx={{ 
         flex: 1,
-        pt: { xs: 8, md: 0 }  // モバイル時はAppBarの高さ分のpadding-topを追加
+        pt: { xs: 7, md: 0 },  // モバイル時はAppBarの高さ分のpadding-topを追加（56px）
+        overflow: 'auto'
       }}>
         <Container maxWidth="md" sx={{ py: 4 }}>
           <Typography variant="h4" gutterBottom fontWeight="bold">

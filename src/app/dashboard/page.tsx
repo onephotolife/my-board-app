@@ -204,7 +204,7 @@ export default function DashboardPage() {
       <Box sx={{ 
         flex: 1, 
         overflow: 'auto',
-        pt: { xs: 8, md: 0 }  // モバイル時はAppBarの高さ分のpadding-topを追加
+        pt: { xs: 7, md: 0 }  // モバイル時はAppBarの高さ分のpadding-topを追加（56px）
       }}>
         {/* ヘッダー */}
         <Box

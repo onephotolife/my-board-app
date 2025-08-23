@@ -823,18 +823,20 @@ export default function RealtimeBoard() {
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <IconButton
                           onClick={() => handleLike(post._id)}
-                          color="default"
                           data-testid={`like-button-${post._id}`}
                           sx={{
+                            color: '#6b7280 !important',
                             '&:hover': {
                               transform: 'scale(1.1)',
+                              color: '#6b7280 !important',
                             },
                             '& .MuiSvgIcon-root': {
                               fontSize: 24,
+                              color: '#6b7280 !important',
                             },
                           }}
                         >
-                          {post.isLikedByUser ? <FavoriteIcon sx={{ color: '#6b7280' }} /> : <FavoriteBorderIcon sx={{ color: '#6b7280' }} />}
+                          {post.isLikedByUser ? <FavoriteIcon /> : <FavoriteBorderIcon />}
                         </IconButton>
                         <Typography 
                           variant="body2" 

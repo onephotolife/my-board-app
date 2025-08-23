@@ -295,12 +295,15 @@ function SignInForm() {
           )}
           
           {error && (
-            <div style={{ 
-              ...modern2025Styles.alert.error, 
-              animation: 'slideUp 0.3s ease-out',
-              marginBottom: '20px',
-              textAlign: 'left'
-            }}
+            <div 
+              className="error-message"
+              role="alert"
+              style={{ 
+                ...modern2025Styles.alert.error, 
+                animation: 'slideUp 0.3s ease-out',
+                marginBottom: '20px',
+                textAlign: 'left'
+              }}
             >
               <div style={{ fontWeight: '600', marginBottom: errorDetail ? '8px' : '0' }}>
                 {error}

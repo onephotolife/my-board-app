@@ -833,7 +833,7 @@ export default function RealtimeBoard() {
                             },
                           }}
                         >
-                          {post.isLikedByUser ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                          {post.isLikedByUser ? <FavoriteIcon sx={{ color: 'gray' }} /> : <FavoriteBorderIcon />}
                         </IconButton>
                         <Typography 
                           variant="body2" 
@@ -1360,7 +1360,7 @@ export default function RealtimeBoard() {
                               },
                             }}
                           >
-                            {post.isLikedByUser ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                            {post.isLikedByUser ? <FavoriteIcon sx={{ color: 'gray' }} /> : <FavoriteBorderIcon />}
                           </IconButton>
                           <Typography 
                             variant="body2" 
@@ -1887,7 +1887,7 @@ export default function RealtimeBoard() {
                               },
                             }}
                           >
-                            {post.isLikedByUser ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                            {post.isLikedByUser ? <FavoriteIcon sx={{ color: 'gray' }} /> : <FavoriteBorderIcon />}
                           </IconButton>
                           <Typography 
                             variant="body2" 
@@ -2410,7 +2410,7 @@ export default function RealtimeBoard() {
                             color="error"
                             data-testid={`like-count-${post._id}`}
                           >
-                            {post.isLikedByUser ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                            {post.isLikedByUser ? <FavoriteIcon sx={{ color: 'gray' }} /> : <FavoriteBorderIcon />}
                           </Badge>
                         </IconButton>
                         

@@ -40,6 +40,7 @@ import {
   CheckCircle as CheckCircleIcon
 } from '@mui/icons-material';
 import { signOut } from 'next-auth/react';
+import Sidebar from '@/components/Sidebar';
 
 // 日付フォーマット関数（メンバー歴は日数で表示）
 const formatTimeAgo = (date: string | Date | undefined) => {
@@ -174,10 +175,6 @@ export default function DashboardPage() {
     }
   };;
 
-  const handleSignOut = async () => {
-    console.log('🚪 ログアウト処理開始');
-    await signOut({ redirect: true, callbackUrl: '/auth/signin' });
-  };
 
   if (status === 'loading' || loading) {
     return (
@@ -201,111 +198,14 @@ export default function DashboardPage() {
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f5f5f5' }}>
-      {/* サイドバー */}
-      <Box
-        sx={{
-          width: 280,
-          bgcolor: 'white',
-          borderRight: '1px solid #e0e0e0',
-          p: 3,
-          display: { xs: 'none', md: 'block' }
-        }}
-      >
-        <Box sx={{ mb: 4, textAlign: 'center' }}>
-          <Avatar
-            sx={{
-              width: 100,
-              height: 100,
-              margin: '0 auto',
-              mb: 2,
-              bgcolor: 'primary.main',
-              fontSize: '2rem'
-            }}
-          >
-            {session.user?.name?.[0] || session.user?.email?.[0]?.toUpperCase()}
-          </Avatar>
-          <Typography variant="h6" gutterBottom>
-            {session.user?.name || 'ユーザー'}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {session.user?.email}
-          </Typography>
-          <Chip
-            label="メンバー"
-            color="primary"
-            size="small"
-            sx={{ mt: 1 }}
-          />
-        </Box>
-
-        <Divider sx={{ mb: 3 }} />
-
-        <List>
-          <ListItem button onClick={() => router.push('/dashboard')}>
-            <ListItemAvatar>
-              <Avatar sx={{ bgcolor: 'primary.light' }}>
-                <DashboardIcon />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText primary="ダッシュボード" />
-          </ListItem>
-          <ListItem button onClick={() => router.push('/board')}>
-            <ListItemAvatar>
-              <Avatar sx={{ bgcolor: 'success.light' }}>
-                <ForumIcon />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText primary="掲示板" />
-          </ListItem>
-          <ListItem button onClick={() => router.push('/posts/new')}>
-            <ListItemAvatar>
-              <Avatar sx={{ bgcolor: 'warning.light' }}>
-                <PostAddIcon />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText primary="新規投稿" />
-          </ListItem>
-          <ListItem button onClick={() => router.push('/profile')}>
-            <ListItemAvatar>
-              <Avatar sx={{ bgcolor: 'info.light' }}>
-                <PersonIcon />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText primary="プロフィール" />
-          </ListItem>
-          <ListItem button onClick={() => router.push('/settings')}>
-            <ListItemAvatar>
-              <Avatar sx={{ bgcolor: 'secondary.light' }}>
-                <SettingsIcon />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText primary="設定" />
-          </ListItem>
-        </List>
-
-        <Divider sx={{ my: 3 }} />
-
-        <Button
-          fullWidth
-          variant="outlined"
-          startIcon={<LogoutIcon />}
-          onClick={handleSignOut}
-          sx={{
-            borderColor: 'error.main',
-            color: 'error.main',
-            '&:hover': {
-              borderColor: 'error.dark',
-              bgcolor: 'error.light',
-              bgcolor: 'rgba(211, 47, 47, 0.04)'
-            }
-          }}
-        >
-          ログアウト
-        </Button>
-      </Box>
+      <Sidebar />
 
       {/* メインコンテンツ */}
-      <Box sx={{ flex: 1, overflow: 'auto' }}>
+      <Box sx={{ 
+        flex: 1, 
+        overflow: 'auto',
+        pt: { xs: 8, md: 0 }  // モバイル時はAppBarの高さ分のpadding-topを追加
+      }}>
         {/* ヘッダー */}
         <Box
           sx={{

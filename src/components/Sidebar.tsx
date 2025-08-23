@@ -180,7 +180,8 @@ export default function Sidebar() {
           display: { xs: 'block', md: 'none' },
           bgcolor: 'white',
           color: 'text.primary',
-          boxShadow: 1
+          boxShadow: 1,
+          zIndex: (theme) => theme.zIndex.appBar + 1
         }}
       >
         <Toolbar>

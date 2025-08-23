@@ -175,7 +175,7 @@ export default function MyPostsPage() {
         justifyContent: 'center', 
         alignItems: 'center', 
         minHeight: '100vh',
-        pt: { xs: 7, md: 0 }  // モバイル時はAppBarの高さ分のpadding-topを追加（56px）
+        pt: { xs: 8, md: 0 }  // モバイル時はAppBarの高さ分のpadding-topを追加（64px）
       }}>
         <CircularProgress />
       </Box>
@@ -188,7 +188,7 @@ export default function MyPostsPage() {
       
       <Box sx={{ 
         flex: 1,
-        pt: { xs: 7, md: 0 },  // モバイル時はAppBarの高さ分のpadding-topを追加（56px）
+        pt: { xs: 8, md: 0 },  // モバイル時はAppBarの高さ分のpadding-topを追加（64px）
         overflow: 'auto'
       }}>
         {/* ヘッダー */}

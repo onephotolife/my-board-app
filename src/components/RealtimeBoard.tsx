@@ -142,8 +142,8 @@ export default function RealtimeBoard() {
       }
       
       const data = await response.json();
-      setPosts(data.posts || []);
-      setTotalPages(data.totalPages || 1);
+      setPosts(data.data || []);
+      setTotalPages(data.pagination?.totalPages || 1);
     } catch (err) {
       console.error('Error fetching posts:', err);
       setError(err instanceof Error ? err.message : '投稿の取得に失敗しました');

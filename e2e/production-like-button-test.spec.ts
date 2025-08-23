@@ -193,7 +193,7 @@ test.describe('Production Like Button Test', () => {
     
     // 詳細レポート
     console.log('\\n📊 == テスト結果サマリー ==');
-    console.log(`  ボードページ投稿数: ${postCards.length || muiCards.length}`);
+    console.log(`  ボードページ投稿数: ${postCards.length}`);
     console.log(`  My Posts投稿数: ${myPostCards.length}`);
     console.log(`  個別いいね数: [${postLikes.join(', ')}]`);
     console.log(`  総いいね数（表示）: ${displayedTotal}`);

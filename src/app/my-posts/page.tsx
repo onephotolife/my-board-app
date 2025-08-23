@@ -32,6 +32,7 @@ import {
   PostAdd as PostAddIcon,
   Archive as ArchiveIcon
 } from '@mui/icons-material';
+import Sidebar from '@/components/Sidebar';
 
 interface Post {
   _id: string;
@@ -176,25 +177,25 @@ export default function MyPostsPage() {
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#f5f5f5' }}>
-      {/* ヘッダー */}
-      <Box
-        sx={{
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          color: 'white',
-          py: 6,
-          mb: 4
-        }}
-      >
-        <Container maxWidth="lg">
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-            <IconButton onClick={() => router.push('/dashboard')} sx={{ color: 'white', mr: 2 }}>
-              <ArrowBackIcon />
-            </IconButton>
-            <Typography variant="h3" sx={{ fontWeight: 700 }}>
-              自分の投稿
-            </Typography>
-          </Box>
+    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f5f5f5' }}>
+      <Sidebar />
+      
+      <Box sx={{ flex: 1 }}>
+        {/* ヘッダー */}
+        <Box
+          sx={{
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            color: 'white',
+            py: 6,
+            mb: 4
+          }}
+        >
+          <Container maxWidth="lg">
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+              <Typography variant="h3" sx={{ fontWeight: 700 }}>
+                自分の投稿
+              </Typography>
+            </Box>
           <Typography variant="h6" sx={{ opacity: 0.9 }}>
             あなたの投稿履歴を管理
           </Typography>
@@ -381,6 +382,7 @@ export default function MyPostsPage() {
           </Paper>
         )}
       </Container>
+      </Box>
     </Box>
   );
 }

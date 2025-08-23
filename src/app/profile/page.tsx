@@ -1,190 +1,281 @@
-import { auth } from '@/lib/auth';
-import { redirect } from 'next/navigation';
-import { connectDB } from '@/lib/db/mongodb';
-import User from '@/lib/models/User';
+'use client';
+
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import {
-  Box,
   Container,
-  Grid,
+  Box,
   Card,
   CardContent,
   Typography,
+  TextField,
+  Button,
   Avatar,
-  Chip,
+  CircularProgress,
+  Alert,
+  Stack,
   Divider,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  IconButton
+  Chip
 } from '@mui/material';
 import {
-  CalendarToday as CalendarTodayIcon,
-  Email as EmailIcon,
-  ArrowBack as ArrowBackIcon,
-  Badge as BadgeIcon
+  Edit as EditIcon,
+  Save as SaveIcon,
+  Cancel as CancelIcon
 } from '@mui/icons-material';
-import ProfileEditForm from './ProfileEditForm';
-import Link from 'next/link';
+import Sidebar from '@/components/Sidebar';
 
-async function getProfileData(email: string) {
-  try {
-    // データベースから直接プロフィールデータを取得
-    await connectDB();
-    
-    const user = await User.findOne({ email }).select('-password').lean();
-    
-    if (user) {
-      return {
-        name: user.name || '',
-        email: user.email,
-        bio: user.bio || '',
-        location: user.location || '',
-        occupation: user.occupation || '',
-        education: user.education || '',
-        website: user.website || '',
-        emailVerified: user.emailVerified || false,
-        createdAt: user.createdAt ? user.createdAt.toISOString() : new Date().toISOString()
-      };
-    }
-  } catch (error) {
-    console.error('プロフィール取得エラー:', error);
-  }
-
-  // デフォルト値を返す
-  return {
+export default function ProfilePage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState(false);
+  const [profileData, setProfileData] = useState({
     name: '',
-    email: email,
     bio: '',
     location: '',
-    occupation: '',
-    education: '',
-    website: '',
-    emailVerified: false,
-    createdAt: new Date().toISOString()
+    website: ''
+  });
+  const [originalData, setOriginalData] = useState({
+    name: '',
+    bio: '',
+    location: '',
+    website: ''
+  });
+  const [saveMessage, setSaveMessage] = useState('');
+
+  useEffect(() => {
+    if (status === 'loading') return;
+    
+    if (status === 'unauthenticated') {
+      router.push('/auth/signin');
+      return;
+    }
+
+    // 初期データをセット
+    if (session?.user) {
+      const initialData = {
+        name: session.user.name || '',
+        bio: '',
+        location: '',
+        website: ''
+      };
+      setProfileData(initialData);
+      setOriginalData(initialData);
+    }
+    
+    setLoading(false);
+  }, [status, session, router]);
+
+  const handleEdit = () => {
+    setEditing(true);
+    setSaveMessage('');
   };
-}
 
-export default async function ProfilePage() {
-  // サーバー側で認証チェック
-  const session = await auth();
-  
-  if (!session?.user) {
-    redirect('/auth/signin?callbackUrl=%2Fprofile');
-  }
+  const handleCancel = () => {
+    setProfileData(originalData);
+    setEditing(false);
+    setSaveMessage('');
+  };
 
-  if (!session.user.emailVerified) {
-    redirect('/auth/email-not-verified');
-  }
+  const handleSave = async () => {
+    // ここで実際のAPI呼び出しを行う
+    setOriginalData(profileData);
+    setEditing(false);
+    setSaveMessage('プロフィールを更新しました');
+    setTimeout(() => setSaveMessage(''), 3000);
+  };
 
-  // サーバー側でプロフィールデータ取得
-  const profileData = await getProfileData(session.user.email!);
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('ja-JP', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+  const handleChange = (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    setProfileData({
+      ...profileData,
+      [field]: event.target.value
     });
   };
 
-  return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#f5f5f5' }}>
-      {/* ヘッダー */}
-      <Box
-        sx={{
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          color: 'white',
-          py: 4,
-          mb: -8
-        }}
-      >
-        <Container maxWidth="lg">
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-            <IconButton 
-              component={Link}
-              href="/dashboard" 
-              sx={{ color: 'white', mr: 2 }}
-            >
-              <ArrowBackIcon />
-            </IconButton>
-            <Typography variant="h4" sx={{ fontWeight: 700 }}>
-              プロフィール
-            </Typography>
-          </Box>
-        </Container>
+  if (status === 'loading' || loading) {
+    return (
+      <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f5f5f5' }}>
+        <Sidebar />
+        <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <CircularProgress />
+        </Box>
       </Box>
+    );
+  }
 
-      <Container maxWidth="lg" sx={{ pb: 4 }}>
-        <Grid container spacing={3} sx={{ mt: 8 }}>
-          {/* 左側：プロフィール画像と基本情報 */}
-          <Grid item xs={12} md={4}>
-            <Card>
-              <CardContent sx={{ textAlign: 'center', py: 4 }}>
+  if (!session) {
+    return null;
+  }
+
+  return (
+    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f5f5f5' }}>
+      <Sidebar />
+      
+      <Box sx={{ flex: 1 }}>
+        <Container maxWidth="md" sx={{ py: 4 }}>
+          <Typography variant="h4" gutterBottom fontWeight="bold">
+            プロフィール
+          </Typography>
+          
+          {saveMessage && (
+            <Alert severity="success" sx={{ mb: 3 }}>
+              {saveMessage}
+            </Alert>
+          )}
+
+          <Card>
+            <CardContent sx={{ p: 4 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
                 <Avatar
                   sx={{
-                    width: 150,
-                    height: 150,
-                    fontSize: '3rem',
+                    width: 120,
+                    height: 120,
                     bgcolor: 'primary.main',
-                    mb: 2,
-                    mx: 'auto'
+                    fontSize: '3rem',
+                    mr: 3
                   }}
                 >
-                  {profileData.name?.[0]?.toUpperCase() || profileData.email?.[0]?.toUpperCase() || 'U'}
+                  {session.user?.name?.[0] || session.user?.email?.[0]?.toUpperCase()}
                 </Avatar>
-                
-                <Typography variant="h5" gutterBottom sx={{ fontWeight: 600 }}>
-                  {profileData.name || 'ユーザー'}
-                </Typography>
-                
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  {profileData.email}
-                </Typography>
-                
-                {profileData.emailVerified && (
+                <Box sx={{ flex: 1 }}>
+                  <Typography variant="h5" gutterBottom>
+                    {profileData.name || session.user?.email}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>
+                    {session.user?.email}
+                  </Typography>
                   <Chip
-                    icon={<BadgeIcon />}
-                    label="認証済み"
-                    color="success"
+                    label="メンバー"
+                    color="primary"
                     size="small"
                     sx={{ mt: 1 }}
                   />
+                </Box>
+                {!editing && (
+                  <Button
+                    variant="contained"
+                    startIcon={<EditIcon />}
+                    onClick={handleEdit}
+                  >
+                    編集
+                  </Button>
                 )}
+              </Box>
 
-                <Divider sx={{ my: 3 }} />
+              <Divider sx={{ mb: 3 }} />
 
-                <List dense>
-                  <ListItem>
-                    <ListItemIcon>
-                      <CalendarTodayIcon />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary="登録日"
-                      secondary={formatDate(profileData.createdAt)}
-                    />
-                  </ListItem>
-                  <ListItem>
-                    <ListItemIcon>
-                      <EmailIcon />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary="メール認証"
-                      secondary={profileData.emailVerified ? '完了' : '未完了'}
-                    />
-                  </ListItem>
-                </List>
-              </CardContent>
-            </Card>
-          </Grid>
+              <Stack spacing={3}>
+                <TextField
+                  label="名前"
+                  value={profileData.name}
+                  onChange={handleChange('name')}
+                  disabled={!editing}
+                  fullWidth
+                  variant={editing ? 'outlined' : 'standard'}
+                  InputProps={{
+                    readOnly: !editing
+                  }}
+                />
 
-          {/* 右側：詳細情報（クライアントコンポーネント） */}
-          <Grid item xs={12} md={8}>
-            <ProfileEditForm initialData={profileData} />
-          </Grid>
-        </Grid>
-      </Container>
+                <TextField
+                  label="自己紹介"
+                  value={profileData.bio}
+                  onChange={handleChange('bio')}
+                  disabled={!editing}
+                  fullWidth
+                  multiline
+                  rows={4}
+                  variant={editing ? 'outlined' : 'standard'}
+                  InputProps={{
+                    readOnly: !editing
+                  }}
+                  placeholder="あなたについて教えてください"
+                />
+
+                <TextField
+                  label="場所"
+                  value={profileData.location}
+                  onChange={handleChange('location')}
+                  disabled={!editing}
+                  fullWidth
+                  variant={editing ? 'outlined' : 'standard'}
+                  InputProps={{
+                    readOnly: !editing
+                  }}
+                  placeholder="例: 東京, 日本"
+                />
+
+                <TextField
+                  label="ウェブサイト"
+                  value={profileData.website}
+                  onChange={handleChange('website')}
+                  disabled={!editing}
+                  fullWidth
+                  variant={editing ? 'outlined' : 'standard'}
+                  InputProps={{
+                    readOnly: !editing
+                  }}
+                  placeholder="https://example.com"
+                />
+              </Stack>
+
+              {editing && (
+                <Box sx={{ mt: 4, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+                  <Button
+                    variant="outlined"
+                    startIcon={<CancelIcon />}
+                    onClick={handleCancel}
+                  >
+                    キャンセル
+                  </Button>
+                  <Button
+                    variant="contained"
+                    startIcon={<SaveIcon />}
+                    onClick={handleSave}
+                  >
+                    保存
+                  </Button>
+                </Box>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card sx={{ mt: 3 }}>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                アカウント情報
+              </Typography>
+              <Stack spacing={2} sx={{ mt: 2 }}>
+                <Box>
+                  <Typography variant="body2" color="text.secondary">
+                    メールアドレス
+                  </Typography>
+                  <Typography variant="body1">
+                    {session.user?.email}
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography variant="body2" color="text.secondary">
+                    ロール
+                  </Typography>
+                  <Typography variant="body1">
+                    メンバー
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography variant="body2" color="text.secondary">
+                    登録日
+                  </Typography>
+                  <Typography variant="body1">
+                    {new Date().toLocaleDateString('ja-JP')}
+                  </Typography>
+                </Box>
+              </Stack>
+            </CardContent>
+          </Card>
+        </Container>
+      </Box>
     </Box>
   );
 }

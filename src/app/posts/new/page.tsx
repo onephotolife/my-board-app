@@ -26,7 +26,6 @@ import {
 import {
   ArrowBack as ArrowBackIcon,
   Send as SendIcon,
-  Save as SaveIcon,
   Cancel as CancelIcon,
   FormatBold as FormatBoldIcon,
   FormatItalic as FormatItalicIcon,
@@ -49,7 +48,6 @@ export default function NewPostPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
-  const [isDraft, setIsDraft] = useState(false);
 
   // 認証チェック
   if (status === 'loading') {
@@ -65,7 +63,7 @@ export default function NewPostPage() {
     return null;
   }
 
-  const handleSubmit = async (e: React.FormEvent, saveAsDraft = false) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // フロントエンドバリデーション
@@ -95,7 +93,6 @@ export default function NewPostPage() {
     setLoading(true);
     setError('');
     setValidationErrors({});
-    setIsDraft(saveAsDraft);
     
     try {
       const response = await fetch('/api/posts', {
@@ -108,7 +105,7 @@ export default function NewPostPage() {
           content: content.trim(),
           category,
           tags: tags.filter(tag => tag.trim()),
-          status: saveAsDraft ? 'draft' : 'published'
+          status: 'published'
         }),
       });
 
@@ -130,7 +127,6 @@ export default function NewPostPage() {
       setError('ネットワークエラーが発生しました');
     } finally {
       setLoading(false);
-      setIsDraft(false);
     }
   };
 
@@ -222,7 +218,7 @@ export default function NewPostPage() {
         {/* 成功メッセージ */}
         {success && (
           <Alert severity="success" sx={{ mb: 3 }}>
-            {isDraft ? '下書きが保存されました！' : '投稿が作成されました！'}掲示板にリダイレクトしています...
+            投稿が作成されました！掲示板にリダイレクトしています...
           </Alert>
         )}
 
@@ -383,16 +379,7 @@ export default function NewPostPage() {
                 キャンセル
               </Button>
               
-              <Stack direction="row" spacing={2}>
-                <Button
-                  variant="outlined"
-                  startIcon={<SaveIcon />}
-                  onClick={(e) => handleSubmit(e, true)}
-                  disabled={loading || !title.trim() || !content.trim()}
-                >
-                  {loading && isDraft ? '保存中...' : '下書き保存'}
-                </Button>
-                <Button
+              <Button
                   type="submit"
                   variant="contained"
                   startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <SendIcon />}
@@ -404,7 +391,6 @@ export default function NewPostPage() {
                 >
                   {loading ? '投稿中...' : '投稿する'}
                 </Button>
-              </Stack>
             </Box>
           </form>
         </Paper>

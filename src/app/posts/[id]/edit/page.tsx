@@ -139,7 +139,7 @@ export default function EditPostPage() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent, saveAsDraft = false) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // フロントエンドバリデーション
@@ -181,7 +181,7 @@ export default function EditPostPage() {
           content: content.trim(),
           category,
           tags: tags.filter(tag => tag.trim()),
-          status: saveAsDraft ? 'draft' : 'published'
+          status: 'published'
         }),
       });
 
@@ -522,16 +522,7 @@ export default function EditPostPage() {
                 キャンセル
               </Button>
               
-              <Stack direction="row" spacing={2}>
-                <Button
-                  variant="outlined"
-                  startIcon={<SaveIcon />}
-                  onClick={(e) => handleSubmit(e, true)}
-                  disabled={saving || !title.trim() || !content.trim()}
-                >
-                  {saving ? '保存中...' : '下書き保存'}
-                </Button>
-                <Button
+              <Button
                   type="submit"
                   variant="contained"
                   startIcon={saving ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />}
@@ -543,7 +534,6 @@ export default function EditPostPage() {
                 >
                   {saving ? '更新中...' : '更新'}
                 </Button>
-              </Stack>
             </Box>
           </form>
         </Paper>

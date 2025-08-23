@@ -38,7 +38,11 @@ interface Post {
   _id: string;
   title?: string;
   content: string;
-  author?: string;
+  author?: string | {
+    _id: string;
+    name: string;
+    email: string;
+  };
   createdAt: string;
   updatedAt: string;
   views?: number;
@@ -84,13 +88,11 @@ export default function MyPostsPage() {
   const fetchMyPosts = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/posts');
+      // 専用のmy-postsエンドポイントを使用
+      const response = await fetch('/api/posts/my-posts');
       if (response.ok) {
-        const allPosts = await response.json();
-        // 自分の投稿のみフィルタリング（実際はAPIで行う）
-        const myPosts = allPosts.filter((post: Post) => 
-          post.author === session?.user?.name || post.author === session?.user?.email
-        );
+        const result = await response.json();
+        const myPosts = result.data || [];
         
         // ダミーデータを追加
         if (myPosts.length === 0) {

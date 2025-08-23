@@ -33,12 +33,14 @@ export const authOptions: AuthOptions = {
           await connectDB();
           console.log('✅ [Auth v4] DB接続成功');
           
-          const user = await UserModel.findOne({ email: credentials.email });
+          const user = await UserModel.findOne({ email: credentials.email }).select('+createdAt');
           console.log('🔍 [Auth v4] ユーザー検索結果:', {
             found: !!user,
             email: user?.email,
             hasPassword: !!user?.password,
-            emailVerified: user?.emailVerified
+            emailVerified: user?.emailVerified,
+            createdAt: user?.createdAt,
+            createdAtType: typeof user?.createdAt
           });
           
           if (!user) {
@@ -66,13 +68,25 @@ export const authOptions: AuthOptions = {
 
           console.log('✅ [Auth v4] 認証成功:', user.email);
           
+          // createdAtを確実に取得してISO文字列に変換
+          const createdAtDate = user.createdAt || user._doc?.createdAt || new Date('2024-01-01');
+          const createdAtString = createdAtDate instanceof Date 
+            ? createdAtDate.toISOString() 
+            : new Date(createdAtDate).toISOString();
+          
+          console.log('📅 [Auth v4] createdAt詳細:', {
+            original: user.createdAt,
+            docValue: user._doc?.createdAt,
+            converted: createdAtString
+          });
+          
           return {
             id: user._id.toString(),
             email: user.email,
             name: user.name || user.email,
             emailVerified: user.emailVerified,
             role: user.role,
-            createdAt: user.createdAt?.toISOString() || new Date().toISOString(),
+            createdAt: createdAtString,
           };
         } catch (error) {
           console.error('❌ [Auth v4] 認証エラー:', error);

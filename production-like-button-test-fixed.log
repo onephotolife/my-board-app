@@ -1,0 +1,281 @@
+
+Running 1 test using 1 worker
+
+[1A[2K[1/1] [chromium] › e2e/production-like-button-test.spec.ts:10:7 › Production Like Button Test › いいねボタンの動作とリアルタイム更新を確認
+[1A[2K[chromium] › e2e/production-like-button-test.spec.ts:10:7 › Production Like Button Test › いいねボタンの動作とリアルタイム更新を確認
+📝 Production いいねボタン機能テスト開始
+
+[1A[2K  表示されている投稿数: 7
+
+[1A[2K  投稿ID: 68a931599c50a03bffe50ff6
+
+[1A[2K  初期いいね数: 0
+
+[1A[2K  いいね後の数: 0
+
+[1A[2K  ⚠️ いいね数の増加が期待値と異なる: 0 → 0
+
+[1A[2K  My Posts総いいね数: 1
+
+[1A[2K  投稿1: 0いいね
+
+[1A[2K  計算した総いいね数: 0
+
+[1A[2K\n📊 IPoV (視覚的証拠):
+
+[1A[2K  - ボードページに投稿カードが表示
+
+[1A[2K  - 各投稿にいいねボタン（ハートアイコン）が配置
+
+[1A[2K  - いいね数はバッジで表示
+
+[1A[2K  - クリックでハートアイコンが塗りつぶし/枠線に変化
+
+[1A[2K  - My Postsページで総いいね数が表示
+
+[1A[2K\n📊 == テスト結果サマリー ==
+
+[1A[2K  ボードページ投稿数: 7
+
+[1A[2K  My Posts投稿数: 1
+
+[1A[2K  個別いいね数: [0]
+
+[1A[2K  総いいね数（表示）: 1
+
+[1A[2K  総いいね数（計算）: 0
+
+[1A[2K  一致確認: ❌ 不一致
+
+[1A[2K  検証結果: ❌ FAILED
+
+[1A[2K  1 passed (26.3s)
+<testsuites id="" name="" tests="1" failures="0" skipped="0" errors="0" time="26.341549">
+<testsuite name="production-like-button-test.spec.ts" timestamp="2025-08-23T14:51:41.951Z" hostname="chromium" tests="1" failures="0" skipped="0" time="19.405" errors="0">
+<testcase name="Production Like Button Test › いいねボタンの動作とリアルタイム更新を確認" classname="production-like-button-test.spec.ts" time="19.405">
+<system-out>
+<![CDATA[📝 Production いいねボタン機能テスト開始
+  表示されている投稿数: 7
+  投稿ID: 68a931599c50a03bffe50ff6
+  初期いいね数: 0
+  いいね後の数: 0
+  ⚠️ いいね数の増加が期待値と異なる: 0 → 0
+  My Posts総いいね数: 1
+  投稿1: 0いいね
+  計算した総いいね数: 0
+\n📊 IPoV (視覚的証拠):
+  - ボードページに投稿カードが表示
+  - 各投稿にいいねボタン（ハートアイコン）が配置
+  - いいね数はバッジで表示
+  - クリックでハートアイコンが塗りつぶし/枠線に変化
+  - My Postsページで総いいね数が表示
+\n📊 == テスト結果サマリー ==
+  ボードページ投稿数: 7
+  My Posts投稿数: 1
+  個別いいね数: [0]
+  総いいね数（表示）: 1
+  総いいね数（計算）: 0
+  一致確認: ❌ 不一致
+  検証結果: ❌ FAILED
+]]>
+</system-out>
+</testcase>
+</testsuite>
+</testsuites>
+{
+  "config": {
+    "configFile": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/playwright.config.ts",
+    "rootDir": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/e2e",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "line"
+      ],
+      [
+        "junit"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.55.0",
+    "workers": 1,
+    "webServer": {
+      "command": "npm run dev",
+      "url": "http://localhost:3000",
+      "reuseExistingServer": true,
+      "timeout": 60000,
+      "stdout": "ignore",
+      "stderr": "pipe"
+    }
+  },
+  "suites": [
+    {
+      "title": "production-like-button-test.spec.ts",
+      "file": "production-like-button-test.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Production Like Button Test",
+          "file": "production-like-button-test.spec.ts",
+          "line": 9,
+          "column": 6,
+          "specs": [
+            {
+              "title": "いいねボタンの動作とリアルタイム更新を確認",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 19405,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "📝 Production いいねボタン機能テスト開始\n"
+                        },
+                        {
+                          "text": "  表示されている投稿数: 7\n"
+                        },
+                        {
+                          "text": "  投稿ID: 68a931599c50a03bffe50ff6\n"
+                        },
+                        {
+                          "text": "  初期いいね数: 0\n"
+                        },
+                        {
+                          "text": "  いいね後の数: 0\n"
+                        },
+                        {
+                          "text": "  ⚠️ いいね数の増加が期待値と異なる: 0 → 0\n"
+                        },
+                        {
+                          "text": "  My Posts総いいね数: 1\n"
+                        },
+                        {
+                          "text": "  投稿1: 0いいね\n"
+                        },
+                        {
+                          "text": "  計算した総いいね数: 0\n"
+                        },
+                        {
+                          "text": "\\n📊 IPoV (視覚的証拠):\n"
+                        },
+                        {
+                          "text": "  - ボードページに投稿カードが表示\n"
+                        },
+                        {
+                          "text": "  - 各投稿にいいねボタン（ハートアイコン）が配置\n"
+                        },
+                        {
+                          "text": "  - いいね数はバッジで表示\n"
+                        },
+                        {
+                          "text": "  - クリックでハートアイコンが塗りつぶし/枠線に変化\n"
+                        },
+                        {
+                          "text": "  - My Postsページで総いいね数が表示\n"
+                        },
+                        {
+                          "text": "\\n📊 == テスト結果サマリー ==\n"
+                        },
+                        {
+                          "text": "  ボードページ投稿数: 7\n"
+                        },
+                        {
+                          "text": "  My Posts投稿数: 1\n"
+                        },
+                        {
+                          "text": "  個別いいね数: [0]\n"
+                        },
+                        {
+                          "text": "  総いいね数（表示）: 1\n"
+                        },
+                        {
+                          "text": "  総いいね数（計算）: 0\n"
+                        },
+                        {
+                          "text": "  一致確認: ❌ 不一致\n"
+                        },
+                        {
+                          "text": "  検証結果: ❌ FAILED\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-23T14:51:42.420Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "412d035a35651dc81ea1-91ad1ef3d944280d1589",
+              "file": "production-like-button-test.spec.ts",
+              "line": 10,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-08-23T14:51:35.677Z",
+    "duration": 26341.549,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

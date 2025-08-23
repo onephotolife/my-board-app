@@ -1,0 +1,97 @@
+
+Running 1 test using 1 worker
+
+[1A[2K[1/1] [chromium] › e2e/debug-like-api.spec.ts:10:7 › Debug Like API Test › APIレスポンスとユーザーID形式を詳細調査
+[1A[2K[chromium] › e2e/debug-like-api.spec.ts:10:7 › Debug Like API Test › APIレスポンスとユーザーID形式を詳細調査
+🔍 Like API Debug テスト開始
+
+[1A[2K🎯 対象投稿ID: 68a931599c50a03bffe50ff6
+
+[1A[2K📊 クリック前いいね数: 1
+
+[1A[2K📤 API Request: PATCH https://board.blankbrainai.com/api/posts/68a931599c50a03bffe50ff6
+
+[1A[2K👆 いいねボタンをクリックしました
+
+[1A[2K[2/1] (retries) [chromium] › e2e/debug-like-api.spec.ts:10:7 › Debug Like API Test › APIレスポンスとユーザーID形式を詳細調査 (retry #1)
+[1A[2K🔍 Like API Debug テスト開始
+
+[1A[2K🎯 対象投稿ID: 68a931599c50a03bffe50ff6
+
+[1A[2K📊 クリック前いいね数: 0
+
+[1A[2K📤 API Request: PATCH https://board.blankbrainai.com/api/posts/68a931599c50a03bffe50ff6
+
+[1A[2K👆 いいねボタンをクリックしました
+
+[1A[2K  1) [chromium] › e2e/debug-like-api.spec.ts:10:7 › Debug Like API Test › APIレスポンスとユーザーID形式を詳細調査 ───
+
+    TypeError: object is not iterable (cannot read property Symbol(Symbol.iterator))
+
+      37 |             url: request.url(),
+      38 |             method: request.method(),
+    > 39 |             headers: Object.fromEntries(request.headers()),
+         |                             ^
+      40 |             postData: request.postData()
+      41 |           });
+      42 |         }
+        at Page.<anonymous> (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/e2e/debug-like-api.spec.ts:39:29)
+
+    Error: page.waitForTimeout: Test ended.
+
+      94 |       
+      95 |       // 少し待機してAPIレスポンスを待つ
+    > 96 |       await page.waitForTimeout(3000);
+         |                  ^
+      97 |       
+      98 |       // クリック後の状態
+      99 |       const afterLikeCount = await likeCount.textContent() || '0';
+        at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/e2e/debug-like-api.spec.ts:96:18
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/debug-like-api-Debug-Like-API-Test-APIレスポンスとユーザーID形式を詳細調査-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/debug-like-api-Debug-Like-API-Test-APIレスポンスとユーザーID形式を詳細調査-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    TypeError: object is not iterable (cannot read property Symbol(Symbol.iterator))
+
+      37 |             url: request.url(),
+      38 |             method: request.method(),
+    > 39 |             headers: Object.fromEntries(request.headers()),
+         |                             ^
+      40 |             postData: request.postData()
+      41 |           });
+      42 |         }
+        at Page.<anonymous> (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/e2e/debug-like-api.spec.ts:39:29)
+
+    Error: page.waitForTimeout: Test ended.
+
+      94 |       
+      95 |       // 少し待機してAPIレスポンスを待つ
+    > 96 |       await page.waitForTimeout(3000);
+         |                  ^
+      97 |       
+      98 |       // クリック後の状態
+      99 |       const afterLikeCount = await likeCount.textContent() || '0';
+        at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/e2e/debug-like-api.spec.ts:96:18
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/debug-like-api-Debug-Like-API-Test-APIレスポンスとユーザーID形式を詳細調査-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/debug-like-api-Debug-Like-API-Test-APIレスポンスとユーザーID形式を詳細調査-chromium-retry1/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/debug-like-api-Debug-Like-API-Test-APIレスポンスとユーザーID形式を詳細調査-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/debug-like-api-Debug-Like-API-Test-APIレスポンスとユーザーID形式を詳細調査-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K  1 failed
+    [chromium] › e2e/debug-like-api.spec.ts:10:7 › Debug Like API Test › APIレスポンスとユーザーID形式を詳細調査 ────

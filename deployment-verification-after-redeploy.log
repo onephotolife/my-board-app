@@ -1,0 +1,56 @@
+
+Running 1 test using 1 worker
+
+[1A[2K[1/1] [chromium] › e2e/verify-code-deployment.spec.ts:10:7 › Code Deployment Verification › コード変更が本番環境に正しくデプロイされているかを確認
+[1A[2K[chromium] › e2e/verify-code-deployment.spec.ts:10:7 › Code Deployment Verification › コード変更が本番環境に正しくデプロイされているかを確認
+🔍 デプロイメント検証開始
+
+[1A[2K🖥️  Console: 📊 signIn結果: {error: null, status: 200, ok: true, url: https://board.blankbrainai.com/dashboard}
+
+[1A[2K🖥️  Console: ✅ ログイン成功、リダイレクト中...
+
+[1A[2K🖥️  Console: ✅ 認証済み・確認済みユーザー、useEffect内即座リダイレクト
+
+[1A[2K🔧 環境情報: {
+  "hasReactDevTools": false,
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.7339.16 Safari/537.36",
+  "location": "https://board.blankbrainai.com/board",
+  "timestamp": "2025-08-23T14:57:39.141Z"
+}
+
+[1A[2K🔍 コード確認: {
+  "foundHandleLike": false,
+  "foundSetPosts": false
+}
+
+[1A[2K🎯 対象投稿ID: 68a931599c50a03bffe50ff6
+
+[1A[2K📊 クリック前: 1
+
+[1A[2K👆 いいねボタンクリック実行
+
+[1A[2K📊 2秒後: 1
+
+[1A[2K📊 5秒後: 1
+
+[1A[2K📈 変化あり: false (1 → 1)
+
+[1A[2K\n📋 いいね関連ログサマリー:
+
+[1A[2K  1: ✅ ログイン成功、リダイレクト中...
+
+[1A[2K  2: ✅ 認証済み・確認済みユーザー、useEffect内即座リダイレクト
+
+[1A[2K\n📊 == 検証結果 ==
+
+[1A[2K  コンソールログ総数: 31
+
+[1A[2K  いいね関連ログ数: 2
+
+[1A[2K  handleLike発見: false
+
+[1A[2K  setPosts発見: false
+
+[1A[2K  検証完了: ✅
+
+[1A[2K  1 passed (23.5s)

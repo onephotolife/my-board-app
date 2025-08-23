@@ -121,7 +121,9 @@ export default function ProfilePage() {
       <Box sx={{ 
         flex: 1,
         pt: { xs: 8, md: 0 },  // モバイル時はAppBarの高さ分のpadding-topを追加（64px）
-        overflow: 'auto'
+        overflow: 'auto',
+        position: 'relative',
+        zIndex: 1
       }}>
         <Container maxWidth="md" sx={{ py: 4 }}>
           <Typography variant="h4" gutterBottom fontWeight="bold">

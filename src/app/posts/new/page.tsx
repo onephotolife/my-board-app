@@ -207,7 +207,9 @@ export default function NewPostPage() {
         flex: 1, 
         py: 4,
         pt: { xs: 8, md: 4 },  // モバイル時はAppBarの高さ分のpadding-topを追加（64px）
-        overflow: 'auto'
+        overflow: 'auto',
+        position: 'relative',
+        zIndex: 1
       }}>
         <Container maxWidth="md">
           {/* ヘッダー */}

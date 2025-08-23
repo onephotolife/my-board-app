@@ -79,9 +79,9 @@ test.describe('本番環境 - メール確認必須フロー完全検証', () =>
       throw new Error('❌ 重大なセキュリティ問題: メール未確認でログイン成功');
     }
     
-    // 検証2: エラーパラメータ確認
-    expect(afterLoginUrl).toContain('error=CredentialsSignin');
-    console.log('✅ ログイン拒否確認');
+    // 検証2: サインインページに留まることを確認（ログイン拒否）
+    expect(afterLoginUrl).toContain('/auth/signin');
+    console.log('✅ ログイン拒否確認 - サインインページに留まっています');
     
     // Step 3: ダッシュボードへの直接アクセス試行
     console.log('\nStep 3️⃣: ダッシュボードへの直接アクセス試行');

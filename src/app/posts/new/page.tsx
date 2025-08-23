@@ -200,19 +200,26 @@ export default function NewPostPage() {
   };
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f5f5f5' }}>
+    <>
       <Sidebar />
-      
       <Box sx={{ 
-        flex: 1, 
-        py: 4,
-        pt: { xs: 8, md: 4 },  // モバイル時はAppBarの高さ分のpadding-topを追加（64px）
-        overflow: 'auto',
-        position: 'relative',
-        zIndex: 1,
-        width: { xs: '100%', md: 'auto' },  // モバイルでは全幅
-        minWidth: 0  // flexboxの最小幅制約を解除
+        display: { xs: 'block', md: 'flex' },
+        minHeight: '100vh', 
+        bgcolor: '#f5f5f5'
       }}>
+        <Box sx={{ 
+          display: { xs: 'none', md: 'block' },
+          width: 280,
+          flexShrink: 0
+        }} />
+        
+        <Box sx={{ 
+          flex: 1, 
+          py: 4,
+          pt: { xs: 8, md: 4 },  // モバイル時はAppBarの高さ分のpadding-topを追加（64px）
+          overflow: 'auto',
+          width: '100%'
+        }}>
         <Container maxWidth="md">
           {/* ヘッダー */}
           <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -398,6 +405,7 @@ export default function NewPostPage() {
           </Paper>
         </Container>
       </Box>
-    </Box>
+      </Box>
+    </>
   );
 }

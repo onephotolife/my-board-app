@@ -115,18 +115,25 @@ export default function ProfilePage() {
   }
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f5f5f5' }}>
+    <>
       <Sidebar />
-      
       <Box sx={{ 
-        flex: 1,
-        pt: { xs: 8, md: 0 },  // モバイル時はAppBarの高さ分のpadding-topを追加（64px）
-        overflow: 'auto',
-        position: 'relative',
-        zIndex: 1,
-        width: { xs: '100%', md: 'auto' },  // モバイルでは全幅
-        minWidth: 0  // flexboxの最小幅制約を解除
+        display: { xs: 'block', md: 'flex' },
+        minHeight: '100vh', 
+        bgcolor: '#f5f5f5'
       }}>
+        <Box sx={{ 
+          display: { xs: 'none', md: 'block' },
+          width: 280,
+          flexShrink: 0
+        }} />
+        
+        <Box sx={{ 
+          flex: 1,
+          pt: { xs: 8, md: 0 },  // モバイル時はAppBarの高さ分のpadding-topを追加（64px）
+          overflow: 'auto',
+          width: '100%'
+        }}>
         <Container maxWidth="md" sx={{ py: 4 }}>
           <Typography variant="h4" gutterBottom fontWeight="bold">
             プロフィール
@@ -290,6 +297,7 @@ export default function ProfilePage() {
           </Card>
         </Container>
       </Box>
-    </Box>
+      </Box>
+    </>
   );
 }

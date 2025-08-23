@@ -97,7 +97,13 @@ export default function ProfilePage() {
     return (
       <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f5f5f5' }}>
         <Sidebar />
-        <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Box sx={{ 
+        flex: 1, 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        pt: { xs: 8, md: 0 }  // モバイル時はAppBarの高さ分のpadding-topを追加
+      }}>
           <CircularProgress />
         </Box>
       </Box>
@@ -112,7 +118,10 @@ export default function ProfilePage() {
     <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f5f5f5' }}>
       <Sidebar />
       
-      <Box sx={{ flex: 1 }}>
+      <Box sx={{ 
+        flex: 1,
+        pt: { xs: 8, md: 0 }  // モバイル時はAppBarの高さ分のpadding-topを追加
+      }}>
         <Container maxWidth="md" sx={{ py: 4 }}>
           <Typography variant="h4" gutterBottom fontWeight="bold">
             プロフィール

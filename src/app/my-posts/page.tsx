@@ -170,7 +170,13 @@ export default function MyPostsPage() {
 
   if (status === 'loading') {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        minHeight: '100vh',
+        pt: { xs: 8, md: 0 }  // モバイル時はAppBarの高さ分のpadding-topを追加
+      }}>
         <CircularProgress />
       </Box>
     );
@@ -180,7 +186,10 @@ export default function MyPostsPage() {
     <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f5f5f5' }}>
       <Sidebar />
       
-      <Box sx={{ flex: 1 }}>
+      <Box sx={{ 
+        flex: 1,
+        pt: { xs: 8, md: 0 }  // モバイル時はAppBarの高さ分のpadding-topを追加
+      }}>
         {/* ヘッダー */}
         <Box
           sx={{

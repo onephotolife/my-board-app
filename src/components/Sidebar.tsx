@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
@@ -13,7 +14,11 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
-  Button
+  Button,
+  Drawer,
+  IconButton,
+  AppBar,
+  Toolbar
 } from '@mui/material';
 import {
   Dashboard as DashboardIcon,
@@ -22,13 +27,20 @@ import {
   Person as PersonIcon,
   Logout as LogoutIcon,
   Settings as SettingsIcon,
-  Article as ArticleIcon
+  Article as ArticleIcon,
+  Menu as MenuIcon,
+  Close as CloseIcon
 } from '@mui/icons-material';
 
 export default function Sidebar() {
   const { data: session } = useSession();
   const router = useRouter();
   const pathname = usePathname();
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
 
   const handleSignOut = async () => {
     console.log('🚪 ログアウト処理開始');
@@ -74,20 +86,8 @@ export default function Sidebar() {
     }
   ];
 
-  return (
-    <Box
-      sx={{
-        width: 280,
-        bgcolor: 'white',
-        borderRight: '1px solid #e0e0e0',
-        p: 3,
-        display: { xs: 'none', md: 'block' },
-        height: '100vh',
-        position: 'sticky',
-        top: 0,
-        overflowY: 'auto'
-      }}
-    >
+  const sidebarContent = (
+    <Box sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
       <Box sx={{ mb: 4, textAlign: 'center' }}>
         <Avatar
           sx={{
@@ -122,7 +122,10 @@ export default function Sidebar() {
           <ListItem 
             key={item.path}
             button 
-            onClick={() => router.push(item.path)}
+            onClick={() => {
+              router.push(item.path);
+              setMobileOpen(false);
+            }}
             selected={pathname === item.path}
             sx={{
               borderRadius: 1,
@@ -145,6 +148,8 @@ export default function Sidebar() {
         ))}
       </List>
 
+      <Box sx={{ flexGrow: 1 }} />
+
       <Divider sx={{ my: 3 }} />
 
       <Button
@@ -164,5 +169,75 @@ export default function Sidebar() {
         ログアウト
       </Button>
     </Box>
+  );
+
+  return (
+    <>
+      {/* モバイル用のAppBar */}
+      <AppBar
+        position="fixed"
+        sx={{
+          display: { xs: 'block', md: 'none' },
+          bgcolor: 'white',
+          color: 'text.primary',
+          boxShadow: 1
+        }}
+      >
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            edge="start"
+            onClick={handleDrawerToggle}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" noWrap component="div">
+            会員制掲示板
+          </Typography>
+        </Toolbar>
+      </AppBar>
+
+      {/* モバイル用のDrawer */}
+      <Drawer
+        variant="temporary"
+        open={mobileOpen}
+        onClose={handleDrawerToggle}
+        ModalProps={{
+          keepMounted: true,
+        }}
+        sx={{
+          display: { xs: 'block', md: 'none' },
+          '& .MuiDrawer-paper': { 
+            boxSizing: 'border-box', 
+            width: 280,
+            bgcolor: 'white'
+          },
+        }}
+      >
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 1 }}>
+          <IconButton onClick={handleDrawerToggle}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
+        {sidebarContent}
+      </Drawer>
+
+      {/* デスクトップ用のサイドバー */}
+      <Box
+        sx={{
+          width: 280,
+          bgcolor: 'white',
+          borderRight: '1px solid #e0e0e0',
+          display: { xs: 'none', md: 'block' },
+          height: '100vh',
+          position: 'sticky',
+          top: 0,
+          overflowY: 'auto'
+        }}
+      >
+        {sidebarContent}
+      </Box>
+    </>
   );
 }

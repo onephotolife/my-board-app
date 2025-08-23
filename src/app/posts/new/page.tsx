@@ -203,7 +203,11 @@ export default function NewPostPage() {
     <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f5f5f5' }}>
       <Sidebar />
       
-      <Box sx={{ flex: 1, py: 4 }}>
+      <Box sx={{ 
+        flex: 1, 
+        py: 4,
+        pt: { xs: 12, md: 4 }  // モバイル時はAppBarの高さ分のpadding-topを追加
+      }}>
         <Container maxWidth="md">
           {/* ヘッダー */}
           <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>

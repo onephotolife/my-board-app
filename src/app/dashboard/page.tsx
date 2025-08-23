@@ -141,11 +141,13 @@ export default function DashboardPage() {
   const fetchUserStats = async () => {
     // 実際のAPIがあれば使用、今はモックデータ
     if (session?.user) {
+      // 既存ユーザーの場合、デフォルトの登録日を設定（2024年1月1日）
+      const defaultMemberSince = '2024-01-01T00:00:00Z';
       setUserStats({
         totalPosts: Math.floor(Math.random() * 50) + 1,
         todayPosts: Math.floor(Math.random() * 5),
         lastLogin: new Date().toISOString(),
-        memberSince: session.user.createdAt || new Date().toISOString()
+        memberSince: session.user.createdAt || defaultMemberSince
       });
     }
   };

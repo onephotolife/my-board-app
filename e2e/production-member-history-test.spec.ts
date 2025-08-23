@@ -82,10 +82,10 @@ test.describe('本番環境: メンバー歴表示テスト', () => {
       });
       console.log('📸 スクリーンショット保存');
       
-      // アサーション - 580日以上620日以下の範囲で確認
+      // アサーション - 810日以上820日以下の範囲で確認（2023年6月1日から計算）
       expect(memberSinceLabel).toBeTruthy();
-      expect(dayValue).toBeGreaterThan(580);
-      expect(dayValue).toBeLessThan(620);
+      expect(dayValue).toBeGreaterThan(810);
+      expect(dayValue).toBeLessThan(820);
       
       console.log('✅ メンバー歴が正しく表示されています');
       

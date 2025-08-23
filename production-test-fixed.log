@@ -1,0 +1,329 @@
+
+Running 1 test using 1 worker
+
+[1A[2K[1/1] [chromium] › e2e/production-auth-test.spec.ts:8:7 › 本番環境認証・権限テスト › 完全な認証フローと権限管理の検証
+[1A[2K[chromium] › e2e/production-auth-test.spec.ts:8:7 › 本番環境認証・権限テスト › 完全な認証フローと権限管理の検証
+===== 本番環境テスト開始 =====
+
+[1A[2K環境: https://board.blankbrainai.com
+
+[1A[2K実行時刻: 2025-08-23T14:01:01.116Z
+
+[1A[2K
+[Step 1] ログインページアクセス
+
+[1A[2Kログインフォーム表示: ❌
+
+[1A[2K
+[Step 2] ログイン実行
+
+[1A[2Kログイン結果: ✅ 成功
+
+[1A[2K現在のURL: https://board.blankbrainai.com/dashboard
+
+[1A[2K
+[Step 3] ダッシュボードアクセス
+
+[1A[2Kダッシュボードアクセス: ✅ 可能
+
+[1A[2K
+[Step 4] 掲示板での権限確認
+
+[1A[2K投稿数: [33m7[39m
+
+[1A[2K編集ボタン: { [32m'表示'[39m: [32m'❌'[39m, [32m'有効'[39m: [32m'❌'[39m }
+
+[1A[2K削除ボタン: { [32m'表示'[39m: [32m'❌'[39m, [32m'有効'[39m: [32m'❌'[39m }
+
+[1A[2K
+[Step 5] 新規投稿ページアクセス
+
+[1A[2K新規投稿ページアクセス: ✅ 可能
+
+[1A[2K投稿フォーム要素: { [32m'タイトル'[39m: [32m'✅'[39m, [32m'本文'[39m: [32m'✅'[39m, [32m'送信ボタン'[39m: [32m'✅'[39m }
+
+[1A[2K
+[Step 6] My Postsページ
+
+[1A[2KMy Postsページアクセス: ✅ 可能
+
+[1A[2K自分の投稿数: [33m1[39m
+
+[1A[2K
+===== 本番環境テスト完了 =====
+
+[1A[2Kスクリーンショット:
+
+[1A[2K  - test-results/prod-before-login.png
+
+[1A[2K  - test-results/prod-after-login.png
+
+[1A[2K  - test-results/prod-final.png
+
+[1A[2K実行時刻: 2025-08-23T14:01:50.771Z
+
+[1A[2K  1 passed (57.4s)
+<testsuites id="" name="" tests="1" failures="0" skipped="0" errors="0" time="57.412493999999995">
+<testsuite name="production-auth-test.spec.ts" timestamp="2025-08-23T14:01:00.461Z" hostname="chromium" tests="1" failures="0" skipped="0" time="49.884" errors="0">
+<testcase name="本番環境認証・権限テスト › 完全な認証フローと権限管理の検証" classname="production-auth-test.spec.ts" time="49.884">
+<system-out>
+<![CDATA[===== 本番環境テスト開始 =====
+環境: https://board.blankbrainai.com
+実行時刻: 2025-08-23T14:01:01.116Z
+
+[Step 1] ログインページアクセス
+ログインフォーム表示: ❌
+
+[Step 2] ログイン実行
+ログイン結果: ✅ 成功
+現在のURL: https://board.blankbrainai.com/dashboard
+
+[Step 3] ダッシュボードアクセス
+ダッシュボードアクセス: ✅ 可能
+
+[Step 4] 掲示板での権限確認
+投稿数: [33m7[39m
+編集ボタン: { [32m'表示'[39m: [32m'❌'[39m, [32m'有効'[39m: [32m'❌'[39m }
+削除ボタン: { [32m'表示'[39m: [32m'❌'[39m, [32m'有効'[39m: [32m'❌'[39m }
+
+[Step 5] 新規投稿ページアクセス
+新規投稿ページアクセス: ✅ 可能
+投稿フォーム要素: { [32m'タイトル'[39m: [32m'✅'[39m, [32m'本文'[39m: [32m'✅'[39m, [32m'送信ボタン'[39m: [32m'✅'[39m }
+
+[Step 6] My Postsページ
+My Postsページアクセス: ✅ 可能
+自分の投稿数: [33m1[39m
+
+===== 本番環境テスト完了 =====
+スクリーンショット:
+  - test-results/prod-before-login.png
+  - test-results/prod-after-login.png
+  - test-results/prod-final.png
+実行時刻: 2025-08-23T14:01:50.771Z
+
+[[ATTACHMENT|test-results/production-auth-test-本番環境認証・権限テスト-完全な認証フローと権限管理の検証-chromium/trace.zip]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+</testsuites>
+{
+  "config": {
+    "configFile": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/playwright.config.ts",
+    "rootDir": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/e2e",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "line"
+      ],
+      [
+        "html"
+      ],
+      [
+        "junit"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.55.0",
+    "workers": 1,
+    "webServer": {
+      "command": "npm run dev",
+      "url": "http://localhost:3000",
+      "reuseExistingServer": true,
+      "timeout": 60000,
+      "stdout": "ignore",
+      "stderr": "pipe"
+    }
+  },
+  "suites": [
+    {
+      "title": "production-auth-test.spec.ts",
+      "file": "production-auth-test.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "本番環境認証・権限テスト",
+          "file": "production-auth-test.spec.ts",
+          "line": 7,
+          "column": 6,
+          "specs": [
+            {
+              "title": "完全な認証フローと権限管理の検証",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 49884,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "===== 本番環境テスト開始 =====\n"
+                        },
+                        {
+                          "text": "環境: https://board.blankbrainai.com\n"
+                        },
+                        {
+                          "text": "実行時刻: 2025-08-23T14:01:01.116Z\n"
+                        },
+                        {
+                          "text": "\n[Step 1] ログインページアクセス\n"
+                        },
+                        {
+                          "text": "ログインフォーム表示: ❌\n"
+                        },
+                        {
+                          "text": "\n[Step 2] ログイン実行\n"
+                        },
+                        {
+                          "text": "ログイン結果: ✅ 成功\n"
+                        },
+                        {
+                          "text": "現在のURL: https://board.blankbrainai.com/dashboard\n"
+                        },
+                        {
+                          "text": "\n[Step 3] ダッシュボードアクセス\n"
+                        },
+                        {
+                          "text": "ダッシュボードアクセス: ✅ 可能\n"
+                        },
+                        {
+                          "text": "\n[Step 4] 掲示板での権限確認\n"
+                        },
+                        {
+                          "text": "投稿数: \u001b[33m7\u001b[39m\n"
+                        },
+                        {
+                          "text": "編集ボタン: { \u001b[32m'表示'\u001b[39m: \u001b[32m'❌'\u001b[39m, \u001b[32m'有効'\u001b[39m: \u001b[32m'❌'\u001b[39m }\n"
+                        },
+                        {
+                          "text": "削除ボタン: { \u001b[32m'表示'\u001b[39m: \u001b[32m'❌'\u001b[39m, \u001b[32m'有効'\u001b[39m: \u001b[32m'❌'\u001b[39m }\n"
+                        },
+                        {
+                          "text": "\n[Step 5] 新規投稿ページアクセス\n"
+                        },
+                        {
+                          "text": "新規投稿ページアクセス: ✅ 可能\n"
+                        },
+                        {
+                          "text": "投稿フォーム要素: { \u001b[32m'タイトル'\u001b[39m: \u001b[32m'✅'\u001b[39m, \u001b[32m'本文'\u001b[39m: \u001b[32m'✅'\u001b[39m, \u001b[32m'送信ボタン'\u001b[39m: \u001b[32m'✅'\u001b[39m }\n"
+                        },
+                        {
+                          "text": "\n[Step 6] My Postsページ\n"
+                        },
+                        {
+                          "text": "My Postsページアクセス: ✅ 可能\n"
+                        },
+                        {
+                          "text": "自分の投稿数: \u001b[33m1\u001b[39m\n"
+                        },
+                        {
+                          "text": "\n===== 本番環境テスト完了 =====\n"
+                        },
+                        {
+                          "text": "スクリーンショット:\n"
+                        },
+                        {
+                          "text": "  - test-results/prod-before-login.png\n"
+                        },
+                        {
+                          "text": "  - test-results/prod-after-login.png\n"
+                        },
+                        {
+                          "text": "  - test-results/prod-final.png\n"
+                        },
+                        {
+                          "text": "実行時刻: 2025-08-23T14:01:50.771Z\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-23T14:01:00.887Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/production-auth-test-本番環境認証・権限テスト-完全な認証フローと権限管理の検証-chromium/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1e639245bba651401f98-368df63420ba0ac6789d",
+              "file": "production-auth-test.spec.ts",
+              "line": 8,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-08-23T14:00:53.619Z",
+    "duration": 57412.494,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}
+
+To open last HTML report run:
+[36m[39m
+[36m  npx playwright show-report[39m
+[36m[39m

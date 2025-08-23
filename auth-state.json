@@ -1,0 +1,14 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "https://board.blankbrainai.com",
+      "localStorage": [
+        {
+          "name": "auth-debug-logs",
+          "value": "[{\"timestamp\":\"2025-08-23T12:56:27.326Z\",\"message\":\"Page loaded\",\"data\":{\"url\":\"https://board.blankbrainai.com/auth/signin\",\"pathname\":\"/auth/signin\",\"search\":\"\",\"referrer\":\"\",\"timestamp\":1755953787326}}]"
+        }
+      ]
+    }
+  ]
+}

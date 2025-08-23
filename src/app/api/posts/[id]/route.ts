@@ -228,8 +228,11 @@ export async function PATCH(
     // 認証チェック
     const user = await getAuthenticatedUser(req);
     if (!user) {
+      console.log('🚫 いいねAPI: 認証失敗');
       return createErrorResponse('認証が必要です', 401, 'UNAUTHORIZED');
     }
+
+    console.log('✅ いいねAPI: 認証成功', { userId: user.id, email: user.email });
 
     const { id } = await params;
     const { action } = await req.json();
@@ -244,6 +247,7 @@ export async function PATCH(
     const post = await Post.findById(id);
     
     if (!post) {
+      console.log('🚫 投稿が見つかりません:', id);
       return createErrorResponse('投稿が見つかりません', 404, 'NOT_FOUND');
     }
     
@@ -252,10 +256,24 @@ export async function PATCH(
       return createErrorResponse('投稿が見つかりません', 404, 'NOT_FOUND');
     }
     
+    console.log('📝 いいね処理前:', { 
+      postId: id, 
+      currentLikes: post.likes,
+      userId: user.id,
+      alreadyLiked: post.likes.includes(user.id)
+    });
+    
     // いいねをトグル
     const updatedPost = await post.toggleLike(user.id);
     
     const isLiked = updatedPost.likes.includes(user.id);
+    
+    console.log('📝 いいね処理後:', { 
+      postId: id, 
+      newLikes: updatedPost.likes,
+      isLiked,
+      likeCount: updatedPost.likes.length
+    });
     
     // Socket.ioでいいね更新をブロードキャスト
     broadcastEvent('post:liked', {

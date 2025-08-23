@@ -214,11 +214,32 @@ export default function RealtimeBoard() {
 
       const data = await response.json();
 
-      if (data.success && socket) {
-        socket.emit('post:like', {
-          postId,
-          action: data.data.isLiked ? 'liked' : 'unliked',
-        });
+      if (data.success) {
+        // 即座にローカル状態を更新
+        setPosts(prevPosts =>
+          prevPosts.map(post =>
+            post._id === postId
+              ? {
+                  ...post,
+                  likes: data.data.isLiked 
+                    ? [...(post.likes || []), session?.user?.id || '']
+                    : (post.likes || []).filter(id => id !== session?.user?.id),
+                  isLikedByUser: data.data.isLiked
+                }
+              : post
+          )
+        );
+
+        // Socket.ioでリアルタイム更新も送信
+        if (socket) {
+          socket.emit('post:like', {
+            postId,
+            action: data.data.isLiked ? 'liked' : 'unliked',
+            userId: session?.user?.id,
+          });
+        }
+      } else {
+        console.error('いいねAPI エラー:', data.error);
       }
     } catch (err) {
       console.error('いいねエラー:', err);

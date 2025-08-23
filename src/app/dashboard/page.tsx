@@ -41,26 +41,17 @@ import {
 } from '@mui/icons-material';
 import { signOut } from 'next-auth/react';
 
-// 日付フォーマット関数
+// 日付フォーマット関数（メンバー歴は日数で表示）
 const formatTimeAgo = (date: string | Date | undefined) => {
   if (!date) return '不明';
   
   const now = new Date();
   const past = new Date(date);
   const diffMs = now.getTime() - past.getTime();
-  const diffSec = Math.floor(diffMs / 1000);
-  const diffMin = Math.floor(diffSec / 60);
-  const diffHour = Math.floor(diffMin / 60);
-  const diffDay = Math.floor(diffHour / 24);
-  const diffMonth = Math.floor(diffDay / 30);
-  const diffYear = Math.floor(diffDay / 365);
-
-  if (diffYear > 0) return `${diffYear}年`;
-  if (diffMonth > 0) return `${diffMonth}ヶ月`;
-  if (diffDay > 0) return `${diffDay}日`;
-  if (diffHour > 0) return `${diffHour}時間`;
-  if (diffMin > 0) return `${diffMin}分`;
-  return 'たった今';
+  const diffDay = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  
+  // 常に日数で表示（0日の場合も「0日」と表示）
+  return `${diffDay}日`;
 };
 
 interface Post {

@@ -206,7 +206,9 @@ export default function DashboardPage() {
         overflow: 'auto',
         pt: { xs: 8, md: 0 },  // モバイル時はAppBarの高さ分のpadding-topを追加（64px）
         position: 'relative',
-        zIndex: 1
+        zIndex: 1,
+        width: { xs: '100%', md: 'auto' },  // モバイルでは全幅
+        minWidth: 0  // flexboxの最小幅制約を解除
       }}>
         {/* ヘッダー */}
         <Box

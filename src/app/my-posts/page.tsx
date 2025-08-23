@@ -176,9 +176,7 @@ export default function MyPostsPage() {
     switch (tabValue) {
       case 0: // すべて
         return posts;
-      case 1: // 公開済み
-        return posts.filter(p => p.status !== 'archived');
-      case 2: // アーカイブ
+      case 1: // アーカイブ
         return posts.filter(p => p.status === 'archived');
       default:
         return posts;
@@ -302,7 +300,6 @@ export default function MyPostsPage() {
             variant="fullWidth"
           >
             <Tab label={`すべて (${posts.length})`} />
-            <Tab label={`公開済み (${posts.filter(p => p.status !== 'archived').length})`} />
             <Tab label={`アーカイブ (${posts.filter(p => p.status === 'archived').length})`} />
           </Tabs>
         </Paper>

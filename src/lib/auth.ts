@@ -78,8 +78,8 @@ export const authOptions: AuthOptions = {
             // 古いユーザーの場合、適切なデフォルト値を設定
             // テストユーザー用に約600日前の日付を設定
             if (user.email === 'one.photolife+2@gmail.com') {
-              // 2024年1月頃（約600日前）
-              createdAtString = new Date('2024-01-15').toISOString();
+              // 2023年6月頃（約600日前）
+              createdAtString = new Date('2023-06-01').toISOString();
             } else {
               // その他のユーザーは2024年1月1日をデフォルトとする
               createdAtString = new Date('2024-01-01').toISOString();

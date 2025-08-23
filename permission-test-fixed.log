@@ -1,0 +1,727 @@
+
+Running 6 tests using 1 worker
+
+[1A[2K[1/6] [chromium] › e2e/production-permission-test.spec.ts:45:7 › Production Permission Management Tests › 1. 権限管理: 投稿の編集・削除ボタン表示確認
+[1A[2K[chromium] › e2e/production-permission-test.spec.ts:45:7 › Production Permission Management Tests › 1. 権限管理: 投稿の編集・削除ボタン表示確認
+📝 テスト1: 投稿の編集・削除ボタン表示確認
+
+[1A[2K  投稿数: 7
+
+[1A[2K  投稿1: 著者="テスト太郎_1755875457111", 編集=false, 削除=false
+
+[1A[2K    ✅ 他人の投稿: ボタン非表示確認
+
+[1A[2K  投稿2: 著者="noreply", 編集=false, 削除=false
+
+[1A[2K    ✅ 他人の投稿: ボタン非表示確認
+
+[1A[2K  投稿3: 著者="noreply", 編集=false, 削除=false
+
+[1A[2K    ✅ 他人の投稿: ボタン非表示確認
+
+[1A[2K  投稿4: 著者="山岸", 編集=false, 削除=false
+
+[1A[2K    ✅ 他人の投稿: ボタン非表示確認
+
+[1A[2K  投稿5: 著者="山岸", 編集=false, 削除=false
+
+[1A[2K    ✅ 他人の投稿: ボタン非表示確認
+
+[1A[2K  投稿6: 著者="山岸", 編集=false, 削除=false
+
+[1A[2K    ✅ 他人の投稿: ボタン非表示確認
+
+[1A[2K  投稿7: 著者="山岸", 編集=false, 削除=false
+
+[1A[2K    ✅ 他人の投稿: ボタン非表示確認
+
+[1A[2K
+📊 テスト "1. 権限管理: 投稿の編集・削除ボタン表示確認" 完了
+
+[1A[2K  状態: passed
+
+[1A[2K  実行時間: 13394ms
+
+[1A[2K[2/6] [chromium] › e2e/production-permission-test.spec.ts:98:7 › Production Permission Management Tests › 2. 権限管理: 自分の投稿編集機能
+[1A[2K[chromium] › e2e/production-permission-test.spec.ts:98:7 › Production Permission Management Tests › 2. 権限管理: 自分の投稿編集機能
+📝 テスト2: 自分の投稿編集機能
+
+[1A[2K  ⚠️ 編集可能な投稿がありません
+
+[1A[2K
+📊 テスト "2. 権限管理: 自分の投稿編集機能" 完了
+
+[1A[2K  状態: passed
+
+[1A[2K  実行時間: 10123ms
+
+[1A[2K[3/6] [chromium] › e2e/production-permission-test.spec.ts:149:7 › Production Permission Management Tests › 3. 権限管理: 他人の投稿への不正アクセス
+[1A[2K[chromium] › e2e/production-permission-test.spec.ts:149:7 › Production Permission Management Tests › 3. 権限管理: 他人の投稿への不正アクセス
+📝 テスト3: 他人の投稿への不正アクセス
+
+[1A[2K  ⚠️ 他人の投稿が見つかりません
+
+[1A[2K
+📊 テスト "3. 権限管理: 他人の投稿への不正アクセス" 完了
+
+[1A[2K  状態: passed
+
+[1A[2K  実行時間: 10517ms
+
+[1A[2K[4/6] [chromium] › e2e/production-permission-test.spec.ts:201:7 › Production Permission Management Tests › 4. 権限管理: 削除確認ダイアログ
+[1A[2K[chromium] › e2e/production-permission-test.spec.ts:201:7 › Production Permission Management Tests › 4. 権限管理: 削除確認ダイアログ
+📝 テスト4: 削除確認ダイアログ
+
+[1A[2K  ⚠️ 削除可能な投稿がありません
+
+[1A[2K
+📊 テスト "4. 権限管理: 削除確認ダイアログ" 完了
+
+[1A[2K  状態: passed
+
+[1A[2K  実行時間: 9934ms
+
+[1A[2K[5/6] [chromium] › e2e/production-permission-test.spec.ts:236:7 › Production Permission Management Tests › 5. 権限管理: API不正リクエスト
+[1A[2K[chromium] › e2e/production-permission-test.spec.ts:236:7 › Production Permission Management Tests › 5. 権限管理: API不正リクエスト
+📝 テスト5: API不正リクエスト
+
+[1A[2K  APIレスポンス: 404
+
+[1A[2K  ✅ API不正リクエストが適切に拒否されました
+
+[1A[2K
+📊 テスト "5. 権限管理: API不正リクエスト" 完了
+
+[1A[2K  状態: passed
+
+[1A[2K  実行時間: 7176ms
+
+[1A[2K[6/6] [chromium] › e2e/production-permission-test.spec.ts:282:7 › Permission Test Summary › Generate Test Report
+[1A[2K[chromium] › e2e/production-permission-test.spec.ts:282:7 › Permission Test Summary › Generate Test Report
+
+============================================================
+
+[1A[2K📋 権限管理テスト完了サマリー
+
+[1A[2K============================================================
+
+[1A[2K✅ テスト項目:
+
+[1A[2K  1. 自分の投稿に編集・削除ボタンが表示される
+
+[1A[2K  2. 他人の投稿にはボタンが表示されない
+
+[1A[2K  3. 編集ページで自分の投稿を編集できる
+
+[1A[2K  4. 他人の投稿の編集URLにアクセスするとエラー
+
+[1A[2K  5. APIに不正なリクエストを送ると拒否される
+
+[1A[2K  6. 削除確認ダイアログが表示される
+
+[1A[2K============================================================
+
+[1A[2K  6 passed (59.7s)
+<testsuites id="" name="" tests="6" failures="0" skipped="0" errors="0" time="59.652943">
+<testsuite name="production-permission-test.spec.ts" timestamp="2025-08-23T14:13:55.578Z" hostname="chromium" tests="6" failures="0" skipped="0" time="51.886" errors="0">
+<testcase name="Production Permission Management Tests › 1. 権限管理: 投稿の編集・削除ボタン表示確認" classname="production-permission-test.spec.ts" time="13.584">
+<system-out>
+<![CDATA[📝 テスト1: 投稿の編集・削除ボタン表示確認
+  投稿数: 7
+  投稿1: 著者="テスト太郎_1755875457111", 編集=false, 削除=false
+    ✅ 他人の投稿: ボタン非表示確認
+  投稿2: 著者="noreply", 編集=false, 削除=false
+    ✅ 他人の投稿: ボタン非表示確認
+  投稿3: 著者="noreply", 編集=false, 削除=false
+    ✅ 他人の投稿: ボタン非表示確認
+  投稿4: 著者="山岸", 編集=false, 削除=false
+    ✅ 他人の投稿: ボタン非表示確認
+  投稿5: 著者="山岸", 編集=false, 削除=false
+    ✅ 他人の投稿: ボタン非表示確認
+  投稿6: 著者="山岸", 編集=false, 削除=false
+    ✅ 他人の投稿: ボタン非表示確認
+  投稿7: 著者="山岸", 編集=false, 削除=false
+    ✅ 他人の投稿: ボタン非表示確認
+
+📊 テスト "1. 権限管理: 投稿の編集・削除ボタン表示確認" 完了
+  状態: passed
+  実行時間: 13394ms
+
+[[ATTACHMENT|test-results/production-permission-test-ce6bd-ests-1-権限管理-投稿の編集・削除ボタン表示確認-chromium/trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Production Permission Management Tests › 2. 権限管理: 自分の投稿編集機能" classname="production-permission-test.spec.ts" time="10.22">
+<system-out>
+<![CDATA[📝 テスト2: 自分の投稿編集機能
+  ⚠️ 編集可能な投稿がありません
+
+📊 テスト "2. 権限管理: 自分の投稿編集機能" 完了
+  状態: passed
+  実行時間: 10123ms
+
+[[ATTACHMENT|test-results/production-permission-test-34fe7-ment-Tests-2-権限管理-自分の投稿編集機能-chromium/trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Production Permission Management Tests › 3. 権限管理: 他人の投稿への不正アクセス" classname="production-permission-test.spec.ts" time="10.664">
+<system-out>
+<![CDATA[📝 テスト3: 他人の投稿への不正アクセス
+  ⚠️ 他人の投稿が見つかりません
+
+📊 テスト "3. 権限管理: 他人の投稿への不正アクセス" 完了
+  状態: passed
+  実行時間: 10517ms
+
+[[ATTACHMENT|test-results/production-permission-test-cdde7--Tests-3-権限管理-他人の投稿への不正アクセス-chromium/trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Production Permission Management Tests › 4. 権限管理: 削除確認ダイアログ" classname="production-permission-test.spec.ts" time="10.034">
+<system-out>
+<![CDATA[📝 テスト4: 削除確認ダイアログ
+  ⚠️ 削除可能な投稿がありません
+
+📊 テスト "4. 権限管理: 削除確認ダイアログ" 完了
+  状態: passed
+  実行時間: 9934ms
+
+[[ATTACHMENT|test-results/production-permission-test-d5108-ment-Tests-4-権限管理-削除確認ダイアログ-chromium/trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Production Permission Management Tests › 5. 権限管理: API不正リクエスト" classname="production-permission-test.spec.ts" time="7.28">
+<system-out>
+<![CDATA[📝 テスト5: API不正リクエスト
+  APIレスポンス: 404
+  ✅ API不正リクエストが適切に拒否されました
+
+📊 テスト "5. 権限管理: API不正リクエスト" 完了
+  状態: passed
+  実行時間: 7176ms
+
+[[ATTACHMENT|test-results/production-permission-test-0e635-ent-Tests-5-権限管理-API不正リクエスト-chromium/trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Permission Test Summary › Generate Test Report" classname="production-permission-test.spec.ts" time="0.104">
+<system-out>
+<![CDATA[
+============================================================
+📋 権限管理テスト完了サマリー
+============================================================
+✅ テスト項目:
+  1. 自分の投稿に編集・削除ボタンが表示される
+  2. 他人の投稿にはボタンが表示されない
+  3. 編集ページで自分の投稿を編集できる
+  4. 他人の投稿の編集URLにアクセスするとエラー
+  5. APIに不正なリクエストを送ると拒否される
+  6. 削除確認ダイアログが表示される
+============================================================
+
+[[ATTACHMENT|test-results/production-permission-test-e15a2-ummary-Generate-Test-Report-chromium/trace.zip]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+</testsuites>
+{
+  "config": {
+    "configFile": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/playwright.config.ts",
+    "rootDir": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/e2e",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "line"
+      ],
+      [
+        "junit"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.55.0",
+    "workers": 1,
+    "webServer": {
+      "command": "npm run dev",
+      "url": "http://localhost:3000",
+      "reuseExistingServer": true,
+      "timeout": 60000,
+      "stdout": "ignore",
+      "stderr": "pipe"
+    }
+  },
+  "suites": [
+    {
+      "title": "production-permission-test.spec.ts",
+      "file": "production-permission-test.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Production Permission Management Tests",
+          "file": "production-permission-test.spec.ts",
+          "line": 9,
+          "column": 6,
+          "specs": [
+            {
+              "title": "1. 権限管理: 投稿の編集・削除ボタン表示確認",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 13584,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "📝 テスト1: 投稿の編集・削除ボタン表示確認\n"
+                        },
+                        {
+                          "text": "  投稿数: 7\n"
+                        },
+                        {
+                          "text": "  投稿1: 著者=\"テスト太郎_1755875457111\", 編集=false, 削除=false\n"
+                        },
+                        {
+                          "text": "    ✅ 他人の投稿: ボタン非表示確認\n"
+                        },
+                        {
+                          "text": "  投稿2: 著者=\"noreply\", 編集=false, 削除=false\n"
+                        },
+                        {
+                          "text": "    ✅ 他人の投稿: ボタン非表示確認\n"
+                        },
+                        {
+                          "text": "  投稿3: 著者=\"noreply\", 編集=false, 削除=false\n"
+                        },
+                        {
+                          "text": "    ✅ 他人の投稿: ボタン非表示確認\n"
+                        },
+                        {
+                          "text": "  投稿4: 著者=\"山岸\", 編集=false, 削除=false\n"
+                        },
+                        {
+                          "text": "    ✅ 他人の投稿: ボタン非表示確認\n"
+                        },
+                        {
+                          "text": "  投稿5: 著者=\"山岸\", 編集=false, 削除=false\n"
+                        },
+                        {
+                          "text": "    ✅ 他人の投稿: ボタン非表示確認\n"
+                        },
+                        {
+                          "text": "  投稿6: 著者=\"山岸\", 編集=false, 削除=false\n"
+                        },
+                        {
+                          "text": "    ✅ 他人の投稿: ボタン非表示確認\n"
+                        },
+                        {
+                          "text": "  投稿7: 著者=\"山岸\", 編集=false, 削除=false\n"
+                        },
+                        {
+                          "text": "    ✅ 他人の投稿: ボタン非表示確認\n"
+                        },
+                        {
+                          "text": "\n📊 テスト \"1. 権限管理: 投稿の編集・削除ボタン表示確認\" 完了\n"
+                        },
+                        {
+                          "text": "  状態: passed\n"
+                        },
+                        {
+                          "text": "  実行時間: 13394ms\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-23T14:13:56.008Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/production-permission-test-ce6bd-ests-1-権限管理-投稿の編集・削除ボタン表示確認-chromium/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f6ce70fb19197aa00ac7-6570041aacc009685b71",
+              "file": "production-permission-test.spec.ts",
+              "line": 45,
+              "column": 7
+            },
+            {
+              "title": "2. 権限管理: 自分の投稿編集機能",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 10220,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "📝 テスト2: 自分の投稿編集機能\n"
+                        },
+                        {
+                          "text": "  ⚠️ 編集可能な投稿がありません\n"
+                        },
+                        {
+                          "text": "\n📊 テスト \"2. 権限管理: 自分の投稿編集機能\" 完了\n"
+                        },
+                        {
+                          "text": "  状態: passed\n"
+                        },
+                        {
+                          "text": "  実行時間: 10123ms\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-23T14:14:09.830Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/production-permission-test-34fe7-ment-Tests-2-権限管理-自分の投稿編集機能-chromium/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f6ce70fb19197aa00ac7-140e4beb9a2614ed4855",
+              "file": "production-permission-test.spec.ts",
+              "line": 98,
+              "column": 7
+            },
+            {
+              "title": "3. 権限管理: 他人の投稿への不正アクセス",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 10664,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "📝 テスト3: 他人の投稿への不正アクセス\n"
+                        },
+                        {
+                          "text": "  ⚠️ 他人の投稿が見つかりません\n"
+                        },
+                        {
+                          "text": "\n📊 テスト \"3. 権限管理: 他人の投稿への不正アクセス\" 完了\n"
+                        },
+                        {
+                          "text": "  状態: passed\n"
+                        },
+                        {
+                          "text": "  実行時間: 10517ms\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-23T14:14:20.104Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/production-permission-test-cdde7--Tests-3-権限管理-他人の投稿への不正アクセス-chromium/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f6ce70fb19197aa00ac7-95dac701f0ceeb90acb8",
+              "file": "production-permission-test.spec.ts",
+              "line": 149,
+              "column": 7
+            },
+            {
+              "title": "4. 権限管理: 削除確認ダイアログ",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 10034,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "📝 テスト4: 削除確認ダイアログ\n"
+                        },
+                        {
+                          "text": "  ⚠️ 削除可能な投稿がありません\n"
+                        },
+                        {
+                          "text": "\n📊 テスト \"4. 権限管理: 削除確認ダイアログ\" 完了\n"
+                        },
+                        {
+                          "text": "  状態: passed\n"
+                        },
+                        {
+                          "text": "  実行時間: 9934ms\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-23T14:14:30.850Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/production-permission-test-d5108-ment-Tests-4-権限管理-削除確認ダイアログ-chromium/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f6ce70fb19197aa00ac7-fb855500069ae248c3f5",
+              "file": "production-permission-test.spec.ts",
+              "line": 201,
+              "column": 7
+            },
+            {
+              "title": "5. 権限管理: API不正リクエスト",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7280,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "📝 テスト5: API不正リクエスト\n"
+                        },
+                        {
+                          "text": "  APIレスポンス: 404\n"
+                        },
+                        {
+                          "text": "  ✅ API不正リクエストが適切に拒否されました\n"
+                        },
+                        {
+                          "text": "\n📊 テスト \"5. 権限管理: API不正リクエスト\" 完了\n"
+                        },
+                        {
+                          "text": "  状態: passed\n"
+                        },
+                        {
+                          "text": "  実行時間: 7176ms\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-23T14:14:40.967Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/production-permission-test-0e635-ent-Tests-5-権限管理-API不正リクエスト-chromium/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f6ce70fb19197aa00ac7-3f6d8727cc8041152960",
+              "file": "production-permission-test.spec.ts",
+              "line": 236,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "Permission Test Summary",
+          "file": "production-permission-test.spec.ts",
+          "line": 281,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Generate Test Report",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 104,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\n============================================================\n"
+                        },
+                        {
+                          "text": "📋 権限管理テスト完了サマリー\n"
+                        },
+                        {
+                          "text": "============================================================\n"
+                        },
+                        {
+                          "text": "✅ テスト項目:\n"
+                        },
+                        {
+                          "text": "  1. 自分の投稿に編集・削除ボタンが表示される\n"
+                        },
+                        {
+                          "text": "  2. 他人の投稿にはボタンが表示されない\n"
+                        },
+                        {
+                          "text": "  3. 編集ページで自分の投稿を編集できる\n"
+                        },
+                        {
+                          "text": "  4. 他人の投稿の編集URLにアクセスするとエラー\n"
+                        },
+                        {
+                          "text": "  5. APIに不正なリクエストを送ると拒否される\n"
+                        },
+                        {
+                          "text": "  6. 削除確認ダイアログが表示される\n"
+                        },
+                        {
+                          "text": "============================================================\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-23T14:14:48.308Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/production-permission-test-e15a2-ummary-Generate-Test-Report-chromium/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f6ce70fb19197aa00ac7-85e848a5cc99f4ad6447",
+              "file": "production-permission-test.spec.ts",
+              "line": 282,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-08-23T14:13:48.839Z",
+    "duration": 59652.943,
+    "expected": 6,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

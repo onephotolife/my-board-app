@@ -46,7 +46,8 @@ interface Post {
   createdAt: string;
   updatedAt: string;
   views?: number;
-  likes?: number;
+  likes?: string[] | number;  // 配列または数値に対応
+  likeCount?: number;  // いいね数を別途格納
   comments?: number;
   status?: 'published' | 'archived';
 }
@@ -64,6 +65,24 @@ const formatTimeAgo = (date: string | Date) => {
   if (diffHour > 0) return `${diffHour}時間前`;
   if (diffMin > 0) return `${diffMin}分前`;
   return 'たった今';
+};
+
+// いいね数を取得するヘルパー関数
+const getLikeCount = (post: Post): number => {
+  // likeCountプロパティがある場合はそれを使用
+  if (typeof post.likeCount === 'number') {
+    return post.likeCount;
+  }
+  // likesが配列の場合は長さを返す
+  if (Array.isArray(post.likes)) {
+    return post.likes.length;
+  }
+  // likesが数値の場合はそのまま返す
+  if (typeof post.likes === 'number') {
+    return post.likes;
+  }
+  // それ以外は0を返す
+  return 0;
 };
 
 export default function MyPostsPage() {
@@ -105,7 +124,7 @@ export default function MyPostsPage() {
               createdAt: new Date(Date.now() - 86400000).toISOString(),
               updatedAt: new Date(Date.now() - 86400000).toISOString(),
               views: 42,
-              likes: 5,
+              likeCount: 5,  // likesではなくlikeCountを使用
               comments: 3,
               status: 'published'
             },
@@ -117,7 +136,7 @@ export default function MyPostsPage() {
               createdAt: new Date(Date.now() - 172800000).toISOString(),
               updatedAt: new Date(Date.now() - 172800000).toISOString(),
               views: 28,
-              likes: 2,
+              likeCount: 2,  // likesではなくlikeCountを使用
               comments: 5,
               status: 'published'
             }
@@ -256,7 +275,7 @@ export default function MyPostsPage() {
           <Grid item xs={12} sm={3}>
             <Paper sx={{ p: 3, textAlign: 'center' }}>
               <Typography variant="h4" color="warning.main" gutterBottom>
-                {posts.reduce((sum, p) => sum + (p.likes || 0), 0)}
+                {posts.reduce((sum, p) => sum + getLikeCount(p), 0)}
               </Typography>
               <Typography variant="body1" color="text.secondary">
                 総いいね数
@@ -365,7 +384,7 @@ export default function MyPostsPage() {
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                         <ThumbUpIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
                         <Typography variant="caption" color="text.secondary">
-                          {post.likes || 0} いいね
+                          {getLikeCount(post)} いいね
                         </Typography>
                       </Box>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>

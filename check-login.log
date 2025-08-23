@@ -1,0 +1,10 @@
+
+Running 1 test using 1 worker
+
+[1A[2K[1/1] [chromium] › e2e/check-login-url.spec.ts:5:5 › Check login URL structure
+[1A[2K[chromium] › e2e/check-login-url.spec.ts:5:5 › Check login URL structure
+ログインリンク発見: /auth/signin
+
+[1A[2K現在のURL: https://board.blankbrainai.com/auth/signin
+
+[1A[2K  1 passed (14.8s)

@@ -224,7 +224,7 @@ test.describe('本番環境 - 詳細ログイン検証', () => {
     }
     
     // ダッシュボード要素の確認
-    const dashboardHeader = page.locator('h1, h2').filter({ hasText: /ダッシュボード|Dashboard/i });
+    const dashboardHeader = page.locator('h4').filter({ hasText: /ダッシュボード|Dashboard/i });
     await expect(dashboardHeader).toBeVisible({ timeout: 10000 });
     console.log('✅ ダッシュボードヘッダー表示確認');
     

@@ -121,38 +121,58 @@ function SignInForm() {
       // 🚀 41人天才会議：NextAuth v4サーバーサイドリダイレクト使用
       console.log('🌐 NextAuthサーバーサイドリダイレクト実行:', finalUrl);
       
-      // NextAuth v4でのsignIn関数を使用（サーバーサイドリダイレクト有効）
+      // NextAuth v4でのsignIn関数を使用（エラーハンドリングのためredirect: false）
       const result = await signIn('credentials', {
         email,
         password,
-        redirect: true, // 🔄 サーバーサイドリダイレクトを有効化
+        redirect: false, // エラーを適切に処理するため
         callbackUrl: finalUrl,
       });
 
-      // redirect: true の場合、成功時は自動的にリダイレクトされるため
-      // このコードは通常実行されない（エラー時のみ）
-      console.log('📊 signIn結果 (エラー時のみ実行):', result);
+      console.log('📊 signIn結果:', result);
       
-      // エラーの場合のみここに到達
       if (result?.error) {
         console.log('❌ ログインエラー:', result.error);
         
-        if (result.error === 'EmailNotVerified') {
-          const errorInfo = getAuthErrorMessage(result.error);
-          setError(errorInfo.title);
-          setErrorDetail(errorInfo.message);
-          setErrorAction(errorInfo.action || '');
+        // メール未確認をチェック
+        try {
+          const checkResponse = await fetch('/api/auth/check-verification', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email }),
+          });
           
-          // メール未確認ページへリダイレクト
-          setTimeout(() => {
-            router.replace('/auth/email-not-verified');
-          }, 2000);
-        } else {
+          const checkData = await checkResponse.json();
+          
+          if (checkData.exists && !checkData.emailVerified) {
+            // メール未確認の場合
+            setError('メールアドレスの確認が必要です');
+            setErrorDetail('登録時に送信された確認メールをご確認ください。');
+            setErrorAction('メールが届いていない場合は、迷惑メールフォルダもご確認ください。');
+            
+            // 5秒後にメール再送信ページへの案内を表示
+            setTimeout(() => {
+              setErrorAction('メールが届いていない場合は、迷惑メールフォルダをご確認いただくか、メール再送信をお試しください。');
+            }, 5000);
+          } else {
+            // その他のエラー（パスワード違いまたはユーザー不在）
+            const errorInfo = getAuthErrorMessage(result.error);
+            setError(errorInfo.title);
+            setErrorDetail(errorInfo.message);
+            setErrorAction(errorInfo.action || '');
+          }
+        } catch (checkError) {
+          console.error('Verification check error:', checkError);
+          // フォールバック: 通常のエラーメッセージ
           const errorInfo = getAuthErrorMessage(result.error);
           setError(errorInfo.title);
           setErrorDetail(errorInfo.message);
           setErrorAction(errorInfo.action || '');
         }
+      } else if (result?.ok) {
+        // ログイン成功
+        console.log('✅ ログイン成功、リダイレクト中...');
+        router.replace(finalUrl);
       }
     } catch (error) {
       console.error('💥 例外エラー:', error);

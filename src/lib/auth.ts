@@ -49,7 +49,9 @@ export const authOptions: AuthOptions = {
           // メール確認状態をチェック
           if (!user.emailVerified) {
             console.log('❌ [Auth v4] メール未確認のユーザー:', user.email);
-            throw new EmailNotVerifiedError('メールアドレスが確認されていません。確認メールをご確認ください。');
+            // メール未確認用の特別なエラーをthrow
+            // NextAuthがこれをキャッチしてエラーページに渡す
+            throw new Error('EmailNotVerified');
           }
 
           // パスワード検証

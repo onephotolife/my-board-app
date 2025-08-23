@@ -44,6 +44,7 @@ import {
   Category as CategoryIcon,
   Clear as ClearIcon,
   NewReleases as NewReleasesIcon,
+  FiberManualRecord as FiberManualRecordIcon,
 } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
@@ -833,7 +834,7 @@ export default function RealtimeBoard() {
                             },
                           }}
                         >
-                          {post.isLikedByUser ? <FavoriteIcon sx={{ color: 'text.secondary' }} /> : <FavoriteBorderIcon sx={{ color: 'text.secondary' }} />}
+                          {post.isLikedByUser ? <FavoriteIcon sx={{ color: '#6b7280' }} /> : <FavoriteBorderIcon sx={{ color: '#6b7280' }} />}
                         </IconButton>
                         <Typography 
                           variant="body2" 

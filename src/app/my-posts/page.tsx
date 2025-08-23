@@ -30,7 +30,6 @@ import {
   ThumbUp as ThumbUpIcon,
   Comment as CommentIcon,
   PostAdd as PostAddIcon,
-  Drafts as DraftsIcon,
   Archive as ArchiveIcon
 } from '@mui/icons-material';
 
@@ -48,7 +47,7 @@ interface Post {
   views?: number;
   likes?: number;
   comments?: number;
-  status?: 'published' | 'draft' | 'archived';
+  status?: 'published' | 'archived';
 }
 
 const formatTimeAgo = (date: string | Date) => {
@@ -158,10 +157,8 @@ export default function MyPostsPage() {
       case 0: // すべて
         return posts;
       case 1: // 公開済み
-        return posts.filter(p => p.status !== 'draft' && p.status !== 'archived');
-      case 2: // 下書き
-        return posts.filter(p => p.status === 'draft');
-      case 3: // アーカイブ
+        return posts.filter(p => p.status !== 'archived');
+      case 2: // アーカイブ
         return posts.filter(p => p.status === 'archived');
       default:
         return posts;
@@ -264,8 +261,7 @@ export default function MyPostsPage() {
             variant="fullWidth"
           >
             <Tab label={`すべて (${posts.length})`} />
-            <Tab label={`公開済み (${posts.filter(p => p.status !== 'draft').length})`} />
-            <Tab label={`下書き (${posts.filter(p => p.status === 'draft').length})`} />
+            <Tab label={`公開済み (${posts.filter(p => p.status !== 'archived').length})`} />
             <Tab label={`アーカイブ (${posts.filter(p => p.status === 'archived').length})`} />
           </Tabs>
         </Paper>
@@ -293,9 +289,6 @@ export default function MyPostsPage() {
                           <Typography variant="caption" color="text.secondary">
                             {formatTimeAgo(post.createdAt)}
                           </Typography>
-                          {post.status === 'draft' && (
-                            <Chip label="下書き" size="small" color="default" />
-                          )}
                           {post.status === 'archived' && (
                             <Chip label="アーカイブ" size="small" color="warning" />
                           )}

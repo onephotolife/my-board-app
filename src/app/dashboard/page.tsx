@@ -42,7 +42,9 @@ import {
 import { signOut } from 'next-auth/react';
 
 // 日付フォーマット関数
-const formatTimeAgo = (date: string | Date) => {
+const formatTimeAgo = (date: string | Date | undefined) => {
+  if (!date) return '不明';
+  
   const now = new Date();
   const past = new Date(date);
   const diffMs = now.getTime() - past.getTime();
@@ -50,10 +52,14 @@ const formatTimeAgo = (date: string | Date) => {
   const diffMin = Math.floor(diffSec / 60);
   const diffHour = Math.floor(diffMin / 60);
   const diffDay = Math.floor(diffHour / 24);
+  const diffMonth = Math.floor(diffDay / 30);
+  const diffYear = Math.floor(diffDay / 365);
 
-  if (diffDay > 0) return `${diffDay}日前`;
-  if (diffHour > 0) return `${diffHour}時間前`;
-  if (diffMin > 0) return `${diffMin}分前`;
+  if (diffYear > 0) return `${diffYear}年`;
+  if (diffMonth > 0) return `${diffMonth}ヶ月`;
+  if (diffDay > 0) return `${diffDay}日`;
+  if (diffHour > 0) return `${diffHour}時間`;
+  if (diffMin > 0) return `${diffMin}分`;
   return 'たった今';
 };
 
@@ -139,7 +145,7 @@ export default function DashboardPage() {
         totalPosts: Math.floor(Math.random() * 50) + 1,
         todayPosts: Math.floor(Math.random() * 5),
         lastLogin: new Date().toISOString(),
-        memberSince: '2024-01-01T00:00:00Z'
+        memberSince: session.user.createdAt || new Date().toISOString()
       });
     }
   };

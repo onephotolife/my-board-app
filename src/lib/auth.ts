@@ -72,6 +72,7 @@ export const authOptions: AuthOptions = {
             name: user.name || user.email,
             emailVerified: user.emailVerified,
             role: user.role,
+            createdAt: user.createdAt?.toISOString() || new Date().toISOString(),
           };
         } catch (error) {
           console.error('❌ [Auth v4] 認証エラー:', error);
@@ -156,6 +157,7 @@ export const authOptions: AuthOptions = {
         token.name = user.name;
         token.emailVerified = user.emailVerified;
         token.role = user.role;
+        token.createdAt = user.createdAt;
       }
       return token;
     },
@@ -174,6 +176,7 @@ export const authOptions: AuthOptions = {
         session.user.name = token.name;
         session.user.emailVerified = token.emailVerified;
         session.user.role = token.role;
+        session.user.createdAt = token.createdAt;
       }
       return session;
     }

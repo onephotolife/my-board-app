@@ -130,28 +130,49 @@ export default function DashboardPage() {
   };
 
   const fetchUserStats = async () => {
-    // 実際のAPIがあれば使用、今はモックデータ
-    if (session?.user) {
-      // テストユーザーの場合、特定の日付を設定
-      let memberSince: string;
-      if (session.user.email === 'one.photolife+2@gmail.com') {
-        // テストユーザー用に約600日前の日付を設定（2023年6月1日）
-        memberSince = '2023-06-01T00:00:00Z';
-      } else if (session.user.createdAt) {
-        memberSince = session.user.createdAt;
-      } else {
-        // その他の既存ユーザーの場合、デフォルトの登録日を設定（2024年1月1日）
-        memberSince = '2024-01-01T00:00:00Z';
-      }
+    try {
+      const response = await fetch('/api/users/stats');
       
-      setUserStats({
-        totalPosts: Math.floor(Math.random() * 50) + 1,
-        todayPosts: Math.floor(Math.random() * 5),
-        lastLogin: new Date().toISOString(),
-        memberSince: memberSince
-      });
+      if (response.ok) {
+        const { data } = await response.json();
+        
+        console.log('[Dashboard] ユーザー統計取得成功:', {
+          email: data.email,
+          memberSince: data.memberSince,
+          totalPosts: data.totalPosts
+        });
+        
+        setUserStats({
+          totalPosts: data.totalPosts,
+          todayPosts: data.todayPosts,
+          lastLogin: data.lastLogin,
+          memberSince: data.memberSince
+        });
+      } else {
+        // APIエラー時はフォールバック
+        console.error('[Dashboard] ユーザー統計取得失敗');
+        if (session?.user) {
+          setUserStats({
+            totalPosts: 0,
+            todayPosts: 0,
+            lastLogin: new Date().toISOString(),
+            memberSince: session.user.createdAt || new Date().toISOString()
+          });
+        }
+      }
+    } catch (error) {
+      console.error('[Dashboard] ユーザー統計取得エラー:', error);
+      // エラー時はフォールバック
+      if (session?.user) {
+        setUserStats({
+          totalPosts: 0,
+          todayPosts: 0,
+          lastLogin: new Date().toISOString(),
+          memberSince: session.user.createdAt || new Date().toISOString()
+        });
+      }
     }
-  };
+  };;
 
   const handleSignOut = async () => {
     console.log('🚪 ログアウト処理開始');

@@ -212,7 +212,8 @@ export default function DashboardPage() {
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             color: 'white',
             p: 4,
-            mb: 4
+            mb: 4,
+            mt: { xs: 0, md: -8 }  // デスクトップでは上部のpadding分を相殺
           }}
         >
           <Container maxWidth="lg">

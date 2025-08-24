@@ -212,7 +212,7 @@ export default function NewPostPage() {
       }}>
         <Container maxWidth="md">
           {/* ヘッダー */}
-          <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Box sx={{ mb: 4, mt: { xs: 0, md: -2 }, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Typography variant="h4" sx={{ fontWeight: 700 }}>
                 新規投稿

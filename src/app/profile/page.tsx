@@ -124,7 +124,7 @@ export default function ProfilePage() {
         pt: { xs: 8, md: 0 },  // デスクトップではpadding-topを0に
         overflow: 'auto'
       }}>
-        <Container maxWidth="md" sx={{ py: 4 }}>
+        <Container maxWidth="md" sx={{ py: 4, pt: { xs: 4, md: 2 } }}>
           <Typography variant="h4" gutterBottom fontWeight="bold">
             プロフィール
           </Typography>

@@ -93,13 +93,19 @@ export default function WelcomeSection({ session }: WelcomeSectionProps) {
               startIcon={<DashboardIcon />}
               onClick={() => router.push('/board')}
               sx={{
-                bgcolor: 'white',
-                color: 'primary.main',
+                bgcolor: '#ff6b6b',
+                color: 'white',
                 fontWeight: 'bold',
+                fontSize: '1.1rem',
+                py: 1.5,
+                px: 3,
                 '&:hover': {
-                  bgcolor: 'grey.100',
+                  bgcolor: '#ff5252',
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 8px 30px rgba(255, 107, 107, 0.4)',
                 },
-                boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
+                transition: 'all 0.3s ease',
               }}
             >
               掲示板へ移動

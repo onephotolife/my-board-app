@@ -1,12 +1,12 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('My-Posts Layout Test', () => {
+test.describe('Profile Layout Test', () => {
   const PROD_URL = 'https://board.blankbrainai.com';
   const TEST_EMAIL = 'one.photolife+2@gmail.com';
   const TEST_PASSWORD = '?@thc123THC@?';
 
-  test('my-postsページが正しいレイアウトで表示される', async ({ page }) => {
-    console.log('🔍 my-postsページのレイアウト検証開始...\n');
+  test('profileページが正しいレイアウトで表示される', async ({ page }) => {
+    console.log('🔍 profileページのレイアウト検証開始...\n');
     
     // 1. ログイン
     await page.goto(`${PROD_URL}/auth/signin`);
@@ -17,22 +17,23 @@ test.describe('My-Posts Layout Test', () => {
     // ダッシュボードへの遷移を待つ（ログイン完了確認）
     await page.waitForURL('**/dashboard', { timeout: 15000 });
     
-    // 2. my-postsページへ遷移
-    await page.goto(`${PROD_URL}/my-posts`);
+    // 2. profileページへ遷移
+    await page.goto(`${PROD_URL}/profile`);
     await page.waitForLoadState('domcontentloaded');
     await page.waitForTimeout(3000);
     
     // 3. スクリーンショット撮影
     await page.screenshot({ 
-      path: 'test-results/my-posts-layout.png',
+      path: 'test-results/profile-layout.png',
       fullPage: true 
     });
     
     // 4. 要素の表示確認
     const checks = [
-      { name: 'ページタイトル', selector: 'h4:has-text("マイ投稿")' },
-      { name: '説明文', selector: 'text=あなたの投稿履歴を管理' },
-      { name: '総投稿数カード', selector: 'text=総投稿数' },
+      { name: 'ページタイトル', selector: 'h4:has-text("プロフィール")' },
+      { name: 'アバター', selector: '.MuiAvatar-root' },
+      { name: '編集ボタン', selector: 'button:has-text("編集")' },
+      { name: 'アカウント情報カード', selector: 'text=アカウント情報' },
       { name: 'サイドバー', selector: 'nav' },
       { name: 'メインコンテンツ', selector: 'main' }
     ];

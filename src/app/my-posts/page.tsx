@@ -14,13 +14,9 @@ import {
   Grid,
   Paper,
   Avatar,
-  Chip,
-  Divider,
   IconButton,
   Alert,
   Stack,
-  Tab,
-  Tabs
 } from '@mui/material';
 import {
   ArrowBack as ArrowBackIcon,
@@ -28,9 +24,7 @@ import {
   Delete as DeleteIcon,
   Visibility as VisibilityIcon,
   ThumbUp as ThumbUpIcon,
-  Comment as CommentIcon,
-  PostAdd as PostAddIcon,
-  Archive as ArchiveIcon
+  PostAdd as PostAddIcon
 } from '@mui/icons-material';
 import AppLayout from '@/components/AppLayout';
 
@@ -45,9 +39,6 @@ interface Post {
   };
   createdAt: string;
   updatedAt: string;
-  views?: number;
-  comments?: number;
-  status?: 'published' | 'archived';
 }
 
 const formatTimeAgo = (date: string | Date) => {
@@ -72,7 +63,6 @@ export default function MyPostsPage() {
   const router = useRouter();
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
-  const [tabValue, setTabValue] = useState(0);
   const [deleteSuccess, setDeleteSuccess] = useState(false);
 
   useEffect(() => {
@@ -105,10 +95,6 @@ export default function MyPostsPage() {
               author: session?.user?.name || session?.user?.email,
               createdAt: new Date(Date.now() - 86400000).toISOString(),
               updatedAt: new Date(Date.now() - 86400000).toISOString(),
-              views: 42,
-              // いいね機能削除
-              comments: 3,
-              status: 'published'
             },
             {
               _id: '2',
@@ -117,10 +103,6 @@ export default function MyPostsPage() {
               author: session?.user?.name || session?.user?.email,
               createdAt: new Date(Date.now() - 172800000).toISOString(),
               updatedAt: new Date(Date.now() - 172800000).toISOString(),
-              views: 28,
-              // いいね機能削除
-              comments: 5,
-              status: 'published'
             }
           );
         }
@@ -154,18 +136,7 @@ export default function MyPostsPage() {
     }
   };
 
-  const getFilteredPosts = () => {
-    switch (tabValue) {
-      case 0: // すべて
-        return posts;
-      case 1: // アーカイブ
-        return posts.filter(p => p.status === 'archived');
-      default:
-        return posts;
-    }
-  };
-
-  const filteredPosts = getFilteredPosts();
+  const filteredPosts = posts;
 
   if (status === 'loading') {
     return (
@@ -202,7 +173,7 @@ export default function MyPostsPage() {
 
         {/* 統計情報 */}
         <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid item xs={12} sm={3}>
+          <Grid item xs={12}>
             <Paper sx={{ p: 3, textAlign: 'center' }}>
               <Typography variant="h4" color="primary" gutterBottom>
                 {posts.length}
@@ -212,40 +183,8 @@ export default function MyPostsPage() {
               </Typography>
             </Paper>
           </Grid>
-          <Grid item xs={12} sm={3}>
-            <Paper sx={{ p: 3, textAlign: 'center' }}>
-              <Typography variant="h4" color="success.main" gutterBottom>
-                {posts.reduce((sum, p) => sum + (p.views || 0), 0)}
-              </Typography>
-              <Typography variant="body1" color="text.secondary">
-                総閲覧数
-              </Typography>
-            </Paper>
-          </Grid>
-          {/* いいね機能削除 */}
-          <Grid item xs={12} sm={3}>
-            <Paper sx={{ p: 3, textAlign: 'center' }}>
-              <Typography variant="h4" color="info.main" gutterBottom>
-                {posts.reduce((sum, p) => sum + (p.comments || 0), 0)}
-              </Typography>
-              <Typography variant="body1" color="text.secondary">
-                総コメント数
-              </Typography>
-            </Paper>
-          </Grid>
         </Grid>
 
-        {/* タブとフィルター */}
-        <Paper sx={{ mb: 3 }}>
-          <Tabs 
-            value={tabValue} 
-            onChange={(e, newValue) => setTabValue(newValue)}
-            variant="fullWidth"
-          >
-            <Tab label={`すべて (${posts.length})`} />
-            <Tab label={`アーカイブ (${posts.filter(p => p.status === 'archived').length})`} />
-          </Tabs>
-        </Paper>
 
         {/* 投稿一覧 */}
         {loading ? (
@@ -270,9 +209,6 @@ export default function MyPostsPage() {
                           <Typography variant="caption" color="text.secondary">
                             {formatTimeAgo(post.createdAt)}
                           </Typography>
-                          {post.status === 'archived' && (
-                            <Chip label="アーカイブ" size="small" color="warning" />
-                          )}
                         </Box>
                       </Box>
                       <Stack direction="row" spacing={1}>
@@ -312,23 +248,6 @@ export default function MyPostsPage() {
                       {post.content}
                     </Typography>
 
-                    <Divider sx={{ my: 2 }} />
-
-                    <Box sx={{ display: 'flex', gap: 3 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        <VisibilityIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
-                        <Typography variant="caption" color="text.secondary">
-                          {post.views || 0} 閲覧
-                        </Typography>
-                      </Box>
-                      {/* いいね機能削除 */}
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        <CommentIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
-                        <Typography variant="caption" color="text.secondary">
-                          {post.comments || 0} コメント
-                        </Typography>
-                      </Box>
-                    </Box>
                   </CardContent>
                 </Card>
               </Grid>

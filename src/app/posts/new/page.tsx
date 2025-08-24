@@ -203,23 +203,13 @@ export default function NewPostPage() {
     <>
       <Sidebar />
       <Box sx={{ 
-        display: { xs: 'block', md: 'flex' },
         minHeight: '100vh', 
-        bgcolor: '#f5f5f5'
+        bgcolor: '#f5f5f5',
+        marginLeft: { xs: 0, md: '280px' },  // デスクトップ時にサイドバー分のマージンを追加
+        py: 4,
+        pt: { xs: 8, md: 4 },  // モバイル時はAppBarの高さ分のpadding-topを追加（64px）
+        overflow: 'auto'
       }}>
-        <Box sx={{ 
-          display: { xs: 'none', md: 'block' },
-          width: 280,
-          flexShrink: 0
-        }} />
-        
-        <Box sx={{ 
-          flex: 1, 
-          py: 4,
-          pt: { xs: 8, md: 4 },  // モバイル時はAppBarの高さ分のpadding-topを追加（64px）
-          overflow: 'auto',
-          width: '100%'
-        }}>
         <Container maxWidth="md">
           {/* ヘッダー */}
           <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>

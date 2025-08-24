@@ -200,23 +200,12 @@ export default function DashboardPage() {
     <>
       <Sidebar />
       <Box sx={{ 
-        display: { xs: 'block', md: 'flex' },
         minHeight: '100vh', 
-        bgcolor: '#f5f5f5'
+        bgcolor: '#f5f5f5',
+        marginLeft: { xs: 0, md: '280px' },  // デスクトップ時にサイドバー分のマージンを追加
+        pt: { xs: 8, md: 0 },  // モバイル時はAppBarの高さ分のpadding-topを追加（64px）
+        overflow: 'auto'
       }}>
-        <Box sx={{ 
-          display: { xs: 'none', md: 'block' },
-          width: 280,
-          flexShrink: 0
-        }} />
-        
-        {/* メインコンテンツ */}
-        <Box sx={{ 
-          flex: 1, 
-          overflow: 'auto',
-          pt: { xs: 8, md: 0 },  // モバイル時はAppBarの高さ分のpadding-topを追加（64px）
-          width: '100%'
-        }}>
         {/* ヘッダー */}
         <Box
           sx={{

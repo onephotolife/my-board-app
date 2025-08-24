@@ -92,6 +92,18 @@ export default function RealtimeBoard() {
   const searchTimeoutRef = useRef<NodeJS.Timeout>();
   const fetchDataRef = useRef<(() => void) | null>(null);
 
+  // カテゴリ名の日本語変換マッピング
+  const getCategoryLabel = (categoryKey: string): string => {
+    const categoryMap: { [key: string]: string } = {
+      'general': '一般',
+      'tech': '技術',
+      'question': '質問',
+      'discussion': '議論',
+      'announcement': 'お知らせ',
+    };
+    return categoryMap[categoryKey] || categoryKey;
+  };
+
   // モバイル対応の設定スタイル（統一）
   const modern2025Styles = {
     colors: {
@@ -722,7 +734,7 @@ export default function RealtimeBoard() {
                     
                     <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
                       <Chip
-                        label={post.category}
+                        label={getCategoryLabel(post.category)}
                         size="small"
                         color="primary"
                         variant="outlined"

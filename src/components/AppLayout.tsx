@@ -225,8 +225,8 @@ export default function AppLayout({ children, title, subtitle }: AppLayoutProps)
         ))}
       </List>
 
-      <Box sx={{ mt: 'auto', pt: 3 }}>
-        {session ? (
+      {session ? (
+        <Box sx={{ px: 2, mt: 2 }}>
           <Button
             fullWidth
             variant="outlined"
@@ -243,7 +243,9 @@ export default function AppLayout({ children, title, subtitle }: AppLayoutProps)
           >
             ログアウト
           </Button>
-        ) : (
+        </Box>
+      ) : (
+        <Box sx={{ px: 2, mt: 2 }}>
           <Button
             fullWidth
             variant="contained"
@@ -254,8 +256,8 @@ export default function AppLayout({ children, title, subtitle }: AppLayoutProps)
           >
             ログイン
           </Button>
-        )}
-      </Box>
+        </Box>
+      )}
     </>
   );
 

@@ -207,12 +207,12 @@ export default function NewPostPage() {
         bgcolor: '#f5f5f5',
         marginLeft: { xs: 0, md: '280px' },  // デスクトップ時にサイドバー分のマージンを追加
         py: 4,
-        pt: { xs: 8, md: 4 },  // モバイル時はAppBarの高さ分、デスクトップは少しpadding
+        pt: { xs: 8, md: '60px' },  // モバイル時はAppBarの高さ分、デスクトップはメニュー開始位置
         overflow: 'auto'
       }}>
         <Container maxWidth="md">
           {/* ヘッダー */}
-          <Box sx={{ mb: 4, mt: { xs: 0, md: '48px' }, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Typography variant="h4" sx={{ fontWeight: 700 }}>
                 新規投稿

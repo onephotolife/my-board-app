@@ -188,7 +188,7 @@ export default function MyPostsPage() {
         minHeight: '100vh', 
         bgcolor: '#f5f5f5',
         marginLeft: { xs: 0, md: '280px' },  // デスクトップ時にサイドバー分のマージンを追加
-        pt: { xs: 8, md: 0 },  // モバイル時はAppBarの高さ分、デスクトップは0
+        pt: { xs: 8, md: '60px' },  // モバイル時はAppBarの高さ分、デスクトップはメニュー開始位置
         overflow: 'auto'
       }}>
         {/* ヘッダー */}
@@ -198,7 +198,7 @@ export default function MyPostsPage() {
             color: 'white',
             py: 6,
             mb: 4,
-            mt: { xs: 0, md: '48px' }  // デスクトップでサイドバーメニューと位置を合わせる
+            mt: 0  // margin-topを削除
           }}
         >
           <Container maxWidth="lg">

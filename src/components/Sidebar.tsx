@@ -87,31 +87,28 @@ export default function Sidebar() {
   ];
 
   const sidebarContent = (
-    <Box sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ p: 2, pb: 1, display: 'flex', alignItems: 'center', gap: 1.5 }}>
         <Avatar
           sx={{
-            width: 40,
-            height: 40,
+            width: 28,
+            height: 28,
             bgcolor: 'primary.main',
-            fontSize: '1rem'
+            fontSize: '0.875rem'
           }}
         >
           {session?.user?.name?.[0] || session?.user?.email?.[0]?.toUpperCase()}
         </Avatar>
         <Box sx={{ flex: 1, minWidth: 0 }}>
-          <Typography variant="subtitle2" noWrap fontWeight="bold">
+          <Typography variant="caption" noWrap fontWeight="bold">
             {session?.user?.name || 'ユーザー'}
-          </Typography>
-          <Typography variant="caption" color="text.secondary" noWrap>
-            {session?.user?.email}
           </Typography>
         </Box>
       </Box>
 
-      <Divider sx={{ mb: 2 }} />
+      <Divider sx={{ mb: 0 }} />
 
-      <List>
+      <List sx={{ px: 2, pt: 1 }}>
         {menuItems.map((item) => (
           <ListItem 
             key={item.path}
@@ -144,9 +141,10 @@ export default function Sidebar() {
 
       <Box sx={{ flexGrow: 1 }} />
 
-      <Divider sx={{ my: 3 }} />
+      <Divider sx={{ my: 2 }} />
 
-      <Button
+      <Box sx={{ px: 2, pb: 2 }}>
+        <Button
         fullWidth
         variant="outlined"
         startIcon={<LogoutIcon />}
@@ -160,8 +158,9 @@ export default function Sidebar() {
           }
         }}
       >
-        ログアウト
-      </Button>
+          ログアウト
+        </Button>
+      </Box>
     </Box>
   );
 

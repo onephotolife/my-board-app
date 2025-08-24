@@ -188,7 +188,7 @@ export default function MyPostsPage() {
         minHeight: '100vh', 
         bgcolor: '#f5f5f5',
         marginLeft: { xs: 0, md: '280px' },  // デスクトップ時にサイドバー分のマージンを追加
-        pt: { xs: 8, md: 8 },  // モバイル・デスクトップ共にpadding-topを追加してサイドバーと高さを合わせる
+        pt: { xs: 8, md: 0 },  // デスクトップではpadding-topを0に
         overflow: 'auto'
       }}>
         {/* ヘッダー */}

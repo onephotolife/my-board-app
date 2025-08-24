@@ -173,7 +173,7 @@ export default function DashboardPage() {
         });
       }
     }
-  };;
+  };
 
 
   if (status === 'loading' || loading) {

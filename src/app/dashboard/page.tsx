@@ -200,36 +200,7 @@ export default function DashboardPage() {
 
   return (
     <EnhancedAppLayout title="ダッシュボード" subtitle="最新の投稿とアクティビティ">
-      <Box sx={{ 
-        py: { xs: 2, md: 4 },
-        px: { xs: 2, sm: 3, md: 4 }
-      }}>
-        {/* ヘッダー */}
-        <Box
-          sx={{
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            color: 'white',
-            p: 4,
-            mb: 4,
-            mt: 0  // margin-topを削除
-          }}
-        >
-          <Container maxWidth="lg">
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Box>
-                <Typography variant="h4" gutterBottom sx={{ fontWeight: 700 }}>
-                  ダッシュボード
-                </Typography>
-                <Typography variant="body1">
-                  おかえりなさい、{session.user?.name || session.user?.email}さん
-                </Typography>
-              </Box>
-              {/* 通知ベルアイコンを削除 */}
-            </Box>
-          </Container>
-        </Box>
-
-        <Container maxWidth="lg" sx={{ pb: 4 }}>
+      <Box sx={{ pb: 4 }}>
 
           {/* 統計カード */}
           <Grid container spacing={3} sx={{ mb: 4 }}>
@@ -589,7 +560,6 @@ export default function DashboardPage() {
             </Grid>
           </Grid>
 
-        </Container>
       </Box>
     </EnhancedAppLayout>
   );

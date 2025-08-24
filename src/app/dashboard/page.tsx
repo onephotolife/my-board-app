@@ -506,24 +506,8 @@ export default function DashboardPage() {
               </Card>
             </Grid>
 
-            {/* お知らせ・活動 */}
+            {/* 最近の活動 */}
             <Grid item xs={12} md={4}>
-              <Card sx={{ mb: 3 }}>
-                <CardContent>
-                  <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                    お知らせ
-                  </Typography>
-                  <Stack spacing={2}>
-                    <Alert severity="info">
-                      新機能: マークダウン記法に対応しました
-                    </Alert>
-                    <Alert severity="success">
-                      メンテナンス完了: システムが安定稼働中です
-                    </Alert>
-                  </Stack>
-                </CardContent>
-              </Card>
-
               <Card>
                 <CardContent>
                   <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>

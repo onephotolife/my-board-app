@@ -378,7 +378,6 @@ export default function MyPostsPage() {
         )}
       </Container>
       </Box>
-      </Box>
     </>
   );
 }

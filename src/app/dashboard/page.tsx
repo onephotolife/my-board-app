@@ -592,7 +592,6 @@ export default function DashboardPage() {
 
         </Container>
       </Box>
-      </Box>
     </>
   );
 }

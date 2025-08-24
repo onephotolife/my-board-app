@@ -395,7 +395,6 @@ export default function NewPostPage() {
           </Paper>
         </Container>
       </Box>
-      </Box>
     </>
   );
 }

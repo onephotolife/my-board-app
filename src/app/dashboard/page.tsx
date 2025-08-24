@@ -236,11 +236,7 @@ export default function DashboardPage() {
                   おかえりなさい、{session.user?.name || session.user?.email}さん
                 </Typography>
               </Box>
-              <Badge badgeContent={3} color="error">
-                <IconButton sx={{ color: 'white' }}>
-                  <NotificationsIcon />
-                </IconButton>
-              </Badge>
+              {/* 通知ベルアイコンを削除 */}
             </Box>
           </Container>
         </Box>

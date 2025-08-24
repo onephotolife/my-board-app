@@ -203,16 +203,16 @@ export default function NewPostPage() {
     <>
       <Sidebar />
       <Box sx={{ 
-        minHeight: '100vh', 
         bgcolor: '#f5f5f5',
         marginLeft: { xs: 0, md: '280px' },  // デスクトップ時にサイドバー分のマージンを追加
         py: 4,
-        pt: { xs: 8, md: 0 },  // モバイル時はAppBarの高さ分、デスクトップは0
+        pt: { xs: 8, md: '61px' },  // モバイル時はAppBarの高さ分、デスクトップはメニュー開始位置
+        minHeight: '100vh',
         overflow: 'auto'
       }}>
         <Container maxWidth="md">
           {/* ヘッダー */}
-          <Box sx={{ mb: 4, mt: { xs: 0, md: '61px' }, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Typography variant="h4" sx={{ fontWeight: 700 }}>
                 新規投稿

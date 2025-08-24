@@ -32,7 +32,7 @@ import {
   PostAdd as PostAddIcon,
   Archive as ArchiveIcon
 } from '@mui/icons-material';
-import EnhancedAppLayout from '@/components/EnhancedAppLayout';
+import AppLayout from '@/components/AppLayout';
 
 interface Post {
   _id: string;
@@ -182,34 +182,17 @@ export default function MyPostsPage() {
   }
 
   return (
-    <EnhancedAppLayout title="マイ投稿" subtitle="投稿履歴の管理">
-      <Box sx={{ 
-        py: { xs: 2, md: 4 },
-        px: { xs: 2, sm: 3, md: 4 }
-      }}>
-        {/* ヘッダー */}
-        <Box
-          sx={{
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            color: 'white',
-            py: 6,
-            mb: 4,
-            mt: 0  // margin-topを削除
-          }}
-        >
-          <Container maxWidth="lg">
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-              <Typography variant="h3" sx={{ fontWeight: 700 }}>
-                自分の投稿
-              </Typography>
-            </Box>
-          <Typography variant="h6" sx={{ opacity: 0.9 }}>
+    <AppLayout>
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        {/* ページヘッダー */}
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h4" gutterBottom sx={{ fontWeight: 700 }}>
+            マイ投稿
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
             あなたの投稿履歴を管理
           </Typography>
-        </Container>
-      </Box>
-
-      <Container maxWidth="lg">
+        </Box>
         {/* 成功メッセージ */}
         {deleteSuccess && (
           <Alert severity="success" sx={{ mb: 3 }}>
@@ -374,7 +357,6 @@ export default function MyPostsPage() {
           </Paper>
         )}
       </Container>
-      </Box>
-    </EnhancedAppLayout>
+    </AppLayout>
   );
 }

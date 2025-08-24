@@ -120,8 +120,10 @@ export default function DashboardPage() {
     try {
       const response = await fetch('/api/posts');
       if (response.ok) {
-        const data = await response.json();
-        setPosts(data.slice(0, 5)); // 最新5件のみ表示
+        const result = await response.json();
+        // APIレスポンスの構造に合わせて修正
+        const posts = result.data || [];
+        setPosts(posts.slice(0, 5)); // 最新5件のみ表示
       }
     } catch (error) {
       console.error('投稿の取得に失敗:', error);

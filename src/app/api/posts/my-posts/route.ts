@@ -51,12 +51,11 @@ export async function GET(req: NextRequest) {
 
     console.log(`📊 [API] /my-posts 取得結果: ${posts.length}件の投稿`);
 
-    // 権限情報といいね数を追加
+    // 権限情報を追加
     const postsWithPermissions = posts.map((post: any) => ({
       ...post,
       canEdit: true,  // 自分の投稿なので編集可能
       canDelete: true, // 自分の投稿なので削除可能
-      likeCount: post.likes?.length || 0, // いいね数を計算
     }));
 
     return NextResponse.json({

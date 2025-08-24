@@ -11,7 +11,6 @@ export interface IPost extends Document {
   };
   status: 'published' | 'draft' | 'deleted';
   views: number;
-  likes: string[];
   tags: string[];
   category: 'general' | 'tech' | 'question' | 'discussion' | 'announcement';
   createdAt: Date;
@@ -20,7 +19,6 @@ export interface IPost extends Document {
   // メソッド
   softDelete(): Promise<IPost>;
   incrementViews(): Promise<IPost>;
-  toggleLike(userId: string): Promise<IPost>;
 }
 
 // Postスキーマの定義
@@ -61,10 +59,6 @@ const PostSchema = new Schema<IPost>(
     views: {
       type: Number,
       default: 0,
-    },
-    likes: {
-      type: [String],
-      default: [],
     },
     tags: {
       type: [String],

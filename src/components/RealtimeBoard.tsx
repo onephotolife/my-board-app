@@ -794,33 +794,7 @@ export default function RealtimeBoard() {
                     </Stack>
                     
                     <Stack direction="row" spacing={1}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <IconButton
-                          onClick={() => handleLike(post._id)}
-                          data-testid={`like-button-${post._id}`}
-                          sx={{
-                            color: '#6b7280 !important',
-                            '&:hover': {
-                              transform: 'scale(1.1)',
-                              color: '#6b7280 !important',
-                            },
-                            '& .MuiSvgIcon-root': {
-                              fontSize: 24,
-                              color: '#6b7280 !important',
-                            },
-                          }}
-                        >
-                          {post.isLikedByUser ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-                        </IconButton>
-                        <Typography 
-                          variant="body2" 
-                          color="text.secondary"
-                          data-testid={`like-count-${post._id}`}
-                          sx={{ minWidth: 20, textAlign: 'center' }}
-                        >
-                          {post.likes?.length || 0}
-                        </Typography>
-                      </Box>
+                      {/* いいね機能削除 */}
                       
                       {(post.canEdit || post.canDelete) && (
                         <Stack direction="row" spacing={0.5}>

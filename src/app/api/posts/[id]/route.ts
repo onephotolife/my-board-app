@@ -76,7 +76,6 @@ export async function GET(
       ...post.toJSON(),
       canEdit: isOwner,
       canDelete: isOwner,
-      isLikedByUser: post.likes?.includes(user.id) || false,
     };
     
     return NextResponse.json({
@@ -216,83 +215,5 @@ export async function DELETE(
   } catch (error) {
     console.error('投稿削除エラー:', error);
     return createErrorResponse('投稿の削除に失敗しました', 500, 'DELETE_ERROR');
-  }
-}
-
-// PATCH: いいね機能（トグル）
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    // 認証チェック
-    const user = await getAuthenticatedUser(req);
-    if (!user) {
-      console.log('🚫 いいねAPI: 認証失敗');
-      return createErrorResponse('認証が必要です', 401, 'UNAUTHORIZED');
-    }
-
-    console.log('✅ いいねAPI: 認証成功', { userId: user.id, email: user.email });
-
-    const { id } = await params;
-    const { action } = await req.json();
-    
-    if (action !== 'toggle_like') {
-      return createErrorResponse('無効なアクションです', 400, 'INVALID_ACTION');
-    }
-    
-    await connectDB();
-    
-    // 投稿を取得
-    const post = await Post.findById(id);
-    
-    if (!post) {
-      console.log('🚫 投稿が見つかりません:', id);
-      return createErrorResponse('投稿が見つかりません', 404, 'NOT_FOUND');
-    }
-    
-    // 削除済みの投稿にはいいねできない
-    if (post.status === 'deleted') {
-      return createErrorResponse('投稿が見つかりません', 404, 'NOT_FOUND');
-    }
-    
-    console.log('📝 いいね処理前:', { 
-      postId: id, 
-      currentLikes: post.likes,
-      userId: user.id,
-      alreadyLiked: post.likes.includes(user.id)
-    });
-    
-    // いいねをトグル
-    const updatedPost = await post.toggleLike(user.id);
-    
-    const isLiked = updatedPost.likes.includes(user.id);
-    
-    console.log('📝 いいね処理後:', { 
-      postId: id, 
-      newLikes: updatedPost.likes,
-      isLiked,
-      likeCount: updatedPost.likes.length
-    });
-    
-    // Socket.ioでいいね更新をブロードキャスト
-    broadcastEvent('post:liked', {
-      postId: id,
-      likeCount: updatedPost.likes.length,
-      userId: user.id,
-      action: isLiked ? 'liked' : 'unliked',
-    });
-    
-    return NextResponse.json({
-      success: true,
-      data: {
-        isLiked,
-        likeCount: updatedPost.likes.length,
-      },
-      message: isLiked ? 'いいねしました' : 'いいねを取り消しました',
-    });
-  } catch (error) {
-    console.error('いいね処理エラー:', error);
-    return createErrorResponse('いいね処理に失敗しました', 500, 'LIKE_ERROR');
   }
 }

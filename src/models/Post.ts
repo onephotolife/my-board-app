@@ -11,7 +11,6 @@ export interface IPost extends Document {
   };
   status: 'published' | 'draft' | 'deleted';
   tags?: string[];
-  likes: Types.ObjectId[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -55,10 +54,6 @@ const PostSchema = new Schema({
   tags: [{
     type: String,
     trim: true,
-  }],
-  likes: [{
-    type: Schema.Types.ObjectId,
-    ref: 'User',
   }],
 }, {
   timestamps: true,

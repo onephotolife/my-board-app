@@ -114,15 +114,11 @@ export async function GET(req: NextRequest) {
     // 権限情報を追加
     const postsWithPermissions = posts.map((post: any) => {
       const isOwner = post.author._id === user.id;
-      const isLiked = Array.isArray(post.likes) && post.likes.includes(user.id);
-      
-      console.log(`📝 投稿 ${post._id}: likes=[${post.likes}], userId=${user.id}, isLiked=${isLiked}`);
       
       return {
         ...post,
         canEdit: isOwner,
         canDelete: isOwner,
-        isLikedByUser: isLiked,
       };
     });
 
@@ -226,7 +222,6 @@ export async function POST(req: NextRequest) {
       },
       status: 'published',
       views: 0,
-      likes: [],
     };
 
     // 投稿の保存

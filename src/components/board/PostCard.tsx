@@ -22,8 +22,6 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { formatDistanceToNow } from 'date-fns';
 import { ja } from 'date-fns/locale';
 import Link from 'next/link';
@@ -41,7 +39,6 @@ interface PostCardProps {
       avatar?: string;
     };
     tags?: string[];
-    likes: string[];
     status: string;
     createdAt: string;
     updatedAt: string;
@@ -54,8 +51,6 @@ export default function PostCard({ post, currentUserId, onRefresh }: PostCardPro
   const router = useRouter();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [isLiked, setIsLiked] = useState(post.likes.includes(currentUserId || ''));
-  const [likeCount, setLikeCount] = useState(post.likes.length);
 
   const isOwner = currentUserId === post.author;
 
@@ -96,22 +91,7 @@ export default function PostCard({ post, currentUserId, onRefresh }: PostCardPro
     }
   };
 
-  const handleLike = async () => {
-    if (!currentUserId) return;
-
-    try {
-      // 楽観的更新
-      setIsLiked(!isLiked);
-      setLikeCount(isLiked ? likeCount - 1 : likeCount + 1);
-
-      // API呼び出し（実装省略）
-      // await fetch(`/api/posts/${post._id}/like`, { method: 'POST' });
-    } catch (error) {
-      // エラー時は元に戻す
-      setIsLiked(isLiked);
-      setLikeCount(likeCount);
-    }
-  };
+  // いいね機能削除
 
   const formattedDate = formatDistanceToNow(new Date(post.createdAt), {
     addSuffix: true,
@@ -177,18 +157,7 @@ export default function PostCard({ post, currentUserId, onRefresh }: PostCardPro
           )}
         </CardContent>
 
-        <CardActions sx={{ px: 2, pb: 2 }}>
-          <IconButton
-            onClick={handleLike}
-            color={isLiked ? 'error' : 'default'}
-            aria-label="いいね"
-          >
-            {isLiked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-          </IconButton>
-          <Typography variant="body2" color="text.secondary">
-            {likeCount}
-          </Typography>
-        </CardActions>
+        {/* いいね機能削除 */}
       </Card>
 
       {/* メニュー */}

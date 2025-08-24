@@ -53,29 +53,10 @@ export async function GET(request: NextRequest) {
       .sort({ createdAt: -1 })
       .select('createdAt');
 
-    // いいねされた数の合計を取得
-    const likesAggregate = await Post.aggregate([
-      {
-        $match: {
-          author: user._id,
-          status: { $ne: 'deleted' }
-        }
-      },
-      {
-        $group: {
-          _id: null,
-          totalLikes: { $sum: { $size: '$likes' } }
-        }
-      }
-    ]);
-
-    const totalLikes = likesAggregate.length > 0 ? likesAggregate[0].totalLikes : 0;
-
     return NextResponse.json({
       totalPosts,
       monthlyPosts,
       lastPostDate: lastPost ? lastPost.createdAt : null,
-      totalLikes,
       accountCreatedDate: user.createdAt
     });
   } catch (error) {

@@ -40,7 +40,7 @@ import {
   CheckCircle as CheckCircleIcon
 } from '@mui/icons-material';
 import { signOut } from 'next-auth/react';
-import Sidebar from '@/components/Sidebar';
+import AppLayout from '@/components/AppLayout';
 
 // 日付フォーマット関数（メンバー歴は日数で表示）
 const formatTimeAgo = (date: string | Date | undefined) => {
@@ -197,14 +197,10 @@ export default function DashboardPage() {
   }
 
   return (
-    <>
-      <Sidebar />
+    <AppLayout>
       <Box sx={{ 
-        bgcolor: '#f5f5f5',
-        marginLeft: { xs: 0, md: '280px' },  // デスクトップ時にサイドバー分のマージンを追加
-        pt: { xs: 8, md: '61px' },  // モバイル時はAppBarの高さ分、デスクトップはメニュー開始位置
-        minHeight: '100vh',
-        overflow: 'auto'
+        py: { xs: 2, md: 4 },
+        px: { xs: 2, sm: 3, md: 4 }
       }}>
         {/* ヘッダー */}
         <Box
@@ -593,6 +589,6 @@ export default function DashboardPage() {
 
         </Container>
       </Box>
-    </>
+    </AppLayout>
   );
 }

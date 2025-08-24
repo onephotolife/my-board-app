@@ -33,7 +33,7 @@ import {
   Code as CodeIcon,
   Link as LinkIcon
 } from '@mui/icons-material';
-import Sidebar from '@/components/Sidebar';
+import AppLayout from '@/components/AppLayout';
 
 export default function NewPostPage() {
   const { data: session, status } = useSession();
@@ -200,15 +200,10 @@ export default function NewPostPage() {
   };
 
   return (
-    <>
-      <Sidebar />
+    <AppLayout>
       <Box sx={{ 
-        bgcolor: '#f5f5f5',
-        marginLeft: { xs: 0, md: '280px' },  // デスクトップ時にサイドバー分のマージンを追加
-        py: 4,
-        pt: { xs: 8, md: '61px' },  // モバイル時はAppBarの高さ分、デスクトップはメニュー開始位置
-        minHeight: '100vh',
-        overflow: 'auto'
+        py: { xs: 2, md: 4 },
+        px: { xs: 2, sm: 3, md: 4 }
       }}>
         <Container maxWidth="md">
           {/* ヘッダー */}
@@ -395,6 +390,6 @@ export default function NewPostPage() {
           </Paper>
         </Container>
       </Box>
-    </>
+    </AppLayout>
   );
 }

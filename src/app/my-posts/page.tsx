@@ -32,7 +32,7 @@ import {
   PostAdd as PostAddIcon,
   Archive as ArchiveIcon
 } from '@mui/icons-material';
-import Sidebar from '@/components/Sidebar';
+import AppLayout from '@/components/AppLayout';
 
 interface Post {
   _id: string;
@@ -182,14 +182,10 @@ export default function MyPostsPage() {
   }
 
   return (
-    <>
-      <Sidebar />
+    <AppLayout>
       <Box sx={{ 
-        bgcolor: '#f5f5f5',
-        marginLeft: { xs: 0, md: '280px' },  // デスクトップ時にサイドバー分のマージンを追加
-        pt: { xs: 8, md: '61px' },  // モバイル時はAppBarの高さ分、デスクトップはメニュー開始位置
-        minHeight: '100vh',
-        overflow: 'auto'
+        py: { xs: 2, md: 4 },
+        px: { xs: 2, sm: 3, md: 4 }
       }}>
         {/* ヘッダー */}
         <Box
@@ -379,6 +375,6 @@ export default function MyPostsPage() {
         )}
       </Container>
       </Box>
-    </>
+    </AppLayout>
   );
 }

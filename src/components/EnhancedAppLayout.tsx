@@ -85,7 +85,10 @@ export default function EnhancedAppLayout({ children, title, subtitle }: Enhance
   };
 
   const handleSignOut = async () => {
-    await signOut({ redirect: true });
+    await signOut({ 
+      redirect: true,
+      callbackUrl: '/auth/signin'
+    });
   };
 
   const scrollToTop = () => {

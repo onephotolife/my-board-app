@@ -52,7 +52,10 @@ export default function AppLayout({ children, title, subtitle }: AppLayoutProps)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleSignOut = async () => {
-    await signOut({ redirect: true });
+    await signOut({ 
+      redirect: true,
+      callbackUrl: '/auth/signin'
+    });
   };
 
   const navigationItems = [

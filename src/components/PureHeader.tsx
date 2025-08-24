@@ -15,8 +15,11 @@ export default function PureHeader() {
     signIn();
   };
 
-  const handleSignOut = () => {
-    signOut();
+  const handleSignOut = async () => {
+    await signOut({ 
+      redirect: true,
+      callbackUrl: '/auth/signin'
+    });
   };
 
   const headerStyle: React.CSSProperties = {

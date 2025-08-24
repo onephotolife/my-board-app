@@ -44,7 +44,10 @@ export default function Sidebar() {
 
   const handleSignOut = async () => {
     console.log('🚪 ログアウト処理開始');
-    await signOut({ redirect: true });
+    await signOut({ 
+      redirect: true,
+      callbackUrl: '/auth/signin'
+    });
   };
 
   const menuItems = [

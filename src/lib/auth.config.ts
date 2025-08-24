@@ -104,7 +104,7 @@ export const authConfig = {
   pages: {
     signIn: "/auth/signin",
     error: "/auth/error",
-    signOut: "/auth/signin",  // ログアウト後のリダイレクト先
+    // signOutページは削除（デフォルトの動作を使用）
   },
   callbacks: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

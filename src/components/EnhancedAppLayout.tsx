@@ -408,6 +408,9 @@ export default function EnhancedAppLayout({ children, title, subtitle }: Enhance
               width: drawerWidth,
               borderRight: 'none',
               boxShadow: '2px 0 12px rgba(0,0,0,0.08)',
+              position: 'fixed',
+              height: '100vh',
+              zIndex: 1100,
             },
           }}
           open
@@ -422,7 +425,8 @@ export default function EnhancedAppLayout({ children, title, subtitle }: Enhance
         sx={{
           flexGrow: 1,
           p: { xs: 2, sm: 3, md: 4 },
-          width: { md: `calc(100% - ${drawerWidth}px)` },
+          width: { xs: '100%', md: `calc(100% - ${drawerWidth}px)` },
+          ml: { xs: 0, md: `${drawerWidth}px` },
           minHeight: '100vh',
           mt: { xs: 7, sm: 8, md: 9 },
         }}

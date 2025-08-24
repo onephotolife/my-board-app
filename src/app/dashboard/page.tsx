@@ -213,7 +213,7 @@ export default function DashboardPage() {
             color: 'white',
             p: 4,
             mb: 4,
-            mt: { xs: 0, md: -8 }  // デスクトップでは上部のpadding分を相殺
+            mt: { xs: 0, md: -20 }  // サイドバーのメニュー位置に合わせる
           }}
         >
           <Container maxWidth="lg">

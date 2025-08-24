@@ -52,10 +52,8 @@ export default function AppLayout({ children, title, subtitle }: AppLayoutProps)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleSignOut = async () => {
-    await signOut({ 
-      redirect: true,
-      callbackUrl: '/auth/signin'
-    });
+    await signOut({ redirect: false });
+    router.push('/auth/signin');
   };
 
   const navigationItems = [

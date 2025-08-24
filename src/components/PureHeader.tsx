@@ -2,10 +2,12 @@
 
 import { useSession, signIn, signOut } from 'next-auth/react';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function PureHeader() {
   const [mounted, setMounted] = useState(false);
   const { data: session, status } = useSession();
+  const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
@@ -16,10 +18,8 @@ export default function PureHeader() {
   };
 
   const handleSignOut = async () => {
-    await signOut({ 
-      redirect: true,
-      callbackUrl: '/auth/signin'
-    });
+    await signOut({ redirect: false });
+    router.push('/auth/signin');
   };
 
   const headerStyle: React.CSSProperties = {

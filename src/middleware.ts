@@ -4,8 +4,10 @@ import { getToken } from 'next-auth/jwt';
 
 import { RateLimiter } from '@/lib/security/rate-limiter';
 import { InputSanitizer } from '@/lib/security/sanitizer';
-// CSRFを一時的に無効化してアプリケーションを正常動作させる
-// import { verifyCSRFToken, createCSRFErrorResponse } from '@/lib/security/csrf-edge';
+import { defaultRateLimiter, apiRateLimiter, authRateLimiter } from '@/lib/security/rate-limiter-v2';
+import { CSRFProtection } from '@/lib/security/csrf-protection';
+import { SanitizerV2 } from '@/lib/security/sanitizer-v2';
+// import { auditLogger, AuditEvent } from '@/lib/security/audit-logger';
 
 // 保護されたパス（認証が必要）
 const protectedPaths = [
@@ -81,8 +83,16 @@ export async function middleware(request: NextRequest) {
   
   // APIルートのセキュリティチェック
   if (pathname.startsWith('/api/')) {
-    // レート制限チェック
-    const rateLimitResult = await RateLimiter.check(request);
+    // 新しいレート制限チェック（エンドポイント別）
+    let rateLimiter = apiRateLimiter;
+    if (pathname.startsWith('/api/auth')) {
+      rateLimiter = authRateLimiter;
+    }
+    
+    const identifier = request.headers.get('x-forwarded-for') || 
+                      request.headers.get('x-real-ip') || 
+                      'unknown';
+    const rateLimitResult = await rateLimiter.check(identifier);
     
     if (!rateLimitResult.allowed) {
       const limitResponse = NextResponse.json(
@@ -102,9 +112,7 @@ export async function middleware(request: NextRequest) {
       return limitResponse;
     }
     
-    // CSRF保護を一時的に無効化（修正中）
-    // TODO: Edge Runtime対応のCSRF実装後に有効化
-    /*
+    // CSRF保護（有効化）
     const method = request.method.toUpperCase();
     if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(method)) {
       const csrfExcludedPaths = [
@@ -113,20 +121,30 @@ export async function middleware(request: NextRequest) {
         '/api/verify-email',
         '/api/request-reset',
         '/api/reset-password',
+        '/api/csrf/token',
       ];
       
       const isExcluded = csrfExcludedPaths.some(path => pathname.startsWith(path));
       
       if (!isExcluded) {
-        const isValidCSRF = await verifyCSRFToken(request);
+        const isValidCSRF = CSRFProtection.verifyToken(request);
         
         if (!isValidCSRF) {
           console.warn(`CSRF token validation failed: ${pathname}`);
-          return createCSRFErrorResponse();
+          
+          // 監査ログに記録（Edge Runtimeではコンソールログのみ）
+          console.error('[AUDIT] CSRF_VIOLATION:', {
+            ip: identifier,
+            userAgent: request.headers.get('user-agent'),
+            pathname,
+            method,
+            severity: 'CRITICAL',
+          });
+          
+          return CSRFProtection.createErrorResponse();
         }
       }
     }
-    */
   }
   
   // クエリパラメータのサニタイゼーション
@@ -134,11 +152,19 @@ export async function middleware(request: NextRequest) {
   let paramsSanitized = false;
 
   searchParams.forEach((value, key) => {
-    const sanitized = InputSanitizer.sanitizeText(value);
+    const sanitized = SanitizerV2.sanitizeHTML(value);
     if (sanitized !== value) {
       url.searchParams.set(key, sanitized);
       paramsSanitized = true;
       console.warn(`Sanitized query parameter: ${key}`);
+      
+      // XSS試行を監査ログに記録（Edge Runtimeではコンソールログのみ）
+      console.error('[AUDIT] XSS_ATTEMPT:', {
+        ip: request.headers.get('x-forwarded-for') || 'unknown',
+        userAgent: request.headers.get('user-agent'),
+        data: { key, originalValue: value, sanitizedValue: sanitized },
+        severity: 'HIGH',
+      });
     }
   });
 

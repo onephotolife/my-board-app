@@ -232,9 +232,11 @@ export default function Sidebar() {
           borderRight: '1px solid #e0e0e0',
           display: { xs: 'none', md: 'block' },
           height: '100vh',
-          position: 'sticky',
+          position: 'fixed',
           top: 0,
-          overflowY: 'auto'
+          left: 0,
+          overflowY: 'auto',
+          zIndex: 1200
         }}
       >
         {sidebarContent}

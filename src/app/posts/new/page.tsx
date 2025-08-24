@@ -18,20 +18,13 @@ import {
   MenuItem,
   Chip,
   Stack,
-  IconButton,
   CircularProgress,
   Card,
   CardContent
 } from '@mui/material';
 import {
   Send as SendIcon,
-  Cancel as CancelIcon,
-  FormatBold as FormatBoldIcon,
-  FormatItalic as FormatItalicIcon,
-  FormatListBulleted as FormatListBulletedIcon,
-  FormatQuote as FormatQuoteIcon,
-  Code as CodeIcon,
-  Link as LinkIcon
+  Cancel as CancelIcon
 } from '@mui/icons-material';
 import AppLayout from '@/components/AppLayout';
 
@@ -157,47 +150,6 @@ export default function NewPostPage() {
     }
   };
 
-  const insertFormat = (format: string) => {
-    const textarea = document.getElementById('content-input') as HTMLTextAreaElement;
-    if (!textarea) return;
-    
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selectedText = content.substring(start, end);
-    
-    let newText = '';
-    switch (format) {
-      case 'bold':
-        newText = `**${selectedText || 'テキスト'}**`;
-        break;
-      case 'italic':
-        newText = `*${selectedText || 'テキスト'}*`;
-        break;
-      case 'list':
-        newText = `\n- ${selectedText || 'リスト項目'}`;
-        break;
-      case 'quote':
-        newText = `\n> ${selectedText || '引用文'}`;
-        break;
-      case 'code':
-        newText = `\`${selectedText || 'コード'}\``;
-        break;
-      case 'link':
-        newText = `[${selectedText || 'リンクテキスト'}](URL)`;
-        break;
-      default:
-        return;
-    }
-    
-    const newContent = content.substring(0, start) + newText + content.substring(end);
-    setContent(newContent);
-    
-    // カーソル位置を調整
-    setTimeout(() => {
-      textarea.focus();
-      textarea.setSelectionRange(start + newText.length, start + newText.length);
-    }, 0);
-  };
 
   return (
     <AppLayout>
@@ -267,34 +219,6 @@ export default function NewPostPage() {
                   <MenuItem value="announcement">お知らせ</MenuItem>
                 </Select>
               </FormControl>
-
-              {/* フォーマットツールバー */}
-              <Paper sx={{ p: 1, mb: 2, bgcolor: 'grey.100' }} elevation={0}>
-                <Stack direction="row" spacing={1}>
-                  <IconButton size="small" onClick={() => insertFormat('bold')}>
-                    <FormatBoldIcon />
-                  </IconButton>
-                  <IconButton size="small" onClick={() => insertFormat('italic')}>
-                    <FormatItalicIcon />
-                  </IconButton>
-                  <IconButton size="small" onClick={() => insertFormat('list')}>
-                    <FormatListBulletedIcon />
-                  </IconButton>
-                  <IconButton size="small" onClick={() => insertFormat('quote')}>
-                    <FormatQuoteIcon />
-                  </IconButton>
-                  <IconButton size="small" onClick={() => insertFormat('code')}>
-                    <CodeIcon />
-                  </IconButton>
-                  <IconButton size="small" onClick={() => insertFormat('link')}>
-                    <LinkIcon />
-                  </IconButton>
-                  <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
-                  <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center', color: 'text.secondary' }}>
-                    Markdownをサポート
-                  </Typography>
-                </Stack>
-              </Paper>
 
               {/* 内容 */}
               <TextField

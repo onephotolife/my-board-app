@@ -83,37 +83,48 @@ export async function middleware(request: NextRequest) {
   
   // APIルートのセキュリティチェック
   if (pathname.startsWith('/api/')) {
-    // 新しいレート制限チェック（エンドポイント別）
-    let rateLimiter = apiRateLimiter;
-    // /api/auth/sessionは除外（頻繁にポーリングされるため）
-    if (pathname === '/api/auth/session') {
-      // セッションチェックはレート制限を緩和
-      rateLimiter = apiRateLimiter;
-    } else if (pathname.startsWith('/api/auth')) {
-      rateLimiter = authRateLimiter;
-    }
+    // レート制限除外パス
+    const rateLimitExcludedPaths = [
+      '/api/health',
+      '/api/version',
+    ];
     
-    const identifier = request.headers.get('x-forwarded-for') || 
-                      request.headers.get('x-real-ip') || 
-                      'unknown';
-    const rateLimitResult = await rateLimiter.check(identifier);
+    // レート制限をスキップするかチェック
+    const skipRateLimit = rateLimitExcludedPaths.some(path => pathname === path);
     
-    if (!rateLimitResult.allowed) {
-      const limitResponse = NextResponse.json(
-        { 
-          error: 'Too many requests. Please try again later.',
-          retryAfter: Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000)
-        },
-        { status: 429 }
-      );
+    if (!skipRateLimit) {
+      // 新しいレート制限チェック（エンドポイント別）
+      let rateLimiter = apiRateLimiter;
+      // /api/auth/sessionとCSRF関連は通常のAPIレート制限
+      if (pathname === '/api/auth/session' || pathname.startsWith('/api/csrf')) {
+        // セッションチェックとCSRFトークンは頻繁にアクセスされるため緩和
+        rateLimiter = apiRateLimiter;
+      } else if (pathname.startsWith('/api/auth')) {
+        rateLimiter = authRateLimiter;
+      }
+    
+      const identifier = request.headers.get('x-forwarded-for') || 
+                        request.headers.get('x-real-ip') || 
+                        'unknown';
+      const rateLimitResult = await rateLimiter.check(identifier);
       
-      limitResponse.headers.set('X-RateLimit-Limit', '5');
-      limitResponse.headers.set('X-RateLimit-Remaining', String(rateLimitResult.remaining));
-      limitResponse.headers.set('X-RateLimit-Reset', String(rateLimitResult.resetTime));
-      limitResponse.headers.set('Retry-After', String(Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000)));
-      
-      console.warn(`Rate limit exceeded: ${request.headers.get('x-forwarded-for') || 'unknown'} - ${pathname}`);
-      return limitResponse;
+      if (!rateLimitResult.allowed) {
+        const limitResponse = NextResponse.json(
+          { 
+            error: 'Too many requests. Please try again later.',
+            retryAfter: Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000)
+          },
+          { status: 429 }
+        );
+        
+        limitResponse.headers.set('X-RateLimit-Limit', '5');
+        limitResponse.headers.set('X-RateLimit-Remaining', String(rateLimitResult.remaining));
+        limitResponse.headers.set('X-RateLimit-Reset', String(rateLimitResult.resetTime));
+        limitResponse.headers.set('Retry-After', String(Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000)));
+        
+        console.warn(`Rate limit exceeded: ${request.headers.get('x-forwarded-for') || 'unknown'} - ${pathname}`);
+        return limitResponse;
+      }
     }
     
     // CSRF保護（有効化）

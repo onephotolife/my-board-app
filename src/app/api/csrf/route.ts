@@ -1,47 +1,43 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-import { getOrCreateCSRFToken } from '@/lib/security/csrf';
+import crypto from 'crypto';
 
 /**
  * CSRFトークン取得エンドポイント
- * クライアントがCSRFトークンを取得するために使用
+ * クライアントが初期化時にトークンを取得するために使用
  */
 export async function GET(request: NextRequest) {
   try {
-    // CSRFトークンを取得または生成
-    const token = await getOrCreateCSRFToken();
+    // 新しいCSRFトークンを生成
+    const token = crypto.randomBytes(32).toString('hex');
     
     // レスポンスを作成
     const response = NextResponse.json(
       { 
         token,
-        header: 'x-csrf-token',
-        message: 'CSRF token generated successfully' 
+        message: 'CSRF token generated successfully'
       },
       { status: 200 }
     );
     
-    // CSRFトークンをレスポンスヘッダーにも設定
-    response.headers.set('X-CSRF-Token', token);
-    
-    // Cookieにも設定（httpOnly=false でクライアントから読み取り可能）
-    response.cookies.set('csrf-token-public', token, {
-      httpOnly: false, // クライアントサイドから読み取り可能
+    // CSRFトークンをクッキーにセット（httpOnly, secure）
+    response.cookies.set({
+      name: 'csrf-token',
+      value: token,
+      httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 24 * 60 * 60, // 24時間
       path: '/',
+      maxAge: 60 * 60 * 24, // 24時間
     });
+    
+    // ヘッダーにもトークンを含める（クライアント側で保存用）
+    response.headers.set('X-CSRF-Token', token);
     
     return response;
   } catch (error) {
     console.error('CSRF token generation error:', error);
-    
     return NextResponse.json(
-      { 
-        error: 'Failed to generate CSRF token',
-        message: 'CSRFトークンの生成に失敗しました' 
-      },
+      { error: 'Failed to generate CSRF token' },
       { status: 500 }
     );
   }

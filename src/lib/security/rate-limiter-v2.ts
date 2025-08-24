@@ -121,9 +121,9 @@ export const defaultRateLimiter = new RateLimiterV2({
   maxItems: 10000,
 });
 
-// API用レート制限（1分間に10リクエスト）
+// API用レート制限（1分間に30リクエスト - フロントエンドの頻繁なリクエストに対応）
 export const apiRateLimiter = new RateLimiterV2({
-  max: 10,
+  max: 30,
   window: 60000,
   maxItems: 10000,
 });

@@ -95,17 +95,15 @@ export default function ProfilePage() {
 
   if (status === 'loading' || loading) {
     return (
-      <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f5f5f5' }}>
-        <Sidebar />
-        <Box sx={{ 
-        flex: 1, 
+      <Box sx={{ 
         display: 'flex', 
+        minHeight: '100vh', 
+        bgcolor: '#f5f5f5',
         alignItems: 'center', 
         justifyContent: 'center',
-        pt: { xs: 8, md: 0 }  // モバイル時はAppBarの高さ分のpadding-topを追加（64px）
+        pt: { xs: 8, md: 0 }
       }}>
-          <CircularProgress />
-        </Box>
+        <CircularProgress />
       </Box>
     );
   }

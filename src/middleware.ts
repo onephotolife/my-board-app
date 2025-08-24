@@ -122,6 +122,7 @@ export async function middleware(request: NextRequest) {
         '/api/request-reset',
         '/api/reset-password',
         '/api/csrf/token',
+        '/api/performance', // パフォーマンスメトリクス収集用エンドポイント
       ];
       
       const isExcluded = csrfExcludedPaths.some(path => pathname.startsWith(path));

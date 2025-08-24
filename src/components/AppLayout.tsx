@@ -29,7 +29,6 @@ import {
   Logout as LogoutIcon,
   Notifications as NotificationsIcon,
   Settings as SettingsIcon,
-  Search as SearchIcon,
   Home as HomeIcon,
   Menu as MenuIcon,
   Close as CloseIcon,
@@ -87,12 +86,6 @@ export default function AppLayout({ children, title, subtitle }: AppLayoutProps)
       icon: <ArticleIcon />,
       path: '/my-posts',
       color: 'info.light',
-    },
-    {
-      label: '検索',
-      icon: <SearchIcon />,
-      path: '/search',
-      color: 'secondary.light',
     },
     {
       label: 'プロフィール',

@@ -88,34 +88,28 @@ export default function Sidebar() {
 
   const sidebarContent = (
     <Box sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <Box sx={{ mb: 4, textAlign: 'center' }}>
+      <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
         <Avatar
           sx={{
-            width: 100,
-            height: 100,
-            margin: '0 auto',
-            mb: 2,
+            width: 40,
+            height: 40,
             bgcolor: 'primary.main',
-            fontSize: '2rem'
+            fontSize: '1rem'
           }}
         >
           {session?.user?.name?.[0] || session?.user?.email?.[0]?.toUpperCase()}
         </Avatar>
-        <Typography variant="h6" gutterBottom>
-          {session?.user?.name || 'ユーザー'}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          {session?.user?.email}
-        </Typography>
-        <Chip
-          label="メンバー"
-          color="primary"
-          size="small"
-          sx={{ mt: 1 }}
-        />
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          <Typography variant="subtitle2" noWrap fontWeight="bold">
+            {session?.user?.name || 'ユーザー'}
+          </Typography>
+          <Typography variant="caption" color="text.secondary" noWrap>
+            {session?.user?.email}
+          </Typography>
+        </Box>
       </Box>
 
-      <Divider sx={{ mb: 3 }} />
+      <Divider sx={{ mb: 2 }} />
 
       <List>
         {menuItems.map((item) => (

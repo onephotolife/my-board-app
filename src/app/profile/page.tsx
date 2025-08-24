@@ -121,10 +121,10 @@ export default function ProfilePage() {
         minHeight: '100vh', 
         bgcolor: '#f5f5f5',
         marginLeft: { xs: 0, md: '280px' },  // デスクトップ時にサイドバー分のマージンを追加
-        pt: { xs: 8, md: 0 },  // デスクトップではpadding-topを0に
+        pt: { xs: 8, md: '98px' },  // デスクトップではサイドバーメニューの開始位置に合わせる
         overflow: 'auto'
       }}>
-        <Container maxWidth="md" sx={{ py: 4, pt: { xs: 4, md: 0 }, mt: { xs: 0, md: -20 } }}>
+        <Container maxWidth="md" sx={{ py: 4 }}>
           <Typography variant="h4" gutterBottom fontWeight="bold">
             プロフィール
           </Typography>

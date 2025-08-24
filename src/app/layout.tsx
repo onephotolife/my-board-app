@@ -98,7 +98,6 @@ export default function RootLayout({
                 <ul className="footer-links">
                   <li><a href="/privacy">プライバシーポリシー</a></li>
                   <li><a href="/terms">利用規約</a></li>
-                  <li><a href="/contact">お問い合わせ</a></li>
                 </ul>
               </nav>
               <p>&copy; 2025 会員制掲示板. All rights reserved.</p>

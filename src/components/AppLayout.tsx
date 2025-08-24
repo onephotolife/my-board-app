@@ -35,7 +35,6 @@ import {
   AccountCircle as AccountCircleIcon,
   PrivacyTip as PrivacyTipIcon,
   Article as ArticleIcon,
-  ContactMail as ContactMailIcon,
 } from '@mui/icons-material';
 
 interface AppLayoutProps {
@@ -106,12 +105,6 @@ export default function AppLayout({ children, title, subtitle }: AppLayoutProps)
       label: '利用規約',
       icon: <ArticleIcon />,
       path: '/terms',
-      color: 'grey.600',
-    },
-    {
-      label: 'お問い合わせ',
-      icon: <ContactMailIcon />,
-      path: '/contact',
       color: 'grey.600',
     },
   ];

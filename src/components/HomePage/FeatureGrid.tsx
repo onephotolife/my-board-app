@@ -33,6 +33,7 @@ export default function FeatureGrid({ features }: FeatureGridProps) {
   const featureIconStyle: React.CSSProperties = {
     fontSize: '40px',
     marginBottom: '16px',
+    textAlign: 'center',
   };
 
   const featureTitleStyle: React.CSSProperties = {

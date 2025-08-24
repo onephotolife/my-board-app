@@ -84,29 +84,6 @@ export default function MyPostsPage() {
       if (response.ok) {
         const result = await response.json();
         const myPosts = result.data || [];
-        
-        // ダミーデータを追加
-        if (myPosts.length === 0) {
-          myPosts.push(
-            {
-              _id: '1',
-              title: 'はじめての投稿',
-              content: 'これは私の最初の投稿です。会員制掲示板を使い始めました！',
-              author: session?.user?.name || session?.user?.email,
-              createdAt: new Date(Date.now() - 86400000).toISOString(),
-              updatedAt: new Date(Date.now() - 86400000).toISOString(),
-            },
-            {
-              _id: '2',
-              title: '技術的な質問',
-              content: 'Next.jsのApp Routerについて詳しく教えてください。',
-              author: session?.user?.name || session?.user?.email,
-              createdAt: new Date(Date.now() - 172800000).toISOString(),
-              updatedAt: new Date(Date.now() - 172800000).toISOString(),
-            }
-          );
-        }
-        
         setPosts(myPosts);
       }
     } catch (error) {

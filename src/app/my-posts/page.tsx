@@ -198,7 +198,7 @@ export default function MyPostsPage() {
             color: 'white',
             py: 6,
             mb: 4,
-            mt: { xs: 0, md: -20 }  // サイドバーのメニュー位置に合わせる
+            mt: { xs: 0, md: -30 }  // サイドバーのメニュー開始位置（約240px）に合わせる
           }}
         >
           <Container maxWidth="lg">

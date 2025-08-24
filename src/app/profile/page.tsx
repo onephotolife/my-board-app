@@ -23,7 +23,7 @@ import {
   Save as SaveIcon,
   Cancel as CancelIcon
 } from '@mui/icons-material';
-import AppLayout from '@/components/AppLayout';
+import EnhancedAppLayout from '@/components/EnhancedAppLayout';
 
 export default function ProfilePage() {
   const { data: session, status } = useSession();
@@ -113,7 +113,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <AppLayout>
+    <EnhancedAppLayout title="プロフィール" subtitle="アカウント情報の管理">
       <Box sx={{ 
         py: { xs: 2, md: 4 },
         px: { xs: 2, sm: 3, md: 4 }
@@ -281,6 +281,6 @@ export default function ProfilePage() {
           </Card>
         </Container>
       </Box>
-    </AppLayout>
+    </EnhancedAppLayout>
   );
 }

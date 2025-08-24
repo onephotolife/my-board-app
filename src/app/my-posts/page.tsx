@@ -32,7 +32,7 @@ import {
   PostAdd as PostAddIcon,
   Archive as ArchiveIcon
 } from '@mui/icons-material';
-import AppLayout from '@/components/AppLayout';
+import EnhancedAppLayout from '@/components/EnhancedAppLayout';
 
 interface Post {
   _id: string;
@@ -182,7 +182,7 @@ export default function MyPostsPage() {
   }
 
   return (
-    <AppLayout>
+    <EnhancedAppLayout title="マイ投稿" subtitle="投稿履歴の管理">
       <Box sx={{ 
         py: { xs: 2, md: 4 },
         px: { xs: 2, sm: 3, md: 4 }
@@ -375,6 +375,6 @@ export default function MyPostsPage() {
         )}
       </Container>
       </Box>
-    </AppLayout>
+    </EnhancedAppLayout>
   );
 }

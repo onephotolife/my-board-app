@@ -40,7 +40,7 @@ import {
   CheckCircle as CheckCircleIcon
 } from '@mui/icons-material';
 import { signOut } from 'next-auth/react';
-import AppLayout from '@/components/AppLayout';
+import EnhancedAppLayout from '@/components/EnhancedAppLayout';
 
 // 日付フォーマット関数（メンバー歴は日数で表示）
 const formatTimeAgo = (date: string | Date | undefined) => {
@@ -199,7 +199,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <AppLayout>
+    <EnhancedAppLayout title="ダッシュボード" subtitle="最新の投稿とアクティビティ">
       <Box sx={{ 
         py: { xs: 2, md: 4 },
         px: { xs: 2, sm: 3, md: 4 }
@@ -591,6 +591,6 @@ export default function DashboardPage() {
 
         </Container>
       </Box>
-    </AppLayout>
+    </EnhancedAppLayout>
   );
 }

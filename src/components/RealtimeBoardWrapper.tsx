@@ -63,24 +63,7 @@ export default function RealtimeBoardWrapper({
 
   return (
     <>
-      <Box sx={{ position: 'fixed', top: 70, right: 20, zIndex: 1000 }}>
-        <Chip
-          icon={isConnected ? <WifiTethering /> : <WifiTetheringOff />}
-          label={isConnected ? 'リアルタイム接続中' : 'オフライン'}
-          color={isConnected ? 'success' : 'default'}
-          variant="outlined"
-          size="small"
-        />
-        {onlineUsers.length > 0 && (
-          <Chip
-            label={`オンライン: ${onlineUsers.length}人`}
-            color="primary"
-            variant="outlined"
-            size="small"
-            sx={{ ml: 1 }}
-          />
-        )}
-      </Box>
+      {/* オフライン/接続状態のチップを削除 */}
 
       {typingUsers.size > 0 && (
         <Box sx={{ position: 'fixed', bottom: 20, left: 20, zIndex: 1000 }}>

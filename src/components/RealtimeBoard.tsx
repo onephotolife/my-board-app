@@ -49,7 +49,7 @@ import {
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
 import RealtimeBoardWrapper from '@/components/RealtimeBoardWrapper';
-import ReportButton from '@/components/ReportButton';
+// import ReportButton from '@/components/ReportButton'; // 通報ボタンを削除
 import { useSocket } from '@/lib/socket/client';
 import { modern2025Styles } from '@/styles/modern-2025';
 
@@ -883,7 +883,7 @@ export default function RealtimeBoard() {
                         </Stack>
                       )}
 
-                      <ReportButton postId={post._id} />
+                      {/* <ReportButton postId={post._id} /> 通報ボタンを削除 */}
                     </Stack>
                   </Box>
                 </CardContent>

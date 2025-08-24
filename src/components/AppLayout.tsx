@@ -348,18 +348,7 @@ export default function AppLayout({ children, title, subtitle }: AppLayoutProps)
                   )}
                 </Box>
               </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Badge badgeContent={3} color="error">
-                  <IconButton sx={{ color: 'white' }}>
-                    <NotificationsIcon />
-                  </IconButton>
-                </Badge>
-                {!isMobile && (
-                  <IconButton sx={{ color: 'white' }}>
-                    <SettingsIcon />
-                  </IconButton>
-                )}
-              </Box>
+              {/* 通知アイコンと設定アイコンを削除 */}
             </Box>
           </Container>
         </Box>

@@ -203,7 +203,7 @@ export default function DashboardPage() {
         minHeight: '100vh', 
         bgcolor: '#f5f5f5',
         marginLeft: { xs: 0, md: '280px' },  // デスクトップ時にサイドバー分のマージンを追加
-        pt: { xs: 8, md: '60px' },  // モバイル時はAppBarの高さ分、デスクトップはメニュー開始位置
+        pt: { xs: 8, md: 0 },  // モバイル時はAppBarの高さ分、デスクトップは0
         overflow: 'auto'
       }}>
         {/* ヘッダー */}
@@ -213,7 +213,7 @@ export default function DashboardPage() {
             color: 'white',
             p: 4,
             mb: 4,
-            mt: 0  // margin-topを削除
+            mt: { xs: 0, md: '61px' }  // デスクトップでサイドバーメニュー開始位置に合わせる
           }}
         >
           <Container maxWidth="lg">

@@ -203,7 +203,7 @@ export default function DashboardPage() {
         minHeight: '100vh', 
         bgcolor: '#f5f5f5',
         marginLeft: { xs: 0, md: '280px' },  // デスクトップ時にサイドバー分のマージンを追加
-        pt: { xs: 8, md: '98px' },  // デスクトップではサイドバーメニューの開始位置に合わせる
+        pt: { xs: 8, md: 0 },  // モバイル時はAppBarの高さ分、デスクトップは0
         overflow: 'auto'
       }}>
         {/* ヘッダー */}
@@ -212,7 +212,8 @@ export default function DashboardPage() {
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             color: 'white',
             p: 4,
-            mb: 4
+            mb: 4,
+            mt: { xs: 0, md: '48px' }  // デスクトップでサイドバーメニューと位置を合わせる
           }}
         >
           <Container maxWidth="lg">

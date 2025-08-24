@@ -30,6 +30,17 @@ export async function GET(request: NextRequest) {
       maxAge: 60 * 60 * 24, // 24時間
     });
     
+    // セッショントークンもセット（CSRF検証に必要）
+    response.cookies.set({
+      name: 'csrf-session',
+      value: token, // 同じトークンを使用
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      path: '/',
+      maxAge: 60 * 60 * 24, // 24時間
+    });
+    
     // ヘッダーにもトークンを含める（クライアント側で保存用）
     response.headers.set('X-CSRF-Token', token);
     

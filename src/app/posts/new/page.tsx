@@ -27,6 +27,7 @@ import {
   Cancel as CancelIcon
 } from '@mui/icons-material';
 import AppLayout from '@/components/AppLayout';
+import { csrfFetch } from '@/hooks/useCSRF';
 
 export default function NewPostPage() {
   const { data: session, status } = useSession();
@@ -87,7 +88,7 @@ export default function NewPostPage() {
     setValidationErrors({});
     
     try {
-      const response = await fetch('/api/posts', {
+      const response = await csrfFetch('/api/posts', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -38,7 +38,6 @@ import {
   FavoriteBorder as FavoriteBorderIcon,
   Search as SearchIcon,
   Refresh as RefreshIcon,
-  Visibility as VisibilityIcon,
   Person as PersonIcon,
   CalendarToday as CalendarIcon,
   Category as CategoryIcon,
@@ -605,7 +604,6 @@ export default function RealtimeBoard() {
                 >
                   <MenuItem value="-createdAt" sx={{ py: 1.5, fontWeight: 500 }}>新しい順</MenuItem>
                   <MenuItem value="createdAt" sx={{ py: 1.5 }}>古い順</MenuItem>
-                  <MenuItem value="-views" sx={{ py: 1.5 }}>閲覧数順</MenuItem>
                   <MenuItem value="-likes" sx={{ py: 1.5 }}>いいね順</MenuItem>
                 </Select>
               </FormControl>
@@ -791,16 +789,6 @@ export default function RealtimeBoard() {
                         <CalendarIcon sx={{ fontSize: 16, mr: 0.5 }} />
                         <Typography variant="caption" data-testid={`post-date-${post._id}`}>
                           {format(new Date(post.createdAt), 'yyyy/MM/dd HH:mm', { locale: ja })}
-                        </Typography>
-                      </Box>
-                      
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <VisibilityIcon sx={{ fontSize: 16, mr: 0.5 }} />
-                        <Typography 
-                          variant="caption"
-                          data-testid={`post-views-${post._id}`}
-                        >
-                          {post.views}
                         </Typography>
                       </Box>
                     </Stack>

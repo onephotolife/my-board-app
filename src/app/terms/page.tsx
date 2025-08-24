@@ -2,9 +2,11 @@
 
 import { Container, Typography, Paper, Box, Divider, Alert } from '@mui/material';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 
 import { modern2025Styles } from '@/styles/modern-2025';
 import ClientHeader from '@/components/ClientHeader';
+import AppLayout from '@/components/AppLayout';
 
 import { termsMetadata } from './metadata';
 
@@ -43,10 +45,10 @@ export default function TermsPage() {
     fontWeight: 500,
   };
 
-  return (
-    <>
-      <ClientHeader />
-      <Container maxWidth="md" sx={{ py: 4 }}>
+  const { data: session } = useSession();
+
+  const content = (
+    <Container maxWidth="md" sx={{ py: 4 }}>
         <Paper 
           elevation={0} 
           sx={{ 
@@ -370,7 +372,15 @@ export default function TermsPage() {
             </Link>
           </Box>
         </Paper>
-      </Container>
+    </Container>
+  );
+
+  return session ? (
+    <AppLayout>{content}</AppLayout>
+  ) : (
+    <>
+      <ClientHeader />
+      {content}
     </>
   );
 }

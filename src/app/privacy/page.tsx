@@ -2,9 +2,11 @@
 
 import { Container, Typography, Paper, Box, Divider } from '@mui/material';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 
 import { modern2025Styles } from '@/styles/modern-2025';
 import ClientHeader from '@/components/ClientHeader';
+import AppLayout from '@/components/AppLayout';
 
 import { privacyMetadata } from './metadata';
 
@@ -35,10 +37,10 @@ export default function PrivacyPage() {
     marginBottom: '1rem',
   };
 
-  return (
-    <>
-      <ClientHeader />
-      <Container maxWidth="md" sx={{ py: 4 }}>
+  const { data: session } = useSession();
+
+  const content = (
+    <Container maxWidth="md" sx={{ py: 4 }}>
         <Paper 
         elevation={0} 
         sx={{ 
@@ -200,11 +202,8 @@ export default function PrivacyPage() {
             10. お問い合わせ
           </Typography>
           <Typography variant="body1" style={paragraphStyle}>
-            本プライバシーポリシーに関するご質問やご意見は、
-            <Link href="/contact" style={{ color: modern2025Styles.colors.primary, marginLeft: '0.5rem' }}>
-              お問い合わせページ
-            </Link>
-            よりご連絡ください。
+            本プライバシーポリシーに関するご質問やご意見がございましたら、
+            運営までご連絡ください。
           </Typography>
         </Box>
 
@@ -245,7 +244,15 @@ export default function PrivacyPage() {
           </Link>
         </Box>
         </Paper>
-      </Container>
+    </Container>
+  );
+
+  return session ? (
+    <AppLayout>{content}</AppLayout>
+  ) : (
+    <>
+      <ClientHeader />
+      {content}
     </>
   );
 }

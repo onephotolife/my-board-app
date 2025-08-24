@@ -409,6 +409,8 @@ export default function EnhancedAppLayout({ children, title, subtitle }: Enhance
               borderRight: 'none',
               boxShadow: '2px 0 12px rgba(0,0,0,0.08)',
               position: 'fixed',
+              left: 0,
+              top: 0,
               height: '100vh',
               zIndex: 1100,
             },

@@ -150,7 +150,9 @@ export async function middleware(request: NextRequest) {
           
           // 監査ログに記録（Edge Runtimeではコンソールログのみ）
           console.error('[AUDIT] CSRF_VIOLATION:', {
-            ip: identifier,
+            ip: request.headers.get('x-forwarded-for') || 
+               request.headers.get('x-real-ip') || 
+               'unknown',
             userAgent: request.headers.get('user-agent'),
             pathname,
             method,
@@ -168,6 +170,38 @@ export async function middleware(request: NextRequest) {
   let paramsSanitized = false;
 
   searchParams.forEach((value, key) => {
+    // callbackUrlは特別処理（サニタイゼーションから除外）
+    if (key === 'callbackUrl') {
+      try {
+        // URLデコードして検証
+        const decodedValue = decodeURIComponent(value);
+        
+        // 相対URLまたは同一オリジンのみ許可
+        if (decodedValue.startsWith('/')) {
+          // 相対URLはそのまま許可
+          return;
+        }
+        
+        // 絶対URLの場合は同一オリジンチェック
+        const callbackUrl = new URL(decodedValue, request.url);
+        const currentUrl = new URL(request.url);
+        
+        if (callbackUrl.origin !== currentUrl.origin) {
+          // 異なるオリジンへのリダイレクトは削除
+          url.searchParams.delete(key);
+          paramsSanitized = true;
+          console.warn(`Removed cross-origin callbackUrl: ${decodedValue}`);
+        }
+      } catch (error) {
+        // 不正なURLは削除
+        url.searchParams.delete(key);
+        paramsSanitized = true;
+        console.warn(`Removed invalid callbackUrl: ${value}`);
+      }
+      return;
+    }
+    
+    // その他のパラメータは従来通りサニタイズ
     const sanitized = SanitizerV2.sanitizeHTML(value);
     if (sanitized !== value) {
       url.searchParams.set(key, sanitized);

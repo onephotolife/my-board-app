@@ -364,33 +364,7 @@ export default function RealtimeBoard() {
             リアルタイムで更新される投稿一覧
           </Typography>
           
-          {isConnected ? (
-            <Chip 
-              icon={<FiberManualRecordIcon sx={{ fontSize: 12 }} />}
-              label="リアルタイム接続中" 
-              color="success" 
-              size="small"
-              sx={{ 
-                mb: 2,
-                '& .MuiChip-icon': {
-                  color: '#22c55e',
-                },
-              }}
-            />
-          ) : (
-            <Chip 
-              icon={<FiberManualRecordIcon sx={{ fontSize: 12 }} />}
-              label="接続中..." 
-              color="default" 
-              size="small"
-              sx={{ 
-                mb: 2,
-                '& .MuiChip-icon': {
-                  color: '#94a3b8',
-                },
-              }}
-            />
-          )}
+          {/* 接続状態チップを削除 */}
           
           {selectedTag && (
             <Alert 

@@ -64,7 +64,7 @@ export default function AppLayout({ children, title, subtitle }: AppLayoutProps)
       color: 'primary.light',
     },
     {
-      label: 'ダッシュボード',
+      label: '会員制掲示板',
       icon: <DashboardIcon />,
       path: '/dashboard',
       color: 'primary.light',
@@ -328,7 +328,7 @@ export default function AppLayout({ children, title, subtitle }: AppLayoutProps)
                     gutterBottom 
                     sx={{ fontWeight: 700 }}
                   >
-                    {title || 'ダッシュボード'}
+                    {title || '会員制掲示板'}
                   </Typography>
                   {subtitle && (
                     <Typography variant="body1">

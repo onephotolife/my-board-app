@@ -160,14 +160,14 @@ export const authOptions: AuthOptions = {
     async redirect({ url, baseUrl }) {
       console.log('🌐 [Redirect callback v4]:', { url, baseUrl });
       
-      // 認証関連のURLの場合はダッシュボードにリダイレクト
+      // 認証関連のURLの場合は会員制掲示板にリダイレクト
       if (url.includes('/auth/signin') || url.includes('/auth/')) {
         const dashboardUrl = `${baseUrl}/dashboard`;
         console.log('🔄 [Server Redirect] auth URL detected, redirecting to:', dashboardUrl);
         return dashboardUrl;
       }
       
-      // デフォルトでダッシュボードに
+      // デフォルトで会員制掲示板に
       if (url.startsWith('/')) {
         const fullUrl = `${baseUrl}${url}`;
         console.log('🔄 [Server Redirect] relative URL to full URL:', fullUrl);
@@ -180,7 +180,7 @@ export const authOptions: AuthOptions = {
         return url;
       }
       
-      // フォールバック：ダッシュボード
+      // フォールバック：会員制掲示板
       const fallbackUrl = `${baseUrl}/dashboard`;
       console.log('🔄 [Server Redirect] fallback to dashboard:', fallbackUrl);
       return fallbackUrl;

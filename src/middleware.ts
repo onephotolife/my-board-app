@@ -85,7 +85,11 @@ export async function middleware(request: NextRequest) {
   if (pathname.startsWith('/api/')) {
     // 新しいレート制限チェック（エンドポイント別）
     let rateLimiter = apiRateLimiter;
-    if (pathname.startsWith('/api/auth')) {
+    // /api/auth/sessionは除外（頻繁にポーリングされるため）
+    if (pathname === '/api/auth/session') {
+      // セッションチェックはレート制限を緩和
+      rateLimiter = apiRateLimiter;
+    } else if (pathname.startsWith('/api/auth')) {
       rateLimiter = authRateLimiter;
     }
     

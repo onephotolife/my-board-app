@@ -128,9 +128,9 @@ export const apiRateLimiter = new RateLimiterV2({
   maxItems: 10000,
 });
 
-// 認証用レート制限（1分間に3リクエスト）
+// 認証用レート制限（1分間に20リクエスト - ログインプロセスで複数リクエスト発生するため）
 export const authRateLimiter = new RateLimiterV2({
-  max: 3,
+  max: 20,
   window: 60000,
   maxItems: 5000,
 });

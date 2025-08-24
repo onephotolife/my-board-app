@@ -62,9 +62,35 @@ export const authConfig = {
           
           // emailVerifiedは Boolean 型であるべき（Dateの場合も考慮）
           const isEmailVerified = userObject?.emailVerified === true || 
+                                  userObject?.emailVerified === 1 || // 数値の1も許容
+                                  userObject?.emailVerified === '1' || // 文字列の'1'も許容
+                                  userObject?.emailVerified === 'true' || // 文字列の'true'も許容
                                   (userObject?.emailVerified instanceof Date && userObject.emailVerified !== null);
           
-          if (!skipEmailVerification && !isEmailVerified) {
+          // undefinedまたはnullの場合は、古いユーザーとして扱う
+          if (userObject?.emailVerified === undefined || userObject?.emailVerified === null) {
+            console.log('⚠️ emailVerifiedが未設定のユーザー:', user.email);
+            // 2024年以前のユーザーは自動的に確認済みとする
+            const createdAt = userObject?.createdAt || new Date('2023-01-01');
+            const isOldUser = new Date(createdAt) < new Date('2024-01-01');
+            
+            if (isOldUser) {
+              console.log('✅ 古いユーザーとして自動承認:', user.email);
+              // 古いユーザーは承認済みとして扱う
+            } else if (!skipEmailVerification && !isEmailVerified) {
+              console.log('⛔ メール未確認のためログイン拒否:', {
+                emailVerified: userObject?.emailVerified,
+                type: typeof userObject?.emailVerified
+              });
+              // メール未確認の場合、特別なユーザーオブジェクトを返す
+              return {
+                id: "email-not-verified",
+                email: user.email,
+                name: user.name,
+                emailVerified: false
+              };
+            }
+          } else if (!skipEmailVerification && !isEmailVerified) {
             console.log('⛔ メール未確認のためログイン拒否:', {
               emailVerified: userObject?.emailVerified,
               type: typeof userObject?.emailVerified
@@ -91,7 +117,7 @@ export const authConfig = {
             id: latestUser._id.toString(),
             email: latestUser.email,
             name: latestUser.name,
-            emailVerified: true
+            emailVerified: true // 認証が成功した時点で確認済みとして扱う
           };
         } catch (error) {
           console.error('Auth error:', error);

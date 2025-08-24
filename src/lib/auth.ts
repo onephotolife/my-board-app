@@ -46,11 +46,28 @@ export const authOptions: AuthOptions = {
             return null;
           }
 
-          // メール確認状態をチェック
-          if (!user.emailVerified) {
+          // メール確認状態をチェック（柔軟な判定）
+          const isEmailVerified = user.emailVerified === true || 
+                                 user.emailVerified === 1 || // 数値の1も許容
+                                 user.emailVerified === '1' || // 文字列の'1'も許容
+                                 user.emailVerified === 'true'; // 文字列の'true'も許容
+          
+          // undefinedまたはnullの場合は、古いユーザーとして扱う
+          if (user.emailVerified === undefined || user.emailVerified === null) {
+            console.log('⚠️ [Auth v4] emailVerifiedが未設定のユーザー:', user.email);
+            // 2024年以前のユーザーは自動的に確認済みとする
+            const createdAt = user.createdAt || new Date('2023-01-01');
+            const isOldUser = new Date(createdAt) < new Date('2024-01-01');
+            
+            if (isOldUser) {
+              console.log('✅ [Auth v4] 古いユーザーとして自動承認:', user.email);
+              // DBは後で修正するが、一時的に承認
+            } else if (!isEmailVerified) {
+              console.log('❌ [Auth v4] メール未確認のユーザー:', user.email);
+              throw new Error('EmailNotVerified');
+            }
+          } else if (!isEmailVerified) {
             console.log('❌ [Auth v4] メール未確認のユーザー:', user.email);
-            // メール未確認用の特別なエラーをthrow
-            // NextAuthがこれをキャッチしてエラーページに渡す
             throw new Error('EmailNotVerified');
           }
 
@@ -96,7 +113,7 @@ export const authOptions: AuthOptions = {
             id: user._id.toString(),
             email: user.email,
             name: user.name || user.email,
-            emailVerified: user.emailVerified,
+            emailVerified: true, // 認証が成功した時点で確認済みとして扱う
             role: user.role,
             createdAt: createdAtString,
           };

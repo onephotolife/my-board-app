@@ -207,7 +207,7 @@ export default function NewPostPage() {
         bgcolor: '#f5f5f5',
         marginLeft: { xs: 0, md: '280px' },  // デスクトップ時にサイドバー分のマージンを追加
         py: 4,
-        pt: { xs: 8, md: 4 },  // モバイル時はAppBarの高さ分のpadding-topを追加（64px）
+        pt: { xs: 8, md: 8 },  // モバイル・デスクトップ共にpadding-topを追加してサイドバーと高さを合わせる
         overflow: 'auto'
       }}>
         <Container maxWidth="md">

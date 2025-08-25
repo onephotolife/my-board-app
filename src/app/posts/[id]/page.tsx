@@ -21,12 +21,6 @@ import {
   TextField,
   Alert,
   Chip,
-  Card,
-  CardContent,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText
 } from '@mui/material';
 import {
   ArrowBack as ArrowBackIcon,
@@ -37,11 +31,9 @@ import {
   Share as ShareIcon,
   BookmarkBorder as BookmarkBorderIcon,
   Bookmark as BookmarkIcon,
-  Comment as CommentIcon,
   Person as PersonIcon,
   AccessTime as AccessTimeIcon,
   Visibility as VisibilityIcon,
-  Send as SendIcon,
   MoreVert as MoreVertIcon
 } from '@mui/icons-material';
 
@@ -66,12 +58,6 @@ interface Post {
   isLikedByUser?: boolean;
 }
 
-interface Comment {
-  _id: string;
-  content: string;
-  author: string;
-  createdAt: string;
-}
 
 // カテゴリー定数
 const CATEGORIES = {
@@ -108,9 +94,6 @@ export default function PostDetailPage() {
   const [error, setError] = useState('');
   const [bookmarked, setBookmarked] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [commentText, setCommentText] = useState('');
-  const [comments, setComments] = useState<Comment[]>([]);
-  const [submittingComment, setSubmittingComment] = useState(false);
   const [likingPost, setLikingPost] = useState(false);
   
   useEffect(() => {
@@ -121,21 +104,6 @@ export default function PostDetailPage() {
     
     if (status === 'authenticated' && postId) {
       fetchPost();
-      // 仮のコメントデータ
-      setComments([
-        {
-          _id: '1',
-          content: 'この投稿とても参考になりました！',
-          author: 'ユーザー1',
-          createdAt: new Date().toISOString()
-        },
-        {
-          _id: '2',
-          content: '私も同じ意見です。素晴らしい内容ですね。',
-          author: 'ユーザー2',
-          createdAt: new Date(Date.now() - 3600000).toISOString()
-        }
-      ]);
     }
   }, [status, postId, router]);
 
@@ -246,22 +214,6 @@ export default function PostDetailPage() {
     }
   };
 
-  const handleCommentSubmit = async () => {
-    if (!commentText.trim()) return;
-    
-    setSubmittingComment(true);
-    // コメント投稿のAPI実装（仮）
-    const newComment: Comment = {
-      _id: Date.now().toString(),
-      content: commentText,
-      author: session?.user?.name || session?.user?.email || '匿名',
-      createdAt: new Date().toISOString()
-    };
-    
-    setComments([newComment, ...comments]);
-    setCommentText('');
-    setSubmittingComment(false);
-  };
 
   if (status === 'loading' || loading) {
     return (
@@ -403,13 +355,6 @@ export default function PostDetailPage() {
             >
               {likingPost ? '処理中...' : 'いいね'} {post.likes?.length || 0}
             </Button>
-            <Button
-              startIcon={<CommentIcon />}
-              variant="outlined"
-              size="small"
-            >
-              コメント {comments.length}
-            </Button>
             <IconButton onClick={handleBookmark}>
               {bookmarked ? <BookmarkIcon color="primary" /> : <BookmarkBorderIcon />}
             </IconButton>
@@ -419,82 +364,6 @@ export default function PostDetailPage() {
           </Stack>
         </Paper>
 
-        {/* コメントセクション */}
-        <Card sx={{ mb: 4 }}>
-          <CardContent>
-            <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-              コメント ({comments.length})
-            </Typography>
-            
-            {/* コメント入力 */}
-            <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
-              <Avatar sx={{ bgcolor: 'primary.main' }}>
-                {session?.user?.name?.[0] || session?.user?.email?.[0]?.toUpperCase() || 'U'}
-              </Avatar>
-              <TextField
-                fullWidth
-                multiline
-                rows={2}
-                placeholder="コメントを入力..."
-                value={commentText}
-                onChange={(e) => setCommentText(e.target.value)}
-                variant="outlined"
-              />
-              <Button
-                variant="contained"
-                onClick={handleCommentSubmit}
-                disabled={!commentText.trim() || submittingComment}
-                sx={{
-                  background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
-                  alignSelf: 'flex-end'
-                }}
-              >
-                <SendIcon />
-              </Button>
-            </Box>
-
-            <Divider sx={{ mb: 3 }} />
-
-            {/* コメント一覧 */}
-            {comments.length > 0 ? (
-              <List>
-                {comments.map((comment, index) => (
-                  <div key={comment._id}>
-                    <ListItem alignItems="flex-start">
-                      <ListItemAvatar>
-                        <Avatar sx={{ bgcolor: 'secondary.main' }}>
-                          {comment.author[0]?.toUpperCase()}
-                        </Avatar>
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary={(
-                          <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                              {comment.author}
-                            </Typography>
-                            <Typography variant="caption" color="text.secondary">
-                              {formatTimeAgo(comment.createdAt)}
-                            </Typography>
-                          </Box>
-                        )}
-                        secondary={(
-                          <Typography variant="body2" sx={{ mt: 1 }}>
-                            {comment.content}
-                          </Typography>
-                        )}
-                      />
-                    </ListItem>
-                    {index < comments.length - 1 && <Divider variant="inset" component="li" />}
-                  </div>
-                ))}
-              </List>
-            ) : (
-              <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 3 }}>
-                まだコメントがありません
-              </Typography>
-            )}
-          </CardContent>
-        </Card>
       </Container>
 
       {/* 削除確認ダイアログ */}

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>新規投稿ブラウザテスト</title>
+    <style>
+        body {
+            font-family: monospace;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+        }
+        .result {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 20px;
+            white-space: pre-wrap;
+            background: #f5f5f5;
+        }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+    </style>
+</head>
+<body>
+    <h1>新規投稿ブラウザテスト</h1>
+    
+    <div>
+        <button onclick="checkMetaTag()">1. メタタグ確認</button>
+        <button onclick="checkCookies()">2. クッキー確認</button>
+        <button onclick="fetchCSRFToken()">3. CSRFトークン取得</button>
+        <button onclick="testPost()">4. 投稿テスト</button>
+        <button onclick="runFullTest()">5. 完全テスト実行</button>
+    </div>
+    
+    <div id="result" class="result"></div>
+
+    <script>
+    const result = document.getElementById('result');
+    
+    function log(message, type = 'info') {
+        const timestamp = new Date().toISOString().split('T')[1].substring(0, 8);
+        const className = type === 'error' ? 'error' : type === 'success' ? 'success' : 'info';
+        result.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+    }
+    
+    function clear() {
+        result.innerHTML = '';
+    }
+    
+    // 1. メタタグ確認
+    function checkMetaTag() {
+        clear();
+        log('=== メタタグ確認 ===', 'info');
+        
+        const metaTag = document.querySelector('meta[name="app-csrf-token"]');
+        if (metaTag) {
+            const token = metaTag.getAttribute('content');
+            log(`✅ メタタグ存在: app-csrf-token`, 'success');
+            log(`   値: ${token ? token.substring(0, 30) + '...' : 'null'}`, 'info');
+        } else {
+            log(`❌ メタタグが見つかりません: app-csrf-token`, 'error');
+        }
+        
+        // 旧メタタグも確認
+        const oldMetaTag = document.querySelector('meta[name="csrf-token"]');
+        if (oldMetaTag) {
+            log(`⚠️ 旧メタタグが存在: csrf-token`, 'error');
+        }
+    }
+    
+    // 2. クッキー確認
+    function checkCookies() {
+        clear();
+        log('=== クッキー確認 ===', 'info');
+        
+        const cookies = document.cookie.split(';').map(c => c.trim());
+        
+        log('現在のクッキー:', 'info');
+        cookies.forEach(cookie => {
+            const [name] = cookie.split('=');
+            if (name.includes('csrf')) {
+                log(`  🔑 ${name}`, 'success');
+            } else if (name.includes('auth')) {
+                log(`  🔐 ${name}`, 'info');
+            } else {
+                log(`  • ${name}`, 'info');
+            }
+        });
+        
+        // httpOnlyクッキーは見えないので注意
+        log('\n注意: httpOnlyクッキーはJavaScriptから見えません', 'info');
+    }
+    
+    // 3. CSRFトークン取得
+    async function fetchCSRFToken() {
+        clear();
+        log('=== CSRFトークン取得 ===', 'info');
+        
+        try {
+            const response = await fetch('/api/csrf', {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    'Accept': 'application/json',
+                }
+            });
+            
+            log(`Status: ${response.status}`, response.ok ? 'success' : 'error');
+            
+            if (response.ok) {
+                const data = await response.json();
+                log(`✅ Token取得成功: ${data.token?.substring(0, 30)}...`, 'success');
+                
+                // メタタグ更新
+                let metaTag = document.querySelector('meta[name="app-csrf-token"]');
+                if (!metaTag) {
+                    metaTag = document.createElement('meta');
+                    metaTag.setAttribute('name', 'app-csrf-token');
+                    document.head.appendChild(metaTag);
+                    log('   メタタグを作成しました', 'info');
+                }
+                metaTag.setAttribute('content', data.token);
+                log('   メタタグを更新しました', 'success');
+                
+                return data.token;
+            } else {
+                const error = await response.text();
+                log(`❌ エラー: ${error}`, 'error');
+            }
+        } catch (error) {
+            log(`❌ ネットワークエラー: ${error.message}`, 'error');
+        }
+        
+        return null;
+    }
+    
+    // 4. 投稿テスト
+    async function testPost() {
+        clear();
+        log('=== 投稿テスト ===', 'info');
+        
+        // メタタグからトークン取得
+        const metaTag = document.querySelector('meta[name="app-csrf-token"]');
+        const token = metaTag?.getAttribute('content');
+        
+        if (!token) {
+            log('❌ CSRFトークンがメタタグにありません', 'error');
+            log('   先に「3. CSRFトークン取得」を実行してください', 'info');
+            return;
+        }
+        
+        log(`トークン: ${token.substring(0, 30)}...`, 'info');
+        
+        const postData = {
+            title: 'ブラウザテスト投稿',
+            content: `テスト投稿 - ${new Date().toISOString()}`,
+            category: 'general',
+            tags: [],
+            status: 'published'
+        };
+        
+        try {
+            log('\n送信中...', 'info');
+            log(`x-csrf-token: ${token.substring(0, 30)}...`, 'info');
+            
+            const response = await fetch('/api/posts', {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-csrf-token': token,
+                },
+                body: JSON.stringify(postData)
+            });
+            
+            log(`\nレスポンス Status: ${response.status}`, response.ok ? 'success' : 'error');
+            
+            const data = await response.json();
+            
+            if (response.status === 403) {
+                log('❌ 403 Forbidden', 'error');
+                log(`   エラー: ${data.error?.message || 'CSRF token validation failed'}`, 'error');
+                
+                // 詳細情報
+                if (data.error?.code) {
+                    log(`   コード: ${data.error.code}`, 'info');
+                }
+            } else if (response.status === 401) {
+                log('❌ 401 Unauthorized', 'error');
+                log('   認証が必要です。ログインしてください。', 'error');
+            } else if (response.ok) {
+                log('✅ 成功！投稿が作成されました', 'success');
+                if (data.data?.id) {
+                    log(`   投稿ID: ${data.data.id}`, 'success');
+                }
+            } else {
+                log(`❌ エラー: ${JSON.stringify(data)}`, 'error');
+            }
+            
+        } catch (error) {
+            log(`❌ ネットワークエラー: ${error.message}`, 'error');
+        }
+    }
+    
+    // 5. 完全テスト
+    async function runFullTest() {
+        clear();
+        log('=== 完全テスト開始 ===', 'info');
+        
+        // ステップ1: メタタグ確認
+        log('\n[Step 1] メタタグ確認', 'info');
+        checkMetaTag();
+        
+        // ステップ2: CSRFトークン取得
+        log('\n[Step 2] CSRFトークン取得', 'info');
+        const token = await fetchCSRFToken();
+        
+        if (!token) {
+            log('\n❌ CSRFトークン取得失敗のため中断', 'error');
+            return;
+        }
+        
+        // ステップ3: 投稿テスト
+        log('\n[Step 3] 投稿テスト', 'info');
+        await testPost();
+        
+        log('\n=== 完全テスト終了 ===', 'info');
+    }
+    
+    // ページロード時に初期チェック
+    window.addEventListener('load', () => {
+        log('ページロード完了', 'info');
+        log('ブラウザコンソールも確認してください (F12 → Console)', 'info');
+    });
+    </script>
+</body>
+</html>

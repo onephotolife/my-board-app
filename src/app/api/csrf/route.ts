@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
       value: token,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'lax',
       path: '/',
       maxAge: 60 * 60 * 24, // 24時間
     });
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
       value: token, // 同じトークンを使用
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'lax',
       path: '/',
       maxAge: 60 * 60 * 24, // 24時間
     });

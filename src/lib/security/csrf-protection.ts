@@ -37,7 +37,7 @@ export class CSRFProtection {
     response.cookies.set(this.COOKIE_NAME, token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'lax',
       path: '/',
       maxAge: 60 * 60 * 24, // 24時間
     });
@@ -46,7 +46,7 @@ export class CSRFProtection {
     response.cookies.set(this.SESSION_COOKIE_NAME, sessionToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'lax',
       path: '/',
       maxAge: 60 * 60 * 24,
     });

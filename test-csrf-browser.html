@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>CSRF Token Browser Test</title>
+</head>
+<body>
+    <h1>CSRF Token ブラウザテスト</h1>
+    <button onclick="testCSRF()">テスト実行</button>
+    <pre id="result"></pre>
+
+    <script>
+    async function testCSRF() {
+        const result = document.getElementById('result');
+        result.textContent = 'テスト実行中...\n\n';
+        
+        try {
+            // 1. CSRFトークン取得
+            result.textContent += '1. CSRFトークン取得中...\n';
+            const csrfResponse = await fetch('https://board.blankbrainai.com/api/csrf', {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    'Accept': 'application/json',
+                }
+            });
+            
+            const csrfData = await csrfResponse.json();
+            result.textContent += `   ✅ Status: ${csrfResponse.status}\n`;
+            result.textContent += `   ✅ Token: ${csrfData.token?.substring(0, 20)}...\n\n`;
+            
+            // 2. クッキー確認
+            result.textContent += '2. クッキー確認...\n';
+            const cookies = document.cookie;
+            result.textContent += `   現在のクッキー: ${cookies}\n`;
+            result.textContent += `   app-csrf-tokenは${cookies.includes('app-csrf-token') ? '存在' : '存在しない'}（httpOnlyなら見えない）\n\n`;
+            
+            // 3. メタタグ設定
+            result.textContent += '3. メタタグ設定...\n';
+            let metaTag = document.querySelector('meta[name="app-csrf-token"]');
+            if (!metaTag) {
+                metaTag = document.createElement('meta');
+                metaTag.setAttribute('name', 'app-csrf-token');
+                document.head.appendChild(metaTag);
+            }
+            metaTag.setAttribute('content', csrfData.token);
+            result.textContent += `   ✅ メタタグ設定完了\n\n`;
+            
+            // 4. テスト投稿送信
+            result.textContent += '4. テスト投稿送信...\n';
+            const postResponse = await fetch('https://board.blankbrainai.com/api/posts', {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-csrf-token': csrfData.token,
+                },
+                body: JSON.stringify({
+                    title: 'ブラウザテスト投稿',
+                    content: 'CSRFトークンのブラウザテスト',
+                    category: 'general'
+                })
+            });
+            
+            const postData = await postResponse.json();
+            result.textContent += `   Status: ${postResponse.status}\n`;
+            
+            if (postResponse.status === 403) {
+                result.textContent += `   ❌ エラー: ${postData.error?.message}\n\n`;
+                
+                // 詳細なデバッグ情報
+                result.textContent += '5. デバッグ情報...\n';
+                result.textContent += `   送信したトークン: ${csrfData.token?.substring(0, 20)}...\n`;
+                result.textContent += `   メタタグの値: ${metaTag.getAttribute('content')?.substring(0, 20)}...\n`;
+                
+                // ヘッダー確認用の再リクエスト
+                result.textContent += '\n6. ヘッダー確認テスト...\n';
+                const debugResponse = await fetch('https://board.blankbrainai.com/api/csrf', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                
+                // レスポンスヘッダー確認
+                const csrfCookie = debugResponse.headers.get('set-cookie');
+                result.textContent += `   Set-Cookie header: ${csrfCookie ? '存在' : '存在しない'}\n`;
+                
+            } else if (postResponse.status === 200 || postResponse.status === 201) {
+                result.textContent += `   ✅ 成功！投稿が作成されました\n`;
+                result.textContent += `   投稿ID: ${postData.data?.id}\n`;
+            } else if (postResponse.status === 401) {
+                result.textContent += `   ⚠️ 認証エラー（ログインが必要）\n`;
+            }
+            
+        } catch (error) {
+            result.textContent += `\n❌ エラー: ${error.message}\n`;
+        }
+    }
+    </script>
+</body>
+</html>

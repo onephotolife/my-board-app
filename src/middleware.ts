@@ -139,6 +139,7 @@ export async function middleware(request: NextRequest) {
         '/api/csrf/token',
         '/api/performance', // パフォーマンスメトリクス収集用エンドポイント
         '/api/test-csrf', // デバッグ用エンドポイント
+        '/api/debug-csrf', // CSRF問題調査用デバッグエンドポイント
       ];
       
       const isExcluded = csrfExcludedPaths.some(path => pathname.startsWith(path));

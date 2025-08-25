@@ -87,6 +87,9 @@ export class CSRFProtection {
         hasCookie: !!cookieToken,
         hasHeader: !!headerToken,
         hasSession: !!sessionToken,
+        cookieTokenSample: cookieToken ? cookieToken.substring(0, 10) + '...' : 'null',
+        headerTokenSample: headerToken ? headerToken.substring(0, 10) + '...' : 'null',
+        sessionTokenSample: sessionToken ? sessionToken.substring(0, 10) + '...' : 'null',
         path: request.nextUrl.pathname,
         method: request.method,
       });
@@ -102,6 +105,8 @@ export class CSRFProtection {
       
       if (!isValid) {
         console.warn('[CSRF] Token mismatch:', {
+          cookieTokenSample: cookieToken.substring(0, 10) + '...',
+          headerTokenSample: headerToken.substring(0, 10) + '...',
           path: request.nextUrl.pathname,
           method: request.method,
         });

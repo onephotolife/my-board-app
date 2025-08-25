@@ -31,9 +31,10 @@ export async function GET(request: NextRequest) {
     });
     
     // セッショントークンもセット（CSRF検証に必要）
+    const sessionToken = crypto.randomBytes(16).toString('hex');
     response.cookies.set({
       name: 'app-csrf-session',
-      value: token, // 同じトークンを使用
+      value: sessionToken, // 別のトークンを使用
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',

@@ -36,10 +36,10 @@ export function useCSRF(): CSRFData {
         setToken(data.token);
         
         // メタタグにも設定（互換性のため）
-        let metaTag = document.querySelector('meta[name="csrf-token"]');
+        let metaTag = document.querySelector('meta[name="app-csrf-token"]');
         if (!metaTag) {
           metaTag = document.createElement('meta');
-          metaTag.setAttribute('name', 'csrf-token');
+          metaTag.setAttribute('name', 'app-csrf-token');
           document.head.appendChild(metaTag);
         }
         metaTag.setAttribute('content', data.token);
@@ -49,7 +49,7 @@ export function useCSRF(): CSRFData {
         setError(err instanceof Error ? err : new Error('Unknown error'));
         
         // フォールバック: メタタグから取得を試みる
-        const metaTag = document.querySelector('meta[name="csrf-token"]');
+        const metaTag = document.querySelector('meta[name="app-csrf-token"]');
         if (metaTag) {
           const metaToken = metaTag.getAttribute('content');
           if (metaToken) {
@@ -112,14 +112,14 @@ export async function csrfFetch(
  * フォーム送信用のCSRFトークン付きデータ
  */
 export function appendCSRFToken(formData: FormData | Record<string, any>): FormData | Record<string, any> {
-  const metaTag = document.querySelector('meta[name="csrf-token"]');
+  const metaTag = document.querySelector('meta[name="app-csrf-token"]');
   const token = metaTag?.getAttribute('content');
   
   if (token) {
     if (formData instanceof FormData) {
-      formData.append('csrf-token', token);
+      formData.append('app-csrf-token', token);
     } else {
-      return { ...formData, 'csrf-token': token };
+      return { ...formData, 'app-csrf-token': token };
     }
   }
   

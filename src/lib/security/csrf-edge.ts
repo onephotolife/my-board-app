@@ -6,9 +6,9 @@
 import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
 
-const CSRF_TOKEN_NAME = 'csrf-token';
+const CSRF_TOKEN_NAME = 'app-csrf-token';
 const CSRF_HEADER_NAME = 'x-csrf-token';
-const CSRF_COOKIE_NAME = 'csrf-token'; // Edge Runtimeでは__Host-プレフィックスを使用しない
+const CSRF_COOKIE_NAME = 'app-csrf-token'; // Edge Runtimeでは__Host-プレフィックスを使用しない
 const TOKEN_LENGTH = 32;
 const TOKEN_EXPIRY = 24 * 60 * 60 * 1000; // 24時間
 

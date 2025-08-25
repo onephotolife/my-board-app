@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     
     // CSRFトークンをクッキーにセット（httpOnly, secure）
     response.cookies.set({
-      name: 'csrf-token',
+      name: 'app-csrf-token',
       value: token,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
     
     // セッショントークンもセット（CSRF検証に必要）
     response.cookies.set({
-      name: 'csrf-session',
+      name: 'app-csrf-session',
       value: token, // 同じトークンを使用
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

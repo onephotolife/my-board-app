@@ -8,9 +8,9 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export class CSRFProtection {
   private static readonly TOKEN_LENGTH = 32;
-  private static readonly COOKIE_NAME = 'csrf-token';
+  private static readonly COOKIE_NAME = 'app-csrf-token';
   private static readonly HEADER_NAME = 'x-csrf-token';
-  private static readonly SESSION_COOKIE_NAME = 'csrf-session';
+  private static readonly SESSION_COOKIE_NAME = 'app-csrf-session';
   
   /**
    * CSRFトークンの生成
@@ -64,7 +64,7 @@ export class CSRFProtection {
   } {
     const cookieToken = request.cookies.get(this.COOKIE_NAME)?.value;
     const headerToken = request.headers.get(this.HEADER_NAME) || 
-                       request.headers.get('csrf-token');
+                       request.headers.get('app-csrf-token');
     const sessionToken = request.cookies.get(this.SESSION_COOKIE_NAME)?.value;
     
     return { cookieToken, headerToken, sessionToken };

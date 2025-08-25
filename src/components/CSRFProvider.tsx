@@ -43,10 +43,10 @@ export function CSRFProvider({ children }: CSRFProviderProps) {
         setToken(data.token);
         
         // メタタグにも設定
-        let metaTag = document.querySelector('meta[name="csrf-token"]');
+        let metaTag = document.querySelector('meta[name="app-csrf-token"]');
         if (!metaTag) {
           metaTag = document.createElement('meta');
-          metaTag.setAttribute('name', 'csrf-token');
+          metaTag.setAttribute('name', 'app-csrf-token');
           document.head.appendChild(metaTag);
         }
         metaTag.setAttribute('content', data.token);

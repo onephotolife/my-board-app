@@ -8,7 +8,7 @@ import { NextRequest } from 'next/server';
  * Double Submit Cookie パターンを使用
  */
 
-const CSRF_TOKEN_NAME = 'csrf-token';
+const CSRF_TOKEN_NAME = 'app-csrf-token';
 const CSRF_HEADER_NAME = 'x-csrf-token';
 const CSRF_COOKIE_NAME = '__Host-csrf';
 const TOKEN_LENGTH = 32;
@@ -36,7 +36,7 @@ function hashToken(token: string, secret: string): string {
  */
 export async function getOrCreateCSRFToken(): Promise<string> {
   const cookieStore = await cookies();
-  const csrfCookieName = process.env.NODE_ENV === 'production' ? CSRF_COOKIE_NAME : 'csrf-token';
+  const csrfCookieName = process.env.NODE_ENV === 'production' ? CSRF_COOKIE_NAME : 'app-csrf-token';
   const existingToken = cookieStore.get(csrfCookieName);
   
   if (existingToken?.value) {
@@ -92,7 +92,7 @@ export async function verifyCSRFToken(
   
   try {
     // Cookieからトークンを取得（開発環境と本番環境で異なるCookie名）
-    const csrfCookieName = process.env.NODE_ENV === 'production' ? CSRF_COOKIE_NAME : 'csrf-token';
+    const csrfCookieName = process.env.NODE_ENV === 'production' ? CSRF_COOKIE_NAME : 'app-csrf-token';
     const cookieToken = request.cookies.get(csrfCookieName)?.value;
     if (!cookieToken) {
       console.warn('CSRF: Cookie token not found');
@@ -183,7 +183,7 @@ export function useCSRFToken(): { token: string | null; header: string } {
   }
   
   // メタタグからトークンを取得
-  const metaTag = document.querySelector('meta[name="csrf-token"]');
+  const metaTag = document.querySelector('meta[name="app-csrf-token"]');
   const token = metaTag?.getAttribute('content') || null;
   
   // Cookieから取得（フォールバック）
@@ -240,7 +240,7 @@ export async function secureFetch(
 export async function regenerateCSRFToken(): Promise<string> {
   const cookieStore = await cookies();
   const newToken = generateCSRFToken();
-  const csrfCookieName = process.env.NODE_ENV === 'production' ? CSRF_COOKIE_NAME : 'csrf-token';
+  const csrfCookieName = process.env.NODE_ENV === 'production' ? CSRF_COOKIE_NAME : 'app-csrf-token';
   
   // 古いトークンを削除
   cookieStore.delete(csrfCookieName);

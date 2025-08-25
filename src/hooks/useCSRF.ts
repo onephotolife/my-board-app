@@ -88,7 +88,7 @@ export async function csrfFetch(
   }
   
   // メタタグからトークンを取得
-  const metaTag = document.querySelector('meta[name="csrf-token"]');
+  const metaTag = document.querySelector('meta[name="app-csrf-token"]');
   const token = metaTag?.getAttribute('content');
   
   if (!token) {

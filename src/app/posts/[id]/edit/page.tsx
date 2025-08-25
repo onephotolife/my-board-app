@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useParams } from 'next/navigation';
+import { useCSRFContext } from '@/components/CSRFProvider';
 import {
   Box,
   Container,
@@ -70,6 +71,7 @@ export default function EditPostPage() {
   const router = useRouter();
   const params = useParams();
   const postId = params.id as string;
+  const { token: csrfToken } = useCSRFContext();
 
   const [post, setPost] = useState<Post | null>(null);
   const [title, setTitle] = useState('');
@@ -175,6 +177,7 @@ export default function EditPostPage() {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          'x-csrf-token': csrfToken || '',
         },
         body: JSON.stringify({
           title: title.trim(),
@@ -211,6 +214,9 @@ export default function EditPostPage() {
     try {
       const response = await fetch(`/api/posts/${postId}`, {
         method: 'DELETE',
+        headers: {
+          'x-csrf-token': csrfToken || '',
+        },
       });
       
       const data = await response.json();

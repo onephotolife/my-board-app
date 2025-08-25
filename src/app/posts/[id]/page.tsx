@@ -337,24 +337,10 @@ export default function PostDetailPage() {
                 {post.views} 閲覧
               </Typography>
             </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-              <ThumbUpIcon sx={{ fontSize: 18 }} />
-              <Typography variant="body2">{post.likes?.length || 0} いいね</Typography>
-            </Box>
           </Box>
 
           {/* アクションボタン */}
           <Stack direction="row" spacing={2} alignItems="center">
-            <Button
-              startIcon={post.isLikedByUser ? <ThumbUpIcon /> : <ThumbUpOutlinedIcon />}
-              onClick={handleLike}
-              variant={post.isLikedByUser ? 'contained' : 'outlined'}
-              size="small"
-              disabled={likingPost}
-              data-testid={`post-detail-like-button-${post._id}`}
-            >
-              {likingPost ? '処理中...' : 'いいね'} {post.likes?.length || 0}
-            </Button>
             <IconButton onClick={handleBookmark}>
               {bookmarked ? <BookmarkIcon color="primary" /> : <BookmarkBorderIcon />}
             </IconButton>

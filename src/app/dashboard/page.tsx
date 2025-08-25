@@ -204,7 +204,7 @@ export default function DashboardPage() {
           {/* ページヘッダー */}
           <Box sx={{ mb: 4 }}>
             <Typography variant="h4" gutterBottom sx={{ fontWeight: 700 }}>
-              会員制掲示板
+              ダッシュボード
             </Typography>
             <Typography variant="body1" color="text.secondary">
               おかえりなさい、{session.user?.name || session.user?.email}さん

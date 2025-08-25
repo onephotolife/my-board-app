@@ -64,7 +64,7 @@ export default function AppLayout({ children, title, subtitle }: AppLayoutProps)
       color: 'primary.light',
     },
     {
-      label: '会員制掲示板',
+      label: 'ダッシュボード',
       icon: <DashboardIcon />,
       path: '/dashboard',
       color: 'primary.light',

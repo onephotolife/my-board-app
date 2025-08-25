@@ -214,8 +214,8 @@ export default function PostDetailPage() {
           return {
             ...prevPost,
             likes: data.data.isLiked 
-              ? [...prevPost.likes.filter(id => id !== session?.user?.id), session?.user?.id || '']
-              : prevPost.likes.filter(id => id !== session?.user?.id),
+              ? [...(prevPost.likes || []).filter(id => id !== session?.user?.id), session?.user?.id || '']
+              : (prevPost.likes || []).filter(id => id !== session?.user?.id),
             isLikedByUser: data.data.isLiked
           };
         });
@@ -387,7 +387,7 @@ export default function PostDetailPage() {
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
               <ThumbUpIcon sx={{ fontSize: 18 }} />
-              <Typography variant="body2">{post.likes.length} いいね</Typography>
+              <Typography variant="body2">{post.likes?.length || 0} いいね</Typography>
             </Box>
           </Box>
 
@@ -401,7 +401,7 @@ export default function PostDetailPage() {
               disabled={likingPost}
               data-testid={`post-detail-like-button-${post._id}`}
             >
-              {likingPost ? '処理中...' : 'いいね'} {post.likes.length}
+              {likingPost ? '処理中...' : 'いいね'} {post.likes?.length || 0}
             </Button>
             <Button
               startIcon={<CommentIcon />}

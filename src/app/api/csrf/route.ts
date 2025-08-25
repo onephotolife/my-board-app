@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import crypto from 'crypto';
 
 /**
  * CSRFトークン取得エンドポイント
@@ -7,8 +6,10 @@ import crypto from 'crypto';
  */
 export async function GET(request: NextRequest) {
   try {
-    // 新しいCSRFトークンを生成
-    const token = crypto.randomBytes(32).toString('hex');
+    // 新しいCSRFトークンを生成（Edge Runtime対応）
+    const tokenArray = new Uint8Array(32);
+    crypto.getRandomValues(tokenArray);
+    const token = Array.from(tokenArray, byte => byte.toString(16).padStart(2, '0')).join('');
     
     // レスポンスを作成
     const response = NextResponse.json(
@@ -31,7 +32,10 @@ export async function GET(request: NextRequest) {
     });
     
     // セッショントークンもセット（CSRF検証に必要）
-    const sessionToken = crypto.randomBytes(16).toString('hex');
+    const sessionArray = new Uint8Array(16);
+    crypto.getRandomValues(sessionArray);
+    const sessionToken = Array.from(sessionArray, byte => byte.toString(16).padStart(2, '0')).join('');
+    
     response.cookies.set({
       name: 'app-csrf-session',
       value: sessionToken, // 別のトークンを使用

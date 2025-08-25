@@ -17,10 +17,19 @@ const MAX_LIMIT = 50;
 // GET: 投稿一覧取得（認証必須）
 export async function GET(req: NextRequest) {
   try {
-    // 認証チェック（NextAuth v5対応）
+    // クッキーのデバッグ情報
+    const cookieDebug = {
+      'next-auth.session-token': req.cookies.get('next-auth.session-token')?.value ? 'present' : 'missing',
+      '__Secure-next-auth.session-token': req.cookies.get('__Secure-next-auth.session-token')?.value ? 'present' : 'missing',
+      cookieHeader: req.headers.get('cookie') ? 'present' : 'missing'
+    };
+
+    // 認証チェック（NextAuth v4対応）
     const token = await getToken({
       req,
-      secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
+      secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
+      secureCookie: process.env.NODE_ENV === 'production',
+      cookieName: process.env.NODE_ENV === 'production' ? '__Secure-next-auth.session-token' : 'next-auth.session-token'
     });
 
     console.log('🔍 [API] 認証トークン確認:', {
@@ -31,7 +40,8 @@ export async function GET(req: NextRequest) {
       tokenKeys: token ? Object.keys(token) : [],
       environment: process.env.NODE_ENV,
       hasAuthSecret: !!process.env.AUTH_SECRET,
-      hasNextAuthSecret: !!process.env.NEXTAUTH_SECRET
+      hasNextAuthSecret: !!process.env.NEXTAUTH_SECRET,
+      cookies: cookieDebug
     });
 
     if (!token) {
@@ -158,10 +168,19 @@ export async function GET(req: NextRequest) {
 // POST: 新規投稿作成（認証必須）
 export async function POST(req: NextRequest) {
   try {
-    // 認証チェック（NextAuth v5対応）
+    // クッキーのデバッグ情報
+    const cookieDebug = {
+      'next-auth.session-token': req.cookies.get('next-auth.session-token')?.value ? 'present' : 'missing',
+      '__Secure-next-auth.session-token': req.cookies.get('__Secure-next-auth.session-token')?.value ? 'present' : 'missing',
+      cookieHeader: req.headers.get('cookie') ? 'present' : 'missing'
+    };
+
+    // 認証チェック（NextAuth v4対応）
     const token = await getToken({
       req,
-      secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
+      secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
+      secureCookie: process.env.NODE_ENV === 'production',
+      cookieName: process.env.NODE_ENV === 'production' ? '__Secure-next-auth.session-token' : 'next-auth.session-token'
     });
 
     console.log('🔍 [API] 認証トークン確認:', {
@@ -172,7 +191,8 @@ export async function POST(req: NextRequest) {
       tokenKeys: token ? Object.keys(token) : [],
       environment: process.env.NODE_ENV,
       hasAuthSecret: !!process.env.AUTH_SECRET,
-      hasNextAuthSecret: !!process.env.NEXTAUTH_SECRET
+      hasNextAuthSecret: !!process.env.NEXTAUTH_SECRET,
+      cookies: cookieDebug
     });
 
     if (!token) {

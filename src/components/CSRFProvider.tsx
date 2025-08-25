@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, ReactNode, useEffect, useState } from 'react';
+import { useSession } from 'next-auth/react';
 
 interface CSRFContextType {
   token: string | null;
@@ -29,10 +30,18 @@ interface CSRFProviderProps {
 export function CSRFProvider({ children }: CSRFProviderProps) {
   const [token, setToken] = useState<string | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [previousSessionId, setPreviousSessionId] = useState<string | null>(null);
+  const { data: session, status } = useSession();
   const header = 'x-csrf-token';
 
   const fetchToken = async () => {
     try {
+      console.log('🔄 [CSRF] トークン取得開始', {
+        sessionStatus: status,
+        hasSession: !!session,
+        timestamp: new Date().toISOString()
+      });
+      
       const response = await fetch('/api/csrf', {
         method: 'GET',
         credentials: 'include',
@@ -51,12 +60,16 @@ export function CSRFProvider({ children }: CSRFProviderProps) {
         }
         metaTag.setAttribute('content', data.token);
         
-        console.log('CSRF token initialized successfully');
+        console.log('✅ [CSRF] トークン更新完了', {
+          tokenPreview: data.token?.substring(0, 20) + '...',
+          metaTagUpdated: true,
+          timestamp: new Date().toISOString()
+        });
       } else {
-        console.error('Failed to fetch CSRF token:', response.statusText);
+        console.error('❌ [CSRF] トークン取得失敗:', response.statusText);
       }
     } catch (error) {
-      console.error('Error fetching CSRF token:', error);
+      console.error('❌ [CSRF] トークン取得エラー:', error);
     } finally {
       setIsInitialized(true);
     }
@@ -79,6 +92,22 @@ export function CSRFProvider({ children }: CSRFProviderProps) {
       document.removeEventListener('visibilitychange', handleFocus);
     };
   }, []);
+
+  // セッション変更を監視してCSRFトークンを再取得
+  useEffect(() => {
+    // セッションIDが変更された場合のみトークンを再取得
+    const currentSessionId = session?.user?.id || session?.user?.email || null;
+    
+    if (status === 'authenticated' && currentSessionId && currentSessionId !== previousSessionId) {
+      console.log('🔑 [CSRF] 新しいセッション確立を検知、CSRFトークンを再取得', {
+        previousSessionId,
+        currentSessionId,
+        userEmail: session?.user?.email
+      });
+      setPreviousSessionId(currentSessionId);
+      fetchToken();
+    }
+  }, [status, session, previousSessionId]);
 
   const refreshToken = async () => {
     await fetchToken();

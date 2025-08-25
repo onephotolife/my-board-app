@@ -235,10 +235,15 @@ export async function POST(req: NextRequest) {
     // 投稿データの作成
     const postData = {
       ...validatedData,
-      author: {
+      author: {        // /src/lib/models/Post.tsのスキーマに合わせる（オブジェクト形式）
         _id: user.id,
         name: user.name,
         email: user.email,
+      },
+      authorInfo: {    // authorInfoフィールドも追加（本番DBのスキーマ要件）
+        name: user.name,
+        email: user.email,
+        avatar: null,  // avatarフィールドは現時点でユーザー情報に含まれないためnull
       },
       status: 'published',
       views: 0,

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { useCSRFContext } from '@/components/CSRFProvider';
 import {
   Box,
   Container,
@@ -61,6 +62,7 @@ const formatTimeAgo = (date: string | Date) => {
 export default function MyPostsPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const { token: csrfToken } = useCSRFContext();
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleteSuccess, setDeleteSuccess] = useState(false);
@@ -101,6 +103,9 @@ export default function MyPostsPage() {
     try {
       const response = await fetch(`/api/posts/${postId}`, {
         method: 'DELETE',
+        headers: {
+          'x-csrf-token': csrfToken || ''
+        }
       });
       
       if (response.ok) {

@@ -7,22 +7,31 @@ import { CSRFProtection } from '@/lib/security/csrf-protection';
  */
 export async function GET(request: NextRequest) {
   try {
-    const response = NextResponse.json({
-      success: true,
-      message: 'CSRF token generated',
-    });
-    
-    // CSRFトークンをCookieに設定
-    const token = CSRFProtection.setToken(response);
-    
-    // レスポンスボディにもトークンを含める（開発用）
+    // レスポンスデータを準備
     const responseData = {
       success: true,
-      csrfToken: token,
+      csrfToken: '',
       message: 'CSRF token generated successfully',
     };
     
-    return NextResponse.json(responseData);
+    // レスポンスを作成
+    const response = NextResponse.json(responseData);
+    
+    // CSRFトークンをCookieに設定し、同じトークンを返す
+    const token = CSRFProtection.setToken(response);
+    
+    // レスポンスボディにトークンを含める
+    responseData.csrfToken = token;
+    
+    // トークンを含むレスポンスを再作成（Cookieを保持）
+    const finalResponse = NextResponse.json(responseData);
+    
+    // Cookieをコピー
+    response.cookies.getAll().forEach(cookie => {
+      finalResponse.cookies.set(cookie);
+    });
+    
+    return finalResponse;
   } catch (error) {
     console.error('[CSRF Token] Error:', error);
     return NextResponse.json(

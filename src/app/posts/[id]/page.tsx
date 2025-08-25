@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useParams } from 'next/navigation';
+import { useCSRFContext } from '@/components/CSRFProvider';
 import {
   Box,
   Container,
@@ -88,6 +89,7 @@ export default function PostDetailPage() {
   const router = useRouter();
   const params = useParams();
   const postId = params.id as string;
+  const { token: csrfToken } = useCSRFContext();
   
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
@@ -141,6 +143,9 @@ export default function PostDetailPage() {
     try {
       const response = await fetch(`/api/posts/${postId}`, {
         method: 'DELETE',
+        headers: {
+          'x-csrf-token': csrfToken || ''
+        }
       });
       
       const data = await response.json();

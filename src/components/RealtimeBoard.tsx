@@ -51,6 +51,7 @@ import RealtimeBoardWrapper from '@/components/RealtimeBoardWrapper';
 // import ReportButton from '@/components/ReportButton'; // 通報ボタンを削除
 import { useSocket } from '@/lib/socket/client';
 import { modern2025Styles } from '@/styles/modern-2025';
+import { useCSRFContext } from '@/components/CSRFProvider';
 
 interface Post {
   _id: string;
@@ -88,6 +89,7 @@ export default function RealtimeBoard() {
   const [totalPages, setTotalPages] = useState(1);
   const [selectedTag, setSelectedTag] = useState('');
   const { socket, isConnected } = useSocket();
+  const { token: csrfToken } = useCSRFContext();
   const searchTimeoutRef = useRef<NodeJS.Timeout>();
   const fetchDataRef = useRef<(() => void) | null>(null);
 
@@ -289,6 +291,9 @@ export default function RealtimeBoard() {
     try {
       const response = await fetch(`/api/posts/${postId}`, {
         method: 'DELETE',
+        headers: {
+          'x-csrf-token': csrfToken || ''
+        }
       });
 
       if (response.ok) {

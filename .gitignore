@@ -100,3 +100,4 @@ debug-selectors.js
 
 # Playwright outputs
 playwright-*.log
+node_modules_old/

@@ -1,4 +1,5 @@
 import SNSFeatureTest from '@/components/SNSFeatureTest';
+import SNSIntegrationTest from '@/components/SNSIntegrationTest';
 import { Box, Typography, Container } from '@mui/material';
 
 export default function TestSNSPage() {
@@ -12,6 +13,9 @@ export default function TestSNSPage() {
           SNS機能の設定状態と初期化のテストページです。
         </Typography>
         <SNSFeatureTest />
+        <Box sx={{ mt: 2 }}>
+          <SNSIntegrationTest />
+        </Box>
       </Box>
     </Container>
   );

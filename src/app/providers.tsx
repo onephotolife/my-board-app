@@ -8,6 +8,7 @@ import { UserProvider } from '@/contexts/UserContext';
 import { PermissionProvider } from '@/contexts/PermissionContext';
 import { CSRFProvider } from '@/components/CSRFProvider';
 import { SocketProvider } from '@/lib/socket/client';
+import { SNSProvider } from '@/contexts/SNSContext';
 import theme from '@/styles/theme';
 
 // レスポンシブスタイルのインポート
@@ -31,10 +32,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <PermissionProvider>
           <CSRFProvider>
             <ConditionalSocketProvider>
-              <ThemeProvider theme={theme}>
-                <CssBaseline />
-                {children}
-              </ThemeProvider>
+              <SNSProvider>
+                <ThemeProvider theme={theme}>
+                  <CssBaseline />
+                  {children}
+                </ThemeProvider>
+              </SNSProvider>
             </ConditionalSocketProvider>
           </CSRFProvider>
         </PermissionProvider>

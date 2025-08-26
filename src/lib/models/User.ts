@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document, Types } from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 export interface IUser extends Document {
@@ -26,9 +26,21 @@ export interface IUser extends Document {
   education?: string;     // 学歴
   website?: string;       // ウェブサイト
   lastProfileUpdate?: Date;
+  // フォロー関連フィールド（新規追加）
+  followingCount: number;  // フォロー中の数（キャッシュ用）
+  followersCount: number;  // フォロワー数（キャッシュ用）
+  mutualFollowsCount: number; // 相互フォロー数（キャッシュ用）
+  isPrivate?: boolean;     // プライベートアカウント設定
   createdAt: Date;
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
+  // フォロー関連メソッド（新規追加）
+  follow(targetUserId: string): Promise<void>;
+  unfollow(targetUserId: string): Promise<void>;
+  isFollowing(targetUserId: string): Promise<boolean>;
+  getFollowers(page?: number, limit?: number): Promise<any[]>;
+  getFollowing(page?: number, limit?: number): Promise<any[]>;
+  updateFollowCounts(): Promise<void>;
 }
 
 const UserSchema = new Schema<IUser>(
@@ -137,6 +149,26 @@ const UserSchema = new Schema<IUser>(
       type: Date,
       default: Date.now,
     },
+    // フォロー関連フィールド（新規追加）
+    followingCount: {
+      type: Number,
+      default: 0,
+      min: [0, 'フォロー数は0以上である必要があります'],
+    },
+    followersCount: {
+      type: Number,
+      default: 0,
+      min: [0, 'フォロワー数は0以上である必要があります'],
+    },
+    mutualFollowsCount: {
+      type: Number,
+      default: 0,
+      min: [0, '相互フォロー数は0以上である必要があります'],
+    },
+    isPrivate: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
@@ -161,10 +193,198 @@ UserSchema.methods.comparePassword = async function (candidatePassword: string):
   return bcrypt.compare(candidatePassword, this.password);
 };
 
+// フォロー関連メソッドの実装
+UserSchema.methods.follow = async function(targetUserId: string): Promise<void> {
+  const session = await mongoose.startSession();
+  
+  try {
+    await session.withTransaction(async () => {
+      const Follow = mongoose.model('Follow');
+      
+      // ObjectId変換とバリデーション
+      if (!mongoose.Types.ObjectId.isValid(targetUserId)) {
+        throw new Error('無効なユーザーIDです');
+      }
+      const targetId = new mongoose.Types.ObjectId(targetUserId);
+      
+      // 自分自身はフォローできない
+      if (this._id.equals(targetId)) {
+        throw new Error('自分自身をフォローすることはできません');
+      }
+      
+      // ターゲットユーザーの存在確認
+      const targetUser = await mongoose.model('User').findById(targetId).session(session);
+      if (!targetUser) {
+        throw new Error('フォロー対象のユーザーが存在しません');
+      }
+      
+      // 既存のフォロー関係をチェック（重複防止）
+      const existingFollow = await Follow.findOne({
+        follower: this._id,
+        following: targetId,
+      }).session(session);
+      
+      if (existingFollow) {
+        throw new Error('既にフォローしています');
+      }
+      
+      // フォロー関係を作成
+      await Follow.create([{
+        follower: this._id,
+        following: targetId,
+      }], { session });
+      
+      // 両者のカウントを並列更新
+      await Promise.all([
+        this.updateFollowCounts(),
+        targetUser.updateFollowCounts(),
+      ]);
+    });
+  } catch (error: any) {
+    // エラーをより詳細に記録
+    console.error(`Follow failed: userId=${this._id}, targetId=${targetUserId}`, error);
+    throw error;
+  } finally {
+    await session.endSession();
+  }
+};
+
+UserSchema.methods.unfollow = async function(targetUserId: string): Promise<void> {
+  const session = await mongoose.startSession();
+  
+  try {
+    await session.withTransaction(async () => {
+      const Follow = mongoose.model('Follow');
+      
+      // ObjectId変換とバリデーション
+      if (!mongoose.Types.ObjectId.isValid(targetUserId)) {
+        throw new Error('無効なユーザーIDです');
+      }
+      const targetId = new mongoose.Types.ObjectId(targetUserId);
+      
+      // フォロー関係を削除
+      const result = await Follow.findOneAndDelete({
+        follower: this._id,
+        following: targetId,
+      }).session(session);
+      
+      if (!result) {
+        throw new Error('フォローしていません');
+      }
+      
+      // ターゲットユーザーの取得
+      const targetUser = await mongoose.model('User').findById(targetId).session(session);
+      if (!targetUser) {
+        // ユーザーが削除されている場合でもアンフォローは成功扱い
+        console.warn(`Target user ${targetId} not found during unfollow`);
+      }
+      
+      // 両者のカウントを並列更新
+      const updatePromises = [this.updateFollowCounts()];
+      if (targetUser) {
+        updatePromises.push(targetUser.updateFollowCounts());
+      }
+      await Promise.all(updatePromises);
+    });
+  } catch (error: any) {
+    console.error(`Unfollow failed: userId=${this._id}, targetId=${targetUserId}`, error);
+    throw error;
+  } finally {
+    await session.endSession();
+  }
+};
+
+UserSchema.methods.isFollowing = async function(targetUserId: string): Promise<boolean> {
+  try {
+    // ObjectId変換とバリデーション
+    if (!mongoose.Types.ObjectId.isValid(targetUserId)) {
+      return false; // 無効なIDの場合はfalseを返す
+    }
+    
+    const Follow = mongoose.model('Follow');
+    const targetId = new mongoose.Types.ObjectId(targetUserId);
+    
+    // 自分自身の場合は常にfalse
+    if (this._id.equals(targetId)) {
+      return false;
+    }
+    
+    const count = await Follow.countDocuments({
+      follower: this._id,
+      following: targetId,
+    });
+    
+    return count > 0;
+  } catch (error) {
+    console.error(`isFollowing check failed: userId=${this._id}, targetId=${targetUserId}`, error);
+    return false;
+  }
+};
+
+UserSchema.methods.getFollowers = async function(page: number = 1, limit: number = 20): Promise<any[]> {
+  const Follow = mongoose.model('Follow');
+  
+  return Follow.find({ following: this._id })
+    .populate('follower', 'name email avatar bio followingCount followersCount')
+    .sort({ createdAt: -1 })
+    .skip((page - 1) * limit)
+    .limit(limit)
+    .lean();
+};
+
+UserSchema.methods.getFollowing = async function(page: number = 1, limit: number = 20): Promise<any[]> {
+  const Follow = mongoose.model('Follow');
+  
+  return Follow.find({ follower: this._id })
+    .populate('following', 'name email avatar bio followingCount followersCount')
+    .sort({ createdAt: -1 })
+    .skip((page - 1) * limit)
+    .limit(limit)
+    .lean();
+};
+
+UserSchema.methods.updateFollowCounts = async function(): Promise<void> {
+  const Follow = mongoose.model('Follow');
+  
+  try {
+    // 並列でカウント取得（パフォーマンス最適化）
+    const [followingCount, followersCount, mutualFollows] = await Promise.all([
+      // フォロー数
+      Follow.countDocuments({ follower: this._id }),
+      // フォロワー数
+      Follow.countDocuments({ following: this._id }),
+      // 相互フォロー数（自分がフォローしている相手のみカウントで重複防止）
+      Follow.countDocuments({ 
+        follower: this._id, 
+        isReciprocal: true 
+      }),
+    ]);
+    
+    // 更新を保存（validateBeforeSave: falseで無限ループ防止）
+    this.followingCount = followingCount;
+    this.followersCount = followersCount;
+    this.mutualFollowsCount = mutualFollows;
+    
+    await this.save({ validateBeforeSave: false });
+  } catch (error) {
+    console.error(`Failed to update follow counts for user ${this._id}:`, error);
+    throw new Error('フォローカウントの更新に失敗しました');
+  }
+};
+
 // 開発環境でスキーマキャッシュをクリア
 if (process.env.NODE_ENV === 'development') {
   delete mongoose.models.User;
   delete mongoose.connection.models.User;
+}
+
+// Followモデルを確実にロードする（循環依存を避けるため動的require）
+if (!mongoose.models.Follow) {
+  try {
+    require('./Follow');
+  } catch (error) {
+    console.warn('Follow model could not be loaded:', error);
+  }
 }
 
 export default mongoose.models.User || mongoose.model<IUser>('User', UserSchema);

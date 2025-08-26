@@ -114,23 +114,23 @@ export class RateLimiterV2 {
   }
 }
 
-// デフォルトインスタンス（1分間に5リクエスト）
+// デフォルトインスタンス
 export const defaultRateLimiter = new RateLimiterV2({
-  max: 5,
+  max: 100, // 開発環境のデフォルトを緩和
   window: 60000, // 1分
   maxItems: 10000,
 });
 
-// API用レート制限（1分間に30リクエスト - フロントエンドの頻繁なリクエストに対応）
+// API用レート制限（開発環境では大幅に緩和）
 export const apiRateLimiter = new RateLimiterV2({
-  max: 30,
+  max: 200, // 開発環境用に大幅緩和: 200req/min
   window: 60000,
   maxItems: 10000,
 });
 
-// 認証用レート制限（1分間に20リクエスト - ログインプロセスで複数リクエスト発生するため）
+// 認証用レート制限
 export const authRateLimiter = new RateLimiterV2({
-  max: 20,
+  max: 100, // 開発環境用に緩和: 100req/min
   window: 60000,
   maxItems: 5000,
 });

@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, ReactNode, useEffect, useState } from 'react';
+import { createContext, useContext, ReactNode, useEffect, useState, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 
 interface CSRFContextType {
@@ -33,13 +33,31 @@ export function CSRFProvider({ children }: CSRFProviderProps) {
   const [previousSessionId, setPreviousSessionId] = useState<string | null>(null);
   const { data: session, status } = useSession();
   const header = 'x-csrf-token';
+  const fetchTokenTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastFetchTimeRef = useRef<number>(0);
+  const MIN_FETCH_INTERVAL = 5000; // 最小5秒間隔
 
-  const fetchToken = async () => {
+  const fetchToken = async (force: boolean = false) => {
+    // デバウンス: 前回の取得から最小間隔を確保
+    const now = Date.now();
+    const timeSinceLastFetch = now - lastFetchTimeRef.current;
+    
+    if (!force && timeSinceLastFetch < MIN_FETCH_INTERVAL) {
+      console.log('⏳ [CSRF] トークン取得をスキップ (デバウンス)', {
+        timeSinceLastFetch,
+        minInterval: MIN_FETCH_INTERVAL
+      });
+      return;
+    }
+    
+    lastFetchTimeRef.current = now;
+    
     try {
       console.log('🔄 [CSRF] トークン取得開始', {
         sessionStatus: status,
         hasSession: !!session,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        forced: force
       });
       
       const response = await fetch('/api/csrf', {
@@ -76,13 +94,22 @@ export function CSRFProvider({ children }: CSRFProviderProps) {
   };
 
   useEffect(() => {
-    // 初回マウント時にトークンを取得
-    fetchToken();
+    // 初回マウント時にトークンを取得（強制実行）
+    fetchToken(true);
     
-    // ページフォーカス時にトークンをリフレッシュ（セキュリティ強化）
+    // ページフォーカス時にトークンをリフレッシュ（デバウンス付き）
     const handleFocus = () => {
       if (document.visibilityState === 'visible') {
-        fetchToken();
+        // デバウンス: 既存のタイムアウトをクリア
+        if (fetchTokenTimeoutRef.current) {
+          clearTimeout(fetchTokenTimeoutRef.current);
+        }
+        
+        // 1秒後に実行（連続フォーカスイベントをまとめる）
+        fetchTokenTimeoutRef.current = setTimeout(() => {
+          fetchToken();
+          fetchTokenTimeoutRef.current = null;
+        }, 1000);
       }
     };
     
@@ -90,6 +117,9 @@ export function CSRFProvider({ children }: CSRFProviderProps) {
     
     return () => {
       document.removeEventListener('visibilitychange', handleFocus);
+      if (fetchTokenTimeoutRef.current) {
+        clearTimeout(fetchTokenTimeoutRef.current);
+      }
     };
   }, []);
 
@@ -110,7 +140,7 @@ export function CSRFProvider({ children }: CSRFProviderProps) {
   }, [status, session, previousSessionId]);
 
   const refreshToken = async () => {
-    await fetchToken();
+    await fetchToken(true); // 手動リフレッシュは強制実行
   };
 
   return (

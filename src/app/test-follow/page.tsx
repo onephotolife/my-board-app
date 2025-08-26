@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { signIn, useSession } from 'next-auth/react';
 import {
   Box,
   Container,
@@ -44,6 +45,7 @@ const TEST_USER_IDS = {
 export default function TestFollowPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [connectionStatus, setConnectionStatus] = useState<'checking' | 'connected' | 'disconnected'>('checking');
+  const { data: session, status } = useSession();
 
   useEffect(() => {
     // ページ読み込み完了をシミュレート
@@ -74,8 +76,44 @@ export default function TestFollowPage() {
       <Alert severity="info" sx={{ mb: 3 }}>
         <AlertTitle>テスト環境</AlertTitle>
         このページはフォローボタンコンポーネントの動作テスト用です。
-        有効なMongoDBのObjectID形式を使用していますが、実際のユーザーは存在しない可能性があります。
+        テストユーザーがデータベースに作成されています。
+        ログイン: testmain@example.com / Test123!
       </Alert>
+
+      {/* 認証状態表示 */}
+      {status === 'loading' ? (
+        <Card sx={{ mb: 3 }}>
+          <CardContent>
+            <CircularProgress size={20} /> 認証状態を確認中...
+          </CardContent>
+        </Card>
+      ) : status === 'authenticated' ? (
+        <Card sx={{ mb: 3, bgcolor: 'success.light' }}>
+          <CardContent>
+            <Typography variant="body1">
+              ✅ ログイン中: {session?.user?.email}
+            </Typography>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card sx={{ mb: 3, bgcolor: 'warning.light' }}>
+          <CardContent>
+            <Typography variant="body1" gutterBottom>
+              ⚠️ 未ログイン状態です。フォロー機能をテストするにはログインが必要です。
+            </Typography>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => signIn(undefined, { callbackUrl: '/test-follow' })}
+            >
+              テストユーザーでログイン
+            </Button>
+            <Typography variant="caption" display="block" sx={{ mt: 1 }}>
+              Email: testmain@example.com / Password: Test123!
+            </Typography>
+          </CardContent>
+        </Card>
+      )}
 
       {/* 接続状態 */}
       <Card sx={{ mb: 3 }}>
@@ -110,7 +148,7 @@ export default function TestFollowPage() {
 
       {/* フォローボタンのテストケース */}
       <Grid container spacing={3}>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <Paper sx={{ p: 3 }}>
             <Typography variant="h5" gutterBottom>
               フォローボタンバリエーション
@@ -191,16 +229,18 @@ export default function TestFollowPage() {
 
               <Box>
                 <Typography variant="subtitle2" gutterBottom>
-                  非表示テキスト
+                  アイコンのみ表示
                 </Typography>
                 <Stack direction="row" spacing={2}>
                   <FollowButton 
                     userId={TEST_USER_IDS.user10}
-                    hideText={true}
+                    compact={true}
+                    showIcon={true}
                   />
                   <FollowButton 
                     userId={TEST_USER_IDS.user11}
-                    hideText={true}
+                    compact={true}
+                    showIcon={true}
                     initialFollowing={true}
                   />
                 </Stack>
@@ -210,16 +250,17 @@ export default function TestFollowPage() {
         </Grid>
 
         {/* エラー状態のシミュレーション */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Paper sx={{ p: 3 }}>
             <Typography variant="h6" gutterBottom>
               エラー処理テスト
             </Typography>
             <Divider sx={{ my: 2 }} />
             <Alert severity="warning" sx={{ mb: 2 }}>
-              <AlertTitle>注意</AlertTitle>
-              これらのテストユーザーIDはデータベースに存在しない可能性があります。
-              404エラーが発生する場合は正常な動作です。
+              <AlertTitle>テスト注意事項</AlertTitle>
+              フォロー機能はログインが必要です。
+              テストユーザーがデータベースに作成されています。
+              スクリプト: node scripts/seed-test-users.js
             </Alert>
             <Stack spacing={2}>
               <Button
@@ -245,7 +286,7 @@ export default function TestFollowPage() {
         </Grid>
 
         {/* パフォーマンステスト */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Paper sx={{ p: 3 }}>
             <Typography variant="h6" gutterBottom>
               パフォーマンステスト

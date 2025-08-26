@@ -97,6 +97,8 @@ create-*-test-*.js
 *-output.log
 *-debug.png
 debug-selectors.js
+get-test-*.js
+get-test-*.mjs
 
 # Playwright outputs
 playwright-*.log

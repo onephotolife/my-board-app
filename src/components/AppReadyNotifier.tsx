@@ -40,9 +40,8 @@ export function AppReadyNotifier() {
     (window as any).__APP_READY__ = true;
     (window as any).__APP_READY_TIME__ = readyTime;
 
-    // 3. HTML属性設定（Selenium/Playwright向け）
-    document.documentElement.setAttribute('data-app-ready', 'true');
-    document.documentElement.setAttribute('data-ready-time', readyTime.toString());
+    // 3. HTML属性設定は削除（Hydration Mismatch回避のため）
+    // PerformanceTrackerコンポーネントがグローバル変数で代替
 
     // 4. コンソールログ（デバッグ用）
     console.log(`🚀 App ready in ${readyTime.toFixed(2)}ms`);

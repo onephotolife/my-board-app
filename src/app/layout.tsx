@@ -4,6 +4,7 @@ import "./globals.css";
 import ClientHeader from "@/components/ClientHeader";
 import { AppReadyNotifier } from "@/components/AppReadyNotifier";
 import { NoScriptFallback } from "@/components/NoScriptFallback";
+import { PerformanceTracker } from "@/components/PerformanceTracker";
 
 import { Providers } from "./providers";
 
@@ -106,33 +107,10 @@ export default function RootLayout({
           
           {/* アプリケーション読み込み完了通知 */}
           <AppReadyNotifier />
+          
+          {/* パフォーマンス監視（Hydration Mismatch回避版） */}
+          <PerformanceTracker />
         </Providers>
-
-        {/* パフォーマンス監視用スクリプト */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              // Critical performance monitoring
-              if ('performance' in window) {
-                window.addEventListener('load', function() {
-                  // Record load time
-                  const loadTime = performance.now();
-                  console.log('Page load time:', loadTime.toFixed(2) + 'ms');
-                  
-                  // Mark page as loaded for testing
-                  document.documentElement.setAttribute('data-page-loaded', 'true');
-                  
-                  // Send performance data
-                  if (window.gtag) {
-                    gtag('event', 'page_load_time', {
-                      custom_parameter: Math.round(loadTime)
-                    });
-                  }
-                });
-              }
-            `
-          }}
-        />
       </body>
     </html>
   );

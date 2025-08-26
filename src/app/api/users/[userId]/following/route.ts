@@ -9,7 +9,7 @@ import { getServerSession } from 'next-auth';
 import dbConnect from '@/lib/mongodb';
 import User from '@/lib/models/User';
 import Follow from '@/lib/models/Follow';
-import { authOptions } from '@/app/api/auth/[...nextauth]/authOptions';
+import { authOptions } from '@/lib/auth';
 
 export async function GET(
   req: NextRequest,

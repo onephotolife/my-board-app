@@ -6,6 +6,7 @@ import { test, expect, AuthPage } from '../fixtures/auth.fixture';
 import { TEST_USERS, WEAK_PASSWORDS, ERROR_MESSAGES } from '../helpers/test-data';
 import { generateTestEmail } from '../helpers/email-helper';
 import { deleteTestUser, findUser } from '../helpers/db-helper';
+import { waitForAppReady, navigateAndWaitForApp } from '../helpers/wait-helper';
 
 test.describe('新規登録フロー', () => {
   let authPage: AuthPage;
@@ -24,8 +25,9 @@ test.describe('新規登録フロー', () => {
   });
   
   test('正常な新規登録が成功する', async ({ page }) => {
-    // 新規登録ページへ移動
+    // 新規登録ページへ移動（アプリ準備完了も待機）
     await authPage.gotoSignup();
+    await waitForAppReady(page);
     
     // ページが正しく読み込まれたことを確認
     await page.waitForSelector('h1, h2', { timeout: 5000 });
@@ -65,6 +67,7 @@ test.describe('新規登録フロー', () => {
     // 既存ユーザーを作成
     await deleteTestUser(TEST_USERS.existingUser.email);
     await authPage.gotoSignup();
+    await waitForAppReady(page);
     
     // 既存のメールアドレスで登録を試みる
     await authPage.fillSignupForm(
@@ -84,6 +87,7 @@ test.describe('新規登録フロー', () => {
   
   test('弱いパスワードが拒否される', async ({ page }) => {
     await authPage.gotoSignup();
+    await waitForAppReady(page);
     
     for (const weakPassword of WEAK_PASSWORDS.slice(0, 3)) {
       // フォーム入力
@@ -103,6 +107,7 @@ test.describe('新規登録フロー', () => {
   
   test('パスワード確認の不一致エラー', async ({ page }) => {
     await authPage.gotoSignup();
+    await waitForAppReady(page);
     
     await page.fill('input[name="email"]', testEmail);
     await page.fill('input[name="password"]', 'ValidPassword123!');
@@ -118,6 +123,7 @@ test.describe('新規登録フロー', () => {
   
   test('必須フィールドの検証', async ({ page }) => {
     await authPage.gotoSignup();
+    await waitForAppReady(page);
     
     // 空のフォームを送信
     await authPage.submitForm();
@@ -132,6 +138,7 @@ test.describe('新規登録フロー', () => {
   
   test('無効なメールアドレス形式の検証', async ({ page }) => {
     await authPage.gotoSignup();
+    await waitForAppReady(page);
     
     const invalidEmails = [
       'notanemail',
@@ -154,6 +161,7 @@ test.describe('新規登録フロー', () => {
   
   test('パスワード強度表示が動作する', async ({ page }) => {
     await authPage.gotoSignup();
+    await waitForAppReady(page);
     
     // 弱いパスワード
     await page.fill('input[name="password"]', 'weak');
@@ -182,6 +190,7 @@ test.describe('新規登録フロー', () => {
   
   test('登録後にメール確認ページへリダイレクト', async ({ page }) => {
     await authPage.gotoSignup();
+    await waitForAppReady(page);
     
     // フォーム入力と送信
     await authPage.fillSignupForm(

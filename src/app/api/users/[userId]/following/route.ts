@@ -13,9 +13,12 @@ import { authOptions } from '@/lib/auth';
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
+    // Next.js 15: paramsをawaitする
+    const { userId } = await params;
+    
     const session = await getServerSession(authOptions);
     const { searchParams } = new URL(req.url);
     const page = parseInt(searchParams.get('page') || '1');
@@ -25,7 +28,7 @@ export async function GET(
     await dbConnect();
     
     // ターゲットユーザーの存在確認
-    const targetUser = await User.findById(params.userId)
+    const targetUser = await User.findById(userId)
       .select('name email avatar bio followingCount followersCount isPrivate');
     
     if (!targetUser) {
@@ -48,7 +51,7 @@ export async function GET(
       const currentUser = await User.findOne({ email: session.user.email });
       if (!currentUser || !currentUser._id.equals(targetUser._id)) {
         // 本人でない場合、フォローしているかチェック
-        const isFollowing = await currentUser.isFollowing(params.userId);
+        const isFollowing = await currentUser.isFollowing(userId);
         if (!isFollowing) {
           return NextResponse.json(
             { error: 'このユーザーのフォロー中リストは非公開です' },

@@ -18,9 +18,12 @@ import { authOptions } from '@/lib/auth';
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
+    // Next.js 15: paramsをawaitする
+    const { userId } = await params;
+    
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
       return NextResponse.json(
@@ -41,10 +44,10 @@ export async function GET(
     }
     
     // フォロー状態を確認
-    const isFollowing = await currentUser.isFollowing(params.userId);
+    const isFollowing = await currentUser.isFollowing(userId);
     
     // ターゲットユーザーの情報を取得
-    const targetUser = await User.findById(params.userId)
+    const targetUser = await User.findById(userId)
       .select('name email avatar bio followingCount followersCount');
     
     if (!targetUser) {
@@ -81,9 +84,12 @@ export async function GET(
  */
 export async function POST(
   req: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
+    // Next.js 15: paramsをawaitする
+    const { userId } = await params;
+    
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
       return NextResponse.json(
@@ -104,7 +110,7 @@ export async function POST(
     }
     
     // ターゲットユーザーの存在確認
-    const targetUser = await User.findById(params.userId);
+    const targetUser = await User.findById(userId);
     if (!targetUser) {
       return NextResponse.json(
         { error: 'フォロー対象のユーザーが見つかりません' },
@@ -122,10 +128,10 @@ export async function POST(
     }
     
     // フォロー実行
-    await currentUser.follow(params.userId);
+    await currentUser.follow(userId);
     
     // 更新後のユーザー情報を返す
-    const updatedTargetUser = await User.findById(params.userId)
+    const updatedTargetUser = await User.findById(userId)
       .select('name email avatar bio followingCount followersCount');
     
     return NextResponse.json({
@@ -167,9 +173,12 @@ export async function POST(
  */
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
+    // Next.js 15: paramsをawaitする
+    const { userId } = await params;
+    
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
       return NextResponse.json(
@@ -190,10 +199,10 @@ export async function DELETE(
     }
     
     // アンフォロー実行
-    await currentUser.unfollow(params.userId);
+    await currentUser.unfollow(userId);
     
     // 更新後のユーザー情報を返す
-    const updatedTargetUser = await User.findById(params.userId)
+    const updatedTargetUser = await User.findById(userId)
       .select('name email avatar bio followingCount followersCount');
     
     return NextResponse.json({

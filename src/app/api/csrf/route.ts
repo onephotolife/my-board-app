@@ -15,6 +15,7 @@ export async function GET(request: NextRequest) {
     const response = NextResponse.json(
       { 
         token,
+        header: 'x-csrf-token',
         message: 'CSRF token generated successfully'
       },
       { status: 200 }

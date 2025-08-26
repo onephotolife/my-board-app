@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useSecureFetch } from '@/components/CSRFProvider';
 import {
   Button,
   Dialog,
@@ -49,6 +50,7 @@ export default function ReportButton({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const secureFetch = useSecureFetch();
 
   const handleSubmit = async () => {
     if (!reason || !description.trim()) {
@@ -60,7 +62,7 @@ export default function ReportButton({
     setError('');
 
     try {
-      const response = await fetch('/api/reports', {
+      const response = await secureFetch('/api/reports', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

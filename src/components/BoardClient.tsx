@@ -3,6 +3,7 @@
 import { useState, useCallback, memo } from 'react';
 import Alert from '@mui/material/Alert';
 import dynamic from 'next/dynamic';
+import { useSecureFetch } from '@/components/CSRFProvider';
 
 // 動的インポートでバンドルサイズを削減
 const PostForm = dynamic(() => import('./PostForm'), { 
@@ -33,12 +34,13 @@ const BoardClient = memo(function BoardClient({ initialPosts }: BoardClientProps
   const [editingPost, setEditingPost] = useState<Post | null>(null);
   const [error, setError] = useState('');
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const secureFetch = useSecureFetch();
 
   const handleSubmit = useCallback(async (title: string, content: string, author: string) => {
     setError('');
     
     try {
-      const response = await fetch('/api/posts', {
+      const response = await secureFetch('/api/posts', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -57,7 +59,7 @@ const BoardClient = memo(function BoardClient({ initialPosts }: BoardClientProps
       console.error('Failed to create post:', error);
       setError('投稿の作成に失敗しました');
     }
-  }, []);
+  }, [secureFetch]);
 
   const handleEdit = useCallback((post: Post) => {
     setEditingPost(post);
@@ -69,7 +71,7 @@ const BoardClient = memo(function BoardClient({ initialPosts }: BoardClientProps
     setError('');
 
     try {
-      const response = await fetch(`/api/posts/${editingPost._id}`, {
+      const response = await secureFetch(`/api/posts/${editingPost._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -90,13 +92,13 @@ const BoardClient = memo(function BoardClient({ initialPosts }: BoardClientProps
       console.error('Failed to update post:', error);
       setError('投稿の更新に失敗しました');
     }
-  }, [editingPost]);
+  }, [editingPost, secureFetch]);
 
   const handleDelete = useCallback(async (id: string) => {
     if (!window.confirm('この投稿を削除しますか？')) return;
     
     try {
-      const response = await fetch(`/api/posts/${id}`, {
+      const response = await secureFetch(`/api/posts/${id}`, {
         method: 'DELETE',
       });
       
@@ -111,7 +113,7 @@ const BoardClient = memo(function BoardClient({ initialPosts }: BoardClientProps
       console.error('Failed to delete post:', error);
       setError('投稿の削除に失敗しました');
     }
-  }, []);
+  }, [secureFetch]);
 
   const handleCloseDialog = useCallback(() => {
     setIsEditDialogOpen(false);

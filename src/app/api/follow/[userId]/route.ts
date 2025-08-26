@@ -17,9 +17,12 @@ import { authOptions } from '@/lib/auth';
  */
 export async function POST(
   req: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
+    // Next.js 15: paramsをawaitする
+    const { userId } = await params;
+    
     // 認証チェック
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
@@ -47,7 +50,7 @@ export async function POST(
     }
     
     // 自分自身をフォローしようとしていないかチェック
-    if (currentUser._id.toString() === params.userId) {
+    if (currentUser._id.toString() === userId) {
       return NextResponse.json(
         { 
           success: false,
@@ -58,7 +61,7 @@ export async function POST(
     }
     
     // ターゲットユーザーの存在確認
-    const targetUser = await User.findById(params.userId);
+    const targetUser = await User.findById(userId);
     if (!targetUser) {
       return NextResponse.json(
         { 
@@ -147,7 +150,7 @@ export async function POST(
     }
     
     // 更新後のユーザー情報を返す
-    const updatedTargetUser = await User.findById(params.userId)
+    const updatedTargetUser = await User.findById(userId)
       .select('name email avatar bio followingCount followersCount');
     
     return NextResponse.json({
@@ -177,9 +180,12 @@ export async function POST(
  */
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
+    // Next.js 15: paramsをawaitする
+    const { userId } = await params;
+    
     // 認証チェック
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
@@ -207,7 +213,7 @@ export async function DELETE(
     }
     
     // ターゲットユーザーの存在確認
-    const targetUser = await User.findById(params.userId);
+    const targetUser = await User.findById(userId);
     if (!targetUser) {
       return NextResponse.json(
         { 
@@ -285,7 +291,7 @@ export async function DELETE(
     }
     
     // 更新後のユーザー情報を返す
-    const updatedTargetUser = await User.findById(params.userId)
+    const updatedTargetUser = await User.findById(userId)
       .select('name email avatar bio followingCount followersCount');
     
     return NextResponse.json({

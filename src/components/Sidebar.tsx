@@ -14,6 +14,7 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  ListItemButton,
   Button,
   Drawer,
   IconButton,
@@ -113,29 +114,32 @@ export default function Sidebar() {
         {menuItems.map((item) => (
           <ListItem 
             key={item.path}
-            button 
-            onClick={() => {
-              router.push(item.path);
-              setMobileOpen(false);
-            }}
-            selected={pathname === item.path}
-            sx={{
-              borderRadius: 1,
-              mb: 0.5,
-              '&.Mui-selected': {
-                bgcolor: 'action.selected',
-                '&:hover': {
-                  bgcolor: 'action.selected'
-                }
-              }
-            }}
+            disablePadding
+            sx={{ mb: 0.5 }}
           >
-            <ListItemAvatar>
-              <Avatar sx={{ bgcolor: item.bgcolor }}>
-                {item.icon}
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText primary={item.label} />
+            <ListItemButton
+              onClick={() => {
+                router.push(item.path);
+                setMobileOpen(false);
+              }}
+              selected={pathname === item.path}
+              sx={{
+                borderRadius: 1,
+                '&.Mui-selected': {
+                  bgcolor: 'action.selected',
+                  '&:hover': {
+                    bgcolor: 'action.selected'
+                  }
+                }
+              }}
+            >
+              <ListItemAvatar>
+                <Avatar sx={{ bgcolor: item.bgcolor }}>
+                  {item.icon}
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText primary={item.label} />
+            </ListItemButton>
           </ListItem>
         ))}
       </List>

@@ -13,6 +13,7 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  ListItemButton,
   Button,
   IconButton,
   Badge,
@@ -148,40 +149,43 @@ export default function AppLayout({ children, title, subtitle }: AppLayoutProps)
         {navigationItems.map((item) => (
           <ListItem
             key={item.path}
-            button
-            onClick={() => {
-              router.push(item.path);
-              setMobileMenuOpen(false);
-            }}
-            selected={pathname === item.path}
-            sx={{
-              borderRadius: '8px',
-              mb: 0.5,
-              '&.Mui-selected': {
-                backgroundColor: 'rgba(99, 102, 241, 0.08)',
-                '&:hover': {
-                  backgroundColor: 'rgba(99, 102, 241, 0.12)',
-                },
-              },
-            }}
+            disablePadding
+            sx={{ mb: 0.5 }}
           >
-            <ListItemAvatar>
-              <Avatar 
-                sx={{ 
-                  bgcolor: pathname === item.path ? 'primary.main' : item.color,
-                  width: 36,
-                  height: 36,
-                }}
-              >
-                {item.icon}
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText 
-              primary={item.label}
-              primaryTypographyProps={{
-                fontWeight: pathname === item.path ? 600 : 400,
+            <ListItemButton
+              onClick={() => {
+                router.push(item.path);
+                setMobileMenuOpen(false);
               }}
-            />
+              selected={pathname === item.path}
+              sx={{
+                borderRadius: '8px',
+                '&.Mui-selected': {
+                  backgroundColor: 'rgba(99, 102, 241, 0.08)',
+                  '&:hover': {
+                    backgroundColor: 'rgba(99, 102, 241, 0.12)',
+                  },
+                },
+              }}
+            >
+              <ListItemAvatar>
+                <Avatar 
+                  sx={{ 
+                    bgcolor: pathname === item.path ? 'primary.main' : item.color,
+                    width: 36,
+                    height: 36,
+                  }}
+                >
+                  {item.icon}
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText 
+                primary={item.label}
+                primaryTypographyProps={{
+                  fontWeight: pathname === item.path ? 600 : 400,
+                }}
+              />
+            </ListItemButton>
           </ListItem>
         ))}
       </List>
@@ -192,35 +196,38 @@ export default function AppLayout({ children, title, subtitle }: AppLayoutProps)
         {footerItems.map((item) => (
           <ListItem
             key={item.path}
-            button
-            onClick={() => {
-              router.push(item.path);
-              setMobileMenuOpen(false);
-            }}
-            sx={{
-              borderRadius: '8px',
-              mb: 0.5,
-            }}
+            disablePadding
+            sx={{ mb: 0.5 }}
           >
-            <ListItemAvatar>
-              <Avatar 
-                sx={{ 
-                  bgcolor: 'transparent',
-                  color: item.color,
-                  width: 32,
-                  height: 32,
-                }}
-              >
-                {item.icon}
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText 
-              primary={item.label}
-              primaryTypographyProps={{
-                fontSize: '0.875rem',
-                color: 'text.secondary',
+            <ListItemButton
+              onClick={() => {
+                router.push(item.path);
+                setMobileMenuOpen(false);
               }}
-            />
+              sx={{
+                borderRadius: '8px',
+              }}
+            >
+              <ListItemAvatar>
+                <Avatar 
+                  sx={{ 
+                    bgcolor: 'transparent',
+                    color: item.color,
+                    width: 32,
+                    height: 32,
+                  }}
+                >
+                  {item.icon}
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText 
+                primary={item.label}
+                primaryTypographyProps={{
+                  fontSize: '0.875rem',
+                  color: 'text.secondary',
+                }}
+              />
+            </ListItemButton>
           </ListItem>
         ))}
       </List>

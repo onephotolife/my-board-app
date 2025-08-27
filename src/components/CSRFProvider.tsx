@@ -4,6 +4,7 @@ import { createContext, useContext, ReactNode, useEffect, useState, useRef, useC
 import { useSession } from 'next-auth/react';
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
+import { CSRFTokenManager } from '@/lib/security/csrf-token-manager';
 
 interface CSRFContextType {
   token: string | null;
@@ -27,7 +28,7 @@ interface CSRFProviderProps {
 
 /**
  * CSRFトークンを管理するプロバイダーコンポーネント
- * アプリケーション起動時に自動的にトークンを取得
+ * SOL-001: トークン初期化保証メカニズム実装
  */
 export function CSRFProvider({ children }: CSRFProviderProps) {
   const [token, setToken] = useState<string | null>(null);
@@ -36,61 +37,46 @@ export function CSRFProvider({ children }: CSRFProviderProps) {
   const [previousSessionId, setPreviousSessionId] = useState<string | null>(null);
   const { data: session, status } = useSession();
   const header = 'x-csrf-token';
+  const tokenManagerRef = useRef<CSRFTokenManager | null>(null);
   const fetchTokenTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const lastFetchTimeRef = useRef<number>(0);
-  const MIN_FETCH_INTERVAL = 5000; // 最小5秒間隔
+
+  // トークンマネージャーの初期化
+  useEffect(() => {
+    if (!tokenManagerRef.current) {
+      tokenManagerRef.current = CSRFTokenManager.getInstance();
+    }
+  }, []);
 
   const fetchToken = async (force: boolean = false) => {
-    // デバウンス: 前回の取得から最小間隔を確保
-    const now = Date.now();
-    const timeSinceLastFetch = now - lastFetchTimeRef.current;
-    
-    if (!force && timeSinceLastFetch < MIN_FETCH_INTERVAL) {
-      console.log('⏳ [CSRF] トークン取得をスキップ (デバウンス)', {
-        timeSinceLastFetch,
-        minInterval: MIN_FETCH_INTERVAL
-      });
-      return;
-    }
-    
-    lastFetchTimeRef.current = now;
-    
     try {
-      console.log('🔄 [CSRF] トークン取得開始', {
+      if (!tokenManagerRef.current) {
+        tokenManagerRef.current = CSRFTokenManager.getInstance();
+      }
+
+      console.log('🔄 [CSRF Provider] トークン取得開始', {
         sessionStatus: status,
         hasSession: !!session,
         timestamp: new Date().toISOString(),
         forced: force
       });
       
-      const response = await fetch('/api/csrf', {
-        method: 'GET',
-        credentials: 'include',
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setToken(data.token);
-        
-        // メタタグにも設定
-        let metaTag = document.querySelector('meta[name="app-csrf-token"]');
-        if (!metaTag) {
-          metaTag = document.createElement('meta');
-          metaTag.setAttribute('name', 'app-csrf-token');
-          document.head.appendChild(metaTag);
-        }
-        metaTag.setAttribute('content', data.token);
-        
-        console.log('✅ [CSRF] トークン更新完了', {
-          tokenPreview: data.token?.substring(0, 20) + '...',
-          metaTagUpdated: true,
-          timestamp: new Date().toISOString()
-        });
+      // トークンマネージャーを使用してトークンを取得
+      let newToken: string;
+      if (force) {
+        newToken = await tokenManagerRef.current.refreshToken();
       } else {
-        console.error('❌ [CSRF] トークン取得失敗:', response.statusText);
+        newToken = await tokenManagerRef.current.ensureToken();
       }
+      
+      setToken(newToken);
+      
+      console.log('✅ [CSRF Provider] トークン更新完了', {
+        tokenPreview: newToken?.substring(0, 20) + '...',
+        timestamp: new Date().toISOString()
+      });
     } catch (error) {
-      console.error('❌ [CSRF] トークン取得エラー:', error);
+      console.error('❌ [CSRF Provider] トークン取得エラー:', error);
+      // エラー時も初期化完了とする（リトライは内部で実施済み）
     } finally {
       setIsInitialized(true);
       setIsLoading(false);
@@ -185,17 +171,18 @@ export function CSRFProvider({ children }: CSRFProviderProps) {
 
 /**
  * CSRFトークンを自動的に含むfetchラッパー
- * トークンが初期化されていない場合は最大3秒待機
+ * SOL-001: トークン初期化保証メカニズムを使用
  */
 export function useSecureFetch() {
   const { token, header, refreshToken } = useCSRFContext();
-  const tokenRef = useRef<string | null>(null);
-  const isWaitingRef = useRef(false);
+  const tokenManagerRef = useRef<CSRFTokenManager | null>(null);
   
-  // トークンをrefで保持（再レンダリング回避）
+  // トークンマネージャーの初期化
   useEffect(() => {
-    tokenRef.current = token;
-  }, [token]);
+    if (!tokenManagerRef.current) {
+      tokenManagerRef.current = CSRFTokenManager.getInstance();
+    }
+  }, []);
   
   return useCallback(async (url: string, options: RequestInit = {}) => {
     const method = (options.method || 'GET').toUpperCase();
@@ -205,62 +192,53 @@ export function useSecureFetch() {
       return fetch(url, options);
     }
     
-    // トークン取得待ち（最大3秒）
-    if (!tokenRef.current && !isWaitingRef.current) {
-      isWaitingRef.current = true;
-      console.log('⏳ [CSRF] トークン初期化待機中...', {
+    // トークンマネージャーからトークンを確実に取得
+    let csrfToken: string | null = null;
+    
+    try {
+      if (!tokenManagerRef.current) {
+        tokenManagerRef.current = CSRFTokenManager.getInstance();
+      }
+      
+      console.log('🔐 [SecureFetch] CSRFトークン取得中...', {
         url,
         method,
         timestamp: new Date().toISOString()
       });
       
-      let waitTime = 0;
-      const waitInterval = 100; // 100ms間隔でチェック
-      const maxWaitTime = 3000; // 最大3秒
+      // ensureToken() で確実にトークンを取得（初期化保証）
+      csrfToken = await tokenManagerRef.current.ensureToken();
       
-      while (!tokenRef.current && waitTime < maxWaitTime) {
-        await new Promise(resolve => setTimeout(resolve, waitInterval));
-        waitTime += waitInterval;
-        
-        // 1秒ごとに進捗ログ
-        if (waitTime % 1000 === 0) {
-          console.log(`⏳ [CSRF] 待機中... ${waitTime/1000}秒経過`);
-        }
-      }
+      console.log('✅ [SecureFetch] CSRFトークン取得成功', {
+        url,
+        method,
+        tokenPreview: csrfToken?.substring(0, 20) + '...'
+      });
       
-      isWaitingRef.current = false;
+    } catch (error) {
+      console.error('❌ [SecureFetch] CSRFトークン取得失敗:', error);
       
-      if (!tokenRef.current) {
-        console.warn('⚠️ [CSRF] Token not available after timeout', {
-          url,
-          method,
-          waitedMs: waitTime,
-          timestamp: new Date().toISOString()
-        });
-        // トークン再取得を試みる
-        await refreshToken();
-        // 追加で少し待機
-        await new Promise(resolve => setTimeout(resolve, 200));
-      } else {
-        console.log('✅ [CSRF] トークン取得成功', {
-          waitedMs: waitTime,
-          tokenPreview: tokenRef.current?.substring(0, 20) + '...'
-        });
-      }
+      // エラー時でも続行するが警告を出す
+      console.warn('⚠️ [SecureFetch] CSRFトークンなしで続行', {
+        url,
+        method,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
     }
     
     // ヘッダーにCSRFトークンを追加
     const headers = new Headers(options.headers);
-    if (tokenRef.current) {
-      headers.set(header, tokenRef.current);
-      console.log('🔒 [CSRF] トークンをリクエストに添付', {
+    
+    if (csrfToken) {
+      headers.set(header, csrfToken);
+      console.log('🔒 [SecureFetch] トークンをリクエストに添付', {
         url,
         method,
         hasToken: true,
-        tokenPreview: tokenRef.current.substring(0, 20) + '...'
+        tokenPreview: csrfToken.substring(0, 20) + '...'
       });
     } else {
-      console.warn('⚠️ [CSRF] トークンなしでリクエスト送信', {
+      console.warn('⚠️ [SecureFetch] トークンなしでリクエスト送信', {
         url,
         method,
         hasToken: false
@@ -272,5 +250,5 @@ export function useSecureFetch() {
       headers,
       credentials: options.credentials || 'include',
     });
-  }, [header, refreshToken]);
+  }, [header]);
 }

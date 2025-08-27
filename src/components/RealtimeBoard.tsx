@@ -51,7 +51,7 @@ import RealtimeBoardWrapper from '@/components/RealtimeBoardWrapper';
 // import ReportButton from '@/components/ReportButton'; // 通報ボタンを削除
 import { useSocket } from '@/lib/socket/client';
 import { modern2025Styles } from '@/styles/modern-2025';
-import { useCSRFContext } from '@/components/CSRFProvider';
+import { useCSRFContext, useSecureFetch } from '@/components/CSRFProvider';
 import FollowButton from '@/components/FollowButton';
 
 interface Post {
@@ -92,6 +92,7 @@ export default function RealtimeBoard() {
   const [followingUsers, setFollowingUsers] = useState<Set<string>>(new Set());
   const { socket, isConnected } = useSocket();
   const { token: csrfToken } = useCSRFContext();
+  const secureFetch = useSecureFetch();
   const searchTimeoutRef = useRef<NodeJS.Timeout>();
   const fetchDataRef = useRef<(() => void) | null>(null);
 
@@ -299,11 +300,10 @@ export default function RealtimeBoard() {
       try {
         console.log('🔍 [Follow Status] Fetching for authors:', uniqueAuthorIds);
         
-        const response = await fetch('/api/follow/status/batch', {
+        const response = await secureFetch('/api/follow/status/batch', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userIds: uniqueAuthorIds }),
-          credentials: 'include'
+          body: JSON.stringify({ userIds: uniqueAuthorIds })
         });
         
         if (response.ok) {
@@ -319,18 +319,15 @@ export default function RealtimeBoard() {
     };
     
     fetchFollowingStatus();
-  }, [posts, session]);
+  }, [posts, session, secureFetch]);
 
   // 投稿削除ハンドラー
   const handleDelete = async (postId: string) => {
     if (!confirm('この投稿を削除してもよろしいですか？')) return;
 
     try {
-      const response = await fetch(`/api/posts/${postId}`, {
-        method: 'DELETE',
-        headers: {
-          'x-csrf-token': csrfToken || ''
-        }
+      const response = await secureFetch(`/api/posts/${postId}`, {
+        method: 'DELETE'
       });
 
       if (response.ok) {

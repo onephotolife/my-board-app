@@ -5,25 +5,24 @@ import {
   Button, 
   CircularProgress, 
   Snackbar, 
-  Alert,
-  ButtonProps 
+  Alert
 } from '@mui/material';
 import { 
   PersonAdd as PersonAddIcon,
   Check as CheckIcon 
 } from '@mui/icons-material';
 import { useSecureFetch } from '@/components/CSRFProvider';
+import { 
+  FollowButtonPropsV1, 
+  FollowButtonPropsV2, 
+  isV2Props, 
+  sanitizeButtonProps,
+  convertToV2Props 
+} from '@/types/mui-extensions';
 
-interface FollowButtonProps extends Omit<ButtonProps, 'onClick'> {
-  userId: string;
-  initialFollowing?: boolean;
-  onFollowChange?: (isFollowing: boolean) => void;
-  showIcon?: boolean;
-  followText?: string;
-  followingText?: string;
-  loadingText?: string;
-  compact?: boolean;
-}
+// 現在はV1を使用（段階的移行のため）
+// 将来的にV2に完全移行予定
+type FollowButtonProps = FollowButtonPropsV1;
 
 export default function FollowButton({
   userId,
@@ -37,7 +36,10 @@ export default function FollowButton({
   size = 'medium',
   variant,
   color,
-  ...buttonProps
+  sx,
+  className,
+  disabled,
+  ...restProps
 }: FollowButtonProps) {
   const [isFollowing, setIsFollowing] = useState(initialFollowing);
   const [isLoading, setIsLoading] = useState(false);
@@ -60,25 +62,43 @@ export default function FollowButton({
         },
       });
 
-      const data = await response.json();
-
+      // 詳細なエラーログ追加
       if (!response.ok) {
-        // エラーハンドリング
+        console.error('Follow API Error:', {
+          status: response.status,
+          statusText: response.statusText,
+          url: response.url,
+          method: method,
+          userId: userId,
+          timestamp: new Date().toISOString()
+        });
+
+        // 404の場合の特別処理
+        if (response.status === 404) {
+          console.warn('404 detected - checking API availability');
+          // APIの存在確認メッセージ
+        }
+
+        // response.json()のエラー処理
+        const data = await response.json().catch(() => ({}));
+
+        // エラーメッセージの改善
         if (response.status === 401) {
           setError('ログインが必要です');
         } else if (response.status === 400 && data.error === 'Cannot follow yourself') {
           setError('自分自身はフォローできません');
         } else if (response.status === 404) {
-          setError('ユーザーが見つかりません');
+          setError('APIエンドポイントが見つかりません。ページを再読み込みしてください。');
         } else if (response.status === 409) {
           setError('既にフォローしています');
         } else {
-          setError(data.error || 'エラーが発生しました');
+          setError(data.error || `エラーが発生しました (${response.status})`);
         }
         setShowError(true);
         return;
       }
 
+      const data = await response.json();
       // 成功時の処理
       const newFollowingState = data.data?.isFollowing ?? !isFollowing;
       setIsFollowing(newFollowingState);
@@ -89,7 +109,12 @@ export default function FollowButton({
       }
 
     } catch (err) {
-      console.error('Follow toggle error:', err);
+      console.error('Follow toggle error:', {
+        error: err,
+        userId,
+        isFollowing,
+        timestamp: new Date().toISOString()
+      });
       setError('ネットワークエラーが発生しました');
       setShowError(true);
     } finally {
@@ -131,14 +156,19 @@ export default function FollowButton({
     );
   };
 
+  // 型安全なprops処理（V2型定義に基づく）
+  // 将来的にV2完全移行時は convertToV2Props を使用
+  const safeProps = sanitizeButtonProps(restProps);
+
   return (
     <>
       <Button
         onClick={handleFollowToggle}
-        disabled={isLoading}
+        disabled={isLoading || disabled}
         variant={getButtonVariant()}
         color={getButtonColor()}
         size={size}
+        className={className}
         startIcon={!compact ? getIcon() : null}
         sx={{
           minWidth: compact ? 80 : 120,
@@ -149,9 +179,9 @@ export default function FollowButton({
             transform: 'translateY(-1px)',
             boxShadow: 2,
           },
-          ...buttonProps.sx,
+          ...sx,
         }}
-        {...buttonProps}
+        {...safeProps}
       >
         {compact && showIcon && getIcon()}
         {!compact && getButtonText()}

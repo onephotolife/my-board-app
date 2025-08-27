@@ -26,7 +26,6 @@ import {
   Stack,
   Divider,
   InputAdornment,
-  Pagination,
   Skeleton,
   Badge,
 } from '@mui/material';
@@ -87,7 +86,8 @@ export default function RealtimeBoard() {
   const [category, setCategory] = useState('all');
   const [sortBy, setSortBy] = useState('-createdAt');
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [selectedTag, setSelectedTag] = useState('');
   const [followingUsers, setFollowingUsers] = useState<Set<string>>(new Set());
   const { socket, isConnected } = useSocket();
@@ -95,6 +95,8 @@ export default function RealtimeBoard() {
   const secureFetch = useSecureFetch();
   const searchTimeoutRef = useRef<NodeJS.Timeout>();
   const fetchDataRef = useRef<(() => void) | null>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   // カテゴリ名の日本語変換マッピング
   const getCategoryLabel = (categoryKey: string): string => {
@@ -137,18 +139,22 @@ export default function RealtimeBoard() {
     },
   };
 
-  // API呼び出し関数
-  const fetchData = useCallback(async () => {
+  // API呼び出し関数（無限スクロール対応）
+  const fetchData = useCallback(async (isLoadMore = false) => {
     try {
-      setLoading(true);
-      setError(null);
+      if (!isLoadMore) {
+        setLoading(true);
+        setError(null);
+      } else {
+        setLoadingMore(true);
+      }
       
       const params = new URLSearchParams();
       if (searchQuery) params.append('search', searchQuery);
       if (category !== 'all') params.append('category', category);
       if (selectedTag) params.append('tag', selectedTag);
       params.append('sort', sortBy);
-      params.append('page', page.toString());
+      params.append('page', isLoadMore ? page.toString() : '1');
       params.append('limit', '10');
       
       const response = await fetch(`/api/posts?${params}`);
@@ -158,43 +164,88 @@ export default function RealtimeBoard() {
       }
       
       const data = await response.json();
-      setPosts(data.data || []);
-      setTotalPages(data.pagination?.totalPages || 1);
+      
+      if (isLoadMore) {
+        // 追加読み込みの場合
+        setPosts(prevPosts => [...prevPosts, ...(data.data || [])]);
+      } else {
+        // 新規検索の場合
+        setPosts(data.data || []);
+        setPage(1);
+      }
+      
+      setHasMore(data.pagination?.hasNext || false);
     } catch (err) {
       console.error('Error fetching posts:', err);
       setError(err instanceof Error ? err.message : '投稿の取得に失敗しました');
-      setPosts([]);
+      if (!isLoadMore) {
+        setPosts([]);
+      }
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   }, [searchQuery, category, sortBy, page, selectedTag]);
 
   // fetchDataRefを更新
   useEffect(() => {
-    fetchDataRef.current = fetchData;
-  }, [fetchData]);
+    fetchDataRef.current = () => fetchData(false);
+  });
 
-  // 初回読み込みとフィルタ変更時の処理
+  // 初回読み込み
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    fetchData(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  // 検索クエリのデバウンス処理
+  // フィルタ変更時の処理
   useEffect(() => {
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current);
+    setPage(1);
+    setPosts([]);
+    setHasMore(true);
+    fetchData(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery, category, sortBy, selectedTag]);
+
+  // 追加読み込み用の関数
+  const loadMore = useCallback(() => {
+    if (!hasMore || loading || loadingMore) return;
+    
+    setPage(prevPage => prevPage + 1);
+    fetchData(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasMore, loading, loadingMore, page]);
+
+  // Intersection Observerの設定（無限スクロール）
+  useEffect(() => {
+    if (!hasMore || loading || loadingMore) return;
+
+    if (observerRef.current) {
+      observerRef.current.disconnect();
     }
 
-    searchTimeoutRef.current = setTimeout(() => {
-      setPage(1); // 検索時はページを1にリセット
-    }, 300);
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          loadMore();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (sentinelRef.current) {
+      observerRef.current.observe(sentinelRef.current);
+    }
 
     return () => {
-      if (searchTimeoutRef.current) {
-        clearTimeout(searchTimeoutRef.current);
+      if (observerRef.current) {
+        observerRef.current.disconnect();
       }
     };
-  }, [searchQuery]);
+  }, [loadMore, hasMore, loading, loadingMore]);
+
+  // 検索クエリのデバウンス処理（無効化）
+  // fetchData内でページリセットを処理するため
 
   // Socket.IOのイベントリスナー設定
   useEffect(() => {
@@ -899,31 +950,25 @@ export default function RealtimeBoard() {
         </Grid>
       )}
 
-      {/* ページネーション */}
-      {totalPages > 1 && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-          <Pagination
-            count={totalPages}
-            page={page}
-            onChange={(_, value) => setPage(value)}
-            color="primary"
-            size="large"
-            sx={{
-              '& .MuiPaginationItem-root': {
-                borderRadius: '8px',
-                fontWeight: 500,
-                '&.Mui-selected': {
-                  background: modern2025Styles.colors.primary,
-                  '&:hover': {
-                    background: modern2025Styles.colors.primary,
-                  },
-                },
-                '&:hover': {
-                  backgroundColor: 'rgba(99, 102, 241, 0.08)',
-                },
-              },
-            }}
-          />
+      {/* 無限スクロール用のセンチネル要素 */}
+      {hasMore && (
+        <Box 
+          ref={sentinelRef}
+          sx={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            mt: 4,
+            mb: 4,
+            minHeight: '60px',
+            alignItems: 'center'
+          }}
+        >
+          {loadingMore && (
+            <CircularProgress 
+              size={30}
+              sx={{ color: modern2025Styles.colors.primary }}
+            />
+          )}
         </Box>
       )}
       </Container>

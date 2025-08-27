@@ -58,7 +58,8 @@
     "postinstall": "node scripts/post-install.js 2>/dev/null || true",
     "security:check": "npm audit --audit-level=moderate",
     "security:fix": "npm audit fix",
-    "bundle:analyze": "ANALYZE=true npm run build"
+    "bundle:analyze": "ANALYZE=true npm run build",
+    "prepare": "husky"
   },
   "dependencies": {
     "@auth/mongodb-adapter": "^3.10.0",
@@ -128,6 +129,7 @@
     "eslint-config-next": "15.4.5",
     "express-rate-limit": "^8.0.1",
     "helmet": "^8.1.0",
+    "husky": "^9.1.0",
     "ioredis": "^5.7.0",
     "jest": "^30.0.5",
     "jest-environment-jsdom": "^30.0.5",

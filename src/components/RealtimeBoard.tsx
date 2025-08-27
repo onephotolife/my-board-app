@@ -52,6 +52,7 @@ import RealtimeBoardWrapper from '@/components/RealtimeBoardWrapper';
 import { useSocket } from '@/lib/socket/client';
 import { modern2025Styles } from '@/styles/modern-2025';
 import { useCSRFContext } from '@/components/CSRFProvider';
+import FollowButton from '@/components/FollowButton';
 
 interface Post {
   _id: string;
@@ -88,6 +89,7 @@ export default function RealtimeBoard() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [selectedTag, setSelectedTag] = useState('');
+  const [followingUsers, setFollowingUsers] = useState<Set<string>>(new Set());
   const { socket, isConnected } = useSocket();
   const { token: csrfToken } = useCSRFContext();
   const searchTimeoutRef = useRef<NodeJS.Timeout>();
@@ -283,6 +285,41 @@ export default function RealtimeBoard() {
       socket.emit('leave:board');
     };
   }, [socket, isConnected, session?.user?.id]);
+
+  // フォロー状態の初期取得
+  useEffect(() => {
+    const fetchFollowingStatus = async () => {
+      if (!session?.user?.id || posts.length === 0) return;
+      
+      const uniqueAuthorIds = [...new Set(posts.map(p => p.author._id))]
+        .filter(id => id !== session.user.id);
+      
+      if (uniqueAuthorIds.length === 0) return;
+      
+      try {
+        console.log('🔍 [Follow Status] Fetching for authors:', uniqueAuthorIds);
+        
+        const response = await fetch('/api/follow/status/batch', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userIds: uniqueAuthorIds }),
+          credentials: 'include'
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log('✅ [Follow Status] Received:', data.followingIds);
+          setFollowingUsers(new Set(data.followingIds));
+        } else {
+          console.error('❌ [Follow Status] API error:', response.status);
+        }
+      } catch (error) {
+        console.error('❌ [Follow Status] Network error:', error);
+      }
+    };
+    
+    fetchFollowingStatus();
+  }, [posts, session]);
 
   // 投稿削除ハンドラー
   const handleDelete = async (postId: string) => {
@@ -783,11 +820,30 @@ export default function RealtimeBoard() {
                   
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Stack direction="row" spacing={2} alignItems="center">
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <PersonIcon sx={{ fontSize: 16, mr: 0.5 }} />
                         <Typography variant="caption" data-testid={`post-author-${post._id}`}>
                           {post.author.name}
                         </Typography>
+                        {session?.user?.id && session.user.id !== post.author._id && (
+                          <FollowButton
+                            userId={post.author._id}
+                            size="small"
+                            compact={true}
+                            initialFollowing={followingUsers.has(post.author._id)}
+                            onFollowChange={(isFollowing) => {
+                              setFollowingUsers(prev => {
+                                const newSet = new Set(prev);
+                                if (isFollowing) {
+                                  newSet.add(post.author._id);
+                                } else {
+                                  newSet.delete(post.author._id);
+                                }
+                                return newSet;
+                              });
+                            }}
+                          />
+                        )}
                       </Box>
                       
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>

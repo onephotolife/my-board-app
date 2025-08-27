@@ -1,7 +1,9 @@
 'use client';
 
-import { createContext, useContext, ReactNode, useEffect, useState, useRef } from 'react';
+import { createContext, useContext, ReactNode, useEffect, useState, useRef, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
+import LinearProgress from '@mui/material/LinearProgress';
+import Box from '@mui/material/Box';
 
 interface CSRFContextType {
   token: string | null;
@@ -30,6 +32,7 @@ interface CSRFProviderProps {
 export function CSRFProvider({ children }: CSRFProviderProps) {
   const [token, setToken] = useState<string | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [previousSessionId, setPreviousSessionId] = useState<string | null>(null);
   const { data: session, status } = useSession();
   const header = 'x-csrf-token';
@@ -90,6 +93,7 @@ export function CSRFProvider({ children }: CSRFProviderProps) {
       console.error('❌ [CSRF] トークン取得エラー:', error);
     } finally {
       setIsInitialized(true);
+      setIsLoading(false);
     }
   };
 
@@ -143,6 +147,35 @@ export function CSRFProvider({ children }: CSRFProviderProps) {
     await fetchToken(true); // 手動リフレッシュは強制実行
   };
 
+  // 初期化中のローディング表示（解決策2）
+  if (isLoading) {
+    return (
+      <>
+        {/* MUIのLinearProgressバー */}
+        <Box sx={{ 
+          position: 'fixed', 
+          top: 0, 
+          left: 0, 
+          right: 0, 
+          zIndex: 9999 
+        }}>
+          <LinearProgress />
+        </Box>
+        
+        {/* スケルトンUI - コンテンツは表示するが操作を無効化 */}
+        <Box sx={{ 
+          opacity: 0.7, 
+          pointerEvents: 'none',
+          position: 'relative'
+        }}>
+          <CSRFContext.Provider value={{ token, header, refreshToken }}>
+            {children}
+          </CSRFContext.Provider>
+        </Box>
+      </>
+    );
+  }
+
   return (
     <CSRFContext.Provider value={{ token, header, refreshToken }}>
       {children}
@@ -152,11 +185,19 @@ export function CSRFProvider({ children }: CSRFProviderProps) {
 
 /**
  * CSRFトークンを自動的に含むfetchラッパー
+ * トークンが初期化されていない場合は最大3秒待機
  */
 export function useSecureFetch() {
-  const { token, header } = useCSRFContext();
+  const { token, header, refreshToken } = useCSRFContext();
+  const tokenRef = useRef<string | null>(null);
+  const isWaitingRef = useRef(false);
   
-  return async (url: string, options: RequestInit = {}): Promise<Response> => {
+  // トークンをrefで保持（再レンダリング回避）
+  useEffect(() => {
+    tokenRef.current = token;
+  }, [token]);
+  
+  return useCallback(async (url: string, options: RequestInit = {}) => {
     const method = (options.method || 'GET').toUpperCase();
     
     // GETリクエストはCSRFトークン不要
@@ -164,10 +205,66 @@ export function useSecureFetch() {
       return fetch(url, options);
     }
     
+    // トークン取得待ち（最大3秒）
+    if (!tokenRef.current && !isWaitingRef.current) {
+      isWaitingRef.current = true;
+      console.log('⏳ [CSRF] トークン初期化待機中...', {
+        url,
+        method,
+        timestamp: new Date().toISOString()
+      });
+      
+      let waitTime = 0;
+      const waitInterval = 100; // 100ms間隔でチェック
+      const maxWaitTime = 3000; // 最大3秒
+      
+      while (!tokenRef.current && waitTime < maxWaitTime) {
+        await new Promise(resolve => setTimeout(resolve, waitInterval));
+        waitTime += waitInterval;
+        
+        // 1秒ごとに進捗ログ
+        if (waitTime % 1000 === 0) {
+          console.log(`⏳ [CSRF] 待機中... ${waitTime/1000}秒経過`);
+        }
+      }
+      
+      isWaitingRef.current = false;
+      
+      if (!tokenRef.current) {
+        console.warn('⚠️ [CSRF] Token not available after timeout', {
+          url,
+          method,
+          waitedMs: waitTime,
+          timestamp: new Date().toISOString()
+        });
+        // トークン再取得を試みる
+        await refreshToken();
+        // 追加で少し待機
+        await new Promise(resolve => setTimeout(resolve, 200));
+      } else {
+        console.log('✅ [CSRF] トークン取得成功', {
+          waitedMs: waitTime,
+          tokenPreview: tokenRef.current?.substring(0, 20) + '...'
+        });
+      }
+    }
+    
     // ヘッダーにCSRFトークンを追加
     const headers = new Headers(options.headers);
-    if (token) {
-      headers.set(header, token);
+    if (tokenRef.current) {
+      headers.set(header, tokenRef.current);
+      console.log('🔒 [CSRF] トークンをリクエストに添付', {
+        url,
+        method,
+        hasToken: true,
+        tokenPreview: tokenRef.current.substring(0, 20) + '...'
+      });
+    } else {
+      console.warn('⚠️ [CSRF] トークンなしでリクエスト送信', {
+        url,
+        method,
+        hasToken: false
+      });
     }
     
     return fetch(url, {
@@ -175,5 +272,5 @@ export function useSecureFetch() {
       headers,
       credentials: options.credentials || 'include',
     });
-  };
+  }, [header, refreshToken]);
 }

@@ -11,6 +11,7 @@ import dbConnect from '@/lib/mongodb';
 import User from '@/lib/models/User';
 import Follow from '@/lib/models/Follow';
 import { authOptions } from '@/lib/auth';
+import { executeWithOptionalTransaction } from '@/lib/db/transaction-helper';
 
 /**
  * ユーザーをフォロー
@@ -88,66 +89,64 @@ export async function POST(
       );
     }
     
-    // フォロー実行（トランザクション使用）
-    const session_db = await User.startSession();
-    try {
-      await session_db.withTransaction(async () => {
-        // フォロー関係を作成
-        await Follow.create([{
-          follower: currentUser._id,
-          following: targetUser._id,
-          isReciprocal: false
-        }], { session: session_db });
+    // フォロー実行（環境に応じてトランザクション使用/不使用）
+    await executeWithOptionalTransaction(async (session) => {
+      // フォロー関係を作成
+      await Follow.create([{
+        follower: currentUser._id,
+        following: targetUser._id,
+        isReciprocal: false
+      }], session ? { session } : undefined);
+      
+      // カウントを更新
+      await User.findByIdAndUpdate(
+        currentUser._id,
+        { $inc: { followingCount: 1 } },
+        session ? { session } : undefined
+      );
+      
+      await User.findByIdAndUpdate(
+        targetUser._id,
+        { $inc: { followersCount: 1 } },
+        session ? { session } : undefined
+      );
+      
+      // 相互フォローチェック
+      const reverseFindQuery = Follow.findOne({
+        follower: targetUser._id,
+        following: currentUser._id
+      });
+      const reverseFollow = session 
+        ? await reverseFindQuery.session(session)
+        : await reverseFindQuery;
+      
+      if (reverseFollow) {
+        // 両方のフォロー関係を相互フォローに更新
+        await Follow.updateMany(
+          {
+            $or: [
+              { follower: currentUser._id, following: targetUser._id },
+              { follower: targetUser._id, following: currentUser._id }
+            ]
+          },
+          { $set: { isReciprocal: true } },
+          session ? { session } : undefined
+        );
         
-        // カウントを更新
+        // 相互フォロー数を更新
         await User.findByIdAndUpdate(
           currentUser._id,
-          { $inc: { followingCount: 1 } },
-          { session: session_db }
+          { $inc: { mutualFollowsCount: 1 } },
+          session ? { session } : undefined
         );
         
         await User.findByIdAndUpdate(
           targetUser._id,
-          { $inc: { followersCount: 1 } },
-          { session: session_db }
+          { $inc: { mutualFollowsCount: 1 } },
+          session ? { session } : undefined
         );
-        
-        // 相互フォローチェック
-        const reverseFollow = await Follow.findOne({
-          follower: targetUser._id,
-          following: currentUser._id
-        }).session(session_db);
-        
-        if (reverseFollow) {
-          // 両方のフォロー関係を相互フォローに更新
-          await Follow.updateMany(
-            {
-              $or: [
-                { follower: currentUser._id, following: targetUser._id },
-                { follower: targetUser._id, following: currentUser._id }
-              ]
-            },
-            { $set: { isReciprocal: true } },
-            { session: session_db }
-          );
-          
-          // 相互フォロー数を更新
-          await User.findByIdAndUpdate(
-            currentUser._id,
-            { $inc: { mutualFollowsCount: 1 } },
-            { session: session_db }
-          );
-          
-          await User.findByIdAndUpdate(
-            targetUser._id,
-            { $inc: { mutualFollowsCount: 1 } },
-            { session: session_db }
-          );
-        }
-      });
-    } finally {
-      await session_db.endSession();
-    }
+      }
+    }, { retryOnFailure: true });
     
     // 更新後のユーザー情報を返す
     const updatedTargetUser = await User.findById(userId)
@@ -240,55 +239,53 @@ export async function DELETE(
       );
     }
     
-    // アンフォロー実行（トランザクション使用）
-    const session_db = await User.startSession();
-    try {
-      await session_db.withTransaction(async () => {
-        // 相互フォローだった場合の処理
-        if (existingFollow.isReciprocal) {
-          // 相手側のフォロー関係を非相互に更新
-          await Follow.findOneAndUpdate(
-            {
-              follower: targetUser._id,
-              following: currentUser._id
-            },
-            { $set: { isReciprocal: false } },
-            { session: session_db }
-          );
-          
-          // 相互フォロー数を減らす
-          await User.findByIdAndUpdate(
-            currentUser._id,
-            { $inc: { mutualFollowsCount: -1 } },
-            { session: session_db }
-          );
-          
-          await User.findByIdAndUpdate(
-            targetUser._id,
-            { $inc: { mutualFollowsCount: -1 } },
-            { session: session_db }
-          );
-        }
+    // アンフォロー実行（環境に応じてトランザクション使用/不使用）
+    await executeWithOptionalTransaction(async (session) => {
+      // 相互フォローだった場合の処理
+      if (existingFollow.isReciprocal) {
+        // 相手側のフォロー関係を非相互に更新
+        await Follow.findOneAndUpdate(
+          {
+            follower: targetUser._id,
+            following: currentUser._id
+          },
+          { $set: { isReciprocal: false } },
+          session ? { session } : undefined
+        );
         
-        // フォロー関係を削除
-        await Follow.findByIdAndDelete(existingFollow._id, { session: session_db });
-        
-        // カウントを更新
+        // 相互フォロー数を減らす
         await User.findByIdAndUpdate(
           currentUser._id,
-          { $inc: { followingCount: -1 } },
-          { session: session_db }
+          { $inc: { mutualFollowsCount: -1 } },
+          session ? { session } : undefined
         );
         
         await User.findByIdAndUpdate(
           targetUser._id,
-          { $inc: { followersCount: -1 } },
-          { session: session_db }
+          { $inc: { mutualFollowsCount: -1 } },
+          session ? { session } : undefined
         );
-      });
-    } finally {
-      await session_db.endSession();
-    }
+      }
+      
+      // フォロー関係を削除
+      await Follow.findByIdAndDelete(
+        existingFollow._id, 
+        session ? { session } : undefined
+      );
+      
+      // カウントを更新
+      await User.findByIdAndUpdate(
+        currentUser._id,
+        { $inc: { followingCount: -1 } },
+        session ? { session } : undefined
+      );
+      
+      await User.findByIdAndUpdate(
+        targetUser._id,
+        { $inc: { followersCount: -1 } },
+        session ? { session } : undefined
+      );
+    }, { retryOnFailure: true });
     
     // 更新後のユーザー情報を返す
     const updatedTargetUser = await User.findById(userId)

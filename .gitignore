@@ -104,3 +104,10 @@ get-test-*.mjs
 playwright-*.log
 node_modules_old/
 debug-profile.js
+
+# 一時的なテストファイルとログ
+playwright-report/
+server.log
+test-*.html
+test-*.tsx
+test-results*/

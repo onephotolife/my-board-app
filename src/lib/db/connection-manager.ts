@@ -118,6 +118,7 @@ class DatabaseConnectionManager {
     responseTime: number;
     lastCheck: number;
     warmupCompleted: boolean;
+    error?: string; // オプショナルなエラープロパティを追加
   }> {
     const now = Date.now();
     
@@ -133,8 +134,23 @@ class DatabaseConnectionManager {
 
     // 実際のDBチェック
     const startTime = Date.now();
+    
+    // NULL安全性チェック追加（優先度1実装）
+    const db = mongoose.connection?.db;
+    if (!db) {
+      console.warn('⚠️ MongoDB: 接続が未確立のため待機中');
+      this.state.isConnected = false;
+      return {
+        isHealthy: false,
+        responseTime: 0,
+        lastCheck: now,
+        warmupCompleted: false,
+        error: 'CONNECTION_NOT_READY'
+      };
+    }
+    
     try {
-      await mongoose.connection.db.admin().ping();
+      await db.admin().ping();
       const responseTime = Date.now() - startTime;
       
       this.state.isConnected = true;

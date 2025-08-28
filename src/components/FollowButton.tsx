@@ -19,7 +19,7 @@ import {
   sanitizeButtonProps,
   convertToV2Props 
 } from '@/types/mui-extensions';
-import { isValidObjectId, getObjectIdErrorMessage } from '@/utils/validators/objectId';
+import { isValidObjectId, getObjectIdErrorMessage } from '@/lib/validators/objectId'; // SOL-1: 統合版バリデーターへ移行
 
 // 現在はV1を使用（段階的移行のため）
 // 将来的にV2に完全移行予定

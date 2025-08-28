@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, usePathname } from 'next/navigation';
 import AppLayout from '@/components/AppLayout';
-import { isValidObjectId, filterValidObjectIds } from '@/utils/validators/objectId';
+import { isValidObjectId, filterValidObjectIds } from '@/lib/validators/objectId'; // SOL-1: 統合版バリデーターへ移行
 import {
   Container,
   Typography,

@@ -14,6 +14,14 @@ import Follow from '@/lib/models/Follow';
 import { authOptions } from '@/lib/auth';
 import { isValidObjectId, debugObjectId } from '@/lib/validators/objectId';
 
+// Solution debug logging
+function logSolutionDebug(solution: string, action: string, data: any) {
+  console.log(`🔧 [Sol-Debug] ${solution} | ${action}:`, {
+    timestamp: new Date().toISOString(),
+    ...data
+  });
+}
+
 /**
  * フォロー状態を確認
  */
@@ -25,9 +33,15 @@ export async function GET(
     // Next.js 15: paramsをawaitする
     const { userId } = await params;
     
-    // デバッグログ追加
+    // デバッグログ追加 + Solution tracking
     const idDebug = debugObjectId(userId);
     console.log('[Follow API GET] ID validation:', idDebug);
+    
+    logSolutionDebug('SOL-1', 'ObjectID validation (lib/validators)', {
+      userId,
+      validation: idDebug,
+      validator: 'lib/validators/objectId'
+    });
     
     // ID形式の検証（400エラーとして返す）
     if (!isValidObjectId(userId)) {
@@ -42,8 +56,30 @@ export async function GET(
       );
     }
     
+    // SOL-2: NextAuth-CSRF統合強化
+    logSolutionDebug('SOL-2', 'NextAuth session check', {
+      hasSession: false,
+      checkStarted: true
+    });
+    
     const session = await getServerSession(authOptions);
+    
+    logSolutionDebug('SOL-2', 'NextAuth session result', {
+      hasSession: !!session,
+      hasUser: !!session?.user,
+      hasEmail: !!session?.user?.email,
+      userId: session?.user?.id,
+      emailVerified: session?.user?.emailVerified,
+      sessionData: session ? 'present' : 'missing'
+    });
+    
     if (!session?.user?.email) {
+      logSolutionDebug('SOL-2', 'Authentication failed', {
+        reason: !session ? 'no_session' : !session.user ? 'no_user' : 'no_email',
+        sessionExists: !!session,
+        userExists: !!session?.user
+      });
+      
       return NextResponse.json(
         { error: 'ログインが必要です' },
         { status: 401 }
@@ -150,9 +186,15 @@ export async function POST(
     // Next.js 15: paramsをawaitする
     const { userId } = await params;
     
-    // デバッグログ追加
+    // デバッグログ追加 + Solution tracking
     const idDebug = debugObjectId(userId);
     console.log('[Follow API POST] ID validation:', idDebug);
+    
+    logSolutionDebug('SOL-1', 'ObjectID validation (lib/validators)', {
+      userId,
+      validation: idDebug,
+      validator: 'lib/validators/objectId'
+    });
     
     // ID形式の検証（400エラーとして返す）
     if (!isValidObjectId(userId)) {
@@ -168,7 +210,19 @@ export async function POST(
     }
     
     const session = await getServerSession(authOptions);
+    
+    logSolutionDebug('SOL-2', 'NextAuth session check (POST)', {
+      hasSession: !!session,
+      hasUser: !!session?.user,
+      hasEmail: !!session?.user?.email,
+      sessionEmail: session?.user?.email
+    });
+    
     if (!session?.user?.email) {
+      logSolutionDebug('SOL-2', 'Authentication failed - missing session (POST)', {
+        session: session ? 'exists_but_incomplete' : 'null',
+        user: session?.user ? 'exists_but_incomplete' : 'null'
+      });
       return NextResponse.json(
         { error: 'ログインが必要です' },
         { status: 401 }
@@ -180,6 +234,10 @@ export async function POST(
     // 現在のユーザーを取得
     const currentUser = await User.findOne({ email: session.user.email });
     if (!currentUser) {
+      logSolutionDebug('SOL-3', 'Current user not found in DB', {
+        sessionEmail: session.user.email,
+        method: 'POST'
+      });
       return NextResponse.json(
         { error: 'ユーザーが見つかりません' },
         { status: 404 }
@@ -288,9 +346,15 @@ export async function DELETE(
     // Next.js 15: paramsをawaitする
     const { userId } = await params;
     
-    // デバッグログ追加
+    // デバッグログ追加 + Solution tracking
     const idDebug = debugObjectId(userId);
     console.log('[Follow API DELETE] ID validation:', idDebug);
+    
+    logSolutionDebug('SOL-1', 'ObjectID validation (lib/validators)', {
+      userId,
+      validation: idDebug,
+      validator: 'lib/validators/objectId'
+    });
     
     // ID形式の検証（400エラーとして返す）
     if (!isValidObjectId(userId)) {
@@ -306,7 +370,19 @@ export async function DELETE(
     }
     
     const session = await getServerSession(authOptions);
+    
+    logSolutionDebug('SOL-2', 'NextAuth session check (DELETE)', {
+      hasSession: !!session,
+      hasUser: !!session?.user,
+      hasEmail: !!session?.user?.email,
+      sessionEmail: session?.user?.email
+    });
+    
     if (!session?.user?.email) {
+      logSolutionDebug('SOL-2', 'Authentication failed - missing session (DELETE)', {
+        session: session ? 'exists_but_incomplete' : 'null',
+        user: session?.user ? 'exists_but_incomplete' : 'null'
+      });
       return NextResponse.json(
         { error: 'ログインが必要です' },
         { status: 401 }
@@ -318,6 +394,10 @@ export async function DELETE(
     // 現在のユーザーを取得
     const currentUser = await User.findOne({ email: session.user.email });
     if (!currentUser) {
+      logSolutionDebug('SOL-3', 'Current user not found in DB', {
+        sessionEmail: session.user.email,
+        method: 'DELETE'
+      });
       return NextResponse.json(
         { error: 'ユーザーが見つかりません' },
         { status: 404 }

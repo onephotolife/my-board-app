@@ -7,6 +7,9 @@ import { connectDB } from "@/lib/db/mongodb-local";
 import UserModel from "@/lib/models/User";
 import { EmailNotVerifiedError, InvalidPasswordError, UserNotFoundError } from "@/lib/auth-errors";
 
+// ROOT CAUSE デバッグ - プロバイダー作成前
+console.log('🔍 [ROOT CAUSE] Creating authOptions at:', new Date().toISOString());
+
 // NextAuth v4の設定
 export const authOptions: AuthOptions = {
   providers: [
@@ -18,31 +21,43 @@ export const authOptions: AuthOptions = {
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        console.log('🔐 [Auth v4] 認証開始:', {
+        console.log('🔐 [Auth v4] [SOL-2] 認証開始:', {
           email: credentials?.email,
           hasPassword: !!credentials?.password,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
+          credentialsKeys: Object.keys(credentials || {}),
+          solution: 'SOL-2_AUTH_DEBUG'
         });
         
         if (!credentials?.email || !credentials?.password) {
-          console.log('❌ [Auth v4] 認証情報不足');
+          console.log('❌ [Auth v4] [SOL-2] 認証情報不足:', {
+            hasEmail: !!credentials?.email,
+            hasPassword: !!credentials?.password,
+            credentials: credentials
+          });
           return null;
         }
 
         try {
+          console.log('🔧 [SOL-2] DB接続開始...');
           await connectDB();
-          console.log('✅ [Auth v4] DB接続成功');
+          console.log('✅ [Auth v4] [SOL-2] DB接続成功');
           
           const user = await UserModel.findOne({ email: credentials.email });
-          console.log('🔍 [Auth v4] ユーザー検索結果:', {
+          console.log('🔍 [Auth v4] [SOL-2] ユーザー検索結果:', {
             found: !!user,
             email: user?.email,
             hasPassword: !!user?.password,
-            emailVerified: user?.emailVerified
+            emailVerified: user?.emailVerified,
+            userId: user?._id?.toString(),
+            solution: 'SOL-2_USER_LOOKUP'
           });
           
           if (!user) {
-            console.log('❌ [Auth v4] ユーザーが見つかりません');
+            console.log('❌ [Auth v4] [SOL-2] ユーザーが見つかりません:', {
+              searchEmail: credentials.email,
+              solution: 'SOL-2_USER_NOT_FOUND'
+            });
             return null;
           }
 
@@ -72,16 +87,31 @@ export const authOptions: AuthOptions = {
           }
 
           // パスワード検証
-          console.log('🔑 [Auth v4] パスワード検証開始');
+          console.log('🔑 [Auth v4] [SOL-2] パスワード検証開始:', {
+            hasUserPassword: !!user.password,
+            passwordLength: user.password?.length,
+            inputPasswordLength: credentials.password?.length
+          });
           const isValidPassword = await bcrypt.compare(credentials.password, user.password);
-          console.log('🔐 [Auth v4] パスワード検証結果:', isValidPassword);
+          console.log('🔐 [Auth v4] [SOL-2] パスワード検証結果:', {
+            isValid: isValidPassword,
+            solution: 'SOL-2_PASSWORD_CHECK'
+          });
           
           if (!isValidPassword) {
-            console.log('❌ [Auth v4] パスワードが一致しません');
+            console.log('❌ [Auth v4] [SOL-2] パスワードが一致しません:', {
+              email: credentials.email,
+              solution: 'SOL-2_INVALID_PASSWORD'
+            });
             return null;
           }
 
-          console.log('✅ [Auth v4] 認証成功:', user.email);
+          console.log('✅ [Auth v4] [SOL-2] 認証成功:', {
+            email: user.email,
+            userId: user._id.toString(),
+            emailVerified: true,
+            solution: 'SOL-2_AUTH_SUCCESS'
+          });
           
           // createdAtの取得 - 古いユーザーの場合はデフォルト値を使用
           let createdAtString: string;
@@ -118,7 +148,11 @@ export const authOptions: AuthOptions = {
             createdAt: createdAtString,
           };
         } catch (error) {
-          console.error('❌ [Auth v4] 認証エラー:', error);
+          console.error('❌ [Auth v4] [SOL-2] 認証エラー:', {
+            error: error instanceof Error ? error.message : error,
+            stack: error instanceof Error ? error.stack : undefined,
+            solution: 'SOL-2_AUTH_ERROR'
+          });
           return null;
         }
       }
@@ -187,40 +221,78 @@ export const authOptions: AuthOptions = {
     },
     
     async jwt({ token, user }: { token: JWT; user?: User }) {
-      console.log('🎫 [JWT v4]:', {
+      // SOL-2: JWT-Session間のデータ伝播強化
+      console.log('🎫 [JWT v4] [SOL-2]:', {
         hasUser: !!user,
         hasToken: !!token,
         userId: user?.id,
-        tokenId: token?.id
+        tokenId: token?.id,
+        timestamp: new Date().toISOString(),
+        solution: 'SOL-2_JWT_SESSION_SYNC'
       });
       
       if (user) {
+        // SOL-2: 完全なユーザーデータをトークンに保存
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
         token.emailVerified = user.emailVerified;
         token.role = user.role;
         token.createdAt = user.createdAt;
+        
+        console.log('🔧 [Sol-Debug] SOL-2 | JWT token populated:', {
+          timestamp: new Date().toISOString(),
+          tokenId: token.id,
+          email: token.email,
+          emailVerified: token.emailVerified,
+          hasAllFields: !!(token.id && token.email && token.name)
+        });
       }
       return token;
     },
     
     async session({ session, token }: { session: Session; token: JWT }) {
-      console.log('📊 [Session v4]:', {
+      // SOL-2: セッションデータの確実な伝播
+      console.log('📊 [Session v4] [SOL-2]:', {
         hasSession: !!session,
         hasToken: !!token,
         tokenId: token?.id,
-        emailVerified: token?.emailVerified
+        emailVerified: token?.emailVerified,
+        timestamp: new Date().toISOString(),
+        solution: 'SOL-2_SESSION_POPULATION'
       });
       
-      if (token && session.user) {
-        session.user.id = token.id;
-        session.user.email = token.email;
-        session.user.name = token.name;
-        session.user.emailVerified = token.emailVerified;
-        session.user.role = token.role;
-        session.user.createdAt = token.createdAt;
+      // SOL-2: トークンデータをセッションに確実に伝播
+      if (token) {
+        // session.userが存在しない場合は作成
+        if (!session.user) {
+          session.user = {} as any;
+        }
+        
+        // SOL-2: 全フィールドを確実に伝播
+        session.user.id = token.id as string;
+        session.user.email = token.email as string;
+        session.user.name = token.name as string || token.email as string;
+        session.user.emailVerified = token.emailVerified as boolean || true;
+        session.user.role = token.role as string || 'user';
+        session.user.createdAt = token.createdAt as string;
+        
+        console.log('🔧 [Sol-Debug] SOL-2 | Session populated:', {
+          timestamp: new Date().toISOString(),
+          userId: session.user.id,
+          email: session.user.email,
+          emailVerified: session.user.emailVerified,
+          hasAllFields: !!(session.user.id && session.user.email && session.user.name),
+          sessionComplete: true
+        });
+      } else {
+        console.error('❌ [Sol-Debug] SOL-2 | Token missing in session callback:', {
+          timestamp: new Date().toISOString(),
+          hasSession: !!session,
+          hasToken: !!token
+        });
       }
+      
       return session;
     }
   },
@@ -232,8 +304,23 @@ export const authOptions: AuthOptions = {
   },
   
   jwt: {
-    secret: process.env.NEXTAUTH_SECRET,
+    secret: process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
     maxAge: 30 * 24 * 60 * 60, // 30日
+  },
+  
+  // SOL-2: Cookie設定の統一
+  cookies: {
+    sessionToken: {
+      name: process.env.NODE_ENV === 'production' 
+        ? '__Secure-next-auth.session-token' 
+        : 'next-auth.session-token',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production'
+      }
+    }
   },
   
   // NextAuth v4設定

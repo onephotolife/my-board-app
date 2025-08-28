@@ -54,8 +54,8 @@ export async function GET(
     
     await dbConnect();
     
-    // 現在のユーザーを取得（認証済みユーザーの検証）
-    const currentUser = await User.findOne({ email: session.user.email });
+    // 現在のユーザーを取得（最適化: ID のみ取得）
+    const currentUser = await User.findOne({ email: session.user.email }).select('_id').lean();
     if (!currentUser) {
       return NextResponse.json(
         { error: '認証済みユーザーが見つかりません' },
@@ -63,21 +63,18 @@ export async function GET(
       );
     }
     
-    // ターゲットユーザーの存在確認（Priority 2: 軽量チェック）
+    // ターゲットユーザーの存在確認（Priority 2: 超軽量チェック - 最大最適化）
     let targetUser;
     try {
       targetUser = await User.findById(userId)
-        .select('_id name email avatar createdAt emailVerified')  // 必要最小限のフィールド
-        .lean();  // パフォーマンス最適化
+        .select('_id name avatar')  // 必要最小限の3フィールドのみ
+        .lean();
     } catch (error: any) {
-      console.error(`[User Exists API GET] Target user lookup error for ID ${userId}:`, {
-        error: error.message,
-        stack: error.stack,
-        timestamp: new Date().toISOString(),
-        requestId: crypto.randomUUID()
-      });
+      // 最適化: ログ出力を最小化
+      if (process.env.NODE_ENV === 'development') {
+        console.error(`[User Exists API] ${userId}: ${error.message}`);
+      }
       
-      // MongooseのCastErrorを404として処理（Priority 1修正と同様）
       return NextResponse.json(
         { 
           exists: false,
@@ -89,7 +86,6 @@ export async function GET(
     }
     
     if (!targetUser) {
-      console.warn(`[User Exists API GET] Target user ${userId} does not exist`);
       return NextResponse.json(
         { 
           exists: false,
@@ -100,20 +96,17 @@ export async function GET(
       );
     }
 
-    // 自分自身のチェック
-    const isSelf = targetUser._id.toString() === currentUser._id.toString();
+    // 自分自身のチェック（最適化: 文字列変換回避）
+    const isSelf = targetUser._id.equals(currentUser._id);
     
-    // ユーザー存在確認成功レスポンス
+    // ユーザー存在確認成功レスポンス（最適化: 最小限データ）
     return NextResponse.json({
       success: true,
       exists: true,
       data: {
         userId: targetUser._id,
         name: targetUser.name,
-        email: targetUser.email,
         avatar: targetUser.avatar,
-        createdAt: targetUser.createdAt,
-        emailVerified: targetUser.emailVerified,
         isSelf: isSelf
       },
     });

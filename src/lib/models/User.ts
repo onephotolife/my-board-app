@@ -195,103 +195,144 @@ UserSchema.methods.comparePassword = async function (candidatePassword: string):
 
 // フォロー関連メソッドの実装
 UserSchema.methods.follow = async function(targetUserId: string): Promise<void> {
-  const session = await mongoose.startSession();
+  // TEMP-FIX: 開発環境ではトランザクションを使用しない（レプリカセット未使用）
+  const useTransaction = process.env.NODE_ENV === 'production' && process.env.USE_TRANSACTIONS === 'true';
   
-  try {
-    await session.withTransaction(async () => {
-      const Follow = mongoose.model('Follow');
-      
-      // ObjectId変換とバリデーション
-      if (!mongoose.Types.ObjectId.isValid(targetUserId)) {
-        throw new Error('無効なユーザーIDです');
-      }
-      const targetId = new mongoose.Types.ObjectId(targetUserId);
-      
-      // 自分自身はフォローできない
-      if (this._id.equals(targetId)) {
-        throw new Error('自分自身をフォローすることはできません');
-      }
-      
-      // ターゲットユーザーの存在確認
-      const targetUser = await mongoose.model('User').findById(targetId).session(session);
-      if (!targetUser) {
-        throw new Error('フォロー対象のユーザーが存在しません');
-      }
-      
-      // 既存のフォロー関係をチェック（重複防止）
-      const existingFollow = await Follow.findOne({
-        follower: this._id,
-        following: targetId,
-      }).session(session);
-      
-      if (existingFollow) {
-        throw new Error('既にフォローしています');
-      }
-      
-      // フォロー関係を作成
-      await Follow.create([{
-        follower: this._id,
-        following: targetId,
-      }], { session });
-      
-      // 両者のカウントを並列更新
-      await Promise.all([
-        this.updateFollowCounts(),
-        targetUser.updateFollowCounts(),
-      ]);
-    });
-  } catch (error: any) {
-    // エラーをより詳細に記録
-    console.error(`Follow failed: userId=${this._id}, targetId=${targetUserId}`, error);
-    throw error;
-  } finally {
-    await session.endSession();
+  if (useTransaction) {
+    // 本番環境（レプリカセット使用時）
+    const session = await mongoose.startSession();
+    
+    try {
+      await session.withTransaction(async () => {
+        await this._followInternal(targetUserId, session);
+      });
+    } catch (error: any) {
+      console.error(`Follow failed: userId=${this._id}, targetId=${targetUserId}`, error);
+      throw error;
+    } finally {
+      await session.endSession();
+    }
+  } else {
+    // 開発環境（トランザクションなし）
+    try {
+      await this._followInternal(targetUserId, null);
+    } catch (error: any) {
+      console.error(`Follow failed: userId=${this._id}, targetId=${targetUserId}`, error);
+      throw error;
+    }
   }
 };
 
-UserSchema.methods.unfollow = async function(targetUserId: string): Promise<void> {
-  const session = await mongoose.startSession();
+// 内部フォロー処理（共通ロジック）
+UserSchema.methods._followInternal = async function(targetUserId: string, session: any): Promise<void> {
+  const Follow = mongoose.model('Follow');
   
-  try {
-    await session.withTransaction(async () => {
-      const Follow = mongoose.model('Follow');
-      
-      // ObjectId変換とバリデーション
-      if (!mongoose.Types.ObjectId.isValid(targetUserId)) {
-        throw new Error('無効なユーザーIDです');
-      }
-      const targetId = new mongoose.Types.ObjectId(targetUserId);
-      
-      // フォロー関係を削除
-      const result = await Follow.findOneAndDelete({
-        follower: this._id,
-        following: targetId,
-      }).session(session);
-      
-      if (!result) {
-        throw new Error('フォローしていません');
-      }
-      
-      // ターゲットユーザーの取得
-      const targetUser = await mongoose.model('User').findById(targetId).session(session);
-      if (!targetUser) {
-        // ユーザーが削除されている場合でもアンフォローは成功扱い
-        console.warn(`Target user ${targetId} not found during unfollow`);
-      }
-      
-      // 両者のカウントを並列更新
-      const updatePromises = [this.updateFollowCounts()];
-      if (targetUser) {
-        updatePromises.push(targetUser.updateFollowCounts());
-      }
-      await Promise.all(updatePromises);
-    });
-  } catch (error: any) {
-    console.error(`Unfollow failed: userId=${this._id}, targetId=${targetUserId}`, error);
-    throw error;
-  } finally {
-    await session.endSession();
+  // ObjectId変換とバリデーション
+  if (!mongoose.Types.ObjectId.isValid(targetUserId)) {
+    throw new Error('無効なユーザーIDです');
   }
+  const targetId = new mongoose.Types.ObjectId(targetUserId);
+  
+  // 自分自身はフォローできない
+  if (this._id.equals(targetId)) {
+    throw new Error('自分自身をフォローすることはできません');
+  }
+  
+  // ターゲットユーザーの存在確認
+  const findOptions = session ? { session } : {};
+  const targetUser = await mongoose.model('User').findById(targetId, null, findOptions);
+  if (!targetUser) {
+    throw new Error('フォロー対象のユーザーが存在しません');
+  }
+  
+  // 既存のフォロー関係をチェック（重複防止）
+  const existingFollow = await Follow.findOne({
+    follower: this._id,
+    following: targetId,
+  }, null, findOptions);
+  
+  if (existingFollow) {
+    throw new Error('既にフォローしています');
+  }
+  
+  // フォロー関係を作成
+  const createOptions = session ? { session } : {};
+  await Follow.create([{
+    follower: this._id,
+    following: targetId,
+  }], createOptions);
+  
+  // 両者のカウントを並列更新
+  await Promise.all([
+    this.updateFollowCounts(),
+    targetUser.updateFollowCounts(),
+  ]);
+};
+
+UserSchema.methods.unfollow = async function(targetUserId: string): Promise<void> {
+  // TEMP-FIX: 開発環境ではトランザクションを使用しない（レプリカセット未使用）
+  const useTransaction = process.env.NODE_ENV === 'production' && process.env.USE_TRANSACTIONS === 'true';
+  
+  if (useTransaction) {
+    // 本番環境（レプリカセット使用時）
+    const session = await mongoose.startSession();
+    
+    try {
+      await session.withTransaction(async () => {
+        await this._unfollowInternal(targetUserId, session);
+      });
+    } catch (error: any) {
+      console.error(`Unfollow failed: userId=${this._id}, targetId=${targetUserId}`, error);
+      throw error;
+    } finally {
+      await session.endSession();
+    }
+  } else {
+    // 開発環境（トランザクションなし）
+    try {
+      await this._unfollowInternal(targetUserId, null);
+    } catch (error: any) {
+      console.error(`Unfollow failed: userId=${this._id}, targetId=${targetUserId}`, error);
+      throw error;
+    }
+  }
+};
+
+// 内部アンフォロー処理（共通ロジック）
+UserSchema.methods._unfollowInternal = async function(targetUserId: string, session: any): Promise<void> {
+  const Follow = mongoose.model('Follow');
+  
+  // ObjectId変換とバリデーション
+  if (!mongoose.Types.ObjectId.isValid(targetUserId)) {
+    throw new Error('無効なユーザーIDです');
+  }
+  const targetId = new mongoose.Types.ObjectId(targetUserId);
+  
+  // フォロー関係を削除
+  const deleteOptions = session ? { session } : {};
+  const result = await Follow.findOneAndDelete({
+    follower: this._id,
+    following: targetId,
+  }, deleteOptions);
+  
+  if (!result) {
+    throw new Error('フォローしていません');
+  }
+  
+  // ターゲットユーザーの取得
+  const findOptions = session ? { session } : {};
+  const targetUser = await mongoose.model('User').findById(targetId, null, findOptions);
+  if (!targetUser) {
+    // ユーザーが削除されている場合でもアンフォローは成功扱い
+    console.warn(`Target user ${targetId} not found during unfollow`);
+  }
+  
+  // 両者のカウントを並列更新
+  const updatePromises = [this.updateFollowCounts()];
+  if (targetUser) {
+    updatePromises.push(targetUser.updateFollowCounts());
+  }
+  await Promise.all(updatePromises);
 };
 
 UserSchema.methods.isFollowing = async function(targetUserId: string): Promise<boolean> {

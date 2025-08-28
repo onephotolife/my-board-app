@@ -100,6 +100,20 @@ export class CSRFProtection {
     
     const { cookieToken, headerToken, sessionToken } = this.getTokenFromRequest(request);
     
+    // PRIORITY-2-DEBUG: CSRFトークンの詳細ログ
+    console.log('[CSRF-P2-DEBUG] Token validation details:', {
+      path: request.nextUrl.pathname,
+      method: request.method,
+      hasCookie: !!cookieToken,
+      hasHeader: !!headerToken,
+      hasSession: !!sessionToken,
+      cookieTokenFull: cookieToken || 'null',
+      headerTokenFull: headerToken || 'null',
+      cookieLength: cookieToken?.length || 0,
+      headerLength: headerToken?.length || 0,
+      solution: 'PRIORITY-2-TOKEN-SYNC'
+    });
+    
     // トークンが存在しない場合
     if (!cookieToken || !headerToken || !sessionToken) {
       console.warn('[CSRF] Missing tokens:', {

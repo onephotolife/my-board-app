@@ -7,24 +7,17 @@ import Divider from '@mui/material/Divider';
 import Skeleton from '@mui/material/Skeleton';
 import dynamic from 'next/dynamic';
 
+import { UnifiedPost } from '@/types/post';
+
 // PostItemを動的インポート
 const PostItem = dynamic(() => import('./PostItem'), {
   loading: () => <PostItemSkeleton />,
   ssr: false,
 });
 
-interface Post {
-  _id: string;
-  title: string;
-  content: string;
-  author: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
 interface VirtualizedPostListProps {
-  posts: Post[];
-  onEdit: (post: Post) => void;
+  posts: UnifiedPost[];
+  onEdit: (post: UnifiedPost) => void;
   onDelete: (id: string) => void;
 }
 

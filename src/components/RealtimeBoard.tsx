@@ -52,34 +52,13 @@ import { useSocket } from '@/lib/socket/client';
 import { modern2025Styles } from '@/styles/modern-2025';
 import { useCSRFContext, useSecureFetch } from '@/components/CSRFProvider';
 import FollowButton from '@/components/FollowButton';
-
-interface Post {
-  _id: string;
-  title: string;
-  content: string;
-  author: {
-    _id: string;
-    name: string;
-    email: string;
-  };
-  category: string;
-  tags: string[];
-  likes: string[];
-  views: number;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-  canEdit?: boolean;
-  canDelete?: boolean;
-  isLikedByUser?: boolean;
-  isNew?: boolean;
-}
+import { UnifiedPost, normalizePostToUnified, deduplicatePosts } from '@/types/post';
 
 export default function RealtimeBoard() {
   const router = useRouter();
   const pathname = usePathname();
   const { data: session } = useSession();
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState<UnifiedPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -168,11 +147,17 @@ export default function RealtimeBoard() {
       const data = await response.json();
       
       if (isLoadMore) {
-        // 追加読み込みの場合
-        setPosts(prevPosts => [...prevPosts, ...(data.data || [])]);
+        // 追加読み込みの場合（重複排除ロジック実装）
+        setPosts(prevPosts => {
+          const normalizedNewPosts = (data.data || []).map(normalizePostToUnified);
+          const existingIds = new Set(prevPosts.map(p => p._id));
+          const uniqueNewPosts = normalizedNewPosts.filter(p => !existingIds.has(p._id));
+          return [...prevPosts, ...uniqueNewPosts];
+        });
       } else {
         // 新規検索の場合
-        setPosts(data.data || []);
+        const normalizedPosts = (data.data || []).map(normalizePostToUnified);
+        setPosts(normalizedPosts);
         setPage(1);
       }
       
@@ -327,12 +312,17 @@ export default function RealtimeBoard() {
   useEffect(() => {
     if (!socket || !isConnected) return;
 
-    const handlePostCreated = (newPost: Post) => {
+    const handlePostCreated = (newPost: any) => {
       console.log('New post received:', newPost);
-      // 新しい投稿を最初に追加（新着フラグ付き）
-      setPosts(prevPosts => [{ ...newPost, isNew: true }, ...prevPosts.filter(p => p._id !== newPost._id)]);
+      const normalizedPost = normalizePostToUnified(newPost);
+      // 新しい投稿を最初に追加（新着フラグ付き・競合状態対策）
+      setPosts(prevPosts => {
+        const existingIndex = prevPosts.findIndex(p => p._id === normalizedPost._id);
+        const filteredPosts = prevPosts.filter(p => p._id !== normalizedPost._id);
+        return [{ ...normalizedPost, isNew: true }, ...filteredPosts];
+      });
       
-      // 3秒後に新着フラグを削除
+      // 3秒後に新着フラグを削除（競合状態対策）
       setTimeout(() => {
         setPosts(prevPosts => 
           prevPosts.map(p => p._id === newPost._id ? { ...p, isNew: false } : p)
@@ -340,10 +330,11 @@ export default function RealtimeBoard() {
       }, 3000);
     };
 
-    const handlePostUpdated = (updatedPost: Post) => {
+    const handlePostUpdated = (updatedPost: any) => {
       console.log('Post updated:', updatedPost);
+      const normalizedPost = normalizePostToUnified(updatedPost);
       setPosts(prevPosts => 
-        prevPosts.map(p => p._id === updatedPost._id ? updatedPost : p)
+        prevPosts.map(p => p._id === normalizedPost._id ? normalizedPost : p)
       );
     };
 

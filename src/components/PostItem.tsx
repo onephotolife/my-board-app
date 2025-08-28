@@ -11,19 +11,11 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 
 import { CanEdit, CanDelete } from '@/components/permissions/PermissionGate';
-
-interface Post {
-  _id: string;
-  title: string;
-  content: string;
-  author: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import { UnifiedPost } from '@/types/post';
 
 interface PostItemProps {
-  post: Post;
-  onEdit: (post: Post) => void;
+  post: UnifiedPost;
+  onEdit: (post: UnifiedPost) => void;
   onDelete: (id: string) => void;
 }
 

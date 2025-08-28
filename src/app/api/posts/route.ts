@@ -8,6 +8,7 @@ import User from '@/lib/models/User';
 import { checkRateLimit, createErrorResponse, AuthUser } from '@/lib/middleware/auth';
 import { createPostSchema, postFilterSchema, sanitizePostInput, formatValidationErrors } from '@/lib/validations/post';
 import { broadcastEvent } from '@/lib/socket/socket-manager';
+import { normalizePostDocuments, normalizePostDocument } from '@/lib/api/post-normalizer';
 
 // ページネーションのデフォルト値
 const DEFAULT_PAGE = 1;
@@ -121,21 +122,13 @@ export async function GET(req: NextRequest) {
       Post.countDocuments(query),
     ]);
 
-    // 権限情報を追加
-    const postsWithPermissions = posts.map((post: any) => {
-      const isOwner = post.author._id === user.id;
-      
-      return {
-        ...post,
-        canEdit: isOwner,
-        canDelete: isOwner,
-      };
-    });
+    // 正規化と権限情報追加（UnifiedPost形式に変換）
+    const normalizedPosts = normalizePostDocuments(posts, user.id);
 
     // レスポンス作成
     return NextResponse.json({
       success: true,
-      data: postsWithPermissions,
+      data: normalizedPosts,
       pagination: {
         page,
         limit,
@@ -251,17 +244,20 @@ export async function POST(req: NextRequest) {
 
     // 投稿の保存
     const post = await Post.create(postData);
+    
+    // 正規化（UnifiedPost形式に変換）
+    const normalizedPost = normalizePostDocument(post.toObject(), user.id);
 
     // Socket.ioで新規投稿をブロードキャスト
     broadcastEvent('post:new', {
-      post: post.toJSON(),
+      post: normalizedPost,
       author: user,
     });
 
     return NextResponse.json(
       {
         success: true,
-        data: post,
+        data: normalizedPost,
         message: '投稿が作成されました',
       },
       { status: 201 }

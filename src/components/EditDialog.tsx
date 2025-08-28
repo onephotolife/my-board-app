@@ -19,25 +19,11 @@ import {
   Typography
 } from '@mui/material';
 import { usePermissions } from '@/contexts/PermissionContext';
-
-interface Post {
-  _id: string;
-  title: string;
-  content: string;
-  author?: {
-    _id: string;
-    name: string;
-    email: string;
-  } | string;
-  category: string;
-  tags: string[];
-  createdAt: string;
-  updatedAt: string;
-}
+import { UnifiedPost } from '@/types/post';
 
 interface EditDialogProps {
   open: boolean;
-  post: Post | null;
+  post: UnifiedPost | null;
   onClose: () => void;
   onUpdate: (data: { title: string; content: string; category: string; tags: string[] }) => Promise<void>;
 }

@@ -4,6 +4,7 @@ import { useState, useCallback, memo } from 'react';
 import Alert from '@mui/material/Alert';
 import dynamic from 'next/dynamic';
 import { useSecureFetch } from '@/components/CSRFProvider';
+import { UnifiedPost, normalizePostToUnified } from '@/types/post';
 
 // 動的インポートでバンドルサイズを削減
 const PostForm = dynamic(() => import('./PostForm'), { 
@@ -16,22 +17,13 @@ const VirtualizedPostList = dynamic(() => import('./VirtualizedPostList'), {
 });
 const EditDialog = dynamic(() => import('./EditDialog'), { ssr: false });
 
-interface Post {
-  _id: string;
-  title: string;
-  content: string;
-  author: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
 interface BoardClientProps {
-  initialPosts: Post[];
+  initialPosts: UnifiedPost[];
 }
 
 const BoardClient = memo(function BoardClient({ initialPosts }: BoardClientProps) {
-  const [posts, setPosts] = useState<Post[]>(initialPosts);
-  const [editingPost, setEditingPost] = useState<Post | null>(null);
+  const [posts, setPosts] = useState<UnifiedPost[]>(initialPosts);
+  const [editingPost, setEditingPost] = useState<UnifiedPost | null>(null);
   const [error, setError] = useState('');
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const secureFetch = useSecureFetch();
@@ -51,7 +43,8 @@ const BoardClient = memo(function BoardClient({ initialPosts }: BoardClientProps
       const data = await response.json();
       
       if (data.success) {
-        setPosts(prev => [data.data, ...prev]);
+        const normalizedPost = normalizePostToUnified(data.data);
+        setPosts(prev => [normalizedPost, ...prev]);
       } else {
         setError(data.error);
       }
@@ -61,7 +54,7 @@ const BoardClient = memo(function BoardClient({ initialPosts }: BoardClientProps
     }
   }, [secureFetch]);
 
-  const handleEdit = useCallback((post: Post) => {
+  const handleEdit = useCallback((post: UnifiedPost) => {
     setEditingPost(post);
     setIsEditDialogOpen(true);
   }, []);
@@ -82,7 +75,8 @@ const BoardClient = memo(function BoardClient({ initialPosts }: BoardClientProps
       const data = await response.json();
       
       if (data.success) {
-        setPosts(prev => prev.map(p => p._id === editingPost._id ? data.data : p));
+        const normalizedPost = normalizePostToUnified(data.data);
+        setPosts(prev => prev.map(p => p._id === editingPost._id ? normalizedPost : p));
         setIsEditDialogOpen(false);
         setEditingPost(null);
       } else {

@@ -29,6 +29,7 @@ export default function FollowButton({
   initialFollowing = false,
   onFollowChange,
   compact = false,
+  disabled: externalDisabled = false,
   ...restProps
 }: FollowButtonProps) {
   // デバッグ用: 不正なpropsの検出
@@ -158,7 +159,7 @@ export default function FollowButton({
     <>
       <Button
         onClick={handleFollowToggle}
-        disabled={isLoading}
+        disabled={isLoading || externalDisabled}
         variant={getButtonVariant()}
         color={getButtonColor()}
         size={safeProps.size || (compact ? 'small' : 'medium')}

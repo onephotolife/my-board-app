@@ -90,6 +90,8 @@ export default function RealtimeBoard() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [selectedTag, setSelectedTag] = useState('');
   const [followingUsers, setFollowingUsers] = useState<Set<string>>(new Set());
+  const [validUserIds, setValidUserIds] = useState<Set<string>>(new Set());
+  const [userValidationCache, setUserValidationCache] = useState<Map<string, { exists: boolean; lastChecked: Date }>>(new Map());
   const { socket, isConnected } = useSocket();
   const { token: csrfToken } = useCSRFContext();
   const secureFetch = useSecureFetch();
@@ -186,6 +188,80 @@ export default function RealtimeBoard() {
       setLoadingMore(false);
     }
   }, [searchQuery, category, sortBy, page, selectedTag]);
+
+  // ユーザー存在確認関数
+  const validateUserExists = useCallback(async (userIds: string[]) => {
+    if (!userIds.length) return;
+
+    // キャッシュ有効期限（5分）
+    const CACHE_TTL = 5 * 60 * 1000;
+    const now = new Date();
+    const uncachedIds = userIds.filter(id => {
+      const cached = userValidationCache.get(id);
+      if (!cached) return true;
+      return now.getTime() - cached.lastChecked.getTime() > CACHE_TTL;
+    });
+
+    if (uncachedIds.length === 0) {
+      // キャッシュから有効なユーザーIDを更新
+      const validIds = new Set<string>();
+      userIds.forEach(id => {
+        const cached = userValidationCache.get(id);
+        if (cached?.exists) {
+          validIds.add(id);
+        }
+      });
+      setValidUserIds(validIds);
+      return;
+    }
+
+    try {
+      // バッチでユーザー存在確認（APIエンドポイントがない場合は個別確認）
+      const validIds = new Set<string>();
+      const newCache = new Map(userValidationCache);
+
+      for (const userId of uncachedIds) {
+        try {
+          // ユーザー情報取得を試みる
+          const response = await secureFetch(`/api/users/${userId}/follow`, {
+            method: 'GET',
+          });
+
+          const exists = response && response.ok;
+          newCache.set(userId, { exists, lastChecked: now });
+          if (exists) {
+            validIds.add(userId);
+          }
+        } catch (err) {
+          // エラーが発生した場合はユーザーが存在しないと判断
+          newCache.set(userId, { exists: false, lastChecked: now });
+        }
+      }
+
+      // キャッシュ済みのIDも追加
+      userIds.forEach(id => {
+        if (!uncachedIds.includes(id)) {
+          const cached = userValidationCache.get(id);
+          if (cached?.exists) {
+            validIds.add(id);
+          }
+        }
+      });
+
+      setUserValidationCache(newCache);
+      setValidUserIds(validIds);
+    } catch (err) {
+      console.error('User validation error:', err);
+    }
+  }, [userValidationCache, secureFetch]);
+
+  // 投稿が更新された時にユーザー検証を実行
+  useEffect(() => {
+    const uniqueUserIds = [...new Set(posts.map(p => p.author._id).filter(Boolean))];
+    if (uniqueUserIds.length > 0) {
+      validateUserExists(uniqueUserIds);
+    }
+  }, [posts, validateUserExists]);
 
   // fetchDataRefを更新
   useEffect(() => {
@@ -873,12 +949,13 @@ export default function RealtimeBoard() {
                         <Typography variant="caption" data-testid={`post-author-${post._id}`}>
                           {post.author.name}
                         </Typography>
-                        {session?.user?.id && session.user.id !== post.author._id && (
+                        {session?.user?.id && session.user.id !== post.author._id && validUserIds.has(post.author._id) && (
                           <FollowButton
                             userId={post.author._id}
                             size="small"
                             compact={true}
                             initialFollowing={followingUsers.has(post.author._id)}
+                            disabled={!validUserIds.has(post.author._id)}
                             onFollowChange={(isFollowing) => {
                               setFollowingUsers(prev => {
                                 const newSet = new Set(prev);
@@ -891,6 +968,12 @@ export default function RealtimeBoard() {
                               });
                             }}
                           />
+                        )}
+                        {/* ユーザーが削除されている場合の表示 */}
+                        {session?.user?.id && session.user.id !== post.author._id && !validUserIds.has(post.author._id) && post.author._id && (
+                          <Typography variant="caption" sx={{ color: 'text.disabled', ml: 1 }}>
+                            (削除されたユーザー)
+                          </Typography>
                         )}
                       </Box>
                       

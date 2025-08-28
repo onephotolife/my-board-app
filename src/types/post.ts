@@ -94,7 +94,7 @@ export interface UpdatePostRequest {
  * ランタイム型検証ヘルパー
  * API応答の型安全性を保証
  */
-export function isUnifiedPost(obj: any): obj is UnifiedPost {
+export function isUnifiedPost(obj: unknown): obj is UnifiedPost {
   return (
     typeof obj === 'object' &&
     obj !== null &&
@@ -117,7 +117,27 @@ export function isUnifiedPost(obj: any): obj is UnifiedPost {
  * レガシーPost型から統一型への変換
  * 後方互換性のためのマイグレーション関数
  */
-export function normalizePostToUnified(post: any): UnifiedPost {
+// レガシー投稿データ型
+interface LegacyPost {
+  _id?: string | { toString(): string };
+  title?: string;
+  content?: string;
+  author?: string | { _id: string; name?: string; email?: string; avatar?: string | null };
+  authorInfo?: { _id?: string; name?: string; email?: string; avatar?: string | null };
+  category?: string;
+  tags?: string[];
+  status?: string;
+  likes?: (string | { toString(): string })[];
+  views?: number;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  canEdit?: boolean;
+  canDelete?: boolean;
+  isLikedByUser?: boolean;
+  isNew?: boolean;
+}
+
+export function normalizePostToUnified(post: LegacyPost): UnifiedPost {
   // 著者情報の正規化
   let author: UnifiedAuthor;
   

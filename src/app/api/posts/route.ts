@@ -9,6 +9,12 @@ import { checkRateLimit, createErrorResponse, AuthUser } from '@/lib/middleware/
 import { createPostSchema, postFilterSchema, sanitizePostInput, formatValidationErrors } from '@/lib/validations/post';
 import { broadcastEvent } from '@/lib/socket/socket-manager';
 import { normalizePostDocuments, normalizePostDocument } from '@/lib/api/post-normalizer';
+import { 
+  CreatePostRequestSchema, 
+  PostFilterSchema,
+  validateCreateRequest,
+  validatePostFilter
+} from '@/schemas/post.schema';
 
 // ページネーションのデフォルト値
 const DEFAULT_PAGE = 1;

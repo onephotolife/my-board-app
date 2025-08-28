@@ -2,11 +2,18 @@
  * API層のPost正規化ユーティリティ
  * データベースから取得したPostを統一型(UnifiedPost)形式に変換
  * 
- * @phase Phase 2 - API Layer Normalization
+ * @phase Phase 3 - Zod Schema Integration
  * @created 2025-08-28
+ * @updated 2025-08-28
  */
 
 import { UnifiedPost, UnifiedAuthor } from '@/types/post';
+import { 
+  UnifiedPostSchema, 
+  parseMongoDocument,
+  validatePost,
+  type ValidationResult 
+} from '@/schemas/post.schema';
 
 /**
  * MongoDB DocumentからUnifiedPost形式への変換
@@ -136,7 +143,7 @@ export function normalizePostFromSocketEvent(eventData: any): UnifiedPost {
  * @param requestData - APIリクエストのボディデータ
  * @returns 検証済みのリクエストデータ
  */
-export function validateAndNormalizePostRequest(requestData: any): {
+export function validateAndNormalizePostRequest(requestData: PostRequestData): {
   title: string;
   content: string;
   category?: string;

@@ -1,0 +1,194 @@
+{
+  "timestamp": "2025-08-28T00:51:41.823Z",
+  "summary": {
+    "totalFilesChecked": 8,
+    "directlyAffected": 0,
+    "indirectlyAffected": 4,
+    "notAffected": 4,
+    "errors": 0,
+    "highRisk": 0,
+    "mediumRisk": 0,
+    "lowRisk": 4
+  },
+  "riskLevels": {
+    "high": [],
+    "medium": [],
+    "low": [
+      {
+        "file": "src/components/PostCardWithFollow.tsx",
+        "reason": "影響は限定的です"
+      },
+      {
+        "file": "src/components/RealtimeBoard.tsx",
+        "reason": "影響は限定的です"
+      },
+      {
+        "file": "src/lib/api/sns-api.ts",
+        "reason": "影響は限定的です"
+      },
+      {
+        "file": "src/components/UserCard.tsx",
+        "reason": "影響は限定的です"
+      }
+    ]
+  },
+  "recommendations": [
+    {
+      "priority": "高",
+      "action": "統合テストの実施",
+      "details": [
+        "• /board ページでのフォロー機能テスト",
+        "• 複数ユーザー間のフォロー/アンフォロー動作確認",
+        "• エラーハンドリングの確認"
+      ]
+    }
+  ],
+  "details": {
+    "directlyAffected": [],
+    "indirectlyAffected": [
+      {
+        "file": "src/components/PostCardWithFollow.tsx",
+        "category": "indirect",
+        "description": "投稿カード（FollowButtonを使用）",
+        "findings": [
+          {
+            "type": "success",
+            "message": "FollowButtonインポート",
+            "impact": "dependency"
+          }
+        ]
+      },
+      {
+        "file": "src/components/RealtimeBoard.tsx",
+        "category": "indirect",
+        "description": "リアルタイム掲示板（FollowButtonを使用）",
+        "findings": [
+          {
+            "type": "success",
+            "message": "FollowButtonインポート",
+            "impact": "dependency"
+          },
+          {
+            "type": "success",
+            "message": "DELETEメソッド使用",
+            "impact": "method-change"
+          },
+          {
+            "type": "success",
+            "message": "POSTメソッド使用",
+            "impact": "method-usage"
+          },
+          {
+            "type": "success",
+            "message": "エラーハンドリング",
+            "impact": "error-handling"
+          }
+        ]
+      },
+      {
+        "file": "src/lib/api/sns-api.ts",
+        "category": "indirect",
+        "description": "SNS API ヘルパー",
+        "findings": [
+          {
+            "type": "success",
+            "message": "新APIパス使用",
+            "impact": "required"
+          },
+          {
+            "type": "success",
+            "message": "DELETEメソッド使用",
+            "impact": "method-change"
+          },
+          {
+            "type": "success",
+            "message": "POSTメソッド使用",
+            "impact": "method-usage"
+          },
+          {
+            "type": "success",
+            "message": "エラーハンドリング",
+            "impact": "error-handling"
+          }
+        ]
+      },
+      {
+        "file": "src/components/UserCard.tsx",
+        "category": "indirect",
+        "description": "ユーザーカード（FollowButtonを使用する可能性）",
+        "findings": [
+          {
+            "type": "success",
+            "message": "FollowButtonインポート",
+            "impact": "dependency"
+          }
+        ]
+      }
+    ],
+    "notAffected": [
+      {
+        "file": "src/components/FollowButton.tsx",
+        "category": "direct",
+        "description": "フォローボタンコンポーネント（修正対象）",
+        "findings": [
+          {
+            "type": "success",
+            "message": "新APIパス使用",
+            "impact": "required"
+          },
+          {
+            "type": "success",
+            "message": "DELETEメソッド使用",
+            "impact": "method-change"
+          },
+          {
+            "type": "success",
+            "message": "POSTメソッド使用",
+            "impact": "method-usage"
+          },
+          {
+            "type": "success",
+            "message": "エラーハンドリング",
+            "impact": "error-handling"
+          }
+        ]
+      },
+      {
+        "file": "src/app/api/users/[userId]/follow/route.ts",
+        "category": "api",
+        "description": "フォローAPI実装",
+        "findings": [
+          {
+            "type": "success",
+            "message": "新APIパス使用",
+            "impact": "required"
+          },
+          {
+            "type": "success",
+            "message": "エラーハンドリング",
+            "impact": "error-handling"
+          }
+        ]
+      },
+      {
+        "file": "src/app/board/page.tsx",
+        "category": "page",
+        "description": "掲示板ページ",
+        "findings": []
+      },
+      {
+        "file": "src/app/test-follow/page.tsx",
+        "category": "page",
+        "description": "フォロー機能テストページ",
+        "findings": [
+          {
+            "type": "success",
+            "message": "FollowButtonインポート",
+            "impact": "dependency"
+          }
+        ]
+      }
+    ],
+    "errors": []
+  }
+}

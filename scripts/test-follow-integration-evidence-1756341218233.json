@@ -1,0 +1,52 @@
+{
+  "timestamp": "2025-08-28T00:33:38.233Z",
+  "environment": "http://localhost:3000",
+  "summary": {
+    "total": 20,
+    "passed": 18,
+    "failed": 1,
+    "warnings": 1
+  },
+  "details": {
+    "components": {
+      "passed": [
+        "FollowButton: APIパスが正しい",
+        "FollowButton: メソッド切り替えロジック",
+        "FollowButton: secureFetch使用",
+        "FollowButton: 旧APIパスが削除済み",
+        "PostCardWithFollow: FollowButtonインポート確認",
+        "PostCardWithFollow: FollowButton使用確認",
+        "PostCardWithFollow: userId伝達確認",
+        "sns-api: followApi定義確認",
+        "sns-api: APIパス確認",
+        "sns-api: 旧APIパス削除確認"
+      ],
+      "failed": [
+        "FollowButton: エラーハンドリングが未実装"
+      ],
+      "warnings": []
+    },
+    "api": {
+      "passed": [
+        "旧パス（削除確認）: 404",
+        "フォロー状態取得: 401",
+        "フォロー実行: 403",
+        "アンフォロー実行: 403"
+      ],
+      "failed": [],
+      "warnings": []
+    },
+    "integration": {
+      "passed": [
+        "APIパス整合性: 統一確認",
+        "エラーハンドリング: エラー状態管理",
+        "エラーハンドリング: エラー表示UI",
+        "エラーハンドリング: エラーログ"
+      ],
+      "failed": [],
+      "warnings": [
+        "エラーハンドリング: try-catch未確認"
+      ]
+    }
+  }
+}

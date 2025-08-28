@@ -1,0 +1,145 @@
+Error: Cannot find module '@faker-js/faker/locale/ja'
+Require stack:
+- /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/board-comprehensive.spec.ts
+- /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/playwright/lib/transform/transform.js
+- /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/playwright/lib/common/configLoader.js
+- /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/playwright/lib/program.js
+- /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/@playwright/test/cli.js
+
+   at board-comprehensive.spec.ts:2
+
+  1 | import { test, expect, Page } from '@playwright/test';
+> 2 | import { faker } from '@faker-js/faker/locale/ja';
+    | ^
+  3 |
+  4 | /**
+  5 |  * 掲示板機能の包括的E2Eテスト
+    at Object.<anonymous> (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/board-comprehensive.spec.ts:2:1)
+
+Error: Cannot find module '../fixtures/test-users'
+Require stack:
+- /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/profile-improvements.spec.ts
+- /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/playwright/lib/transform/transform.js
+- /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/playwright/lib/common/configLoader.js
+- /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/playwright/lib/program.js
+- /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/@playwright/test/cli.js
+
+   at profile-improvements.spec.ts:2
+
+  1 | import { test, expect } from '@playwright/test';
+> 2 | import { testUsers } from '../fixtures/test-users';
+    | ^
+  3 |
+  4 | /**
+  5 |  * 🎯 25人天才エンジニア会議による包括的プロフィール改善テスト
+    at Object.<anonymous> (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/profile-improvements.spec.ts:2:1)
+
+Cannot use({ defaultBrowserType }) in a describe group, because it forces a new worker.
+Make it top-level in the test file or put in the configuration file.
+
+   at responsive.spec.ts:257
+
+  255 |   // 向き変更のテスト（モバイルデバイスのみ）
+  256 |   test.describe('画面回転', () => {
+> 257 |     test.use(devices['iPhone 12']);
+      |          ^
+  258 |
+  259 |     test('縦向きから横向きへの変更', async ({ page, context }) => {
+  260 |       await page.goto('/board');
+
+[1A[2K{
+  "config": {
+    "configFile": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/playwright.config.ts",
+    "rootDir": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {},
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "line"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.55.0",
+    "workers": 1,
+    "webServer": {
+      "command": "npm run dev",
+      "url": "http://localhost:3000",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
+  },
+  "suites": [],
+  "errors": [
+    {
+      "message": "Error: Cannot find module '@faker-js/faker/locale/ja'\nRequire stack:\n- /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/board-comprehensive.spec.ts\n- /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/playwright/lib/transform/transform.js\n- /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/playwright/lib/common/configLoader.js\n- /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/playwright/lib/program.js\n- /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/@playwright/test/cli.js",
+      "stack": "Error: Cannot find module '@faker-js/faker/locale/ja'\nRequire stack:\n- /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/board-comprehensive.spec.ts\n- /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/playwright/lib/transform/transform.js\n- /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/playwright/lib/common/configLoader.js\n- /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/playwright/lib/program.js\n- /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/@playwright/test/cli.js\n    at Object.<anonymous> (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/board-comprehensive.spec.ts:2:1)",
+      "location": {
+        "file": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/board-comprehensive.spec.ts",
+        "column": 1,
+        "line": 2
+      },
+      "snippet": "\u001b[90m   at \u001b[39mboard-comprehensive.spec.ts:2\n\n  1 | import { test, expect, Page } from '@playwright/test';\n> 2 | import { faker } from '@faker-js/faker/locale/ja';\n    | ^\n  3 |\n  4 | /**\n  5 |  * 掲示板機能の包括的E2Eテスト"
+    },
+    {
+      "message": "Error: Cannot find module '../fixtures/test-users'\nRequire stack:\n- /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/profile-improvements.spec.ts\n- /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/playwright/lib/transform/transform.js\n- /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/playwright/lib/common/configLoader.js\n- /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/playwright/lib/program.js\n- /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/@playwright/test/cli.js",
+      "stack": "Error: Cannot find module '../fixtures/test-users'\nRequire stack:\n- /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/profile-improvements.spec.ts\n- /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/playwright/lib/transform/transform.js\n- /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/playwright/lib/common/configLoader.js\n- /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/playwright/lib/program.js\n- /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/node_modules/@playwright/test/cli.js\n    at Object.<anonymous> (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/profile-improvements.spec.ts:2:1)",
+      "location": {
+        "file": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/profile-improvements.spec.ts",
+        "column": 1,
+        "line": 2
+      },
+      "snippet": "\u001b[90m   at \u001b[39mprofile-improvements.spec.ts:2\n\n  1 | import { test, expect } from '@playwright/test';\n> 2 | import { testUsers } from '../fixtures/test-users';\n    | ^\n  3 |\n  4 | /**\n  5 |  * 🎯 25人天才エンジニア会議による包括的プロフィール改善テスト"
+    },
+    {
+      "message": "Cannot use({ defaultBrowserType }) in a describe group, because it forces a new worker.\nMake it top-level in the test file or put in the configuration file.",
+      "location": {
+        "file": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/responsive.spec.ts",
+        "line": 257,
+        "column": 10
+      },
+      "snippet": "\u001b[90m   at \u001b[39mresponsive.spec.ts:257\n\n  255 |   // 向き変更のテスト（モバイルデバイスのみ）\n  256 |   test.describe('画面回転', () => {\n> 257 |     test.use(devices['iPhone 12']);\n      |          ^\n  258 |\n  259 |     test('縦向きから横向きへの変更', async ({ page, context }) => {\n  260 |       await page.goto('/board');"
+    }
+  ],
+  "stats": {
+    "startTime": "2025-08-28T00:48:40.136Z",
+    "duration": 587.015,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "timestamp": "2025-08-28T00:31:06.531Z",
+  "version": "v2",
+  "environment": "http://localhost:3000",
+  "testUserId": "test-user-123",
+  "results": {
+    "total": 9,
+    "passed": 8,
+    "warnings": 0,
+    "failed": 1
+  },
+  "details": {
+    "passed": [
+      "旧APIパスは無効化確認",
+      "GET /api/users/[userId]/follow エンドポイント確認",
+      "POST /api/users/[userId]/follow エンドポイント確認",
+      "DELETE /api/users/[userId]/follow エンドポイント確認",
+      "旧APIパスは削除確認",
+      "新APIパスは設定確認",
+      "unfollowパスは未使用（正しい）",
+      "メソッド切り替えロジック確認"
+    ],
+    "failed": [
+      "unfollowパスが予期せぬステータス 403"
+    ],
+    "warnings": []
+  },
+  "apiSpec": {
+    "follow": "POST /api/users/[userId]/follow",
+    "unfollow": "DELETE /api/users/[userId]/follow",
+    "getStatus": "GET /api/users/[userId]/follow"
+  }
+}

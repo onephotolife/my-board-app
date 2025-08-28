@@ -60,12 +60,11 @@ export default function FollowButton({
     setError(null);
     
     try {
-      const endpoint = isFollowing
-        ? `/api/sns/users/${userId}/unfollow`
-        : `/api/sns/users/${userId}/follow`;
+      const endpoint = `/api/users/${userId}/follow`;
+      const method = isFollowing ? 'DELETE' : 'POST';
       
       const response = await secureFetch(endpoint, {
-        method: 'POST',
+        method: method,
       });
 
       if (!response) {

@@ -1,0 +1,355 @@
+
+> my-board-app@0.1.0 predev
+> npm run kill-port
+
+
+> my-board-app@0.1.0 kill-port
+> lsof -ti:3000 | xargs kill -9 2>/dev/null || echo 'Port 3000 is free'
+
+
+> my-board-app@0.1.0 dev
+> node server.js
+
+> Ready on http://localhost:3000
+> Socket.io support enabled
+ ✓ Compiled /middleware in 428ms (255 modules)
+ ○ Compiling / ...
+ ✓ Compiled / in 8.8s (1776 modules)
+ GET / 200 in 9245ms
+ GET / 200 in 83ms
+ GET / 200 in 52ms
+ ✓ Compiled in 374ms (765 modules)
+ ✓ Compiled in 176ms (765 modules)
+ GET / 200 in 46ms
+ GET / 200 in 44ms
+🔍 Middleware: 保護されたパス: /board
+🍪 [Middleware Debug] クッキーヘッダー: null
+🎫 Middleware: トークン状態: {
+  exists: false,
+  id: undefined,
+  email: undefined,
+  emailVerified: undefined,
+  pathname: '/board',
+  timestamp: '2025-08-28T00:49:42.983Z'
+}
+🚫 Middleware: 未認証のためリダイレクト: http://localhost:3000/auth/signin?callbackUrl=%2Fboard
+🍪 [Middleware Auth Debug] クッキーヘッダー: null
+🔍 [Middleware] 認証ページアクセス: {
+  pathname: '/auth/signin',
+  hasToken: false,
+  tokenId: undefined,
+  emailVerified: undefined,
+  callbackUrl: '/board',
+  timestamp: '2025-08-28T00:49:42.995Z'
+}
+ ○ Compiling /auth/signin ...
+ ✓ Compiled /auth/signin in 712ms (1777 modules)
+ GET /auth/signin?callbackUrl=%2Fboard 200 in 961ms
+ ○ Compiling /api/auth/[...nextauth] ...
+ ✓ Compiled /api/auth/[...nextauth] in 1680ms (2091 modules)
+ POST /api/performance 201 in 1815ms
+ POST /api/performance 201 in 1815ms
+ GET /api/csrf 200 in 2184ms
+ POST /api/performance 201 in 18ms
+ POST /api/performance 201 in 30ms
+ POST /api/performance 201 in 24ms
+ POST /api/performance 201 in 24ms
+[next-auth][warn][DEBUG_ENABLED] 
+https://next-auth.js.org/warnings#debug_enabled
+ GET /api/auth/session 200 in 2778ms
+🔍 Middleware: 保護されたパス: /board
+🍪 [Middleware Debug] クッキーヘッダー: null
+🎫 Middleware: トークン状態: {
+  exists: false,
+  id: undefined,
+  email: undefined,
+  emailVerified: undefined,
+  pathname: '/board',
+  timestamp: '2025-08-28T00:49:55.970Z'
+}
+🚫 Middleware: 未認証のためリダイレクト: http://localhost:3000/auth/signin?callbackUrl=%2Fboard
+🍪 [Middleware Auth Debug] クッキーヘッダー: null
+🔍 [Middleware] 認証ページアクセス: {
+  pathname: '/auth/signin',
+  hasToken: false,
+  tokenId: undefined,
+  emailVerified: undefined,
+  callbackUrl: '/board',
+  timestamp: '2025-08-28T00:49:55.982Z'
+}
+ GET /auth/signin?callbackUrl=%2Fboard 200 in 259ms
+ POST /api/performance 201 in 22ms
+ POST /api/performance 201 in 42ms
+ GET /api/csrf 200 in 29ms
+ GET /api/auth/session 200 in 31ms
+ POST /api/performance 201 in 20ms
+ POST /api/performance 201 in 33ms
+ POST /api/performance 201 in 32ms
+ POST /api/performance 201 in 21ms
+🔍 Middleware: 保護されたパス: /board
+🍪 [Middleware Debug] クッキーヘッダー: null
+🎫 Middleware: トークン状態: {
+  exists: false,
+  id: undefined,
+  email: undefined,
+  emailVerified: undefined,
+  pathname: '/board',
+  timestamp: '2025-08-28T00:50:01.793Z'
+}
+🚫 Middleware: 未認証のためリダイレクト: http://localhost:3000/auth/signin?callbackUrl=%2Fboard
+🍪 [Middleware Auth Debug] クッキーヘッダー: null
+🔍 [Middleware] 認証ページアクセス: {
+  pathname: '/auth/signin',
+  hasToken: false,
+  tokenId: undefined,
+  emailVerified: undefined,
+  callbackUrl: '/board',
+  timestamp: '2025-08-28T00:50:01.801Z'
+}
+ GET /auth/signin?callbackUrl=%2Fboard 200 in 70ms
+ POST /api/performance 201 in 23ms
+ POST /api/performance 201 in 31ms
+ GET /api/csrf 200 in 28ms
+ GET /api/auth/session 200 in 29ms
+ POST /api/performance 201 in 18ms
+ POST /api/performance 201 in 27ms
+ POST /api/performance 201 in 21ms
+ POST /api/performance 201 in 21ms
+🌐 [Redirect callback v4]: {
+  url: 'http://localhost:3000/dashboard',
+  baseUrl: 'http://localhost:3000'
+}
+🔄 [Server Redirect] same origin URL: http://localhost:3000/dashboard
+🎫 [JWT v4]: {
+  hasUser: false,
+  hasToken: true,
+  userId: undefined,
+  tokenId: '68ad36cbfd831a5fbd96b575'
+}
+📊 [Session v4]: {
+  hasSession: true,
+  hasToken: true,
+  tokenId: '68ad36cbfd831a5fbd96b575',
+  emailVerified: true
+}
+ GET /api/auth/session 200 in 22ms
+🌐 [Redirect callback v4]: {
+  url: 'http://localhost:3000/dashboard',
+  baseUrl: 'http://localhost:3000'
+}
+🔄 [Server Redirect] same origin URL: http://localhost:3000/dashboard
+🎫 [JWT v4]: {
+  hasUser: false,
+  hasToken: true,
+  userId: undefined,
+  tokenId: '68ad36cbfd831a5fbd96b575'
+}
+📊 [Session v4]: {
+  hasSession: true,
+  hasToken: true,
+  tokenId: '68ad36cbfd831a5fbd96b575',
+  emailVerified: true
+}
+ GET /api/auth/session 200 in 13ms
+ ○ Compiling /api/profile ...
+ ✓ Compiled /api/profile in 828ms (2076 modules)
+🔓 [API Security] オプショナル認証チェック開始
+🔐 [API Security] メール確認済みセッションチェック開始
+[next-auth][warn][DEBUG_ENABLED] 
+https://next-auth.js.org/warnings#debug_enabled
+🌐 [Redirect callback v4]: {
+  url: 'http://localhost:3000/dashboard',
+  baseUrl: 'http://localhost:3000'
+}
+🔄 [Server Redirect] same origin URL: http://localhost:3000/dashboard
+🌐 [Redirect callback v4]: {
+  url: 'http://localhost:3000/dashboard',
+  baseUrl: 'http://localhost:3000'
+}
+🔄 [Server Redirect] same origin URL: http://localhost:3000/dashboard
+🌐 [Redirect callback v4]: {
+  url: 'http://localhost:3000/dashboard',
+  baseUrl: 'http://localhost:3000'
+}
+🔄 [Server Redirect] same origin URL: http://localhost:3000/dashboard
+🎫 [JWT v4]: {
+  hasUser: false,
+  hasToken: true,
+  userId: undefined,
+  tokenId: '68ad36cbfd831a5fbd96b575'
+}
+📊 [Session v4]: {
+  hasSession: true,
+  hasToken: true,
+  tokenId: '68ad36cbfd831a5fbd96b575',
+  emailVerified: true
+}
+🎫 [JWT v4]: {
+  hasUser: false,
+  hasToken: true,
+  userId: undefined,
+  tokenId: '68ad36cbfd831a5fbd96b575'
+}
+📊 [Session v4]: {
+  hasSession: true,
+  hasToken: true,
+  tokenId: '68ad36cbfd831a5fbd96b575',
+  emailVerified: true
+}
+🎫 [JWT v4]: {
+  hasUser: false,
+  hasToken: true,
+  userId: undefined,
+  tokenId: '68ad36cbfd831a5fbd96b575'
+}
+📊 [Session v4]: {
+  hasSession: true,
+  hasToken: true,
+  tokenId: '68ad36cbfd831a5fbd96b575',
+  emailVerified: true
+}
+🔍 [API Security] オプショナルセッション状態: {
+  hasSession: true,
+  hasUser: true,
+  email: 'one.photolife+111@gmail.com',
+  emailVerified: true
+}
+🔍 [API Security] セッション状態: {
+  hasSession: true,
+  hasUser: true,
+  email: 'one.photolife+111@gmail.com',
+  emailVerified: true,
+  timestamp: '2025-08-28T00:50:42.186Z'
+}
+✅ [API Security] 認証成功: one.photolife+111@gmail.com
+MongoDB connected successfully
+🔍 [Batch Follow Status] Request: {
+  requestUserId: '68ad36cbfd831a5fbd96b575',
+  targetUserIds: [
+    '68a818205d927f6b75413c56',
+    '68a8176840abde7f4273e6e9',
+    '68a817542d683a50b97c20b2',
+    '68a816974d583357364d1188',
+    '68a81606ad0864284c5021ec'
+  ],
+  count: 5
+}
+[CSRF] Token mismatch: {
+  cookieTokenSample: '241aa2dffe...',
+  headerTokenSample: 'b972655226...',
+  path: '/api/follow/status/batch',
+  method: 'POST'
+}
+CSRF token validation failed: /api/follow/status/batch
+[AUDIT] CSRF_VIOLATION: {
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Mobile Safari/537.36',
+  pathname: '/api/follow/status/batch',
+  method: 'POST',
+  severity: 'CRITICAL'
+}
+ GET /api/user/permissions 200 in 984ms
+ GET /api/profile 200 in 986ms
+✅ [Batch Follow Status] Response: {
+  requestUserId: '68ad36cbfd831a5fbd96b575',
+  followingCount: 0,
+  followingIds: []
+}
+ POST /api/follow/status/batch 200 in 988ms
+🔓 [API Security] オプショナル認証チェック開始
+🌐 [Redirect callback v4]: {
+  url: 'http://localhost:3000/dashboard',
+  baseUrl: 'http://localhost:3000'
+}
+🔄 [Server Redirect] same origin URL: http://localhost:3000/dashboard
+🎫 [JWT v4]: {
+  hasUser: false,
+  hasToken: true,
+  userId: undefined,
+  tokenId: '68ad36cbfd831a5fbd96b575'
+}
+📊 [Session v4]: {
+  hasSession: true,
+  hasToken: true,
+  tokenId: '68ad36cbfd831a5fbd96b575',
+  emailVerified: true
+}
+🔍 [API Security] オプショナルセッション状態: {
+  hasSession: true,
+  hasUser: true,
+  email: 'one.photolife+111@gmail.com',
+  emailVerified: true
+}
+🔐 [API Security] メール確認済みセッションチェック開始
+🌐 [Redirect callback v4]: {
+  url: 'http://localhost:3000/dashboard',
+  baseUrl: 'http://localhost:3000'
+}
+🔄 [Server Redirect] same origin URL: http://localhost:3000/dashboard
+🎫 [JWT v4]: {
+  hasUser: false,
+  hasToken: true,
+  userId: undefined,
+  tokenId: '68ad36cbfd831a5fbd96b575'
+}
+📊 [Session v4]: {
+  hasSession: true,
+  hasToken: true,
+  tokenId: '68ad36cbfd831a5fbd96b575',
+  emailVerified: true
+}
+🔍 [API Security] セッション状態: {
+  hasSession: true,
+  hasUser: true,
+  email: 'one.photolife+111@gmail.com',
+  emailVerified: true,
+  timestamp: '2025-08-28T00:50:42.277Z'
+}
+✅ [API Security] 認証成功: one.photolife+111@gmail.com
+ GET /api/user/permissions 200 in 35ms
+ GET /api/profile 200 in 37ms
+ ✓ Compiled /_not-found in 434ms (2077 modules)
+ GET /api/sns/users/test-user/follow 404 in 643ms
+ ✓ Compiled /api/users/[userId]/follow in 383ms (2079 modules)
+[next-auth][warn][DEBUG_ENABLED] 
+https://next-auth.js.org/warnings#debug_enabled
+ GET /api/users/test-user/follow 401 in 879ms
+[CSRF] Missing tokens: {
+  hasCookie: false,
+  hasHeader: false,
+  hasSession: false,
+  cookieTokenSample: 'null',
+  headerTokenSample: 'null',
+  sessionTokenSample: 'null',
+  path: '/api/users/test-user/follow',
+  method: 'POST'
+}
+CSRF token validation failed: /api/users/test-user/follow
+[AUDIT] CSRF_VIOLATION: {
+  ip: '::1',
+  userAgent: null,
+  pathname: '/api/users/test-user/follow',
+  method: 'POST',
+  severity: 'CRITICAL'
+}
+[CSRF] Missing tokens: {
+  hasCookie: false,
+  hasHeader: false,
+  hasSession: false,
+  cookieTokenSample: 'null',
+  headerTokenSample: 'null',
+  sessionTokenSample: 'null',
+  path: '/api/users/test-user/follow',
+  method: 'DELETE'
+}
+CSRF token validation failed: /api/users/test-user/follow
+[AUDIT] CSRF_VIOLATION: {
+  ip: '::1',
+  userAgent: null,
+  pathname: '/api/users/test-user/follow',
+  method: 'DELETE',
+  severity: 'CRITICAL'
+}
+ ✓ Compiled in 377ms (770 modules)
+ ✓ Compiled in 182ms (770 modules)
+ ✓ Compiled in 200ms (770 modules)

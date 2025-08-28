@@ -1,0 +1,1368 @@
+
+Running 9 tests using 1 worker
+
+[1A[2K[1/9] [chromium] › tests/e2e/follow.spec.ts:102:7 › フォロー機能E2Eテスト › フォローボタンが表示される
+[1A[2K  1) [chromium] › tests/e2e/follow.spec.ts:102:7 › フォロー機能E2Eテスト › フォローボタンが表示される ────────────────────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m()[22m failed
+
+    Locator:  locator('button[data-testid="follow-button"]').first()
+    Expected: visible
+    Received: <element(s) not found>
+    Timeout:  10000ms
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 10000ms[22m
+    [2m  - waiting for locator('button[data-testid="follow-button"]').first()[22m
+
+
+      108 |     
+      109 |     // ボタンの存在確認（タイムアウト10秒）
+    > 110 |     await expect(followButton).toBeVisible({ timeout: 10000 });
+          |                                ^
+      111 |     
+      112 |     // ボタンテキスト確認
+      113 |     const buttonText = await followButton.textContent();
+        at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:110:32
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/follow-フォロー機能E2Eテスト-フォローボタンが表示される-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/follow-フォロー機能E2Eテスト-フォローボタンが表示される-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/follow-フォロー機能E2Eテスト-フォローボタンが表示される-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/follow-フォロー機能E2Eテスト-フォローボタンが表示される-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/follow-フォロー機能E2Eテスト-フォローボタンが表示される-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K[2/9] [chromium] › tests/e2e/follow.spec.ts:117:7 › フォロー機能E2Eテスト › 未認証状態でフォローボタンが機能しない
+[1A[2K[3/9] [chromium] › tests/e2e/follow.spec.ts:135:7 › フォロー機能E2Eテスト › 認証済みユーザーがフォロー/アンフォロー操作できる
+[1A[2K  2) [chromium] › tests/e2e/follow.spec.ts:135:7 › フォロー機能E2Eテスト › 認証済みユーザーがフォロー/アンフォロー操作できる ────────
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at mockLogin (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:26:14)
+        at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:137:11
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/follow-フォロー機能E2Eテスト-認証済みユーザーがフォロー-アンフォロー操作できる-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/follow-フォロー機能E2Eテスト-認証済みユーザーがフォロー-アンフォロー操作できる-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/follow-フォロー機能E2Eテスト-認証済みユーザーがフォロー-アンフォロー操作できる-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/follow-フォロー機能E2Eテスト-認証済みユーザーがフォロー-アンフォロー操作できる-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K[4/9] [chromium] › tests/e2e/follow.spec.ts:175:7 › フォロー機能E2Eテスト › 複数のフォローボタンが独立して動作する
+[1A[2K  3) [chromium] › tests/e2e/follow.spec.ts:175:7 › フォロー機能E2Eテスト › 複数のフォローボタンが独立して動作する ──────────────
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at mockLogin (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:26:14)
+        at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:176:11
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/follow-フォロー機能E2Eテスト-複数のフォローボタンが独立して動作する-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/follow-フォロー機能E2Eテスト-複数のフォローボタンが独立して動作する-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/follow-フォロー機能E2Eテスト-複数のフォローボタンが独立して動作する-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/follow-フォロー機能E2Eテスト-複数のフォローボタンが独立して動作する-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K[5/9] [chromium] › tests/e2e/follow.spec.ts:204:7 › フォロー機能E2Eテスト › ネットワークエラー時のエラーハンドリング
+[1A[2K  4) [chromium] › tests/e2e/follow.spec.ts:204:7 › フォロー機能E2Eテスト › ネットワークエラー時のエラーハンドリング ─────────────
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at mockLogin (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:26:14)
+        at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:205:11
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/follow-フォロー機能E2Eテスト-ネットワークエラー時のエラーハンドリング-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/follow-フォロー機能E2Eテスト-ネットワークエラー時のエラーハンドリング-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/follow-フォロー機能E2Eテスト-ネットワークエラー時のエラーハンドリング-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/follow-フォロー機能E2Eテスト-ネットワークエラー時のエラーハンドリング-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K[6/9] [chromium] › tests/e2e/follow.spec.ts:240:7 › フォロー機能E2Eテスト › ページリロード後もフォロー状態が維持される
+[1A[2K  5) [chromium] › tests/e2e/follow.spec.ts:240:7 › フォロー機能E2Eテスト › ページリロード後もフォロー状態が維持される ────────────
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at mockLogin (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:26:14)
+        at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:241:11
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/follow-フォロー機能E2Eテスト-ページリロード後もフォロー状態が維持される-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/follow-フォロー機能E2Eテスト-ページリロード後もフォロー状態が維持される-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/follow-フォロー機能E2Eテスト-ページリロード後もフォロー状態が維持される-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/follow-フォロー機能E2Eテスト-ページリロード後もフォロー状態が維持される-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K[7/9] [chromium] › tests/e2e/follow.spec.ts:294:7 › パフォーマンステスト › フォローボタンの応答性能
+[1A[2K  6) [chromium] › tests/e2e/follow.spec.ts:294:7 › パフォーマンステスト › フォローボタンの応答性能 ───────────────────────
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at mockLogin (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:26:14)
+        at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:295:11
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/follow-パフォーマンステスト-フォローボタンの応答性能-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/follow-パフォーマンステスト-フォローボタンの応答性能-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/follow-パフォーマンステスト-フォローボタンの応答性能-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/follow-パフォーマンステスト-フォローボタンの応答性能-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K[8/9] [chromium] › tests/e2e/follow.spec.ts:329:7 › アクセシビリティテスト › フォローボタンのaria-label確認
+[1A[2K  7) [chromium] › tests/e2e/follow.spec.ts:329:7 › アクセシビリティテスト › フォローボタンのaria-label確認 ──────────────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m()[22m failed
+
+    Locator:  locator('button[data-testid="follow-button"]').first()
+    Expected: visible
+    Received: <element(s) not found>
+    Timeout:  10000ms
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 10000ms[22m
+    [2m  - waiting for locator('button[data-testid="follow-button"]').first()[22m
+
+
+      331 |     
+      332 |     const followButton = page.locator('button[data-testid="follow-button"]').first();
+    > 333 |     await expect(followButton).toBeVisible({ timeout: 10000 });
+          |                                ^
+      334 |     
+      335 |     // aria-labelの確認
+      336 |     const ariaLabel = await followButton.getAttribute('aria-label');
+        at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:333:32
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/follow-アクセシビリティテスト-フォローボタンのaria-label確認-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/follow-アクセシビリティテスト-フォローボタンのaria-label確認-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/follow-アクセシビリティテスト-フォローボタンのaria-label確認-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/follow-アクセシビリティテスト-フォローボタンのaria-label確認-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/follow-アクセシビリティテスト-フォローボタンのaria-label確認-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K[9/9] [chromium] › tests/e2e/follow.spec.ts:340:7 › アクセシビリティテスト › キーボード操作でフォローボタンを操作できる
+[1A[2K  8) [chromium] › tests/e2e/follow.spec.ts:340:7 › アクセシビリティテスト › キーボード操作でフォローボタンを操作できる ─────────────
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at mockLogin (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:26:14)
+        at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:341:11
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/follow-アクセシビリティテスト-キーボード操作でフォローボタンを操作できる-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/follow-アクセシビリティテスト-キーボード操作でフォローボタンを操作できる-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/follow-アクセシビリティテスト-キーボード操作でフォローボタンを操作できる-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/follow-アクセシビリティテスト-キーボード操作でフォローボタンを操作できる-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K  8 failed
+    [chromium] › tests/e2e/follow.spec.ts:102:7 › フォロー機能E2Eテスト › フォローボタンが表示される ─────────────────────
+    [chromium] › tests/e2e/follow.spec.ts:135:7 › フォロー機能E2Eテスト › 認証済みユーザーがフォロー/アンフォロー操作できる ─────────
+    [chromium] › tests/e2e/follow.spec.ts:175:7 › フォロー機能E2Eテスト › 複数のフォローボタンが独立して動作する ───────────────
+    [chromium] › tests/e2e/follow.spec.ts:204:7 › フォロー機能E2Eテスト › ネットワークエラー時のエラーハンドリング ──────────────
+    [chromium] › tests/e2e/follow.spec.ts:240:7 › フォロー機能E2Eテスト › ページリロード後もフォロー状態が維持される ─────────────
+    [chromium] › tests/e2e/follow.spec.ts:294:7 › パフォーマンステスト › フォローボタンの応答性能 ────────────────────────
+    [chromium] › tests/e2e/follow.spec.ts:329:7 › アクセシビリティテスト › フォローボタンのaria-label確認 ───────────────
+    [chromium] › tests/e2e/follow.spec.ts:340:7 › アクセシビリティテスト › キーボード操作でフォローボタンを操作できる ──────────────
+  1 passed (31.9s)
+{
+  "config": {
+    "configFile": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/playwright.config.ts",
+    "rootDir": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "line"
+      ],
+      [
+        "json"
+      ],
+      [
+        "junit"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.55.0",
+    "workers": 1,
+    "webServer": {
+      "command": "npm run dev",
+      "url": "http://localhost:3000",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "follow.spec.ts",
+      "file": "follow.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "フォロー機能E2Eテスト",
+          "file": "follow.spec.ts",
+          "line": 96,
+          "column": 6,
+          "specs": [
+            {
+              "title": "フォローボタンが表示される",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 12441,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m failed\n\nLocator:  locator('button[data-testid=\"follow-button\"]').first()\nExpected: visible\nReceived: <element(s) not found>\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('button[data-testid=\"follow-button\"]').first()\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m failed\n\nLocator:  locator('button[data-testid=\"follow-button\"]').first()\nExpected: visible\nReceived: <element(s) not found>\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('button[data-testid=\"follow-button\"]').first()\u001b[22m\n\n    at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:110:32",
+                        "location": {
+                          "file": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts",
+                          "column": 32,
+                          "line": 110
+                        },
+                        "snippet": "  108 |     \n  109 |     // ボタンの存在確認（タイムアウト10秒）\n> 110 |     await expect(followButton).toBeVisible({ timeout: 10000 });\n      |                                ^\n  111 |     \n  112 |     // ボタンテキスト確認\n  113 |     const buttonText = await followButton.textContent();"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts",
+                            "column": 32,
+                            "line": 110
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m failed\n\nLocator:  locator('button[data-testid=\"follow-button\"]').first()\nExpected: visible\nReceived: <element(s) not found>\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('button[data-testid=\"follow-button\"]').first()\u001b[22m\n\n\n  108 |     \n  109 |     // ボタンの存在確認（タイムアウト10秒）\n> 110 |     await expect(followButton).toBeVisible({ timeout: 10000 });\n      |                                ^\n  111 |     \n  112 |     // ボタンテキスト確認\n  113 |     const buttonText = await followButton.textContent();\n    at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:110:32"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-28T00:49:42.395Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/follow-フォロー機能E2Eテスト-フォローボタンが表示される-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/follow-フォロー機能E2Eテスト-フォローボタンが表示される-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/follow-フォロー機能E2Eテスト-フォローボタンが表示される-chromium/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/follow-フォロー機能E2Eテスト-フォローボタンが表示される-chromium/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts",
+                        "column": 32,
+                        "line": 110
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "1e2bdb6f6fbc3d67c557-78e716c44ea37e590ce9",
+              "file": "follow.spec.ts",
+              "line": 102,
+              "column": 7
+            },
+            {
+              "title": "未認証状態でフォローボタンが機能しない",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1526,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-28T00:49:55.714Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/follow-フォロー機能E2Eテスト-未認証状態でフォローボタンが機能しない-chromium/trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1e2bdb6f6fbc3d67c557-72d3d906463cddfd322c",
+              "file": "follow.spec.ts",
+              "line": 117,
+              "column": 7
+            },
+            {
+              "title": "認証済みユーザーがフォロー/アンフォロー操作できる",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 143,
+                      "error": {
+                        "message": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:293:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)",
+                        "stack": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:293:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at UtilityScript.evaluate (<anonymous>:293:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at mockLogin (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:26:14)\n    at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:137:11",
+                        "location": {
+                          "file": "<anonymous>",
+                          "column": 16,
+                          "line": 293
+                        }
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "<anonymous>",
+                            "column": 16,
+                            "line": 293
+                          },
+                          "message": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:293:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at UtilityScript.evaluate (<anonymous>:293:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at mockLogin (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:26:14)\n    at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:137:11"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-28T00:49:57.420Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/follow-フォロー機能E2Eテスト-認証済みユーザーがフォロー-アンフォロー操作できる-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/follow-フォロー機能E2Eテスト-認証済みユーザーがフォロー-アンフォロー操作できる-chromium/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/follow-フォロー機能E2Eテスト-認証済みユーザーがフォロー-アンフォロー操作できる-chromium/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "<anonymous>",
+                        "column": 16,
+                        "line": 293
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "1e2bdb6f6fbc3d67c557-d2f27ae12e266f84a128",
+              "file": "follow.spec.ts",
+              "line": 135,
+              "column": 7
+            },
+            {
+              "title": "複数のフォローボタンが独立して動作する",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 213,
+                      "error": {
+                        "message": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:293:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)",
+                        "stack": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:293:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at UtilityScript.evaluate (<anonymous>:293:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at mockLogin (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:26:14)\n    at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:176:11",
+                        "location": {
+                          "file": "<anonymous>",
+                          "column": 16,
+                          "line": 293
+                        }
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "<anonymous>",
+                            "column": 16,
+                            "line": 293
+                          },
+                          "message": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:293:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at UtilityScript.evaluate (<anonymous>:293:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at mockLogin (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:26:14)\n    at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:176:11"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-28T00:49:58.105Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/follow-フォロー機能E2Eテスト-複数のフォローボタンが独立して動作する-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/follow-フォロー機能E2Eテスト-複数のフォローボタンが独立して動作する-chromium/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/follow-フォロー機能E2Eテスト-複数のフォローボタンが独立して動作する-chromium/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "<anonymous>",
+                        "column": 16,
+                        "line": 293
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "1e2bdb6f6fbc3d67c557-b0373e85a83ae74ce87d",
+              "file": "follow.spec.ts",
+              "line": 175,
+              "column": 7
+            },
+            {
+              "title": "ネットワークエラー時のエラーハンドリング",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 244,
+                      "error": {
+                        "message": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:293:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)",
+                        "stack": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:293:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at UtilityScript.evaluate (<anonymous>:293:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at mockLogin (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:26:14)\n    at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:205:11",
+                        "location": {
+                          "file": "<anonymous>",
+                          "column": 16,
+                          "line": 293
+                        }
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "<anonymous>",
+                            "column": 16,
+                            "line": 293
+                          },
+                          "message": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:293:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at UtilityScript.evaluate (<anonymous>:293:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at mockLogin (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:26:14)\n    at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:205:11"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-28T00:49:58.964Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/follow-フォロー機能E2Eテスト-ネットワークエラー時のエラーハンドリング-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/follow-フォロー機能E2Eテスト-ネットワークエラー時のエラーハンドリング-chromium/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/follow-フォロー機能E2Eテスト-ネットワークエラー時のエラーハンドリング-chromium/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "<anonymous>",
+                        "column": 16,
+                        "line": 293
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "1e2bdb6f6fbc3d67c557-a407ac7979f59786d09b",
+              "file": "follow.spec.ts",
+              "line": 204,
+              "column": 7
+            },
+            {
+              "title": "ページリロード後もフォロー状態が維持される",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 246,
+                      "error": {
+                        "message": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:293:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)",
+                        "stack": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:293:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at UtilityScript.evaluate (<anonymous>:293:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at mockLogin (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:26:14)\n    at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:241:11",
+                        "location": {
+                          "file": "<anonymous>",
+                          "column": 16,
+                          "line": 293
+                        }
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "<anonymous>",
+                            "column": 16,
+                            "line": 293
+                          },
+                          "message": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:293:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at UtilityScript.evaluate (<anonymous>:293:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at mockLogin (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:26:14)\n    at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:241:11"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-28T00:49:59.858Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/follow-フォロー機能E2Eテスト-ページリロード後もフォロー状態が維持される-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/follow-フォロー機能E2Eテスト-ページリロード後もフォロー状態が維持される-chromium/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/follow-フォロー機能E2Eテスト-ページリロード後もフォロー状態が維持される-chromium/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "<anonymous>",
+                        "column": 16,
+                        "line": 293
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "1e2bdb6f6fbc3d67c557-82ac32a54479da6f3e46",
+              "file": "follow.spec.ts",
+              "line": 240,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "パフォーマンステスト",
+          "file": "follow.spec.ts",
+          "line": 293,
+          "column": 6,
+          "specs": [
+            {
+              "title": "フォローボタンの応答性能",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 175,
+                      "error": {
+                        "message": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:293:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)",
+                        "stack": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:293:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at UtilityScript.evaluate (<anonymous>:293:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at mockLogin (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:26:14)\n    at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:295:11",
+                        "location": {
+                          "file": "<anonymous>",
+                          "column": 16,
+                          "line": 293
+                        }
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "<anonymous>",
+                            "column": 16,
+                            "line": 293
+                          },
+                          "message": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:293:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at UtilityScript.evaluate (<anonymous>:293:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at mockLogin (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:26:14)\n    at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:295:11"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-28T00:50:00.742Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/follow-パフォーマンステスト-フォローボタンの応答性能-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/follow-パフォーマンステスト-フォローボタンの応答性能-chromium/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/follow-パフォーマンステスト-フォローボタンの応答性能-chromium/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "<anonymous>",
+                        "column": 16,
+                        "line": 293
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "1e2bdb6f6fbc3d67c557-75dafdd33217b571b24b",
+              "file": "follow.spec.ts",
+              "line": 294,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "アクセシビリティテスト",
+          "file": "follow.spec.ts",
+          "line": 328,
+          "column": 6,
+          "specs": [
+            {
+              "title": "フォローボタンのaria-label確認",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 6,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 11036,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m failed\n\nLocator:  locator('button[data-testid=\"follow-button\"]').first()\nExpected: visible\nReceived: <element(s) not found>\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('button[data-testid=\"follow-button\"]').first()\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m failed\n\nLocator:  locator('button[data-testid=\"follow-button\"]').first()\nExpected: visible\nReceived: <element(s) not found>\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('button[data-testid=\"follow-button\"]').first()\u001b[22m\n\n    at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:333:32",
+                        "location": {
+                          "file": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts",
+                          "column": 32,
+                          "line": 333
+                        },
+                        "snippet": "  331 |     \n  332 |     const followButton = page.locator('button[data-testid=\"follow-button\"]').first();\n> 333 |     await expect(followButton).toBeVisible({ timeout: 10000 });\n      |                                ^\n  334 |     \n  335 |     // aria-labelの確認\n  336 |     const ariaLabel = await followButton.getAttribute('aria-label');"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts",
+                            "column": 32,
+                            "line": 333
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m failed\n\nLocator:  locator('button[data-testid=\"follow-button\"]').first()\nExpected: visible\nReceived: <element(s) not found>\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('button[data-testid=\"follow-button\"]').first()\u001b[22m\n\n\n  331 |     \n  332 |     const followButton = page.locator('button[data-testid=\"follow-button\"]').first();\n> 333 |     await expect(followButton).toBeVisible({ timeout: 10000 });\n      |                                ^\n  334 |     \n  335 |     // aria-labelの確認\n  336 |     const ariaLabel = await followButton.getAttribute('aria-label');\n    at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:333:32"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-28T00:50:01.542Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/follow-アクセシビリティテスト-フォローボタンのaria-label確認-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/follow-アクセシビリティテスト-フォローボタンのaria-label確認-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/follow-アクセシビリティテスト-フォローボタンのaria-label確認-chromium/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/follow-アクセシビリティテスト-フォローボタンのaria-label確認-chromium/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts",
+                        "column": 32,
+                        "line": 333
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "1e2bdb6f6fbc3d67c557-201c46e651909d93618c",
+              "file": "follow.spec.ts",
+              "line": 329,
+              "column": 7
+            },
+            {
+              "title": "キーボード操作でフォローボタンを操作できる",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 7,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 175,
+                      "error": {
+                        "message": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:293:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)",
+                        "stack": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:293:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at UtilityScript.evaluate (<anonymous>:293:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at mockLogin (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:26:14)\n    at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:341:11",
+                        "location": {
+                          "file": "<anonymous>",
+                          "column": 16,
+                          "line": 293
+                        }
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "<anonymous>",
+                            "column": 16,
+                            "line": 293
+                          },
+                          "message": "Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.\n    at UtilityScript.evaluate (<anonymous>:293:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at UtilityScript.evaluate (<anonymous>:293:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at mockLogin (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:26:14)\n    at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:341:11"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-28T00:50:13.338Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/follow-アクセシビリティテスト-キーボード操作でフォローボタンを操作できる-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/follow-アクセシビリティテスト-キーボード操作でフォローボタンを操作できる-chromium/video.webm"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/test-results/follow-アクセシビリティテスト-キーボード操作でフォローボタンを操作できる-chromium/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "<anonymous>",
+                        "column": 16,
+                        "line": 293
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "1e2bdb6f6fbc3d67c557-7585a888c68b58e600a5",
+              "file": "follow.spec.ts",
+              "line": 340,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-08-28T00:49:41.796Z",
+    "duration": 31918.866,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 8,
+    "flaky": 0
+  }
+}
+<testsuites id="" name="" tests="9" failures="8" skipped="0" errors="0" time="31.918866">
+<testsuite name="follow.spec.ts" timestamp="2025-08-28T00:49:41.931Z" hostname="chromium" tests="9" failures="8" skipped="0" time="26.199" errors="0">
+<testcase name="フォロー機能E2Eテスト › フォローボタンが表示される" classname="follow.spec.ts" time="12.441">
+<failure message="follow.spec.ts:102:7 フォローボタンが表示される" type="FAILURE">
+<![CDATA[  [chromium] › follow.spec.ts:102:7 › フォロー機能E2Eテスト › フォローボタンが表示される ─────────────────────────────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator:  locator('button[data-testid="follow-button"]').first()
+    Expected: visible
+    Received: <element(s) not found>
+    Timeout:  10000ms
+
+    Call log:
+      - Expect "toBeVisible" with timeout 10000ms
+      - waiting for locator('button[data-testid="follow-button"]').first()
+
+
+      108 |     
+      109 |     // ボタンの存在確認（タイムアウト10秒）
+    > 110 |     await expect(followButton).toBeVisible({ timeout: 10000 });
+          |                                ^
+      111 |     
+      112 |     // ボタンテキスト確認
+      113 |     const buttonText = await followButton.textContent();
+        at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:110:32
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/follow-フォロー機能E2Eテスト-フォローボタンが表示される-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/follow-フォロー機能E2Eテスト-フォローボタンが表示される-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../test-results/follow-フォロー機能E2Eテスト-フォローボタンが表示される-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../test-results/follow-フォロー機能E2Eテスト-フォローボタンが表示される-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../test-results/follow-フォロー機能E2Eテスト-フォローボタンが表示される-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results/follow-フォロー機能E2Eテスト-フォローボタンが表示される-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|test-results/follow-フォロー機能E2Eテスト-フォローボタンが表示される-chromium/video.webm]]
+
+[[ATTACHMENT|test-results/follow-フォロー機能E2Eテスト-フォローボタンが表示される-chromium/error-context.md]]
+
+[[ATTACHMENT|test-results/follow-フォロー機能E2Eテスト-フォローボタンが表示される-chromium/trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="フォロー機能E2Eテスト › 未認証状態でフォローボタンが機能しない" classname="follow.spec.ts" time="1.526">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results/follow-フォロー機能E2Eテスト-未認証状態でフォローボタンが機能しない-chromium/trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="フォロー機能E2Eテスト › 認証済みユーザーがフォロー/アンフォロー操作できる" classname="follow.spec.ts" time="0.143">
+<failure message="follow.spec.ts:135:7 認証済みユーザーがフォロー/アンフォロー操作できる" type="FAILURE">
+<![CDATA[  [chromium] › follow.spec.ts:135:7 › フォロー機能E2Eテスト › 認証済みユーザーがフォロー/アンフォロー操作できる ─────────────────────
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at mockLogin (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:26:14)
+        at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:137:11
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/follow-フォロー機能E2Eテスト-認証済みユーザーがフォロー-アンフォロー操作できる-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/follow-フォロー機能E2Eテスト-認証済みユーザーがフォロー-アンフォロー操作できる-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../test-results/follow-フォロー機能E2Eテスト-認証済みユーザーがフォロー-アンフォロー操作できる-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../test-results/follow-フォロー機能E2Eテスト-認証済みユーザーがフォロー-アンフォロー操作できる-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results/follow-フォロー機能E2Eテスト-認証済みユーザーがフォロー-アンフォロー操作できる-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|test-results/follow-フォロー機能E2Eテスト-認証済みユーザーがフォロー-アンフォロー操作できる-chromium/video.webm]]
+
+[[ATTACHMENT|test-results/follow-フォロー機能E2Eテスト-認証済みユーザーがフォロー-アンフォロー操作できる-chromium/trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="フォロー機能E2Eテスト › 複数のフォローボタンが独立して動作する" classname="follow.spec.ts" time="0.213">
+<failure message="follow.spec.ts:175:7 複数のフォローボタンが独立して動作する" type="FAILURE">
+<![CDATA[  [chromium] › follow.spec.ts:175:7 › フォロー機能E2Eテスト › 複数のフォローボタンが独立して動作する ───────────────────────────
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at mockLogin (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:26:14)
+        at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:176:11
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/follow-フォロー機能E2Eテスト-複数のフォローボタンが独立して動作する-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/follow-フォロー機能E2Eテスト-複数のフォローボタンが独立して動作する-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../test-results/follow-フォロー機能E2Eテスト-複数のフォローボタンが独立して動作する-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../test-results/follow-フォロー機能E2Eテスト-複数のフォローボタンが独立して動作する-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results/follow-フォロー機能E2Eテスト-複数のフォローボタンが独立して動作する-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|test-results/follow-フォロー機能E2Eテスト-複数のフォローボタンが独立して動作する-chromium/video.webm]]
+
+[[ATTACHMENT|test-results/follow-フォロー機能E2Eテスト-複数のフォローボタンが独立して動作する-chromium/trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="フォロー機能E2Eテスト › ネットワークエラー時のエラーハンドリング" classname="follow.spec.ts" time="0.244">
+<failure message="follow.spec.ts:204:7 ネットワークエラー時のエラーハンドリング" type="FAILURE">
+<![CDATA[  [chromium] › follow.spec.ts:204:7 › フォロー機能E2Eテスト › ネットワークエラー時のエラーハンドリング ──────────────────────────
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at mockLogin (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:26:14)
+        at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:205:11
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/follow-フォロー機能E2Eテスト-ネットワークエラー時のエラーハンドリング-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/follow-フォロー機能E2Eテスト-ネットワークエラー時のエラーハンドリング-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../test-results/follow-フォロー機能E2Eテスト-ネットワークエラー時のエラーハンドリング-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../test-results/follow-フォロー機能E2Eテスト-ネットワークエラー時のエラーハンドリング-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results/follow-フォロー機能E2Eテスト-ネットワークエラー時のエラーハンドリング-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|test-results/follow-フォロー機能E2Eテスト-ネットワークエラー時のエラーハンドリング-chromium/video.webm]]
+
+[[ATTACHMENT|test-results/follow-フォロー機能E2Eテスト-ネットワークエラー時のエラーハンドリング-chromium/trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="フォロー機能E2Eテスト › ページリロード後もフォロー状態が維持される" classname="follow.spec.ts" time="0.246">
+<failure message="follow.spec.ts:240:7 ページリロード後もフォロー状態が維持される" type="FAILURE">
+<![CDATA[  [chromium] › follow.spec.ts:240:7 › フォロー機能E2Eテスト › ページリロード後もフォロー状態が維持される ─────────────────────────
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at mockLogin (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:26:14)
+        at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:241:11
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/follow-フォロー機能E2Eテスト-ページリロード後もフォロー状態が維持される-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/follow-フォロー機能E2Eテスト-ページリロード後もフォロー状態が維持される-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../test-results/follow-フォロー機能E2Eテスト-ページリロード後もフォロー状態が維持される-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../test-results/follow-フォロー機能E2Eテスト-ページリロード後もフォロー状態が維持される-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results/follow-フォロー機能E2Eテスト-ページリロード後もフォロー状態が維持される-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|test-results/follow-フォロー機能E2Eテスト-ページリロード後もフォロー状態が維持される-chromium/video.webm]]
+
+[[ATTACHMENT|test-results/follow-フォロー機能E2Eテスト-ページリロード後もフォロー状態が維持される-chromium/trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="パフォーマンステスト › フォローボタンの応答性能" classname="follow.spec.ts" time="0.175">
+<failure message="follow.spec.ts:294:7 フォローボタンの応答性能" type="FAILURE">
+<![CDATA[  [chromium] › follow.spec.ts:294:7 › パフォーマンステスト › フォローボタンの応答性能 ────────────────────────────────────
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at mockLogin (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:26:14)
+        at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:295:11
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/follow-パフォーマンステスト-フォローボタンの応答性能-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/follow-パフォーマンステスト-フォローボタンの応答性能-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../test-results/follow-パフォーマンステスト-フォローボタンの応答性能-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../test-results/follow-パフォーマンステスト-フォローボタンの応答性能-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results/follow-パフォーマンステスト-フォローボタンの応答性能-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|test-results/follow-パフォーマンステスト-フォローボタンの応答性能-chromium/video.webm]]
+
+[[ATTACHMENT|test-results/follow-パフォーマンステスト-フォローボタンの応答性能-chromium/trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="アクセシビリティテスト › フォローボタンのaria-label確認" classname="follow.spec.ts" time="11.036">
+<failure message="follow.spec.ts:329:7 フォローボタンのaria-label確認" type="FAILURE">
+<![CDATA[  [chromium] › follow.spec.ts:329:7 › アクセシビリティテスト › フォローボタンのaria-label確認 ───────────────────────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator:  locator('button[data-testid="follow-button"]').first()
+    Expected: visible
+    Received: <element(s) not found>
+    Timeout:  10000ms
+
+    Call log:
+      - Expect "toBeVisible" with timeout 10000ms
+      - waiting for locator('button[data-testid="follow-button"]').first()
+
+
+      331 |     
+      332 |     const followButton = page.locator('button[data-testid="follow-button"]').first();
+    > 333 |     await expect(followButton).toBeVisible({ timeout: 10000 });
+          |                                ^
+      334 |     
+      335 |     // aria-labelの確認
+      336 |     const ariaLabel = await followButton.getAttribute('aria-label');
+        at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:333:32
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/follow-アクセシビリティテスト-フォローボタンのaria-label確認-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/follow-アクセシビリティテスト-フォローボタンのaria-label確認-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../test-results/follow-アクセシビリティテスト-フォローボタンのaria-label確認-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../test-results/follow-アクセシビリティテスト-フォローボタンのaria-label確認-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../test-results/follow-アクセシビリティテスト-フォローボタンのaria-label確認-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results/follow-アクセシビリティテスト-フォローボタンのaria-label確認-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|test-results/follow-アクセシビリティテスト-フォローボタンのaria-label確認-chromium/video.webm]]
+
+[[ATTACHMENT|test-results/follow-アクセシビリティテスト-フォローボタンのaria-label確認-chromium/error-context.md]]
+
+[[ATTACHMENT|test-results/follow-アクセシビリティテスト-フォローボタンのaria-label確認-chromium/trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="アクセシビリティテスト › キーボード操作でフォローボタンを操作できる" classname="follow.spec.ts" time="0.175">
+<failure message="follow.spec.ts:340:7 キーボード操作でフォローボタンを操作できる" type="FAILURE">
+<![CDATA[  [chromium] › follow.spec.ts:340:7 › アクセシビリティテスト › キーボード操作でフォローボタンを操作できる ──────────────────────────
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at mockLogin (/Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:26:14)
+        at /Users/yoshitaka.yamagishi/Documents/projects/my-board-app/tests/e2e/follow.spec.ts:341:11
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../test-results/follow-アクセシビリティテスト-キーボード操作でフォローボタンを操作できる-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../test-results/follow-アクセシビリティテスト-キーボード操作でフォローボタンを操作できる-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../test-results/follow-アクセシビリティテスト-キーボード操作でフォローボタンを操作できる-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../test-results/follow-アクセシビリティテスト-キーボード操作でフォローボタンを操作できる-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results/follow-アクセシビリティテスト-キーボード操作でフォローボタンを操作できる-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|test-results/follow-アクセシビリティテスト-キーボード操作でフォローボタンを操作できる-chromium/video.webm]]
+
+[[ATTACHMENT|test-results/follow-アクセシビリティテスト-キーボード操作でフォローボタンを操作できる-chromium/trace.zip]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+</testsuites>

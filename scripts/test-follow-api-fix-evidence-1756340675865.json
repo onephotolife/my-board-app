@@ -1,0 +1,22 @@
+{
+  "timestamp": "2025-08-28T00:24:35.865Z",
+  "environment": "http://localhost:3000",
+  "results": {
+    "total": 5,
+    "passed": 4,
+    "warnings": 0,
+    "failed": 1
+  },
+  "details": {
+    "passed": [
+      "旧APIパスは無効化確認",
+      "新APIパスは有効",
+      "旧APIパスは削除確認",
+      "新APIパスは設定確認"
+    ],
+    "failed": [
+      "unfollowパスが予期せぬステータス 403"
+    ],
+    "warnings": []
+  }
+}

@@ -61,18 +61,50 @@ export async function GET(
       );
     }
     
-    // フォロー状態を確認
-    const isFollowing = await currentUser.isFollowing(userId);
-    
-    // ターゲットユーザーの情報を取得
-    const targetUser = await User.findById(userId)
-      .select('name email avatar bio followingCount followersCount');
-    
-    if (!targetUser) {
+    // ターゲットユーザーの情報を取得（フォロー状態確認前に実施）
+    let targetUser;
+    try {
+      targetUser = await User.findById(userId)
+        .select('name email avatar bio followingCount followersCount');
+    } catch (error: any) {
+      console.error(`[Follow API GET] Target user lookup error for ID ${userId}:`, {
+        error: error.message,
+        stack: error.stack,
+        timestamp: new Date().toISOString()
+      });
       return NextResponse.json(
-        { error: 'ターゲットユーザーが見つかりません' },
+        { 
+          error: 'ユーザーが見つかりません',
+          code: 'USER_NOT_FOUND' 
+        },
         { status: 404 }
       );
+    }
+    
+    if (!targetUser) {
+      console.warn(`[Follow API GET] Target user ${userId} does not exist`);
+      return NextResponse.json(
+        { 
+          error: 'ターゲットユーザーが見つかりません',
+          code: 'USER_NOT_FOUND'
+        },
+        { status: 404 }
+      );
+    }
+
+    // フォロー状態を確認
+    let isFollowing;
+    try {
+      isFollowing = await currentUser.isFollowing(userId);
+    } catch (error: any) {
+      console.error(`[Follow API GET] isFollowing check failed:`, {
+        currentUserId: currentUser._id,
+        targetUserId: userId,
+        error: error.message,
+        stack: error.stack
+      });
+      // フォロー状態確認に失敗した場合はfalseとして扱う
+      isFollowing = false;
     }
     
     // 相互フォロー状態を確認
@@ -154,11 +186,32 @@ export async function POST(
       );
     }
     
-    // ターゲットユーザーの存在確認
-    const targetUser = await User.findById(userId);
-    if (!targetUser) {
+    // ターゲットユーザーの存在確認（エラーハンドリング強化）
+    let targetUser;
+    try {
+      targetUser = await User.findById(userId);
+    } catch (error: any) {
+      console.error(`[Follow API POST] Target user lookup error for ID ${userId}:`, {
+        error: error.message,
+        stack: error.stack,
+        timestamp: new Date().toISOString()
+      });
       return NextResponse.json(
-        { error: 'フォロー対象のユーザーが見つかりません' },
+        { 
+          error: 'フォロー対象のユーザーが見つかりません',
+          code: 'USER_NOT_FOUND' 
+        },
+        { status: 404 }
+      );
+    }
+    
+    if (!targetUser) {
+      console.warn(`[Follow API POST] Target user ${userId} does not exist`);
+      return NextResponse.json(
+        { 
+          error: 'フォロー対象のユーザーが見つかりません',
+          code: 'USER_NOT_FOUND'
+        },
         { status: 404 }
       );
     }
@@ -274,9 +327,36 @@ export async function DELETE(
     // アンフォロー実行
     await currentUser.unfollow(userId);
     
-    // 更新後のユーザー情報を返す
-    const updatedTargetUser = await User.findById(userId)
-      .select('name email avatar bio followingCount followersCount');
+    // 更新後のユーザー情報を返す（エラーハンドリング追加）
+    let updatedTargetUser;
+    try {
+      updatedTargetUser = await User.findById(userId)
+        .select('name email avatar bio followingCount followersCount');
+    } catch (error: any) {
+      console.error(`[Follow API DELETE] Target user lookup error for ID ${userId}:`, {
+        error: error.message,
+        stack: error.stack,
+        timestamp: new Date().toISOString()
+      });
+      return NextResponse.json(
+        { 
+          error: 'アンフォロー対象のユーザーが見つかりません',
+          code: 'USER_NOT_FOUND' 
+        },
+        { status: 404 }
+      );
+    }
+    
+    if (!updatedTargetUser) {
+      console.warn(`[Follow API DELETE] Target user ${userId} does not exist after unfollow`);
+      return NextResponse.json(
+        { 
+          error: 'アンフォロー対象のユーザーが見つかりません',
+          code: 'USER_NOT_FOUND'
+        },
+        { status: 404 }
+      );
+    }
     
     return NextResponse.json({
       success: true,

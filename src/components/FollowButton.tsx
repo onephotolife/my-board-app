@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { 
   Button, 
   CircularProgress, 
@@ -19,6 +19,7 @@ import {
   sanitizeButtonProps,
   convertToV2Props 
 } from '@/types/mui-extensions';
+import { isValidObjectId, getObjectIdErrorMessage } from '@/utils/validators/objectId';
 
 // 現在はV1を使用（段階的移行のため）
 // 将来的にV2に完全移行予定
@@ -49,10 +50,32 @@ export default function FollowButton({
   const [showError, setShowError] = useState(false);
   const secureFetch = useSecureFetch();
 
+  // 優先度2実装: ObjectIDの事前検証
+  const isUserIdValid = useMemo(() => {
+    if (!userId) return false;
+    const valid = isValidObjectId(userId);
+    
+    if (!valid && process.env.NODE_ENV === 'development') {
+      console.warn(`[FollowButton] Invalid ObjectID detected: ${userId}`);
+    }
+    
+    return valid;
+  }, [userId]);
+
   const handleFollowToggle = useCallback(async () => {
     if (!userId) {
       console.error('FollowButton: userId is required');
       setError('ユーザーIDが必要です');
+      setShowError(true);
+      return;
+    }
+
+    // 優先度2実装: クライアント側でObjectID検証
+    // 無効なIDの場合はAPIリクエストを送信しない
+    if (!isUserIdValid) {
+      const errorMessage = getObjectIdErrorMessage(userId);
+      console.error(`FollowButton: Invalid ObjectID - ${errorMessage}`);
+      setError(errorMessage);
       setShowError(true);
       return;
     }
@@ -121,7 +144,7 @@ export default function FollowButton({
     } finally {
       setIsLoading(false);
     }
-  }, [userId, isFollowing, secureFetch, onFollowChange]);
+  }, [userId, isUserIdValid, isFollowing, secureFetch, onFollowChange]);
 
   const handleCloseError = useCallback(() => {
     setShowError(false);
@@ -159,7 +182,7 @@ export default function FollowButton({
     <>
       <Button
         onClick={handleFollowToggle}
-        disabled={isLoading || externalDisabled}
+        disabled={isLoading || externalDisabled || !isUserIdValid}
         variant={getButtonVariant()}
         color={getButtonColor()}
         size={safeProps.size || (compact ? 'small' : 'medium')}

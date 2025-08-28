@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, usePathname } from 'next/navigation';
 import AppLayout from '@/components/AppLayout';
+import { isValidObjectId, filterValidObjectIds } from '@/utils/validators/objectId';
 import {
   Container,
   Typography,
@@ -178,10 +179,26 @@ export default function RealtimeBoard() {
   const validateUserExists = useCallback(async (userIds: string[]) => {
     if (!userIds.length) return;
 
+    // 優先度2実装: クライアント側でObjectID検証
+    // 無効なIDは事前にフィルタリング
+    const validIds = filterValidObjectIds(userIds);
+    
+    if (process.env.NODE_ENV === 'development' && validIds.length < userIds.length) {
+      console.warn(
+        `[RealtimeBoard] Filtered invalid ObjectIDs: ${userIds.length - validIds.length} invalid IDs removed`
+      );
+    }
+
+    // 有効なIDのみで処理を継続
+    if (!validIds.length) {
+      setValidUserIds(new Set());
+      return;
+    }
+
     // キャッシュ有効期限（5分）
     const CACHE_TTL = 5 * 60 * 1000;
     const now = new Date();
-    const uncachedIds = userIds.filter(id => {
+    const uncachedIds = validIds.filter(id => {
       const cached = userValidationCache.get(id);
       if (!cached) return true;
       return now.getTime() - cached.lastChecked.getTime() > CACHE_TTL;
@@ -189,23 +206,29 @@ export default function RealtimeBoard() {
 
     if (uncachedIds.length === 0) {
       // キャッシュから有効なユーザーIDを更新
-      const validIds = new Set<string>();
-      userIds.forEach(id => {
+      const cachedValidIds = new Set<string>();
+      validIds.forEach(id => {
         const cached = userValidationCache.get(id);
         if (cached?.exists) {
-          validIds.add(id);
+          cachedValidIds.add(id);
         }
       });
-      setValidUserIds(validIds);
+      setValidUserIds(cachedValidIds);
       return;
     }
 
     try {
       // バッチでユーザー存在確認（APIエンドポイントがない場合は個別確認）
-      const validIds = new Set<string>();
+      const existingUserIds = new Set<string>();
       const newCache = new Map(userValidationCache);
 
       for (const userId of uncachedIds) {
+        // 優先度2: 無効なIDのAPI呼び出しを防止（二重チェック）
+        if (!isValidObjectId(userId)) {
+          console.warn(`[RealtimeBoard] Skipping invalid ObjectID: ${userId}`);
+          continue;
+        }
+
         try {
           // ユーザー情報取得を試みる
           const response = await secureFetch(`/api/users/${userId}/follow`, {
@@ -215,7 +238,7 @@ export default function RealtimeBoard() {
           const exists = response && response.ok;
           newCache.set(userId, { exists, lastChecked: now });
           if (exists) {
-            validIds.add(userId);
+            existingUserIds.add(userId);
           }
         } catch (err) {
           // エラーが発生した場合はユーザーが存在しないと判断
@@ -224,17 +247,17 @@ export default function RealtimeBoard() {
       }
 
       // キャッシュ済みのIDも追加
-      userIds.forEach(id => {
+      validIds.forEach(id => {
         if (!uncachedIds.includes(id)) {
           const cached = userValidationCache.get(id);
           if (cached?.exists) {
-            validIds.add(id);
+            existingUserIds.add(id);
           }
         }
       });
 
       setUserValidationCache(newCache);
-      setValidUserIds(validIds);
+      setValidUserIds(existingUserIds);
     } catch (err) {
       console.error('User validation error:', err);
     }

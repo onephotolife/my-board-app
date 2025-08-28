@@ -12,6 +12,7 @@ import dbConnect from '@/lib/mongodb';
 import User from '@/lib/models/User';
 import Follow from '@/lib/models/Follow';
 import { authOptions } from '@/lib/auth';
+import { isValidObjectId, debugObjectId } from '@/lib/validators/objectId';
 
 /**
  * フォロー状態を確認
@@ -23,6 +24,23 @@ export async function GET(
   try {
     // Next.js 15: paramsをawaitする
     const { userId } = await params;
+    
+    // デバッグログ追加
+    const idDebug = debugObjectId(userId);
+    console.log('[Follow API GET] ID validation:', idDebug);
+    
+    // ID形式の検証（400エラーとして返す）
+    if (!isValidObjectId(userId)) {
+      console.warn('[Follow API GET] Invalid ObjectID format:', idDebug);
+      return NextResponse.json(
+        { 
+          error: '無効なユーザーID形式です',
+          code: 'INVALID_OBJECT_ID_FORMAT',
+          details: `ID must be 24 character hex string, got ${idDebug.length} characters`
+        },
+        { status: 400 }
+      );
+    }
     
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
@@ -71,9 +89,19 @@ export async function GET(
     });
     
   } catch (error) {
-    console.error('フォロー状態確認エラー:', error);
+    const requestId = crypto.randomUUID();
+    console.error('[Follow API GET] Unexpected error:', {
+      error,
+      userId: (await params).userId,
+      requestId,
+      timestamp: new Date().toISOString()
+    });
     return NextResponse.json(
-      { error: 'サーバーエラーが発生しました' },
+      { 
+        error: 'サーバーエラーが発生しました',
+        code: 'INTERNAL_SERVER_ERROR',
+        requestId // トレース用
+      },
       { status: 500 }
     );
   }
@@ -89,6 +117,23 @@ export async function POST(
   try {
     // Next.js 15: paramsをawaitする
     const { userId } = await params;
+    
+    // デバッグログ追加
+    const idDebug = debugObjectId(userId);
+    console.log('[Follow API POST] ID validation:', idDebug);
+    
+    // ID形式の検証（400エラーとして返す）
+    if (!isValidObjectId(userId)) {
+      console.warn('[Follow API POST] Invalid ObjectID format:', idDebug);
+      return NextResponse.json(
+        { 
+          error: '無効なユーザーID形式です',
+          code: 'INVALID_OBJECT_ID_FORMAT',
+          details: `ID must be 24 character hex string, got ${idDebug.length} characters`
+        },
+        { status: 400 }
+      );
+    }
     
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
@@ -144,7 +189,14 @@ export async function POST(
     });
     
   } catch (error: any) {
-    console.error('フォローエラー:', error);
+    const requestId = crypto.randomUUID();
+    console.error('[Follow API POST] Error:', {
+      error: error.message || error,
+      userId: (await params).userId,
+      requestId,
+      timestamp: new Date().toISOString(),
+      stack: error.stack
+    });
     
     // エラーメッセージの判定
     if (error.message === '自分自身をフォローすることはできません') {
@@ -162,7 +214,11 @@ export async function POST(
     }
     
     return NextResponse.json(
-      { error: 'サーバーエラーが発生しました' },
+      { 
+        error: 'サーバーエラーが発生しました',
+        code: 'INTERNAL_SERVER_ERROR',
+        requestId // トレース用
+      },
       { status: 500 }
     );
   }
@@ -178,6 +234,23 @@ export async function DELETE(
   try {
     // Next.js 15: paramsをawaitする
     const { userId } = await params;
+    
+    // デバッグログ追加
+    const idDebug = debugObjectId(userId);
+    console.log('[Follow API DELETE] ID validation:', idDebug);
+    
+    // ID形式の検証（400エラーとして返す）
+    if (!isValidObjectId(userId)) {
+      console.warn('[Follow API DELETE] Invalid ObjectID format:', idDebug);
+      return NextResponse.json(
+        { 
+          error: '無効なユーザーID形式です',
+          code: 'INVALID_OBJECT_ID_FORMAT',
+          details: `ID must be 24 character hex string, got ${idDebug.length} characters`
+        },
+        { status: 400 }
+      );
+    }
     
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
@@ -215,7 +288,14 @@ export async function DELETE(
     });
     
   } catch (error: any) {
-    console.error('アンフォローエラー:', error);
+    const requestId = crypto.randomUUID();
+    console.error('[Follow API DELETE] Error:', {
+      error: error.message || error,
+      userId: (await params).userId,
+      requestId,
+      timestamp: new Date().toISOString(),
+      stack: error.stack
+    });
     
     if (error.message === 'フォローしていません') {
       return NextResponse.json(
@@ -225,7 +305,11 @@ export async function DELETE(
     }
     
     return NextResponse.json(
-      { error: 'サーバーエラーが発生しました' },
+      { 
+        error: 'サーバーエラーが発生しました',
+        code: 'INTERNAL_SERVER_ERROR',
+        requestId // トレース用
+      },
       { status: 500 }
     );
   }

@@ -111,3 +111,10 @@ server.log
 test-*.html
 test-*.tsx
 test-results*/
+
+# 開発中の一時ファイル
+middleware-priority1-patch.ts
+src/app/(main)/
+src/lib/security/csrf-sync.ts
+src/models/User.ts
+test-priority1-unit-results.json

@@ -17,6 +17,7 @@ import { useState } from 'react';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ForumIcon from '@mui/icons-material/Forum';
 import MenuIcon from '@mui/icons-material/Menu';
+import TimelineIcon from '@mui/icons-material/Timeline';
 
 import SlideDrawer from './SlideDrawer';
 
@@ -67,6 +68,14 @@ export default function ClientHeader() {
                 sx={{ display: { xs: 'none', sm: 'flex' } }}
               >
                 掲示板
+              </Button>
+              <Button 
+                color="inherit" 
+                href="/timeline"
+                startIcon={<TimelineIcon />}
+                sx={{ display: { xs: 'none', sm: 'flex' } }}
+              >
+                タイムライン
               </Button>
               <Button 
                 color="inherit" 

@@ -13,10 +13,25 @@ async function getAuthenticatedUser(req: NextRequest): Promise<AuthUser | null> 
   try {
     const token = await getToken({
       req,
-      secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
+      secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
+      secureCookie: process.env.NODE_ENV === 'production',
+      cookieName: process.env.NODE_ENV === 'production' 
+        ? '__Secure-next-auth.session-token' 
+        : 'next-auth.session-token'
+    });
+
+    console.log('[AUTH-DEBUG] Token validation:', {
+      hasToken: !!token,
+      environment: process.env.NODE_ENV,
+      secureCookie: process.env.NODE_ENV === 'production',
+      cookieName: process.env.NODE_ENV === 'production' 
+        ? '__Secure-next-auth.session-token' 
+        : 'next-auth.session-token',
+      timestamp: new Date().toISOString()
     });
 
     if (!token) {
+      console.log('[AUTH-DEBUG] No token found');
       return null;
     }
 

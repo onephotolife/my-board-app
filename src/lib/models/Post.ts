@@ -14,12 +14,23 @@ export interface IPost extends Document {
   likes: string[];
   tags: string[];
   category: 'general' | 'tech' | 'question' | 'discussion' | 'announcement';
+  // コメント機能拡張
+  commentCount: number;
+  lastCommentAt?: Date;
+  commentStats: {
+    total: number;
+    active: number;
+    deleted: number;
+    reported: number;
+  };
+  commentsEnabled: boolean;
   createdAt: Date;
   updatedAt: Date;
   deletedAt?: Date;
   // メソッド
   softDelete(): Promise<IPost>;
   incrementViews(): Promise<IPost>;
+  updateCommentCount(): Promise<IPost>;
 }
 
 // Postスキーマの定義
@@ -90,6 +101,26 @@ const PostSchema = new Schema<IPost>(
       type: Date,
       default: null,
     },
+    // コメント機能拡張フィールド
+    commentCount: {
+      type: Number,
+      default: 0,
+      min: [0, 'コメント数は0以上である必要があります'],
+    },
+    lastCommentAt: {
+      type: Date,
+      default: null,
+    },
+    commentStats: {
+      total: { type: Number, default: 0 },
+      active: { type: Number, default: 0 },
+      deleted: { type: Number, default: 0 },
+      reported: { type: Number, default: 0 },
+    },
+    commentsEnabled: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     timestamps: true,
@@ -145,6 +176,58 @@ PostSchema.methods.toggleLike = function(userId: string) {
     this.likes.push(userId);
   }
   return this.save();
+};
+
+// コメント統計更新メソッド
+PostSchema.methods.updateCommentCount = async function() {
+  try {
+    const Comment = mongoose.models.Comment;
+    if (!Comment) {
+      console.warn('[POST] Commentモデルが見つかりません。コメント統計をスキップ');
+      return this;
+    }
+
+    // アクティブコメント数
+    const activeCount = await Comment.countDocuments({
+      postId: this._id,
+      status: 'active'
+    });
+
+    // 統計情報の取得
+    const [totalCount, deletedCount, reportedCount] = await Promise.all([
+      Comment.countDocuments({ postId: this._id }),
+      Comment.countDocuments({ postId: this._id, status: 'deleted' }),
+      Comment.countDocuments({ postId: this._id, status: 'reported' })
+    ]);
+
+    // 最新コメントの取得
+    const lastComment = await Comment.findOne({
+      postId: this._id,
+      status: 'active'
+    }).sort({ createdAt: -1 });
+
+    // 統計情報の更新
+    this.commentCount = activeCount;
+    this.commentStats = {
+      total: totalCount,
+      active: activeCount,
+      deleted: deletedCount,
+      reported: reportedCount
+    };
+    this.lastCommentAt = lastComment?.createdAt || null;
+
+    console.log('[POST-DEBUG] Comment stats updated:', {
+      postId: this._id,
+      commentCount: this.commentCount,
+      stats: this.commentStats,
+      lastCommentAt: this.lastCommentAt
+    });
+
+    return this.save();
+  } catch (error) {
+    console.error('[POST-ERROR] Failed to update comment count:', error);
+    return this;
+  }
 };
 
 // 仮想プロパティ

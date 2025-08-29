@@ -36,6 +36,7 @@ import {
   AccountCircle as AccountCircleIcon,
   PrivacyTip as PrivacyTipIcon,
   Article as ArticleIcon,
+  Timeline as TimelineIcon,
 } from '@mui/icons-material';
 
 interface AppLayoutProps {
@@ -75,6 +76,12 @@ export default function AppLayout({ children, title, subtitle }: AppLayoutProps)
       icon: <ForumIcon />,
       path: '/board',
       color: 'success.light',
+    },
+    {
+      label: 'タイムライン',
+      icon: <TimelineIcon />,
+      path: '/timeline',
+      color: 'info.light',
     },
     {
       label: '新規投稿',

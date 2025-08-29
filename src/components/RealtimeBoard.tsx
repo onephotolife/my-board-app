@@ -485,45 +485,103 @@ export default function RealtimeBoard() {
 
   // いいねハンドラー
   const handleLike = async (postId: string) => {
+    // デバッグログ：事前検証
+    console.log('[LIKE-DEBUG] Pre-validation:', {
+      hasSession: !!session,
+      hasCSRFToken: !!csrfToken,
+      tokenPreview: csrfToken ? csrfToken.substring(0, 20) + '...' : 'null',
+      timestamp: new Date().toISOString()
+    });
+
+    // 解決策2: CSRFトークン初期化の保証強化
     if (!session) {
+      console.log('[LIKE-AUTH] No session, redirecting to signin');
       router.push('/auth/signin');
       return;
     }
+
+    if (!csrfToken) {
+      console.warn('[LIKE-CSRF] No CSRF token available, aborting');
+      alert('セキュリティトークンの初期化中です。しばらくお待ちください。');
+      return;
+    }
+
+    // デバッグログ追加
+    console.log('[LIKE-DEBUG] handleLike called:', {
+      postId,
+      session: !!session,
+      csrfToken: csrfToken ? csrfToken.substring(0, 20) + '...' : 'null',
+      timestamp: new Date().toISOString()
+    });
 
     try {
       const post = posts.find(p => p._id === postId);
       if (!post) return;
 
       const isLiked = post.isLikedByUser;
-      const endpoint = isLiked 
-        ? `/api/posts/${postId}/unlike`
-        : `/api/posts/${postId}/like`;
+      const endpoint = `/api/posts/${postId}/like`;
+      const method = isLiked ? 'DELETE' : 'POST';
+
+      // デバッグログ：リクエスト前
+      console.log('[LIKE-DEBUG] Request details:', {
+        endpoint,
+        method,
+        hasCSRFToken: !!csrfToken,
+        isLiked
+      });
 
       const response = await fetch(endpoint, {
-        method: 'POST',
+        method,
         headers: {
           'Content-Type': 'application/json',
+          ...(csrfToken && { 'x-csrf-token': csrfToken }),
         },
       });
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'いいねの処理に失敗しました');
+        throw new Error(error.error?.message || error.error || 'いいねの処理に失敗しました');
       }
 
       const data = await response.json();
+      
+      // デバッグログ：レスポンス
+      console.log('[LIKE-RESPONSE] Received:', {
+        status: response.status,
+        data: data
+      });
       
       // 楽観的UI更新
       setPosts(prevPosts => 
         prevPosts.map(p => 
           p._id === postId 
-            ? { ...p, likes: data.likes, isLikedByUser: !isLiked }
+            ? { ...p, likes: data.data?.likes || data.likes, isLikedByUser: !isLiked }
             : p
         )
       );
     } catch (err) {
-      console.error('Error toggling like:', err);
-      alert(err instanceof Error ? err.message : 'いいねの処理に失敗しました');
+      // 解決策1: エラーハンドリングの改善
+      console.error('[LIKE-ERROR] Error details:', {
+        error: err,
+        type: err instanceof Error ? err.constructor.name : typeof err,
+        message: err instanceof Error ? err.message : String(err),
+        stack: err instanceof Error ? err.stack : undefined,
+        timestamp: new Date().toISOString()
+      });
+      
+      let errorMessage = 'いいねの処理に失敗しました';
+      if (err instanceof Error) {
+        if (err.message.includes('CSRF')) {
+          errorMessage = 'セキュリティトークンの取得に失敗しました。ページを更新してください。';
+        } else if (err.message.includes('403')) {
+          errorMessage = '認証エラーです。再度ログインしてください。';
+        } else if (err.message.includes('404')) {
+          errorMessage = '投稿が見つかりません。';
+        } else {
+          errorMessage = err.message;
+        }
+      }
+      alert(errorMessage);
     }
   };
 
@@ -1000,7 +1058,28 @@ export default function RealtimeBoard() {
                     </Stack>
                     
                     <Stack direction="row" spacing={1}>
-                      {/* いいね機能削除 */}
+                      {/* いいね機能復元 */}
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <IconButton
+                          size="small"
+                          onClick={() => handleLike(post._id)}
+                          sx={{
+                            color: post.isLikedByUser ? modern2025Styles.colors.danger : 'text.secondary',
+                            '&:hover': {
+                              backgroundColor: 'rgba(239, 68, 68, 0.08)',
+                            },
+                          }}
+                        >
+                          {post.isLikedByUser ? (
+                            <FavoriteIcon fontSize="small" />
+                          ) : (
+                            <FavoriteBorderIcon fontSize="small" />
+                          )}
+                        </IconButton>
+                        <Typography variant="caption" sx={{ ml: 0.5 }}>
+                          {post.likes?.length || 0}
+                        </Typography>
+                      </Box>
                       
                       {(post.canEdit || post.canDelete) && (
                         <Stack direction="row" spacing={0.5}>
@@ -1036,7 +1115,7 @@ export default function RealtimeBoard() {
                           )}
                         </Stack>
                       )}
-
+                      
                       {/* <ReportButton postId={post._id} /> 通報ボタンを削除 */}
                     </Stack>
                   </Box>
@@ -1046,30 +1125,25 @@ export default function RealtimeBoard() {
           ))}
         </Grid>
       )}
-
+      
       {/* 無限スクロール用のセンチネル要素 */}
-      {hasMore && (
-        <Box 
+      {hasMore && !loading && (
+        <Box
           ref={sentinelRef}
-          sx={{ 
-            display: 'flex', 
-            justifyContent: 'center', 
-            mt: 4,
-            mb: 4,
-            minHeight: '60px',
-            alignItems: 'center'
+          sx={{
+            height: 100,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            mt: 2,
           }}
         >
-          {loadingMore && (
-            <CircularProgress 
-              size={30}
-              sx={{ color: modern2025Styles.colors.primary }}
-            />
-          )}
+          {loadingMore && <CircularProgress size={32} />}
         </Box>
       )}
+      
       </Container>
-    </RealtimeBoardWrapper>
-  </AppLayout>
+      </RealtimeBoardWrapper>
+    </AppLayout>
   );
-}
+} 

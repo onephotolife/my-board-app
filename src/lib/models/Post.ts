@@ -11,6 +11,7 @@ export interface IPost extends Document {
   };
   status: 'published' | 'draft' | 'deleted';
   views: number;
+  likes: string[];
   tags: string[];
   category: 'general' | 'tech' | 'question' | 'discussion' | 'announcement';
   createdAt: Date;
@@ -60,6 +61,16 @@ const PostSchema = new Schema<IPost>(
       type: Number,
       default: 0,
     },
+    likes: {
+      type: [String],
+      default: [],
+      validate: {
+        validator: function(likes: string[]) {
+          return likes.length <= 1000; // 最大1000いいねまで（パフォーマンス考慮）
+        },
+        message: 'いいねの上限に達しました',
+      },
+    },
     tags: {
       type: [String],
       default: [],
@@ -91,6 +102,7 @@ PostSchema.index({ 'author._id': 1 });
 PostSchema.index({ status: 1 });
 PostSchema.index({ tags: 1 });
 PostSchema.index({ category: 1 });
+PostSchema.index({ likes: 1 }); // いいね検索用
 PostSchema.index({ 'author._id': 1, createdAt: -1 }); // 複合インデックス
 
 // 静的メソッド

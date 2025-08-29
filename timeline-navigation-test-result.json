@@ -1,0 +1,353 @@
+{
+  "timestamp": "2025-08-29T05:53:50.079Z",
+  "authenticated": true,
+  "navigationAnalysis": {
+    "/": {
+      "navigationLinks": [],
+      "timelineLinks": [],
+      "sidebarLinks": [],
+      "headers": {
+        "modernHeader": false,
+        "clientHeader": false,
+        "appLayout": false,
+        "customHeader": true
+      },
+      "hasTimelineLink": false,
+      "hasTimelineInSidebar": false
+    },
+    "/dashboard": {
+      "navigationLinks": [],
+      "timelineLinks": [],
+      "sidebarLinks": [],
+      "headers": {
+        "modernHeader": false,
+        "clientHeader": false,
+        "appLayout": false,
+        "customHeader": true
+      },
+      "hasTimelineLink": false,
+      "hasTimelineInSidebar": false
+    },
+    "/board": {
+      "navigationLinks": [],
+      "timelineLinks": [],
+      "sidebarLinks": [],
+      "headers": {
+        "modernHeader": false,
+        "clientHeader": false,
+        "appLayout": false,
+        "customHeader": true
+      },
+      "hasTimelineLink": false,
+      "hasTimelineInSidebar": false
+    },
+    "/profile": {
+      "navigationLinks": [],
+      "timelineLinks": [],
+      "sidebarLinks": [],
+      "headers": {
+        "modernHeader": false,
+        "clientHeader": false,
+        "appLayout": false,
+        "customHeader": true
+      },
+      "hasTimelineLink": false,
+      "hasTimelineInSidebar": false
+    },
+    "/timeline": {
+      "navigationLinks": [],
+      "timelineLinks": [],
+      "sidebarLinks": [],
+      "headers": {
+        "modernHeader": false,
+        "clientHeader": false,
+        "appLayout": false,
+        "customHeader": true
+      },
+      "hasTimelineLink": false,
+      "hasTimelineInSidebar": false
+    }
+  },
+  "timelineAccess": {
+    "error": "'text,,,まだ投稿がありません,' is not a valid selector"
+  },
+  "debugLogs": [
+    {
+      "timestamp": "2025-08-29T05:53:45.430Z",
+      "category": "auth-start",
+      "data": {
+        "email": "one.photolife+1@gmail.com",
+        "baseUrl": "http://localhost:3000"
+      },
+      "test": "timeline-navigation-http"
+    },
+    {
+      "timestamp": "2025-08-29T05:53:45.456Z",
+      "category": "csrf-obtained",
+      "data": {
+        "token": "exists",
+        "cookies": "next-auth.csrf-token=0fa5e1f76e4326978c084a4b367e0..."
+      },
+      "test": "timeline-navigation-http"
+    },
+    {
+      "timestamp": "2025-08-29T05:53:45.567Z",
+      "category": "auth-response",
+      "data": {
+        "status": 200,
+        "hasSessionToken": true
+      },
+      "test": "timeline-navigation-http"
+    },
+    {
+      "timestamp": "2025-08-29T05:53:45.586Z",
+      "category": "session-verified",
+      "data": {
+        "hasUser": true,
+        "userEmail": "one.photolife+1@gmail.com"
+      },
+      "test": "timeline-navigation-http"
+    },
+    {
+      "timestamp": "2025-08-29T05:53:45.587Z",
+      "category": "nav-analysis-start",
+      "data": {
+        "path": "/",
+        "timestamp": "2025-08-29T05:53:45.587Z"
+      },
+      "test": "timeline-navigation-http"
+    },
+    {
+      "timestamp": "2025-08-29T05:53:46.101Z",
+      "category": "nav-elements-found",
+      "data": {
+        "path": "/",
+        "totalLinks": 14,
+        "navigationLinks": 0,
+        "timelineLinks": 0,
+        "muiButtons": 0,
+        "muiMenuItems": 0,
+        "muiListItems": 0,
+        "hasMuiDrawer": false
+      },
+      "test": "timeline-navigation-http"
+    },
+    {
+      "timestamp": "2025-08-29T05:53:46.103Z",
+      "category": "header-types",
+      "data": {
+        "modernHeader": false,
+        "clientHeader": false,
+        "appLayout": false,
+        "customHeader": true
+      },
+      "test": "timeline-navigation-http"
+    },
+    {
+      "timestamp": "2025-08-29T05:53:46.103Z",
+      "category": "sidebar-navigation",
+      "data": {
+        "sidebarLinksCount": 0,
+        "hasTimelineInSidebar": false,
+        "links": []
+      },
+      "test": "timeline-navigation-http"
+    },
+    {
+      "timestamp": "2025-08-29T05:53:46.103Z",
+      "category": "nav-analysis-start",
+      "data": {
+        "path": "/dashboard",
+        "timestamp": "2025-08-29T05:53:46.103Z"
+      },
+      "test": "timeline-navigation-http"
+    },
+    {
+      "timestamp": "2025-08-29T05:53:46.747Z",
+      "category": "nav-elements-found",
+      "data": {
+        "path": "/dashboard",
+        "totalLinks": 14,
+        "navigationLinks": 0,
+        "timelineLinks": 0,
+        "muiButtons": 0,
+        "muiMenuItems": 0,
+        "muiListItems": 0,
+        "hasMuiDrawer": false
+      },
+      "test": "timeline-navigation-http"
+    },
+    {
+      "timestamp": "2025-08-29T05:53:46.748Z",
+      "category": "header-types",
+      "data": {
+        "modernHeader": false,
+        "clientHeader": false,
+        "appLayout": false,
+        "customHeader": true
+      },
+      "test": "timeline-navigation-http"
+    },
+    {
+      "timestamp": "2025-08-29T05:53:46.748Z",
+      "category": "sidebar-navigation",
+      "data": {
+        "sidebarLinksCount": 0,
+        "hasTimelineInSidebar": false,
+        "links": []
+      },
+      "test": "timeline-navigation-http"
+    },
+    {
+      "timestamp": "2025-08-29T05:53:46.748Z",
+      "category": "nav-analysis-start",
+      "data": {
+        "path": "/board",
+        "timestamp": "2025-08-29T05:53:46.748Z"
+      },
+      "test": "timeline-navigation-http"
+    },
+    {
+      "timestamp": "2025-08-29T05:53:48.170Z",
+      "category": "nav-elements-found",
+      "data": {
+        "path": "/board",
+        "totalLinks": 14,
+        "navigationLinks": 0,
+        "timelineLinks": 0,
+        "muiButtons": 12,
+        "muiMenuItems": 0,
+        "muiListItems": 45,
+        "hasMuiDrawer": false
+      },
+      "test": "timeline-navigation-http"
+    },
+    {
+      "timestamp": "2025-08-29T05:53:48.172Z",
+      "category": "header-types",
+      "data": {
+        "modernHeader": false,
+        "clientHeader": false,
+        "appLayout": false,
+        "customHeader": true
+      },
+      "test": "timeline-navigation-http"
+    },
+    {
+      "timestamp": "2025-08-29T05:53:48.173Z",
+      "category": "sidebar-navigation",
+      "data": {
+        "sidebarLinksCount": 0,
+        "hasTimelineInSidebar": false,
+        "links": []
+      },
+      "test": "timeline-navigation-http"
+    },
+    {
+      "timestamp": "2025-08-29T05:53:48.174Z",
+      "category": "nav-analysis-start",
+      "data": {
+        "path": "/profile",
+        "timestamp": "2025-08-29T05:53:48.174Z"
+      },
+      "test": "timeline-navigation-http"
+    },
+    {
+      "timestamp": "2025-08-29T05:53:48.901Z",
+      "category": "nav-elements-found",
+      "data": {
+        "path": "/profile",
+        "totalLinks": 14,
+        "navigationLinks": 0,
+        "timelineLinks": 0,
+        "muiButtons": 0,
+        "muiMenuItems": 0,
+        "muiListItems": 0,
+        "hasMuiDrawer": false
+      },
+      "test": "timeline-navigation-http"
+    },
+    {
+      "timestamp": "2025-08-29T05:53:48.901Z",
+      "category": "header-types",
+      "data": {
+        "modernHeader": false,
+        "clientHeader": false,
+        "appLayout": false,
+        "customHeader": true
+      },
+      "test": "timeline-navigation-http"
+    },
+    {
+      "timestamp": "2025-08-29T05:53:48.901Z",
+      "category": "sidebar-navigation",
+      "data": {
+        "sidebarLinksCount": 0,
+        "hasTimelineInSidebar": false,
+        "links": []
+      },
+      "test": "timeline-navigation-http"
+    },
+    {
+      "timestamp": "2025-08-29T05:53:48.901Z",
+      "category": "nav-analysis-start",
+      "data": {
+        "path": "/timeline",
+        "timestamp": "2025-08-29T05:53:48.901Z"
+      },
+      "test": "timeline-navigation-http"
+    },
+    {
+      "timestamp": "2025-08-29T05:53:49.908Z",
+      "category": "nav-elements-found",
+      "data": {
+        "path": "/timeline",
+        "totalLinks": 14,
+        "navigationLinks": 0,
+        "timelineLinks": 0,
+        "muiButtons": 10,
+        "muiMenuItems": 0,
+        "muiListItems": 45,
+        "hasMuiDrawer": false
+      },
+      "test": "timeline-navigation-http"
+    },
+    {
+      "timestamp": "2025-08-29T05:53:49.909Z",
+      "category": "header-types",
+      "data": {
+        "modernHeader": false,
+        "clientHeader": false,
+        "appLayout": false,
+        "customHeader": true
+      },
+      "test": "timeline-navigation-http"
+    },
+    {
+      "timestamp": "2025-08-29T05:53:49.910Z",
+      "category": "sidebar-navigation",
+      "data": {
+        "sidebarLinksCount": 0,
+        "hasTimelineInSidebar": false,
+        "links": []
+      },
+      "test": "timeline-navigation-http"
+    },
+    {
+      "timestamp": "2025-08-29T05:53:49.910Z",
+      "category": "timeline-access-test-start",
+      "data": {
+        "timestamp": "2025-08-29T05:53:49.910Z"
+      },
+      "test": "timeline-navigation-http"
+    },
+    {
+      "timestamp": "2025-08-29T05:53:50.079Z",
+      "category": "timeline-access-error",
+      "data": {
+        "error": "'text,,,まだ投稿がありません,' is not a valid selector"
+      },
+      "test": "timeline-navigation-http"
+    }
+  ]
+}

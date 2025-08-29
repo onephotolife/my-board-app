@@ -30,6 +30,7 @@ import {
   FavoriteBorder as FavoriteBorderIcon,
   Comment as CommentIcon,
   Share as ShareIcon,
+  FiberManualRecord as FiberManualRecordIcon,
 } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';

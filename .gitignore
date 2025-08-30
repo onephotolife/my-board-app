@@ -111,6 +111,9 @@ server.log
 test-*.html
 test-*.tsx
 test-results*/
+tests/solutions/*.log
+tests/solutions/*.json
+tests/solutions/screenshots/
 
 # 開発中の一時ファイル
 middleware-priority1-patch.ts

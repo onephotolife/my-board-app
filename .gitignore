@@ -127,3 +127,22 @@ node_modules_backup*/
 src/app/board.backup*/
 *.backup/
 dev.log
+
+# デバッグ・テスト結果ファイル
+debug-results-*.json
+profile-rate-limit-results-*.json
+usercontext-unit-test-results-*.json
+my-posts-401-debug-*.json
+test-results-*.json
+dev-server.log
+
+# 一時的なスクリプトファイル
+scripts/*.js
+tests/*.js
+tests/*.sh
+tests/comprehensive/*.js
+tests/integration/*.js
+tests/unit/*.js
+
+# レポートファイル（特定のもののみ保持）
+*-401-*.md

@@ -1,259 +1,236 @@
 #!/usr/bin/env node
+
 /**
  * 影響範囲テスト
- * 
- * 改修による既存機能への影響を確認
+ * getServerSession実装による他機能への影響確認
  */
 
 const axios = require('axios');
 const axiosCookieJarSupport = require('axios-cookiejar-support').wrapper;
 const tough = require('tough-cookie');
 
-// Cookie管理用のjar作成
-const cookieJar = new tough.CookieJar();
-const client = axiosCookieJarSupport(axios.create({
-  baseURL: 'http://localhost:3000',
-  jar: cookieJar,
-  withCredentials: true,
-  timeout: 30000,
-  headers: {
-    'Accept': 'application/json, text/html',
-    'User-Agent': 'Impact-Test-Client/1.0'
-  }
-}));
-
 // 認証情報
-const AUTH_CREDENTIALS = {
+const AUTH = {
   email: 'one.photolife+1@gmail.com',
   password: '?@thc123THC@?'
 };
 
-console.log('================================================================================');
-console.log('影響範囲テスト');
-console.log('================================================================================');
-console.log('');
+const BASE_URL = 'http://localhost:3000';
 
-async function runTest(name, testFn) {
-  const startTime = Date.now();
-  console.log(`🧪 [${name}] 開始...`);
-  
+// Cookie管理
+const cookieJar = new tough.CookieJar();
+const client = axiosCookieJarSupport(axios.create({
+  baseURL: BASE_URL,
+  jar: cookieJar,
+  withCredentials: true,
+  timeout: 30000
+}));
+
+/**
+ * 認証
+ */
+async function authenticate() {
   try {
-    const result = await testFn();
-    const duration = Date.now() - startTime;
-    console.log(`✅ [${name}] 成功 (${duration}ms)`);
-    return { status: 'PASS', result, duration };
+    // CSRFトークン取得
+    const csrfRes = await client.get('/api/auth/csrf');
+    const csrfToken = csrfRes.data.csrfToken;
+    
+    // ログイン
+    const formData = new URLSearchParams();
+    formData.append('email', AUTH.email);
+    formData.append('password', AUTH.password);
+    formData.append('csrfToken', csrfToken);
+    formData.append('json', 'true');
+    
+    await client.post('/api/auth/callback/credentials', formData.toString(), {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    });
+    
+    // セッション確認
+    const sessionRes = await client.get('/api/auth/session');
+    return sessionRes.data;
   } catch (error) {
-    const duration = Date.now() - startTime;
-    console.log(`❌ [${name}] 失敗 (${duration}ms)`);
-    console.log(`   エラー: ${error.message}`);
-    return { status: 'FAIL', error: error.message, duration };
+    console.error('認証エラー:', error.message);
+    return null;
   }
 }
 
-// テスト結果
-const testResults = {
-  timestamp: new Date().toISOString(),
-  tests: []
-};
-
-async function main() {
-  // 1. ホームページアクセス
-  const homeTest = await runTest('ホームページアクセス', async () => {
-    const response = await client.get('/');
-    if (response.status !== 200) throw new Error(`Status ${response.status}`);
-    return { status: response.status };
-  });
-  testResults.tests.push(homeTest);
-
-  // 2. CSRFトークン取得
-  const csrfTest = await runTest('CSRFトークン取得', async () => {
-    const response = await client.get('/api/csrf');
-    if (!response.data?.token) throw new Error('Token not found');
-    return { token: response.data.token.substring(0, 20) + '...' };
-  });
-  testResults.tests.push(csrfTest);
-
-  // 3. 認証処理
-  const authTest = await runTest('認証処理', async () => {
-    const csrfResponse = await client.get('/api/auth/csrf');
-    const csrfToken = csrfResponse.data.csrfToken;
+/**
+ * APIテスト
+ */
+async function testAPI(method, path, data = null) {
+  try {
+    const config = {};
+    let response;
     
-    const loginResponse = await client.post('/api/auth/callback/credentials', null, {
-      params: {
-        ...AUTH_CREDENTIALS,
-        csrfToken
-      },
-      maxRedirects: 0,
-      validateStatus: (status) => status < 500
-    });
-    
-    const sessionResponse = await client.get('/api/auth/session');
-    return {
-      loginStatus: loginResponse.status,
-      hasSession: !!sessionResponse.data
-    };
-  });
-  testResults.tests.push(authTest);
-
-  // 4. 投稿一覧取得
-  const postsTest = await runTest('投稿一覧取得（認証が必要）', async () => {
-    try {
-      const response = await client.get('/api/posts');
-      return {
-        status: response.status,
-        posts: Array.isArray(response.data) ? response.data.length : 0
-      };
-    } catch (error) {
-      if (error.response?.status === 401) {
-        // 401エラーは認証が必要なので正常
-        return { status: 401, message: 'Authentication required (expected behavior)' };
-      }
-      throw error;
+    if (method === 'GET') {
+      response = await client.get(path, config);
+    } else if (method === 'POST') {
+      response = await client.post(path, data, config);
+    } else if (method === 'PUT') {
+      response = await client.put(path, data, config);
+    } else if (method === 'DELETE') {
+      response = await client.delete(path, config);
     }
-  });
-  testResults.tests.push(postsTest);
-
-  // 5. セッションチェック
-  const sessionTest = await runTest('セッションチェック', async () => {
-    const response = await client.get('/api/auth/session');
+    
     return {
+      success: true,
       status: response.status,
-      hasSession: !!response.data,
-      user: response.data?.user?.email
+      data: response.data
     };
-  });
-  testResults.tests.push(sessionTest);
-
-  // 6. パフォーマンスメトリクス
-  const perfTest = await runTest('パフォーマンスメトリクス', async () => {
-    const response = await client.get('/api/performance');
+  } catch (error) {
     return {
-      status: response.status,
-      hasMetrics: !!response.data
+      success: false,
+      status: error.response?.status || 0,
+      error: error.response?.data || error.message
     };
-  });
-  testResults.tests.push(perfTest);
+  }
+}
 
-  // 7. 連続リクエスト（レート制限確認）
-  const rateLimitTest = await runTest('連続リクエスト（429エラーなし）', async () => {
-    let successCount = 0;
-    let errorCount = 0;
-    
-    for (let i = 0; i < 5; i++) {
-      try {
-        const response = await client.get('/api/csrf');
-        if (response.status === 200) successCount++;
-        else if (response.status === 429) errorCount++;
-      } catch (error) {
-        if (error.response?.status === 429) errorCount++;
-      }
-    }
-    
-    if (errorCount > 0) throw new Error(`429エラーが${errorCount}回発生`);
-    return { successCount, errorCount };
-  });
-  testResults.tests.push(rateLimitTest);
-
-  // 8. CSP（Content Security Policy）確認
-  const cspTest = await runTest('CSPヘッダー確認', async () => {
-    const response = await client.get('/');
-    const csp = response.headers['content-security-policy'];
-    if (!csp) throw new Error('CSP header not found');
-    return { hasCSP: true, cspLength: csp.length };
-  });
-  testResults.tests.push(cspTest);
-
-  // 9. XSS保護ヘッダー確認
-  const xssTest = await runTest('XSS保護ヘッダー確認', async () => {
-    const response = await client.get('/');
-    const xssProtection = response.headers['x-xss-protection'];
-    const contentType = response.headers['x-content-type-options'];
-    
-    if (!xssProtection || !contentType) {
-      throw new Error('Security headers missing');
-    }
-    
-    return {
-      xssProtection,
-      contentTypeOptions: contentType
-    };
-  });
-  testResults.tests.push(xssTest);
-
-  // 10. レスポンスタイム確認
-  const responseTimeTest = await runTest('レスポンスタイム確認', async () => {
-    const times = [];
-    
-    for (let i = 0; i < 3; i++) {
-      const start = Date.now();
-      await client.get('/');
-      times.push(Date.now() - start);
-    }
-    
-    const avgTime = times.reduce((a, b) => a + b, 0) / times.length;
-    if (avgTime > 1000) throw new Error(`平均レスポンスタイムが遅い: ${avgTime}ms`);
-    
-    return {
-      times,
-      average: Math.round(avgTime)
-    };
-  });
-  testResults.tests.push(responseTimeTest);
-
-  // 結果サマリー
-  console.log('');
-  console.log('================================================================================');
-  console.log('📊 テスト結果サマリー');
-  console.log('================================================================================');
+/**
+ * 影響範囲テスト実行
+ */
+async function runImpactTests() {
+  console.log('='.repeat(60));
+  console.log('🔍 影響範囲テスト');
+  console.log('='.repeat(60));
+  console.log('実行時刻:', new Date().toISOString());
+  console.log('='.repeat(60));
   
-  const passed = testResults.tests.filter(t => t.status === 'PASS').length;
-  const failed = testResults.tests.filter(t => t.status === 'FAIL').length;
-  
-  console.log(`✅ 成功: ${passed}個`);
-  console.log(`❌ 失敗: ${failed}個`);
-  console.log(`📊 合計: ${testResults.tests.length}個`);
-  
-  console.log('\n詳細:');
-  testResults.tests.forEach((test, index) => {
-    const icon = test.status === 'PASS' ? '✅' : '❌';
-    const testName = [
-      'ホームページアクセス',
-      'CSRFトークン取得',
-      '認証処理',
-      '投稿一覧取得（認証が必要）',
-      'セッションチェック',
-      'パフォーマンスメトリクス',
-      '連続リクエスト（429エラーなし）',
-      'CSPヘッダー確認',
-      'XSS保護ヘッダー確認',
-      'レスポンスタイム確認'
-    ][index];
-    
-    console.log(`${icon} ${testName}: ${test.status} (${test.duration}ms)`);
-    if (test.error) {
-      console.log(`   └─ ${test.error}`);
-    }
-  });
-  
-  // 最終判定
-  console.log('');
-  console.log('================================================================================');
-  console.log('🏁 最終判定');
-  console.log('================================================================================');
-  
-  if (failed === 0) {
-    console.log('✅ すべてのテストが成功しました！');
-    console.log('✅ 既存機能への悪影響はありません！');
-    process.exit(0);
-  } else {
-    console.log(`❌ ${failed}個のテストが失敗しました`);
-    console.log('⚠️  既存機能に影響がある可能性があります');
+  // 認証
+  console.log('\n【認証】');
+  const session = await authenticate();
+  if (!session) {
+    console.error('❌ 認証失敗');
     process.exit(1);
   }
+  console.log('✅ 認証成功:', session.user.email);
+  
+  const results = [];
+  
+  // 1. 全投稿取得（公開）
+  console.log('\n【1. 全投稿取得 /api/posts】');
+  const allPosts = await testAPI('GET', '/api/posts');
+  console.log('Status:', allPosts.status);
+  console.log('Success:', allPosts.success);
+  if (allPosts.success) {
+    console.log('投稿数:', allPosts.data.data?.length || 0);
+  }
+  results.push({ name: '全投稿取得', ...allPosts });
+  
+  // 2. 自分の投稿（修正対象）
+  console.log('\n【2. 自分の投稿 /api/posts/my-posts】⭐ 修正対象');
+  const myPosts = await testAPI('GET', '/api/posts/my-posts');
+  console.log('Status:', myPosts.status);
+  console.log('Success:', myPosts.success);
+  if (myPosts.success) {
+    console.log('投稿数:', myPosts.data.data?.length || 0);
+  }
+  results.push({ name: '自分の投稿', ...myPosts });
+  
+  // 3. プロフィール取得
+  console.log('\n【3. プロフィール /api/users/profile】');
+  const profile = await testAPI('GET', '/api/users/profile');
+  console.log('Status:', profile.status);
+  console.log('Success:', profile.success);
+  if (profile.success) {
+    console.log('ユーザー名:', profile.data.data?.name);
+  }
+  results.push({ name: 'プロフィール', ...profile });
+  
+  // 4. いいね済み投稿
+  console.log('\n【4. いいね済み投稿 /api/posts/liked】');
+  const likedPosts = await testAPI('GET', '/api/posts/liked');
+  console.log('Status:', likedPosts.status);
+  console.log('Success:', likedPosts.success);
+  if (likedPosts.success) {
+    console.log('いいね数:', likedPosts.data.data?.length || 0);
+  }
+  results.push({ name: 'いいね済み投稿', ...likedPosts });
+  
+  // 5. 通知取得
+  console.log('\n【5. 通知 /api/notifications】');
+  const notifications = await testAPI('GET', '/api/notifications');
+  console.log('Status:', notifications.status);
+  console.log('Success:', notifications.success);
+  if (notifications.success) {
+    console.log('通知数:', notifications.data.data?.length || 0);
+  }
+  results.push({ name: '通知', ...notifications });
+  
+  // 6. タグ一覧
+  console.log('\n【6. タグ一覧 /api/tags】');
+  const tags = await testAPI('GET', '/api/tags');
+  console.log('Status:', tags.status);
+  console.log('Success:', tags.success);
+  if (tags.success) {
+    console.log('タグ数:', tags.data.data?.length || 0);
+  }
+  results.push({ name: 'タグ一覧', ...tags });
+  
+  // 7. ダッシュボード統計
+  console.log('\n【7. ダッシュボード統計 /api/dashboard/stats】');
+  const stats = await testAPI('GET', '/api/dashboard/stats');
+  console.log('Status:', stats.status);
+  console.log('Success:', stats.success);
+  results.push({ name: 'ダッシュボード統計', ...stats });
+  
+  // 8. セッション（認証状態）
+  console.log('\n【8. セッション /api/auth/session】');
+  const sessionCheck = await testAPI('GET', '/api/auth/session');
+  console.log('Status:', sessionCheck.status);
+  console.log('Success:', sessionCheck.success);
+  if (sessionCheck.success && sessionCheck.data.user) {
+    console.log('認証済み:', sessionCheck.data.user.email);
+  }
+  results.push({ name: 'セッション', ...sessionCheck });
+  
+  // 結果サマリー
+  console.log('\n' + '='.repeat(60));
+  console.log('📊 影響範囲テスト結果サマリー');
+  console.log('='.repeat(60));
+  
+  let passCount = 0;
+  let failCount = 0;
+  
+  results.forEach(result => {
+    const status = result.success ? '✅ PASS' : '❌ FAIL';
+    console.log(`${result.name}: ${status} (${result.status})`);
+    if (result.success) passCount++;
+    else failCount++;
+  });
+  
+  console.log('\n統計:');
+  console.log(`  成功: ${passCount}/${results.length}`);
+  console.log(`  失敗: ${failCount}/${results.length}`);
+  
+  // 特に重要な結果
+  const myPostsResult = results.find(r => r.name === '自分の投稿');
+  console.log('\n⭐ 修正対象（/api/posts/my-posts）:',
+    myPostsResult.success ? '✅ 正常動作' : '❌ エラー');
+  
+  const allPassed = failCount === 0;
+  console.log('\n総合判定:', allPassed ? '✅ 全API正常' : `⚠️ ${failCount}個のAPIでエラー`);
+  
+  console.log('='.repeat(60));
+  console.log('テスト完了時刻:', new Date().toISOString());
+  
+  return {
+    passed: passCount,
+    failed: failCount,
+    total: results.length,
+    details: results
+  };
 }
 
 // 実行
-main().catch(error => {
-  console.error('Fatal error:', error);
-  process.exit(1);
-});
+if (require.main === module) {
+  runImpactTests()
+    .then(result => {
+      process.exit(result.failed > 0 ? 1 : 0);
+    })
+    .catch(error => {
+      console.error('実行エラー:', error);
+      process.exit(1);
+    });
+}

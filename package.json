@@ -61,6 +61,12 @@
     "bundle:analyze": "ANALYZE=true npm run build",
     "prepare": "husky"
   },
+  "overrides": {
+    "jose": "4.15.9",
+    "@auth/core": {
+      "jose": "4.15.9"
+    }
+  },
   "dependencies": {
     "@auth/mongodb-adapter": "^3.10.0",
     "@emotion/cache": "^11.14.0",
@@ -125,6 +131,7 @@
     "artillery": "^2.0.24",
     "async-retry": "^1.3.3",
     "axe-playwright": "^2.1.0",
+    "axios": "^1.11.0",
     "dotenv": "^17.2.1",
     "eslint": "^9",
     "eslint-config-next": "15.4.5",

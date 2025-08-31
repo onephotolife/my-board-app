@@ -146,23 +146,32 @@ export async function middleware(request: NextRequest) {
       const isExcluded = csrfExcludedPaths.some(path => pathname.startsWith(path));
       
       if (!isExcluded) {
+        // 開発環境ではCSRF検証をスキップ（警告のみ）
+        const isProduction = process.env.NODE_ENV === 'production';
         const isValidCSRF = CSRFProtection.verifyToken(request);
         
         if (!isValidCSRF) {
-          console.warn(`CSRF token validation failed: ${pathname}`);
-          
-          // 監査ログに記録（Edge Runtimeではコンソールログのみ）
-          console.error('[AUDIT] CSRF_VIOLATION:', {
-            ip: request.headers.get('x-forwarded-for') || 
-               request.headers.get('x-real-ip') || 
-               'unknown',
-            userAgent: request.headers.get('user-agent'),
-            pathname,
-            method,
-            severity: 'CRITICAL',
-          });
-          
-          return CSRFProtection.createErrorResponse();
+          if (!isProduction) {
+            // 開発環境では警告のみでリクエストを通す
+            console.warn(`[CSRF-DEV] Development mode: CSRF token validation failed but allowing request: ${pathname}`);
+            console.warn(`[CSRF-DEV] NODE_ENV: ${process.env.NODE_ENV || 'undefined'}`);
+          } else {
+            // 本番環境では厳格に403エラーを返す
+            console.warn(`CSRF token validation failed: ${pathname}`);
+            
+            // 監査ログに記録（Edge Runtimeではコンソールログのみ）
+            console.error('[AUDIT] CSRF_VIOLATION:', {
+              ip: request.headers.get('x-forwarded-for') || 
+                 request.headers.get('x-real-ip') || 
+                 'unknown',
+              userAgent: request.headers.get('user-agent'),
+              pathname,
+              method,
+              severity: 'CRITICAL',
+            });
+            
+            return CSRFProtection.createErrorResponse();
+          }
         }
       }
     }

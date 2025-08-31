@@ -121,3 +121,8 @@ src/app/(main)/
 src/lib/security/csrf-sync.ts
 src/models/User.ts
 test-priority1-unit-results.json
+
+# バックアップディレクトリ
+node_modules_backup*/
+src/app/board.backup*/
+*.backup/

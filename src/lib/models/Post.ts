@@ -187,22 +187,30 @@ PostSchema.methods.updateCommentCount = async function() {
       return this;
     }
 
+    // ObjectIdを文字列に変換
+    const postIdString = this._id.toString();
+    
+    console.log('[POST-DEBUG] updateCommentCount called for:', {
+      postId: postIdString,
+      originalType: typeof this._id
+    });
+
     // アクティブコメント数
     const activeCount = await Comment.countDocuments({
-      postId: this._id,
+      postId: postIdString,
       status: 'active'
     });
 
     // 統計情報の取得
     const [totalCount, deletedCount, reportedCount] = await Promise.all([
-      Comment.countDocuments({ postId: this._id }),
-      Comment.countDocuments({ postId: this._id, status: 'deleted' }),
-      Comment.countDocuments({ postId: this._id, status: 'reported' })
+      Comment.countDocuments({ postId: postIdString }),
+      Comment.countDocuments({ postId: postIdString, status: 'deleted' }),
+      Comment.countDocuments({ postId: postIdString, status: 'reported' })
     ]);
 
     // 最新コメントの取得
     const lastComment = await Comment.findOne({
-      postId: this._id,
+      postId: postIdString,
       status: 'active'
     }).sort({ createdAt: -1 });
 

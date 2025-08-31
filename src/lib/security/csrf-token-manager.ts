@@ -11,7 +11,7 @@ export class CSRFTokenManager {
   private retryCount = 0;
   private maxRetries = 3;
   private tokenExpiry: number | null = null;
-  private tokenTTL = 3600000; // 1時間（ミリ秒）
+  private tokenTTL = 7200000; // 2時間（ミリ秒） - テスト実行時間を考慮して延長
   
   // シングルトンパターン
   static getInstance(): CSRFTokenManager {

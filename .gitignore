@@ -144,5 +144,10 @@ tests/comprehensive/*.js
 tests/integration/*.js
 tests/unit/*.js
 
-# レポートファイル（特定のもののみ保持）
-*-401-*.md
+# レポートファイル（デバッグ系は除外、最終レポートは保持）
+*-401-debug-*.md
+*-401-error-*.md
+*-401-solution-*.md
+# 最終レポートは保持
+# my-posts-401-complete-fix-report.md
+# my-posts-401-fix-implementation-report.md

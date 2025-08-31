@@ -27,8 +27,8 @@ export class RateLimiterV2 {
     this.maxItems = options.maxItems || 10000;
     this.cache = new Map();
     
-    // 定期的なクリーンアップ
-    setInterval(() => this.cleanup(), this.window);
+    // Edge Runtime互換: 定期クリーンアップをsetIntervalから確率的実行に変更
+    // setInterval(() => this.cleanup(), this.window);  // Edge Runtime非互換のため削除
   }
   
   /**
@@ -38,6 +38,11 @@ export class RateLimiterV2 {
     const now = Date.now();
     const key = identifier;
     const timestamps = this.cache.get(key) || [];
+    
+    // Edge Runtime互換: 5%の確率で遅延クリーンアップを実行
+    if (Math.random() < 0.05) {
+      this.cleanup();
+    }
     
     // 時間窓内のリクエストをフィルタ
     const recentRequests = timestamps.filter(

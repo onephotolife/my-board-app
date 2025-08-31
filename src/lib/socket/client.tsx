@@ -1,8 +1,10 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { io, Socket } from 'socket.io-client';
 import { useSession } from 'next-auth/react';
+
+// Socket.io動的インポート用の型定義
+type Socket = any; // socket.io-clientのSocket型
 
 interface SocketContextType {
   socket: Socket | null;
@@ -54,85 +56,98 @@ export function SocketProvider({ children }: SocketProviderProps) {
     }
     
     if (status === 'authenticated' && session?.user) {
-      try {
-        const socketInstance = io(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000', {
-          path: '/socket.io',
-          withCredentials: true,
-          transports: ['websocket', 'polling'],
-          reconnection: true,
-          reconnectionAttempts: 3,
-          reconnectionDelay: 1000,
-          timeout: 10000,
-        });
+      let socketInstance: Socket | null = null;
 
-      socketInstance.on('connect', () => {
-        console.log('🔌 Connected to Socket.io server');
-        setIsConnected(true);
-      });
-
-      socketInstance.on('disconnect', () => {
-        console.log('🔌 Disconnected from Socket.io server');
-        setIsConnected(false);
-      });
-
-      socketInstance.on('connected', (data) => {
-        console.log('✅ Authenticated connection:', data);
-      });
-
-      socketInstance.on('user:online', (data) => {
-        setOnlineUsers(prev => [...new Set([...prev, data.userId])]);
-      });
-
-      socketInstance.on('user:offline', (data) => {
-        setOnlineUsers(prev => prev.filter(id => id !== data.userId));
-      });
-
-      socketInstance.on('user:typing', (data) => {
-        setTypingUsers(prev => {
-          const newMap = new Map(prev);
-          newMap.set(data.userId, data.userName);
-          return newMap;
-        });
-
-        setTimeout(() => {
-          setTypingUsers(prev => {
-            const newMap = new Map(prev);
-            newMap.delete(data.userId);
-            return newMap;
+      // Socket.io動的インポート: 非同期関数として実装
+      const initializeSocket = async () => {
+        try {
+          // Socket.io動的インポート: Edge Runtime互換性とコンパイル最適化
+          const { io } = await import('socket.io-client');
+          socketInstance = io(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000', {
+            path: '/socket.io',
+            withCredentials: true,
+            transports: ['websocket', 'polling'],
+            reconnection: true,
+            reconnectionAttempts: 3,
+            reconnectionDelay: 1000,
+            timeout: 10000,
           });
-        }, 3000);
-      });
 
-      socketInstance.on('user:stopped-typing', (data) => {
-        setTypingUsers(prev => {
-          const newMap = new Map(prev);
-          newMap.delete(data.userId);
-          return newMap;
-        });
-      });
+          socketInstance.on('connect', () => {
+            console.log('🔌 Connected to Socket.io server');
+            setIsConnected(true);
+          });
 
-      socketInstance.on('error', (error) => {
-        console.error('Socket error:', error);
-      });
+          socketInstance.on('disconnect', () => {
+            console.log('🔌 Disconnected from Socket.io server');
+            setIsConnected(false);
+          });
 
-      socketInstance.on('connect_error', (error) => {
-        console.warn('⚠️ Socket connection error:', error.message);
-        // エラーが発生してもアプリを続行
-      });
+          socketInstance.on('connected', (data) => {
+            console.log('✅ Authenticated connection:', data);
+          });
 
-      socketInstance.on('connect_timeout', () => {
-        console.warn('⚠️ Socket connection timeout');
-      });
+          socketInstance.on('user:online', (data) => {
+            setOnlineUsers(prev => [...new Set([...prev, data.userId])]);
+          });
 
-      setSocket(socketInstance);
+          socketInstance.on('user:offline', (data) => {
+            setOnlineUsers(prev => prev.filter(id => id !== data.userId));
+          });
 
-      return () => {
-        socketInstance.disconnect();
+          socketInstance.on('user:typing', (data) => {
+            setTypingUsers(prev => {
+              const newMap = new Map(prev);
+              newMap.set(data.userId, data.userName);
+              return newMap;
+            });
+
+            setTimeout(() => {
+              setTypingUsers(prev => {
+                const newMap = new Map(prev);
+                newMap.delete(data.userId);
+                return newMap;
+              });
+            }, 3000);
+          });
+
+          socketInstance.on('user:stopped-typing', (data) => {
+            setTypingUsers(prev => {
+              const newMap = new Map(prev);
+              newMap.delete(data.userId);
+              return newMap;
+            });
+          });
+
+          socketInstance.on('error', (error) => {
+            console.error('Socket error:', error);
+          });
+
+          socketInstance.on('connect_error', (error) => {
+            console.warn('⚠️ Socket connection error:', error.message);
+            // エラーが発生してもアプリを続行
+          });
+
+          socketInstance.on('connect_timeout', () => {
+            console.warn('⚠️ Socket connection timeout');
+          });
+
+          setSocket(socketInstance);
+        } catch (error) {
+          console.error('🔴 Failed to initialize Socket.io:', error);
+          // Socket.ioの初期化が失敗してもアプリを続行
+        }
       };
-      } catch (error) {
-        console.error('🔴 Failed to initialize Socket.io:', error);
-        // Socket.ioの初期化が失敗してもアプリを続行
-      }
+
+      // 非同期でSocket初期化を実行
+      initializeSocket();
+
+      // クリーンアップ関数を返す
+      return () => {
+        if (socketInstance) {
+          socketInstance.disconnect();
+        }
+      };
     }
   }, [session, status]);
 

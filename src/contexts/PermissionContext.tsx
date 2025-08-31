@@ -29,15 +29,34 @@ interface PermissionContextType {
 
 const PermissionContext = createContext<PermissionContextType | undefined>(undefined);
 
-export function PermissionProvider({ children }: { children: React.ReactNode }) {
+interface PermissionProviderProps {
+  children: React.ReactNode;
+  initialData?: any | null;
+}
+
+export function PermissionProvider({ children, initialData }: PermissionProviderProps) {
   const { data: session, status } = useSession();
-  const [userRole, setUserRole] = useState<UserRole>(UserRole.GUEST);
-  const [permissions, setPermissions] = useState<Permission[]>([]);
-  const [userId, setUserId] = useState<string | null>(null);
-  const [userPermissions, setUserPermissions] = useState<UserPermissions | null>(null);
+  const [userRole, setUserRole] = useState<UserRole>(
+    initialData?.role || UserRole.GUEST
+  );
+  const [permissions, setPermissions] = useState<Permission[]>(
+    initialData ? getUserPermissions(initialData.userId || '', initialData.role || UserRole.USER).permissions : []
+  );
+  const [userId, setUserId] = useState<string | null>(
+    initialData?.userId || null
+  );
+  const [userPermissions, setUserPermissions] = useState<UserPermissions | null>(
+    initialData ? getUserPermissions(initialData.userId || '', initialData.role || UserRole.USER) : null
+  );
 
   useEffect(() => {
     const fetchUserPermissions = async () => {
+      // initialDataがある場合は、APIコールをスキップ
+      if (initialData && session?.user?.email) {
+        console.log('[PERF] Using initial permissions data, skipping API call');
+        return;
+      }
+
       if (session?.user?.email) {
         try {
           // APIからユーザー情報を取得

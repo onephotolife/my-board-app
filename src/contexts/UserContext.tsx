@@ -43,18 +43,29 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 // Provider Props
 interface UserProviderProps {
   children: ReactNode;
+  initialData?: any | null;
 }
 
 // Provider Component
-export function UserProvider({ children }: UserProviderProps) {
+export function UserProvider({ children, initialData }: UserProviderProps) {
   const { data: session, status, update: updateSession } = useSession();
   const router = useRouter();
-  const [user, setUser] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<UserProfile | null>(
+    initialData?.user || null
+  );
+  const [loading, setLoading] = useState(!initialData);
   const [error, setError] = useState<string | null>(null);
 
   // ユーザー情報の取得
   const fetchUserProfile = useCallback(async () => {
+    // initialDataがある場合は、初回フェッチをスキップ
+    if (initialData?.user && !user) {
+      console.log('[PERF] Using initial user data, skipping API call');
+      setUser(initialData.user);
+      setLoading(false);
+      return;
+    }
+
     if (!session?.user?.email) {
       setUser(null);
       setLoading(false);
@@ -108,7 +119,7 @@ export function UserProvider({ children }: UserProviderProps) {
     } finally {
       setLoading(false);
     }
-  }, [session]);
+  }, [session, initialData, user]);
 
   // プロフィール更新
   const updateProfile = useCallback(async (data: ProfileUpdateData) => {

@@ -24,16 +24,17 @@ export function useCSRFContext() {
 
 interface CSRFProviderProps {
   children: ReactNode;
+  initialToken?: string | null;
 }
 
 /**
  * CSRFトークンを管理するプロバイダーコンポーネント
  * SOL-001: トークン初期化保証メカニズム実装
  */
-export function CSRFProvider({ children }: CSRFProviderProps) {
-  const [token, setToken] = useState<string | null>(null);
-  const [isInitialized, setIsInitialized] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+export function CSRFProvider({ children, initialToken }: CSRFProviderProps) {
+  const [token, setToken] = useState<string | null>(initialToken || null);
+  const [isInitialized, setIsInitialized] = useState(!!initialToken);
+  const [isLoading, setIsLoading] = useState(!initialToken);
   const [previousSessionId, setPreviousSessionId] = useState<string | null>(null);
   const { data: session, status } = useSession();
   const header = 'x-csrf-token';
@@ -49,6 +50,15 @@ export function CSRFProvider({ children }: CSRFProviderProps) {
 
   const fetchToken = async (force: boolean = false) => {
     try {
+      // initialTokenがあり、強制リフレッシュでない場合はスキップ
+      if (initialToken && !force && !isInitialized) {
+        console.log('[PERF] Using initial CSRF token, skipping API call');
+        setToken(initialToken);
+        setIsInitialized(true);
+        setIsLoading(false);
+        return;
+      }
+
       if (!tokenManagerRef.current) {
         tokenManagerRef.current = CSRFTokenManager.getInstance();
       }

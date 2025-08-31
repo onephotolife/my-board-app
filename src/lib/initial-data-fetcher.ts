@@ -75,23 +75,25 @@ export async function fetchInitialData(session?: Session | null): Promise<Initia
         return null;
       }),
 
-      // CSRFトークン取得
-      fetch('/api/csrf/token', {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-      }).then(async (res) => {
-        if (!res.ok) {
-          console.warn(`[API] /api/csrf/token returned ${res.status}`);
+      // CSRFトークン取得（セッションにトークンがない場合のみ）
+      // 改善: 条件付き取得でリクエスト数削減
+      // Note: sessionにcsrfTokenプロパティは存在しないため、常に取得
+      fetch('/api/csrf', { // /api/csrf/tokenではなく/api/csrfを使用
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+        }).then(async (res) => {
+          if (!res.ok) {
+            console.warn(`[API] /api/csrf returned ${res.status}`);
+            return null;
+          }
+          const data = await res.json();
+          return data.token || null; // tokenフィールドを使用
+        }).catch((err) => {
+          console.error('[API] /api/csrf error:', err);
           return null;
-        }
-        const data = await res.json();
-        return data.csrfToken || null;
-      }).catch((err) => {
-        console.error('[API] /api/csrf/token error:', err);
-        return null;
-      }),
+        }),
     ]);
 
     const fetchTime = performance.now() - startTime;

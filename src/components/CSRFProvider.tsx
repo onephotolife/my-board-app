@@ -40,6 +40,7 @@ export function CSRFProvider({ children, initialToken }: CSRFProviderProps) {
   const header = 'x-csrf-token';
   const tokenManagerRef = useRef<CSRFTokenManager | null>(null);
   const fetchTokenTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const tokenFetchedRef = useRef<boolean>(false);
 
   // トークンマネージャーの初期化
   useEffect(() => {
@@ -94,8 +95,25 @@ export function CSRFProvider({ children, initialToken }: CSRFProviderProps) {
   };
 
   useEffect(() => {
-    // 初回マウント時にトークンを取得（強制実行）
-    fetchToken(true);
+    // 初回マウント時にトークンを取得（重複防止）
+    if (!tokenFetchedRef.current) {
+      tokenFetchedRef.current = true;
+      // initialTokenがある場合はAPIコールをスキップ
+      if (initialToken) {
+        console.log('[PERF] Using initial CSRF token from SSR, skipping API call');
+        setToken(initialToken);
+        setIsInitialized(true);
+        setIsLoading(false);
+        // TokenManagerにも設定
+        if (!tokenManagerRef.current) {
+          tokenManagerRef.current = CSRFTokenManager.getInstance();
+        }
+        tokenManagerRef.current.setToken(initialToken);
+      } else {
+        // initialTokenがない場合のみ取得（強制実行を無効化）
+        fetchToken(false);
+      }
+    }
     
     // ページフォーカス時にトークンをリフレッシュ（デバウンス付き）
     const handleFocus = () => {

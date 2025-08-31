@@ -161,6 +161,28 @@ export class CSRFTokenManager {
   }
   
   /**
+   * トークンを手動設定（initialTokenからの初期化用）
+   */
+  setToken(token: string): void {
+    console.log('📝 [CSRF] トークンを手動設定');
+    this.token = token;
+    this.tokenExpiry = Date.now() + this.tokenTTL;
+    this.retryCount = 0;
+    
+    // メタタグにも設定
+    if (typeof document !== 'undefined') {
+      this.updateMetaTag(token);
+    }
+  }
+  
+  /**
+   * トークンの有効性チェック
+   */
+  isValid(): boolean {
+    return !!(this.token && !this.isTokenExpired());
+  }
+  
+  /**
    * トークンマネージャーをリセット（テスト用）
    */
   static reset(): void {

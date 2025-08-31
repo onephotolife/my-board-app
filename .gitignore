@@ -126,3 +126,4 @@ test-priority1-unit-results.json
 node_modules_backup*/
 src/app/board.backup*/
 *.backup/
+dev.log

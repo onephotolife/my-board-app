@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getToken } from 'next-auth/jwt';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
 import { connectDB } from '@/lib/db/mongodb-local';
 import Post from '@/lib/models/Post';
 import { createErrorResponse } from '@/lib/middleware/auth';
@@ -7,29 +8,51 @@ import { createErrorResponse } from '@/lib/middleware/auth';
 // GET: 自分の投稿のみ取得
 export async function GET(req: NextRequest) {
   try {
-    // 認証チェック
-    const token = await getToken({
-      req,
-      secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
+    // デバッグ: ヘッダー確認
+    const cookieHeader = req.headers.get('cookie');
+    console.log('🍪 [API Debug] リクエストヘッダー:', {
+      cookie: cookieHeader,
+      hasCookie: !!cookieHeader,
+      cookiePreview: cookieHeader ? cookieHeader.substring(0, 100) + '...' : 'なし',
+      timestamp: new Date().toISOString(),
+    });
+    
+    // 手動でCookieから認証トークンを探す
+    if (cookieHeader) {
+      const hasSessionToken = cookieHeader.includes('next-auth.session-token');
+      const hasSecureToken = cookieHeader.includes('__Secure-next-auth.session-token');
+      console.log('🔎 [API Debug] セッショントークン検出:', {
+        hasSessionToken,
+        hasSecureToken,
+        env: process.env.NODE_ENV,
+      });
+    }
+    
+    // App Router対応: getServerSessionを使用
+    console.log('🔧 [API Debug] getServerSession呼び出し開始...');
+    const session = await getServerSession(authOptions);
+    
+    console.log('🔍 [API] /my-posts セッション確認:', {
+      hasSession: !!session,
+      userId: session?.user?.id,
+      email: session?.user?.email,
+      emailVerified: session?.user?.emailVerified,
+      name: session?.user?.name,
+      timestamp: new Date().toISOString(),
     });
 
-    console.log('🔍 [API] /my-posts 認証トークン確認:', {
-      hasToken: !!token,
-      userId: token?.id || token?.sub,
-      email: token?.email,
-      emailVerified: token?.emailVerified,
-    });
-
-    if (!token) {
+    if (!session || !session.user) {
+      console.log('❌ [API] セッションが見つかりません');
       return createErrorResponse('認証が必要です', 401, 'UNAUTHORIZED');
     }
 
-    if (!token.emailVerified) {
+    if (!session.user.emailVerified) {
+      console.log('❌ [API] メール未確認');
       return createErrorResponse('メールアドレスの確認が必要です', 403, 'EMAIL_NOT_VERIFIED');
     }
 
-    const userId = token.id || token.sub;
-    const userEmail = token.email;
+    const userId = session.user.id;
+    const userEmail = session.user.email;
 
     if (!userId) {
       return createErrorResponse('ユーザーIDが見つかりません', 400, 'USER_ID_NOT_FOUND');

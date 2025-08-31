@@ -82,7 +82,9 @@ export default function MyPostsPage() {
     setLoading(true);
     try {
       // 専用のmy-postsエンドポイントを使用
-      const response = await fetch('/api/posts/my-posts');
+      const response = await fetch('/api/posts/my-posts', {
+        credentials: 'include'
+      });
       if (response.ok) {
         const result = await response.json();
         const myPosts = result.data || [];
@@ -105,7 +107,8 @@ export default function MyPostsPage() {
         method: 'DELETE',
         headers: {
           'x-csrf-token': csrfToken || ''
-        }
+        },
+        credentials: 'include'
       });
       
       if (response.ok) {

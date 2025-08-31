@@ -6,6 +6,32 @@ import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import { CSRFTokenManager } from '@/lib/security/csrf-token-manager';
 
+// グローバル型定義（Solution 1 - Enhanced）
+declare global {
+  interface Window {
+    csrfTokenInitialized?: boolean;
+    __CSRF_INIT_IN_PROGRESS__?: boolean;
+    __CSRF_INIT_PROMISE__?: Promise<string>;
+    __CSRF_TOKEN_CACHE__?: string;
+    __CSRF_MOUNT_COUNT__?: number;
+    __CSRF_MOUNT_HISTORY__?: Array<{
+      timestamp: string;
+      hasInitialToken: boolean;
+      tokenFetchedRef: boolean;
+      sessionStatus: string;
+      mountCount: number;
+      instanceId: string;
+    }>;
+    __API_CALL_TRACKER__?: {
+      [endpoint: string]: {
+        count: number;
+        timestamps: string[];
+        statuses: number[];
+      }
+    };
+  }
+}
+
 interface CSRFContextType {
   token: string | null;
   header: string;
@@ -49,6 +75,30 @@ export function CSRFProvider({ children, initialToken }: CSRFProviderProps) {
     }
   }, []);
 
+  // API呼び出しをトラッキングする関数
+  const trackApiCall = (endpoint: string, status: number) => {
+    if (typeof window === 'undefined') return;
+    
+    window.__API_CALL_TRACKER__ = window.__API_CALL_TRACKER__ || {};
+    const tracker = window.__API_CALL_TRACKER__[endpoint] || {
+      count: 0,
+      timestamps: [],
+      statuses: []
+    };
+    
+    tracker.count++;
+    tracker.timestamps.push(new Date().toISOString());
+    tracker.statuses.push(status);
+    
+    window.__API_CALL_TRACKER__[endpoint] = tracker;
+    
+    console.log(`[API_TRACK] ${endpoint}:`, {
+      totalCalls: tracker.count,
+      recentStatus: status,
+      last5Calls: tracker.timestamps.slice(-5)
+    });
+  };
+
   const fetchToken = async (force: boolean = false) => {
     try {
       // initialTokenがあり、強制リフレッシュでない場合はスキップ
@@ -71,6 +121,9 @@ export function CSRFProvider({ children, initialToken }: CSRFProviderProps) {
         forced: force
       });
       
+      // API呼び出しトラッキング開始
+      trackApiCall('/api/csrf', 0); // 0 = pending
+      
       // トークンマネージャーを使用してトークンを取得
       let newToken: string;
       if (force) {
@@ -78,6 +131,9 @@ export function CSRFProvider({ children, initialToken }: CSRFProviderProps) {
       } else {
         newToken = await tokenManagerRef.current.ensureToken();
       }
+      
+      // API呼び出し成功をトラッキング
+      trackApiCall('/api/csrf', 200);
       
       setToken(newToken);
       
@@ -87,6 +143,8 @@ export function CSRFProvider({ children, initialToken }: CSRFProviderProps) {
       });
     } catch (error) {
       console.error('❌ [CSRF Provider] トークン取得エラー:', error);
+      // API呼び出しエラーをトラッキング
+      trackApiCall('/api/csrf', error instanceof Error && error.message.includes('429') ? 429 : 500);
       // エラー時も初期化完了とする（リトライは内部で実施済み）
     } finally {
       setIsInitialized(true);
@@ -95,23 +153,85 @@ export function CSRFProvider({ children, initialToken }: CSRFProviderProps) {
   };
 
   useEffect(() => {
-    // 初回マウント時にトークンを取得（重複防止）
-    if (!tokenFetchedRef.current) {
-      tokenFetchedRef.current = true;
-      // initialTokenがある場合はAPIコールをスキップ
-      if (initialToken) {
-        console.log('[PERF] Using initial CSRF token from SSR, skipping API call');
-        setToken(initialToken);
+    // デバッグログ: マウント情報を記録
+    const mountInfo = {
+      timestamp: new Date().toISOString(),
+      hasInitialToken: !!initialToken,
+      tokenFetchedRef: tokenFetchedRef.current,
+      sessionStatus: status,
+      mountCount: window.__CSRF_MOUNT_COUNT__ = (window.__CSRF_MOUNT_COUNT__ || 0) + 1,
+      instanceId: Math.random().toString(36).substr(2, 9)
+    };
+    
+    console.log('[DEBUG] CSRFProvider mount:', mountInfo);
+    
+    // グローバル配列に記録
+    window.__CSRF_MOUNT_HISTORY__ = window.__CSRF_MOUNT_HISTORY__ || [];
+    window.__CSRF_MOUNT_HISTORY__.push(mountInfo);
+    
+    // Enhanced グローバル初期化プロミスパターン（Solution 1 - Enhanced）
+    if (typeof window !== 'undefined') {
+      // 既に初期化中の場合は、既存のPromiseを待機
+      if (window.__CSRF_INIT_IN_PROGRESS__) {
+        console.log('[CSRF] ⏳ Token initialization already in progress, waiting...');
+        if (window.__CSRF_INIT_PROMISE__) {
+          window.__CSRF_INIT_PROMISE__.then(token => {
+            console.log('[CSRF] ✅ Received token from global promise');
+            setToken(token);
+            setIsInitialized(true);
+            setIsLoading(false);
+          }).catch(error => {
+            console.error('[CSRF] ❌ Global promise failed:', error);
+            setIsInitialized(true);
+            setIsLoading(false);
+          });
+        }
+        return;
+      }
+      
+      // キャッシュされたトークンが存在する場合
+      if (window.__CSRF_TOKEN_CACHE__) {
+        console.log('[CSRF] ✅ Using cached token');
+        setToken(window.__CSRF_TOKEN_CACHE__);
         setIsInitialized(true);
         setIsLoading(false);
-        // TokenManagerにも設定
-        if (!tokenManagerRef.current) {
-          tokenManagerRef.current = CSRFTokenManager.getInstance();
+        return;
+      }
+      
+      // 初回マウント時にトークンを取得（重複防止）
+      if (!tokenFetchedRef.current) {
+        tokenFetchedRef.current = true;
+        
+        // initialTokenがある場合はAPIコールをスキップ
+        if (initialToken) {
+          console.log('[PERF] Using initial CSRF token from SSR, skipping API call');
+          setToken(initialToken);
+          setIsInitialized(true);
+          setIsLoading(false);
+          // グローバルキャッシュに保存
+          window.__CSRF_TOKEN_CACHE__ = initialToken;
+          // TokenManagerにも設定
+          if (!tokenManagerRef.current) {
+            tokenManagerRef.current = CSRFTokenManager.getInstance();
+          }
+          tokenManagerRef.current.setToken(initialToken);
+        } else {
+          // グローバル初期化フラグとPromiseを設定
+          window.__CSRF_INIT_IN_PROGRESS__ = true;
+          window.__CSRF_INIT_PROMISE__ = new Promise((resolve, reject) => {
+            fetchToken(false).then(() => {
+              const currentToken = tokenManagerRef.current?.getCurrentToken();
+              if (currentToken) {
+                window.__CSRF_TOKEN_CACHE__ = currentToken;
+                resolve(currentToken);
+              } else {
+                reject(new Error('Failed to get token'));
+              }
+            }).catch(reject).finally(() => {
+              window.__CSRF_INIT_IN_PROGRESS__ = false;
+            });
+          });
         }
-        tokenManagerRef.current.setToken(initialToken);
-      } else {
-        // initialTokenがない場合のみ取得（強制実行を無効化）
-        fetchToken(false);
       }
     }
     
@@ -134,6 +254,10 @@ export function CSRFProvider({ children, initialToken }: CSRFProviderProps) {
     document.addEventListener('visibilitychange', handleFocus);
     
     return () => {
+      console.log('[DEBUG] CSRFProvider unmount:', {
+        instanceId: mountInfo.instanceId,
+        lifetime: Date.now() - new Date(mountInfo.timestamp).getTime()
+      });
       document.removeEventListener('visibilitychange', handleFocus);
       if (fetchTokenTimeoutRef.current) {
         clearTimeout(fetchTokenTimeoutRef.current);

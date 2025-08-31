@@ -89,15 +89,38 @@ export async function middleware(request: NextRequest) {
       '/api/version',
     ];
     
+    // Solution 2 Enhanced: 開発環境で初期化関連エンドポイントのレート制限を除外
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    const developmentExcludedPaths = [
+      '/api/csrf',
+      '/api/auth/session',
+      '/api/performance',
+      '/api/profile'  // UserContext無限ループ問題の一時的な対処
+    ];
+    
+    // 開発環境の除外チェック
+    const isDevExcluded = isDevelopment && 
+      developmentExcludedPaths.some(path => pathname.startsWith(path));
+    
     // レート制限をスキップするかチェック
-    const skipRateLimit = rateLimitExcludedPaths.some(path => pathname === path);
+    const skipRateLimit = rateLimitExcludedPaths.some(path => pathname === path) || isDevExcluded;
+    
+    // デバッグログ
+    if (isDevExcluded) {
+      console.log('[RateLimit] Development exclusion applied:', {
+        pathname,
+        isDevelopment,
+        skipRateLimit: true,
+        timestamp: new Date().toISOString()
+      });
+    }
     
     if (!skipRateLimit) {
       // 新しいレート制限チェック（エンドポイント別）
       let rateLimiter = apiRateLimiter;
       // /api/auth/sessionとCSRF関連は通常のAPIレート制限
-      if (pathname === '/api/auth/session' || pathname.startsWith('/api/csrf')) {
-        // セッションチェックとCSRFトークンは頻繁にアクセスされるため緩和
+      if (pathname === '/api/auth/session') {
+        // セッションチェックは頻繁にアクセスされるため緩和
         rateLimiter = apiRateLimiter;
       } else if (pathname.startsWith('/api/auth')) {
         rateLimiter = authRateLimiter;

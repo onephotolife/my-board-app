@@ -119,7 +119,7 @@ export function UserProvider({ children, initialData }: UserProviderProps) {
     } finally {
       setLoading(false);
     }
-  }, [session, initialData, user]);
+  }, [session, initialData]);
 
   // プロフィール更新
   const updateProfile = useCallback(async (data: ProfileUpdateData) => {

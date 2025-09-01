@@ -24,6 +24,9 @@ import {
   ListItem,
   ListItemText,
   ListItemAvatar,
+  Fade,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
@@ -31,6 +34,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import CommentIcon from '@mui/icons-material/Comment';
 import { formatDistanceToNow } from 'date-fns';
 import { ja } from 'date-fns/locale';
+import DeleteConfirmDialog from './DeleteConfirmDialog';
 
 interface Post {
   _id: string;
@@ -66,6 +70,24 @@ export default function EnhancedPostCard({
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [comments, setComments] = useState<any[]>([]);
   const [loadingComments, setLoadingComments] = useState(false);
+  
+  // 削除確認ダイアログ用の状態
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [targetCommentId, setTargetCommentId] = useState<string | null>(null);
+  
+  // 削除アニメーション用の状態
+  const [deletingCommentIds, setDeletingCommentIds] = useState<Set<string>>(new Set());
+  
+  // Snackbar用の状態
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: 'success' | 'error' | 'info' | 'warning';
+  }>({
+    open: false,
+    message: '',
+    severity: 'success',
+  });
   
   // 投稿者の判定：APIから返されるcanEdit/canDeleteフラグを優先的に使用
   // フラグがない場合はフォールバックとしてcurrentUserIdで判定
@@ -127,6 +149,72 @@ export default function EnhancedPostCard({
     handleMenuClose();
     onDelete(post._id);
   };
+
+  // コメント削除関数（ダイアログ表示）
+  const handleDeleteComment = (commentId: string) => {
+    setTargetCommentId(commentId);
+    setDeleteDialogOpen(true);
+  };
+
+  // 削除確認後の実際の削除処理
+  const confirmDeleteComment = async () => {
+    if (!targetCommentId) return;
+
+    try {
+      // アニメーション開始
+      setDeletingCommentIds(prev => new Set(prev).add(targetCommentId));
+      
+      // アニメーション待機（300ms）
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      const response = await csrfFetch(`/api/posts/${post._id}/comments/${targetCommentId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error?.message || `削除に失敗しました: ${response.status}`);
+      }
+
+      // 削除成功後、コメント一覧を再取得
+      await fetchComments();
+      console.log('[COMMENT-DELETE-SUCCESS]', targetCommentId);
+      
+      // 成功通知を表示
+      setSnackbar({
+        open: true,
+        message: 'コメントを削除しました',
+        severity: 'success',
+      });
+      
+      // アニメーション状態をクリア
+      setDeletingCommentIds(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(targetCommentId);
+        return newSet;
+      });
+      
+    } catch (error) {
+      console.error('[COMMENT-DELETE-ERROR]', error);
+      
+      // エラー通知を表示
+      setSnackbar({
+        open: true,
+        message: error instanceof Error ? error.message : 'コメントの削除に失敗しました',
+        severity: 'error',
+      });
+      
+      // エラー時もアニメーション状態をクリア
+      setDeletingCommentIds(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(targetCommentId);
+        return newSet;
+      });
+    } finally {
+      setDeleteDialogOpen(false);
+      setTargetCommentId(null);
+    }
+  };
   
   const formatDate = (dateString: string) => {
     try {
@@ -154,7 +242,8 @@ export default function EnhancedPostCard({
   };
   
   return (
-    <Card sx={{ mb: 3, boxShadow: 2, '&:hover': { boxShadow: 4 } }}>
+    <>
+      <Card sx={{ mb: 3, boxShadow: 2, '&:hover': { boxShadow: 4 } }}>
       <CardHeader
         avatar={(
           <Avatar sx={{ bgcolor: getAvatarColor(post.authorName) }}>
@@ -359,38 +448,59 @@ export default function EnhancedPostCard({
               </Typography>
               <List dense>
                 {comments.map((comment) => (
-                  <ListItem key={comment._id} alignItems="flex-start">
-                    <ListItemAvatar>
-                      <Avatar sx={{ width: 28, height: 28, fontSize: '0.875rem' }}>
-                        {comment.authorName?.[0] || comment.authorEmail?.[0] || 'U'}
-                      </Avatar>
-                    </ListItemAvatar>
-                    <ListItemText
-                      primary={
-                        <Box>
-                          <Typography variant="body2">
-                            <span
-                              dangerouslySetInnerHTML={{
-                                __html: DOMPurify.sanitize(comment.content, {
-                                  ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'br', 'p'],
-                                  ALLOWED_ATTR: ['href', 'target']
-                                })
-                              }}
-                            />
-                          </Typography>
-                        </Box>
-                      }
-                      secondary={
-                        <Typography variant="caption" color="text.secondary">
-                          {comment.authorName || comment.authorEmail || '匿名'} • 
-                          {formatDistanceToNow(new Date(comment.createdAt), {
-                            addSuffix: true,
-                            locale: ja
-                          })}
-                        </Typography>
-                      }
-                    />
-                  </ListItem>
+                  <Collapse 
+                    key={comment._id}
+                    in={!deletingCommentIds.has(comment._id)} 
+                    timeout={300}
+                  >
+                    <Fade 
+                      in={!deletingCommentIds.has(comment._id)} 
+                      timeout={200}
+                    >
+                      <ListItem alignItems="flex-start">
+                        <ListItemAvatar>
+                          <Avatar sx={{ width: 28, height: 28, fontSize: '0.875rem' }}>
+                            {comment.author?.name?.[0] || comment.author?.email?.[0] || 'U'}
+                          </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText
+                          primary={
+                            <Box>
+                              <Typography variant="body2">
+                                <span
+                                  dangerouslySetInnerHTML={{
+                                    __html: DOMPurify.sanitize(comment.content, {
+                                      ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'br', 'p'],
+                                      ALLOWED_ATTR: ['href', 'target']
+                                    })
+                                  }}
+                                />
+                              </Typography>
+                            </Box>
+                          }
+                          secondary={
+                            <Typography variant="caption" color="text.secondary">
+                              {comment.author?.name || comment.author?.email || '匿名'} • 
+                              {formatDistanceToNow(new Date(comment.createdAt), {
+                                addSuffix: true,
+                                locale: ja
+                              })}
+                            </Typography>
+                          }
+                        />
+                        {comment.canDelete && (
+                          <IconButton
+                            size="small"
+                            onClick={() => handleDeleteComment(comment._id)}
+                            sx={{ ml: 'auto' }}
+                            data-testid={`delete-comment-${comment._id}`}
+                          >
+                            <DeleteIcon fontSize="small" />
+                          </IconButton>
+                        )}
+                      </ListItem>
+                    </Fade>
+                  </Collapse>
                 ))}
               </List>
             </Box>
@@ -402,5 +512,36 @@ export default function EnhancedPostCard({
         </Box>
       </Collapse>
     </Card>
+    
+    {/* 削除確認ダイアログ */}
+    <DeleteConfirmDialog
+      open={deleteDialogOpen}
+      onClose={() => {
+        setDeleteDialogOpen(false);
+        setTargetCommentId(null);
+      }}
+      onConfirm={confirmDeleteComment}
+      title="コメントを削除"
+      message="このコメントを削除してもよろしいですか？この操作は取り消せません。"
+      confirmText="削除"
+      cancelText="キャンセル"
+    />
+    
+    {/* Snackbar通知 */}
+    <Snackbar
+      open={snackbar.open}
+      autoHideDuration={6000}
+      onClose={() => setSnackbar(prev => ({ ...prev, open: false }))}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+    >
+      <Alert 
+        onClose={() => setSnackbar(prev => ({ ...prev, open: false }))}
+        severity={snackbar.severity}
+        sx={{ width: '100%' }}
+      >
+        {snackbar.message}
+      </Alert>
+    </Snackbar>
+    </>
   );
 }

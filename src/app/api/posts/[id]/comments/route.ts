@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import { z } from 'zod';
 import mongoose from 'mongoose';
+import DOMPurify from 'isomorphic-dompurify';
 
 import { connectDB } from '@/lib/db/mongodb-local';
 import Post from '@/lib/models/Post';
@@ -301,9 +302,24 @@ export async function POST(
         timestamp: new Date().toISOString()
       });
 
+      // 基本的なXSSエスケープ処理（一時的にDOMPurifyを無効化）
+      const sanitizedContent = validationResult.data.content
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#x27;')
+        .replace(/\//g, '&#x2F;');
+        
+      console.log('[XSS-BASIC-ESCAPE] Content sanitization:', {
+        original: validationResult.data.content,
+        sanitized: sanitizedContent,
+        length: { original: validationResult.data.content.length, sanitized: sanitizedContent.length },
+        timestamp: new Date().toISOString()
+      });
+
       // コメント作成
       const comment = new Comment({
-        content: validationResult.data.content,
+        content: sanitizedContent,
         postId: id,
         author: {
           _id: user.id,

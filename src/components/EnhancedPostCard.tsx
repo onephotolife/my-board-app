@@ -1,6 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { csrfFetch } from '@/hooks/useCSRF';
+import DOMPurify from 'isomorphic-dompurify';
 import {
   Card,
   CardHeader,
@@ -16,6 +18,12 @@ import {
   Collapse,
   TextField,
   Button,
+  Divider,
+  CircularProgress,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemAvatar,
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
@@ -53,6 +61,11 @@ export default function EnhancedPostCard({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [showComments, setShowComments] = useState(false);
   const [comment, setComment] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [comments, setComments] = useState<any[]>([]);
+  const [loadingComments, setLoadingComments] = useState(false);
   
   // 投稿者の判定：APIから返されるcanEdit/canDeleteフラグを優先的に使用
   // フラグがない場合はフォールバックとしてcurrentUserIdで判定
@@ -73,6 +86,29 @@ export default function EnhancedPostCard({
     currentUserId,
     postAuthor: post.author
   });
+  
+  // コメント取得関数
+  const fetchComments = async () => {
+    try {
+      setLoadingComments(true);
+      const response = await fetch(`/api/posts/${post._id}/comments`);
+      if (response.ok) {
+        const data = await response.json();
+        setComments(data.data || []);
+      }
+    } catch (error) {
+      console.error('[COMMENTS-FETCH-ERROR]', error);
+    } finally {
+      setLoadingComments(false);
+    }
+  };
+  
+  // コメント表示時にコメントを取得
+  useEffect(() => {
+    if (showComments && comments.length === 0) {
+      fetchComments();
+    }
+  }, [showComments]);
   
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -248,22 +284,121 @@ export default function EnhancedPostCard({
             <Button
               variant="contained"
               size="small"
-              disabled={!comment.trim()}
-              onClick={() => {
-                // TODO: コメント投稿機能の実装
-                setComment('');
+              disabled={!comment.trim() || submitting}
+              onClick={async () => {
+                if (!comment.trim()) return;
+                
+                try {
+                  setSubmitting(true);
+                  setSubmitError(null);
+                  setSubmitSuccess(false);
+                  
+                  const response = await csrfFetch(`/api/posts/${post._id}/comments`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: comment })
+                  });
+                  
+                  if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.error?.message || `Failed: ${response.status}`);
+                  }
+                  
+                  const data = await response.json();
+                  setComment('');
+                  setSubmitSuccess(true);
+                  
+                  // コメント一覧を再取得
+                  await fetchComments();
+                  
+                  // 成功メッセージを3秒後に非表示
+                  setTimeout(() => setSubmitSuccess(false), 3000);
+                  
+                  console.log('[COMMENT-SUCCESS]', data);
+                  
+                } catch (error) {
+                  console.error('[COMMENT-ERROR]', error);
+                  setSubmitError(error instanceof Error ? error.message : 'コメント投稿に失敗しました');
+                } finally {
+                  setSubmitting(false);
+                }
               }}
             >
-              投稿
+              {submitting ? '投稿中...' : '投稿'}
             </Button>
           </Box>
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            sx={{ mt: 1, display: 'block' }}
-          >
-            ※ コメント機能は今後実装予定です
-          </Typography>
+          {submitError && (
+            <Typography
+              variant="caption"
+              color="error"
+              sx={{ mt: 1, display: 'block' }}
+            >
+              エラー: {submitError}
+            </Typography>
+          )}
+          {submitSuccess && (
+            <Typography
+              variant="caption"
+              color="success.main"
+              sx={{ mt: 1, display: 'block' }}
+            >
+              ✅ コメントを投稿しました
+            </Typography>
+          )}
+          
+          {/* コメント一覧 */}
+          {loadingComments ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+              <CircularProgress size={24} />
+            </Box>
+          ) : comments.length > 0 ? (
+            <Box sx={{ mt: 2 }}>
+              <Divider sx={{ mb: 1 }} />
+              <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                コメント ({comments.length}件)
+              </Typography>
+              <List dense>
+                {comments.map((comment) => (
+                  <ListItem key={comment._id} alignItems="flex-start">
+                    <ListItemAvatar>
+                      <Avatar sx={{ width: 28, height: 28, fontSize: '0.875rem' }}>
+                        {comment.authorName?.[0] || comment.authorEmail?.[0] || 'U'}
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={
+                        <Box>
+                          <Typography variant="body2">
+                            <span
+                              dangerouslySetInnerHTML={{
+                                __html: DOMPurify.sanitize(comment.content, {
+                                  ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'br', 'p'],
+                                  ALLOWED_ATTR: ['href', 'target']
+                                })
+                              }}
+                            />
+                          </Typography>
+                        </Box>
+                      }
+                      secondary={
+                        <Typography variant="caption" color="text.secondary">
+                          {comment.authorName || comment.authorEmail || '匿名'} • 
+                          {formatDistanceToNow(new Date(comment.createdAt), {
+                            addSuffix: true,
+                            locale: ja
+                          })}
+                        </Typography>
+                      }
+                    />
+                  </ListItem>
+                ))}
+              </List>
+            </Box>
+          ) : (
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+              まだコメントはありません
+            </Typography>
+          )}
         </Box>
       </Collapse>
     </Card>

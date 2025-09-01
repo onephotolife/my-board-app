@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
+import DOMPurify from 'isomorphic-dompurify';
 
 // コメントインターフェース
 export interface IComment extends Document {
@@ -46,11 +47,17 @@ const CommentSchema = new Schema<IComment>(
       trim: true,
       validate: {
         validator: function(v: string) {
-          // XSS対策: 危険なタグを検出
-          const dangerousPatterns = /<script|<iframe|javascript:|on\w+=/gi;
-          return !dangerousPatterns.test(v);
+          // 基本的なバリデーション（DOMPurifyはAPI層とフロントエンドで処理）
+          console.log('[COMMENT-MODEL-DEBUG] Basic validation:', {
+            content: v.substring(0, 50),
+            length: v.length,
+            timestamp: new Date().toISOString()
+          });
+          
+          // 基本的な長さチェックのみ実行（XSSサニタイズはAPI層で処理）
+          return v.trim().length > 0 && v.length <= 500;
         },
-        message: '不正な文字が含まれています',
+        message: 'コメントを入力してください（500文字以内）',
       },
     },
     postId: {

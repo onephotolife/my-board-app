@@ -9,6 +9,7 @@ import Post from '@/lib/models/Post';
 import Comment from '@/lib/models/Comment';
 import { createErrorResponse, AuthUser } from '@/lib/middleware/auth';
 import { broadcastEvent } from '@/lib/socket/socket-manager';
+import { verifyCSRFToken } from '@/lib/security/csrf';
 
 // バリデーションスキーマ - 事前処理を使用
 const preprocessString = (val: unknown) => {
@@ -215,22 +216,16 @@ export async function POST(
       return createErrorResponse('認証が必要です', 401, 'UNAUTHORIZED');
     }
 
-    // CSRFトークン検証（開発環境では警告のみ）
-    const csrfToken = req.headers.get('x-csrf-token');
-    
-    // 本番環境以外（開発環境）ではCSRF検証をスキップ（警告ログのみ）
-    const isProduction = process.env.NODE_ENV === 'production';
-    
-    if (!isProduction) {
-      if (!csrfToken) {
-        console.warn('[CSRF-WARNING] Development mode: CSRF token missing but allowing request');
-        console.warn('[CSRF-WARNING] NODE_ENV:', process.env.NODE_ENV || 'undefined');
-      }
-    } else {
-      // 本番環境では厳格にCSRFトークンを要求
-      if (!csrfToken) {
-        return createErrorResponse('CSRFトークンが必要です', 403, 'CSRF_TOKEN_MISSING');
-      }
+    // CSRFトークン検証（全環境で必須）
+    const isValidCSRF = await verifyCSRFToken(req);
+    if (!isValidCSRF) {
+      console.error('[CSRF-ERROR] CSRF token validation failed', {
+        userId: user.id,
+        userEmail: user.email,
+        postId: await params.then(p => p.id),
+        timestamp: new Date().toISOString()
+      });
+      return createErrorResponse('CSRFトークンが無効です', 403, 'CSRF_VALIDATION_FAILED');
     }
 
     const { id } = await params;

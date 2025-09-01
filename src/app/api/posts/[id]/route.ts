@@ -7,6 +7,7 @@ import Post from '@/lib/models/Post';
 import { checkPostOwnership, createErrorResponse, AuthUser } from '@/lib/middleware/auth';
 import { updatePostSchema, formatValidationErrors } from '@/lib/validations/post';
 import { broadcastEvent } from '@/lib/socket/socket-manager';
+import { verifyCSRFToken } from '@/lib/security/csrf';
 
 // 認証チェックヘルパー
 async function getAuthenticatedUser(req: NextRequest): Promise<AuthUser | null> {
@@ -109,6 +110,12 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // CSRF検証
+    const isValidCSRF = await verifyCSRFToken(req);
+    if (!isValidCSRF) {
+      return createErrorResponse('CSRFトークンが無効です', 403, 'CSRF_VALIDATION_FAILED');
+    }
+
     // 認証チェック
     const user = await getAuthenticatedUser(req);
     if (!user) {
@@ -190,6 +197,12 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // CSRF検証
+    const isValidCSRF = await verifyCSRFToken(req);
+    if (!isValidCSRF) {
+      return createErrorResponse('CSRFトークンが無効です', 403, 'CSRF_VALIDATION_FAILED');
+    }
+
     // 認証チェック
     const user = await getAuthenticatedUser(req);
     if (!user) {

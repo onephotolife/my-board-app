@@ -6,6 +6,7 @@ import Post from '@/lib/models/Post';
 import Comment from '@/lib/models/Comment';
 import { createErrorResponse, AuthUser } from '@/lib/middleware/auth';
 import { broadcastEvent } from '@/lib/socket/socket-manager';
+import { verifyCSRFToken } from '@/lib/security/csrf';
 
 // 認証チェックヘルパー
 async function getAuthenticatedUser(req: NextRequest): Promise<AuthUser | null> {
@@ -61,9 +62,9 @@ export async function DELETE(
     }
 
     // CSRFトークン検証
-    const csrfToken = req.headers.get('x-csrf-token');
-    if (!csrfToken) {
-      return createErrorResponse('CSRFトークンが必要です', 403, 'CSRF_TOKEN_MISSING');
+    const isValidCSRF = await verifyCSRFToken(req);
+    if (!isValidCSRF) {
+      return createErrorResponse('CSRFトークンが無効です', 403, 'CSRF_VALIDATION_FAILED');
     }
 
     const { id, commentId } = await params;

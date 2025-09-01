@@ -9,6 +9,7 @@ import { checkRateLimit, createErrorResponse, AuthUser } from '@/lib/middleware/
 import { createPostSchema, postFilterSchema, sanitizePostInput, formatValidationErrors } from '@/lib/validations/post';
 import { broadcastEvent } from '@/lib/socket/socket-manager';
 import { normalizePostDocuments, normalizePostDocument } from '@/lib/api/post-normalizer';
+import { verifyCSRFToken } from '@/lib/security/csrf';
 import { 
   CreatePostRequestSchema, 
   PostFilterSchema,
@@ -167,6 +168,12 @@ export async function GET(req: NextRequest) {
 // POST: 新規投稿作成（認証必須）
 export async function POST(req: NextRequest) {
   try {
+    // CSRF検証
+    const isValidCSRF = await verifyCSRFToken(req);
+    if (!isValidCSRF) {
+      return createErrorResponse('CSRFトークンが無効です', 403, 'CSRF_VALIDATION_FAILED');
+    }
+
     // クッキーのデバッグ情報
     const cookieDebug = {
       'next-auth.session-token': req.cookies.get('next-auth.session-token')?.value ? 'present' : 'missing',

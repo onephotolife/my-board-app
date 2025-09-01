@@ -5,6 +5,7 @@ import { connectDB } from '@/lib/db/mongodb-local';
 import Post from '@/lib/models/Post';
 import { createErrorResponse, AuthUser } from '@/lib/middleware/auth';
 import { broadcastEvent } from '@/lib/socket/socket-manager';
+import { verifyCSRFToken } from '@/lib/security/csrf';
 
 // 認証チェックヘルパー
 async function getAuthenticatedUser(req: NextRequest): Promise<AuthUser | null> {
@@ -86,6 +87,12 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // CSRF検証
+    const isValidCSRF = await verifyCSRFToken(req);
+    if (!isValidCSRF) {
+      return createErrorResponse('CSRFトークンが無効です', 403, 'CSRF_VALIDATION_FAILED');
+    }
+
     console.log('[LIKE-API-DEBUG] 🚀 Like POST request started:', {
       method: 'POST',
       timestamp: new Date().toISOString(),
@@ -221,6 +228,12 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // CSRF検証
+    const isValidCSRF = await verifyCSRFToken(req);
+    if (!isValidCSRF) {
+      return createErrorResponse('CSRFトークンが無効です', 403, 'CSRF_VALIDATION_FAILED');
+    }
+
     console.log('[LIKE-API-DEBUG] 🚀 Unlike DELETE request started:', {
       method: 'DELETE',
       timestamp: new Date().toISOString(),

@@ -151,3 +151,8 @@ tests/unit/*.js
 # 最終レポートは保持
 # my-posts-401-complete-fix-report.md
 # my-posts-401-fix-implementation-report.md
+# Backup files
+*.backup.*
+authenticated-test-results.json
+playwright/
+.serena/

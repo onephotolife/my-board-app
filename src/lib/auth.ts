@@ -10,6 +10,14 @@ import { EmailNotVerifiedError, InvalidPasswordError, UserNotFoundError } from "
 // ROOT CAUSE デバッグ - プロバイダー作成前
 console.log('🔍 [ROOT CAUSE] Creating authOptions at:', new Date().toISOString());
 
+// Phase 1 環境変数確認
+console.log('🔧 [PHASE1-CONFIG] Environment:', {
+  NODE_ENV: process.env.NODE_ENV,
+  TEST_MODE: process.env.NEXT_PUBLIC_TEST_MODE,
+  httpOnly: process.env.NODE_ENV === 'production' || process.env.NEXT_PUBLIC_TEST_MODE !== 'true',
+  timestamp: new Date().toISOString()
+});
+
 // NextAuth v4の設定
 export const authOptions: AuthOptions = {
   providers: [
@@ -262,6 +270,14 @@ export const authOptions: AuthOptions = {
         solution: 'SOL-2_SESSION_POPULATION'
       });
       
+      // Phase 1: セッション確立の詳細ログ
+      console.log('🔐 [PHASE1-SESSION] Session establishment:', {
+        testMode: process.env.NEXT_PUBLIC_TEST_MODE,
+        httpOnlyEnabled: process.env.NODE_ENV === 'production' || process.env.NEXT_PUBLIC_TEST_MODE !== 'true',
+        sessionEstablished: !!(token && token.id),
+        timestamp: new Date().toISOString()
+      });
+      
       // SOL-2: トークンデータをセッションに確実に伝播
       if (token) {
         // session.userが存在しない場合は作成
@@ -284,6 +300,13 @@ export const authOptions: AuthOptions = {
           emailVerified: session.user.emailVerified,
           hasAllFields: !!(session.user.id && session.user.email && session.user.name),
           sessionComplete: true
+        });
+        
+        // Phase 1: セッション確立成功の確認
+        console.log('✅ [PHASE1-SESSION-ESTABLISHED]', {
+          userId: session.user.id,
+          email: session.user.email,
+          timestamp: new Date().toISOString()
         });
       } else {
         console.error('❌ [Sol-Debug] SOL-2 | Token missing in session callback:', {
@@ -308,14 +331,16 @@ export const authOptions: AuthOptions = {
     maxAge: 30 * 24 * 60 * 60, // 30日
   },
   
-  // SOL-2: Cookie設定の統一
+  // SOL-2: Cookie設定の統一（Phase 1修正: 環境別httpOnly設定）
   cookies: {
     sessionToken: {
       name: process.env.NODE_ENV === 'production' 
         ? '__Secure-next-auth.session-token' 
         : 'next-auth.session-token',
       options: {
-        httpOnly: true,
+        // Phase 1: テスト環境でのみhttpOnlyを無効化
+        httpOnly: process.env.NODE_ENV === 'production' || 
+                  process.env.NEXT_PUBLIC_TEST_MODE !== 'true',
         sameSite: 'lax',
         path: '/',
         secure: process.env.NODE_ENV === 'production'

@@ -10,6 +10,7 @@ import Comment from '@/lib/models/Comment';
 import { createErrorResponse, AuthUser } from '@/lib/middleware/auth';
 import { broadcastEvent } from '@/lib/socket/socket-manager';
 import { verifyCSRFToken } from '@/lib/security/csrf';
+import notificationService from '@/lib/services/notificationService';
 
 // バリデーションスキーマ - 事前処理を使用
 const preprocessString = (val: unknown) => {
@@ -352,6 +353,24 @@ export async function POST(
         },
         commentCount: post.commentCount + 1
       });
+
+      // 通知作成（投稿者へ）
+      if (post.author && post.author.toString() !== user.id) {
+        notificationService.createCommentNotification(
+          user.id,
+          {
+            name: user.name,
+            email: user.email,
+            avatar: null
+          },
+          id,
+          post.author.toString(),
+          sanitizedContent.substring(0, 50) + '...'
+        ).catch(error => {
+          console.error('[COMMENT-NOTIFICATION-ERROR] Failed to create notification:', error);
+          // 通知作成の失敗はコメント投稿の成功に影響しない
+        });
+      }
 
       // ログ記録
       console.log('[COMMENT-SUCCESS] Comment created:', {

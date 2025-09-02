@@ -6,6 +6,7 @@ import Post from '@/lib/models/Post';
 import { createErrorResponse, AuthUser } from '@/lib/middleware/auth';
 import { broadcastEvent } from '@/lib/socket/socket-manager';
 import { verifyCSRFToken } from '@/lib/security/csrf';
+import notificationService from '@/lib/services/notificationService';
 
 // 認証チェックヘルパー
 async function getAuthenticatedUser(req: NextRequest): Promise<AuthUser | null> {
@@ -202,6 +203,26 @@ export async function POST(
 
     console.log('[LIKE-API-DEBUG] Broadcasting socket event:', eventData);
     broadcastEvent('post:liked', eventData);
+
+    // 通知作成（投稿者へ）
+    if (updatedPost.author && updatedPost.author.toString() !== user.id) {
+      const postPreview = updatedPost.title || updatedPost.content?.substring(0, 50) || '';
+      
+      notificationService.createLikeNotification(
+        user.id,
+        {
+          name: user.name,
+          email: user.email,
+          avatar: null
+        },
+        postId,
+        updatedPost.author.toString(),
+        postPreview + '...'
+      ).catch(error => {
+        console.error('[LIKE-NOTIFICATION-ERROR] Failed to create notification:', error);
+        // 通知作成の失敗はいいねの成功に影響しない
+      });
+    }
 
     return NextResponse.json({
       success: true,

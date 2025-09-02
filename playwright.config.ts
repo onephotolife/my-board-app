@@ -1,11 +1,12 @@
 import { defineConfig, devices } from '@playwright/test';
+import * as path from 'path';
 
 /**
  * Playwright E2Eテスト設定
- * フォロー機能のブラウザテスト用
+ * StorageState認証対応版
  */
 export default defineConfig({
-  testDir: './tests/e2e',
+  testDir: './tests',
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
@@ -29,9 +30,19 @@ export default defineConfig({
   },
 
   projects: [
+    // Setup project - runs first to authenticate
+    {
+      name: 'setup',
+      testMatch: /.*\.setup\.ts/,
+    },
+    // Main test projects - use saved auth state
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: { 
+        ...devices['Desktop Chrome'],
+        storageState: path.join(__dirname, 'playwright/.auth/user.json'),
+      },
+      dependencies: ['setup'],
     },
   ],
 

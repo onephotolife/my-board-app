@@ -48,6 +48,10 @@ docs/archive/
 *-report-*.md
 *-test-*.md
 test*.js
+*.log
+playwright-test-results.json
+simple-test.js
+full-notification-test.js
 test*.sh
 *.backup
 *.log.tmp

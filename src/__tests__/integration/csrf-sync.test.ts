@@ -8,16 +8,14 @@
  */
 
 import { NextRequest } from 'next/server';
+
 import { 
   CSRFSyncManager, 
-  getCSRFSyncManager,
   generateCSRFTokenForRequest,
-  verifyCSRFTokenForRequest,
   TokenState
 } from '@/lib/security/csrf-sync-manager';
 import { 
   verifyCSRFMiddleware,
-  handleCSRFTokenGeneration,
   createCSRFErrorResponse
 } from '@/lib/security/csrf-middleware';
 
@@ -131,7 +129,7 @@ describe('CSRF同期メカニズム 統合テスト', () => {
       expect(tokenInfo.state).toBe(TokenState.ACTIVE);
       expect(tokenInfo.expiresAt).toBeGreaterThan(Date.now());
       
-      console.log('[TEST-EVIDENCE] トークン生成成功:', {
+      console.warn('[TEST-EVIDENCE] トークン生成成功:', {
         tokenLength: tokenInfo.token.length,
         state: tokenInfo.state,
         sessionId: tokenInfo.sessionId,
@@ -147,7 +145,7 @@ describe('CSRF同期メカニズム 統合テスト', () => {
       
       expect(token1.token).toBe(token2.token);
       
-      console.log('[TEST-EVIDENCE] トークン再利用確認:', {
+      console.warn('[TEST-EVIDENCE] トークン再利用確認:', {
         firstToken: token1.token.substring(0, 10) + '...',
         secondToken: token2.token.substring(0, 10) + '...',
         identical: token1.token === token2.token,

@@ -1,45 +1,19 @@
 #!/bin/sh
-# pre-commit hook - Focused on TypeScript type definition import errors
-# Prevents commits with critical errors (.d/.d.ts imports)
+# pre-commit hook - Runs lint-staged for code quality checks
+# Executes ESLint, Prettier, and other checks on staged files
 
-echo "🔍 Running focused ESLint checks before commit..."
+echo "🔍 Running pre-commit checks..."
 
-# Check only for .d and .d.ts import violations in staged files
-STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(ts|tsx|js|jsx)$')
+# Run lint-staged
+npx lint-staged
 
-if [ -z "$STAGED_FILES" ]; then
-  echo "✅ No JavaScript/TypeScript files to check."
-  exit 0
-fi
-
-# Check for .d or .d.ts import violations
-VIOLATIONS_FOUND=false
-for file in $STAGED_FILES; do
-  if [ -f "$file" ]; then
-    # Check for .d or .d.ts imports
-    if grep -E "from\s+['\"][^'\"]+\.d(\.ts)?['\"]" "$file" > /dev/null 2>&1; then
-      echo "❌ Error in $file: Found .d or .d.ts extension in import"
-      echo "   TypeScript型定義ファイルは拡張子なしでインポートしてください"
-      echo "   例: import { Type } from '@/types/module'"
-      VIOLATIONS_FOUND=true
-    fi
-  fi
-done
-
-if [ "$VIOLATIONS_FOUND" = true ]; then
+# Check if lint-staged succeeded
+if [ $? -ne 0 ]; then
   echo ""
-  echo "❌ Pre-commit check failed: TypeScript import violations found"
-  echo "💡 Fix the .d/.d.ts extensions in imports before committing"
+  echo "❌ Pre-commit check failed. Please fix the issues above."
+  echo "💡 Some issues may be auto-fixable with 'npm run lint:fix'"
   exit 1
 fi
 
-# Optional: Run full lint on staged files only (commented out due to many existing errors)
-# echo "Running full ESLint on staged files..."
-# npx eslint $STAGED_FILES
-# if [ $? -ne 0 ]; then
-#   echo "❌ ESLint errors found. Run 'npm run lint:fix' to auto-fix some issues."
-#   exit 1
-# fi
-
-echo "✅ Pre-commit check passed. No .d/.d.ts import violations found."
+echo "✅ Pre-commit checks passed!"
 exit 0

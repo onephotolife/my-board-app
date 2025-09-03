@@ -4,18 +4,35 @@ import { renderHook } from '@testing-library/react';
 import { SessionProvider } from 'next-auth/react';
 import { CSRFProvider, useSecureFetch, useCSRFContext } from '../CSRFProvider';
 
+// CSRFTokenManager モック - DOM操作を完全に無効化
+const mockTokenManagerInstance = {
+  ensureToken: jest.fn().mockResolvedValue('test-csrf-token-123'),
+  refreshToken: jest.fn().mockResolvedValue('new-csrf-token-789'),
+  getCurrentToken: jest.fn().mockReturnValue('test-csrf-token-123'),
+  setToken: jest.fn(), // DOM操作を伴う setToken をモック化
+  isValid: jest.fn().mockReturnValue(true),
+};
+
+jest.mock('@/lib/security/csrf-token-manager', () => ({
+  CSRFTokenManager: {
+    getInstance: jest.fn(() => mockTokenManagerInstance),
+    reset: jest.fn(),
+  }
+}));
+
 // Fetch モック
 global.fetch = jest.fn();
-
-// Document モック
-const mockMetaTag = {
-  setAttribute: jest.fn(),
-  getAttribute: jest.fn(),
-};
 
 describe('CSRFProvider', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    
+    // CSRFTokenManagerモックのリセットと再設定
+    mockTokenManagerInstance.ensureToken.mockResolvedValue('test-csrf-token-123');
+    mockTokenManagerInstance.refreshToken.mockResolvedValue('new-csrf-token-789');
+    mockTokenManagerInstance.getCurrentToken.mockReturnValue('test-csrf-token-123');
+    mockTokenManagerInstance.setToken.mockClear();
+    mockTokenManagerInstance.isValid.mockReturnValue(true);
     
     // fetch モックの設定
     (global.fetch as jest.Mock).mockResolvedValue({
@@ -26,15 +43,25 @@ describe('CSRFProvider', () => {
         message: 'CSRF token generated successfully'
       }),
     });
-
-    // document.querySelector モック
-    jest.spyOn(document, 'querySelector').mockReturnValue(null);
-    jest.spyOn(document, 'createElement').mockReturnValue(mockMetaTag as any);
-    jest.spyOn(document.head, 'appendChild').mockImplementation(() => mockMetaTag as any);
   });
 
   afterEach(() => {
     jest.restoreAllMocks();
+    
+    // グローバル状態をクリーンアップ
+    if (typeof window !== 'undefined') {
+      delete window.csrfTokenInitialized;
+      delete window.__CSRF_INIT_IN_PROGRESS__;
+      delete window.__CSRF_INIT_PROMISE__;
+      delete window.__CSRF_TOKEN_CACHE__;
+      delete window.__CSRF_MOUNT_COUNT__;
+      delete window.__CSRF_MOUNT_HISTORY__;
+      delete window.__API_CALL_TRACKER__;
+    }
+    
+    // CSRFTokenManagerをリセット
+    const { CSRFTokenManager } = require('@/lib/security/csrf-token-manager');
+    CSRFTokenManager.reset();
   });
 
   describe('CSRFProvider 初期化', () => {
@@ -45,28 +72,30 @@ describe('CSRFProvider', () => {
         </SessionProvider>
       );
 
-      renderHook(() => useCSRFContext(), { wrapper });
+      const { result } = renderHook(() => useCSRFContext(), { wrapper });
 
       await waitFor(() => {
-        expect(global.fetch).toHaveBeenCalledWith('/api/csrf', {
-          method: 'GET',
-          credentials: 'include',
-        });
+        // CSRFTokenManagerのensureTokenが呼ばれることを確認
+        expect(mockTokenManagerInstance.ensureToken).toHaveBeenCalled();
+        // コンテキストからトークンが取得できることを確認
+        expect(result.current.token).toBe('test-csrf-token-123');
       });
     });
 
-    it('トークン取得後にメタタグを設定する', async () => {
+    it('initialTokenが提供された場合にsetTokenが呼ばれる', async () => {
       const wrapper = ({ children }: { children: React.ReactNode }) => (
         <SessionProvider session={null}>
-          <CSRFProvider>{children}</CSRFProvider>
+          <CSRFProvider initialToken="initial-csrf-token-456">{children}</CSRFProvider>
         </SessionProvider>
       );
 
-      renderHook(() => useCSRFContext(), { wrapper });
+      const { result } = renderHook(() => useCSRFContext(), { wrapper });
 
       await waitFor(() => {
-        expect(mockMetaTag.setAttribute).toHaveBeenCalledWith('name', 'app-csrf-token');
-        expect(mockMetaTag.setAttribute).toHaveBeenCalledWith('content', 'test-csrf-token-123');
+        // initialTokenが提供された場合、CSRFTokenManagerのsetTokenが呼ばれることを確認
+        expect(mockTokenManagerInstance.setToken).toHaveBeenCalledWith('initial-csrf-token-456');
+        // トークンがコンテキストに正しく設定されることを確認
+        expect(result.current.token).toBe('initial-csrf-token-456');
       });
     });
   });
@@ -94,21 +123,14 @@ describe('CSRFProvider', () => {
     });
 
     it('POSTリクエストでトークンが初期化されるまで待機する', async () => {
-      // 遅延させたトークン取得をシミュレート
+      // ensureTokenを遅延させるモック
       let tokenResolve: (value: any) => void;
       const tokenPromise = new Promise((resolve) => {
         tokenResolve = resolve;
       });
       
-      (global.fetch as jest.Mock).mockImplementation((url) => {
-        if (url === '/api/csrf') {
-          return tokenPromise;
-        }
-        return Promise.resolve({
-          ok: true,
-          json: async () => ({ success: true }),
-        });
-      });
+      // CSRFTokenManagerのensureTokenを遅延モックに変更
+      mockTokenManagerInstance.ensureToken.mockImplementation(() => tokenPromise);
 
       const wrapper = ({ children }: { children: React.ReactNode }) => (
         <SessionProvider session={null}>
@@ -118,7 +140,7 @@ describe('CSRFProvider', () => {
 
       const { result } = renderHook(() => useSecureFetch(), { wrapper });
 
-      // POSTリクエストを開始（まだトークンが無い）
+      // POSTリクエストを開始（トークンが遅延中）
       let postPromise: Promise<any>;
       act(() => {
         const secureFetch = result.current;
@@ -128,23 +150,13 @@ describe('CSRFProvider', () => {
         });
       });
 
-      // トークンがまだ取得されていないことを確認
-      expect((global.fetch as jest.Mock)).toHaveBeenCalledWith('/api/csrf', {
-        method: 'GET',
-        credentials: 'include',
-      });
+      // CSRFTokenManagerのensureTokenが呼ばれることを確認
+      expect(mockTokenManagerInstance.ensureToken).toHaveBeenCalled();
 
       // トークン取得を解決
       await act(async () => {
-        tokenResolve!({
-          ok: true,
-          json: async () => ({
-            token: 'delayed-token-456',
-            header: 'x-csrf-token',
-            message: 'CSRF token generated successfully'
-          }),
-        });
-        await new Promise(resolve => setTimeout(resolve, 300));
+        tokenResolve!('delayed-token-456');
+        await new Promise(resolve => setTimeout(resolve, 100));
       });
 
       // POSTリクエストが完了するまで待つ

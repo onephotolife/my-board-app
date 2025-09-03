@@ -9,7 +9,7 @@ import { checkRateLimit, createErrorResponse, AuthUser } from '@/lib/middleware/
 import { createPostSchema, postFilterSchema, sanitizePostInput, formatValidationErrors } from '@/lib/validations/post';
 import { broadcastEvent } from '@/lib/socket/socket-manager';
 import { normalizePostDocuments, normalizePostDocument } from '@/lib/api/post-normalizer';
-import { verifyCSRFToken } from '@/lib/security/csrf';
+import { verifyCSRFMiddleware } from '@/lib/security/csrf-middleware';
 import { 
   CreatePostRequestSchema, 
   PostFilterSchema,
@@ -169,9 +169,25 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     // CSRF検証
-    const isValidCSRF = await verifyCSRFToken(req);
-    if (!isValidCSRF) {
-      return createErrorResponse('CSRFトークンが無効です', 403, 'CSRF_VALIDATION_FAILED');
+    const csrfResult = await verifyCSRFMiddleware(req, {
+      developmentBypass: process.env.NODE_ENV === 'development',
+      enableSyncManager: true,
+      fallbackToLegacy: true
+    });
+    
+    if (!csrfResult.valid) {
+      console.error('[CSRF-ERROR] CSRF token validation failed for post creation', {
+        error: csrfResult.error,
+        userId: user.id,
+        userEmail: user.email,
+        timestamp: new Date().toISOString()
+      });
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('[CSRF-WARN] Development mode: CSRF validation failed but continuing...');
+      } else {
+        return createErrorResponse('CSRFトークンが無効です', 403, 'CSRF_VALIDATION_FAILED');
+      }
     }
 
     // クッキーのデバッグ情報

@@ -87,9 +87,22 @@ export async function csrfFetch(
     return fetch(url, options);
   }
   
-  // メタタグからトークンを取得
-  const metaTag = document.querySelector('meta[name="app-csrf-token"]');
-  const token = metaTag?.getAttribute('content');
+  // まずクッキーからトークンを取得を試みる
+  let token = null;
+  const cookies = document.cookie.split(';');
+  for (const cookie of cookies) {
+    const [name, value] = cookie.trim().split('=');
+    if (name === 'csrf-token-public' || name === 'app-csrf-token') {
+      token = value;
+      break;
+    }
+  }
+  
+  // クッキーから取得できない場合はメタタグから取得
+  if (!token) {
+    const metaTag = document.querySelector('meta[name="app-csrf-token"]');
+    token = metaTag?.getAttribute('content');
+  }
   
   if (!token) {
     console.warn('CSRF token not found for request:', url);

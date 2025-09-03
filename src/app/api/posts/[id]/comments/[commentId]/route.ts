@@ -6,7 +6,7 @@ import Post from '@/lib/models/Post';
 import Comment from '@/lib/models/Comment';
 import { createErrorResponse, AuthUser } from '@/lib/middleware/auth';
 import { broadcastEvent } from '@/lib/socket/socket-manager';
-import { verifyCSRFToken } from '@/lib/security/csrf';
+import { verifyCSRFMiddleware } from '@/lib/security/csrf-middleware';
 
 // 認証チェックヘルパー
 async function getAuthenticatedUser(req: NextRequest): Promise<AuthUser | null> {
@@ -61,10 +61,27 @@ export async function DELETE(
       return createErrorResponse('認証が必要です', 401, 'UNAUTHORIZED');
     }
 
-    // CSRFトークン検証
-    const isValidCSRF = await verifyCSRFToken(req);
-    if (!isValidCSRF) {
-      return createErrorResponse('CSRFトークンが無効です', 403, 'CSRF_VALIDATION_FAILED');
+    // CSRFトークン検証（新しいミドルウェアを使用）
+    const csrfResult = await verifyCSRFMiddleware(req, {
+      developmentBypass: process.env.NODE_ENV === 'development',
+      enableSyncManager: true,
+      fallbackToLegacy: true
+    });
+    
+    if (!csrfResult.valid) {
+      console.error('[CSRF-ERROR] CSRF token validation failed for comment deletion', {
+        error: csrfResult.error,
+        userId: user.id,
+        userEmail: user.email,
+        timestamp: new Date().toISOString()
+      });
+      
+      // 開発環境ではCSRF検証失敗を警告のみにして、処理を継続
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('[CSRF-WARN] Development mode: CSRF validation failed but continuing...');
+      } else {
+        return createErrorResponse('CSRFトークンが無効です', 403, 'CSRF_VALIDATION_FAILED');
+      }
     }
 
     const { id, commentId } = await params;

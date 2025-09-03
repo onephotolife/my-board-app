@@ -15,6 +15,7 @@ const customJestConfig = {
     '^@auth/(.*)$': '<rootDir>/node_modules/@auth/$1',
     '^(\\.{1,2}/.*)\\.js$': '$1',
     // ESMモジュールのモック
+    '^next-auth$': '<rootDir>/src/__mocks__/next-auth.js',
     '^next-auth/providers/credentials$': '<rootDir>/src/__mocks__/next-auth-credentials.js',
     '^mongodb$': '<rootDir>/src/__mocks__/mongodb.js',
     '^mongoose$': '<rootDir>/src/__mocks__/mongoose.js',
@@ -42,7 +43,7 @@ const customJestConfig = {
     },
   },
   transformIgnorePatterns: [
-    '/node_modules/(?!(next-auth|@auth|@auth/core|bson|mongodb|mongoose|mongodb-memory-server|uuid)/)',
+    '/node_modules/(?!(next-auth|@auth|@auth/core|jose|openid-client|bson|mongodb|mongoose|mongodb-memory-server|uuid)/)',
   ],
   testPathIgnorePatterns: [
     '<rootDir>/.next/',

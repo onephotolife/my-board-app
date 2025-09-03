@@ -91,11 +91,24 @@ export async function verifyCSRFToken(
   }
   
   try {
-    // Cookieからトークンを取得（開発環境と本番環境で異なるCookie名）
-    const csrfCookieName = process.env.NODE_ENV === 'production' ? CSRF_COOKIE_NAME : 'app-csrf-token';
-    const cookieToken = request.cookies.get(csrfCookieName)?.value;
+    // Cookieからトークンを取得（複数のCookie名を試す）
+    let cookieToken = null;
+    const cookieNames = [
+      process.env.NODE_ENV === 'production' ? CSRF_COOKIE_NAME : 'app-csrf-token',
+      'csrf-token-public',
+      'app-csrf-token'
+    ];
+    
+    for (const cookieName of cookieNames) {
+      const token = request.cookies.get(cookieName)?.value;
+      if (token) {
+        cookieToken = token;
+        break;
+      }
+    }
+    
     if (!cookieToken) {
-      console.warn('CSRF: Cookie token not found');
+      console.warn('CSRF: Cookie token not found in any of:', cookieNames);
       return false;
     }
     
@@ -131,13 +144,38 @@ export async function verifyCSRFToken(
     }
     
     // トークンの比較（タイミング攻撃対策）
+    // デバッグ情報を追加
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[CSRF] Token comparison:', {
+        cookieToken: cookieToken.substring(0, 10) + '...',
+        requestToken: requestToken.substring(0, 10) + '...',
+        cookieTokenLength: cookieToken.length,
+        requestTokenLength: requestToken.length,
+        path: pathname,
+        method: request.method
+      });
+    }
+    
     const isValid = crypto.timingSafeEqual(
       Buffer.from(cookieToken),
       Buffer.from(requestToken)
     );
     
     if (!isValid) {
-      console.warn('CSRF: Token mismatch');
+      console.warn('[CSRF] Token mismatch:', {
+        cookieTokenSample: cookieToken.substring(0, 10) + '...',
+        headerTokenSample: requestToken.substring(0, 10) + '...',
+        path: pathname,
+        method: request.method
+      });
+      
+      // 開発環境ではCSRFトークン不一致でも警告だけ出して通す
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('[CSRF-DEV] Development mode: CSRF token validation failed but allowing request:', pathname);
+        console.warn('[CSRF-DEV] NODE_ENV:', process.env.NODE_ENV);
+        // 開発環境では一時的にtrueを返す（デバッグ用）
+        // return true;
+      }
       return false;
     }
     

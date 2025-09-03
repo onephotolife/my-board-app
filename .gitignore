@@ -160,3 +160,6 @@ tests/unit/*.js
 authenticated-test-results.json
 playwright/
 .serena/
+# Development utilities
+*-csrf-test.js
+clear-cookies-and-test.js

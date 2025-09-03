@@ -102,7 +102,7 @@ export class CSRFProtection {
     const { cookieToken, headerToken, sessionToken } = this.getTokenFromRequest(request);
     
     // PRIORITY-2-DEBUG: CSRFトークンの詳細ログ
-    console.log('[CSRF-P2-DEBUG] Token validation details:', {
+    console.warn('[CSRF-P2-DEBUG] Token validation details:', {
       path: request.nextUrl.pathname,
       method: request.method,
       hasCookie: !!cookieToken,

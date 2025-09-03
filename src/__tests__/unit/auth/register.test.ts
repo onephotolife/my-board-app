@@ -104,4 +104,4 @@ describe('Register API Simple Tests', () => {
   });
 });
 
-console.log('【天才会議】シンプルテスト: 基本構造確認完了 ✅');
+console.warn('【天才会議】シンプルテスト: 基本構造確認完了 ✅');

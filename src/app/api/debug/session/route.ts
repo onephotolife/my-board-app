@@ -5,19 +5,19 @@ import { cookies } from 'next/headers';
 import { auth } from '@/lib/auth';
 
 export async function GET(request: Request) {
-  console.log('🔍 セッションデバッグ開始');
+  console.warn('🔍 セッションデバッグ開始');
   
   try {
     // 1. NextAuth セッションの取得
     const session = await auth();
-    console.log('📊 NextAuth セッション:', session);
+    console.warn('📊 NextAuth セッション:', session);
     
     // 2. JWTトークンの取得
     const token = await getToken({ 
       req: request as any,
       secret: process.env.NEXTAUTH_SECRET 
     });
-    console.log('🎫 JWT トークン:', token);
+    console.warn('🎫 JWT トークン:', token);
     
     // 3. Cookieの確認
     const cookieStore = await cookies();
@@ -27,7 +27,7 @@ export async function GET(request: Request) {
       c.name.includes('next-auth') ||
       c.name.includes('session')
     );
-    console.log('🍪 認証関連Cookie:', authCookies);
+    console.warn('🍪 認証関連Cookie:', authCookies);
     
     // 4. 環境変数の確認（値は隠す）
     const envCheck = {
@@ -35,7 +35,7 @@ export async function GET(request: Request) {
       NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET ? '✅ 設定済み' : '❌ 未設定',
       NODE_ENV: process.env.NODE_ENV,
     };
-    console.log('🔧 環境変数:', envCheck);
+    console.warn('🔧 環境変数:', envCheck);
     
     // 5. リクエストヘッダーの確認
     const headers = {
@@ -45,7 +45,7 @@ export async function GET(request: Request) {
       'x-forwarded-proto': request.headers.get('x-forwarded-proto'),
       'x-forwarded-host': request.headers.get('x-forwarded-host'),
     };
-    console.log('📋 リクエストヘッダー:', headers);
+    console.warn('📋 リクエストヘッダー:', headers);
     
     const debugInfo = {
       timestamp: new Date().toISOString(),
@@ -79,7 +79,7 @@ export async function GET(request: Request) {
       },
     };
     
-    console.log('🎯 デバッグ情報全体:', JSON.stringify(debugInfo, null, 2));
+    console.warn('🎯 デバッグ情報全体:', JSON.stringify(debugInfo, null, 2));
     
     return NextResponse.json(debugInfo, {
       status: 200,

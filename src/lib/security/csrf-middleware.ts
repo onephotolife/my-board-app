@@ -189,7 +189,7 @@ export async function verifyCSRFMiddleware(
   if (mergedConfig.fallbackToLegacy) {
     const isValid = await legacyVerifyCSRFToken(req, token);
     if (isValid) {
-      console.log('[CSRF-MW] Fallback to legacy verification succeeded');
+      console.warn('[CSRF-MW] Fallback to legacy verification succeeded');
       return { valid: true };
     }
   }

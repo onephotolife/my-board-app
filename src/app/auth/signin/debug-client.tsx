@@ -19,7 +19,7 @@ export function DebugClient() {
       }
       
       localStorage.setItem('auth-debug-logs', JSON.stringify(existingLogs));
-      console.log(`[AUTH-DEBUG] ${message}`, data);
+      console.warn(`[AUTH-DEBUG] ${message}`, data);
     };
     
     // ページロード情報を記録

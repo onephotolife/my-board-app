@@ -26,28 +26,28 @@ export default function RealtimeBoardWrapper({
   const [showNotification, setShowNotification] = useState(false);
 
   const handleNewPost = useCallback((data: any) => {
-    console.log('📝 New post in wrapper:', data);
+    console.warn('📝 New post in wrapper:', data);
     setNotification(`${data.author.name}さんが新しい投稿を作成しました`);
     setShowNotification(true);
     onNewPost?.(data.post);
   }, [onNewPost]);
 
   const handlePostUpdated = useCallback((data: any) => {
-    console.log('✏️ Post updated in wrapper:', data);
+    console.warn('✏️ Post updated in wrapper:', data);
     setNotification(`${data.author.name}さんが投稿を編集しました`);
     setShowNotification(true);
     onPostUpdated?.(data.post);
   }, [onPostUpdated]);
 
   const handlePostDeleted = useCallback((data: any) => {
-    console.log('🗑️ Post deleted in wrapper:', data);
+    console.warn('🗑️ Post deleted in wrapper:', data);
     setNotification(`${data.author.name}さんが投稿を削除しました`);
     setShowNotification(true);
     onPostDeleted?.(data.postId);
   }, [onPostDeleted]);
 
   const handlePostLiked = useCallback((data: any) => {
-    console.log('❤️ Post liked in wrapper:', data);
+    console.warn('❤️ Post liked in wrapper:', data);
     onPostLiked?.(data);
   }, [onPostLiked]);
 

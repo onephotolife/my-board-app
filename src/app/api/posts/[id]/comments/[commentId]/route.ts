@@ -22,20 +22,20 @@ async function getAuthenticatedUser(req: NextRequest): Promise<AuthUser | null> 
         : 'next-auth.session-token'
     });
 
-    console.log('[COMMENT-DELETE-AUTH-DEBUG] Token validation:', {
+    console.warn('[COMMENT-DELETE-AUTH-DEBUG] Token validation:', {
       hasToken: !!token,
       environment: process.env.NODE_ENV,
       timestamp: new Date().toISOString()
     });
 
     if (!token) {
-      console.log('[COMMENT-DELETE-AUTH-DEBUG] No token found');
+      console.warn('[COMMENT-DELETE-AUTH-DEBUG] No token found');
       return null;
     }
 
     // メール確認チェック
     if (!token.emailVerified) {
-      console.log('[COMMENT-DELETE-AUTH-DEBUG] Email not verified');
+      console.warn('[COMMENT-DELETE-AUTH-DEBUG] Email not verified');
       return null;
     }
 
@@ -120,7 +120,7 @@ export async function DELETE(
 
     // 権限チェック（コメントの所有者のみ削除可能）
     if (comment.author._id !== user.id) {
-      console.log('[COMMENT-DELETE-ERROR] Permission denied:', {
+      console.warn('[COMMENT-DELETE-ERROR] Permission denied:', {
         commentId,
         commentAuthor: comment.author._id,
         userId: user.id,
@@ -144,7 +144,7 @@ export async function DELETE(
     });
 
     // 監査ログ記録
-    console.log('[COMMENT-SUCCESS] Comment deleted:', {
+    console.warn('[COMMENT-SUCCESS] Comment deleted:', {
       commentId,
       postId: id,
       userId: user.id,

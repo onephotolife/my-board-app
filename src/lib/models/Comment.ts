@@ -49,7 +49,7 @@ const CommentSchema = new Schema<IComment>(
       validate: {
         validator: function(v: string) {
           // 基本的なバリデーション（DOMPurifyはAPI層とフロントエンドで処理）
-          console.log('[COMMENT-MODEL-DEBUG] Basic validation:', {
+          console.warn('[COMMENT-MODEL-DEBUG] Basic validation:', {
             content: v.substring(0, 50),
             length: v.length,
             timestamp: new Date().toISOString()

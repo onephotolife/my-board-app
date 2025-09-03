@@ -37,10 +37,10 @@ function ProvidersWithData({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // セッションがある場合、初期データを並列フェッチ
     if (session && !dataFetched) {
-      console.log('[PERF] Starting parallel initial data fetch');
+      console.warn('[PERF] Starting parallel initial data fetch');
       fetchInitialDataClient().then((data) => {
         if (data) {
-          console.log('[PERF] Initial data fetched successfully:', {
+          console.warn('[PERF] Initial data fetched successfully:', {
             fetchTime: data.fetchTime ? `${data.fetchTime.toFixed(2)}ms` : 'N/A'
           });
           setInitialData(data);
@@ -55,7 +55,7 @@ function ProvidersWithData({ children }: { children: React.ReactNode }) {
 
   // デバッグログ
   if (initialData && process.env.NODE_ENV === 'development') {
-    console.log('[PERF] ProvidersWithData using initial data:', {
+    console.warn('[PERF] ProvidersWithData using initial data:', {
       hasUserProfile: !!initialData.userProfile,
       hasPermissions: !!initialData.permissions,
       hasCSRFToken: !!initialData.csrfToken,

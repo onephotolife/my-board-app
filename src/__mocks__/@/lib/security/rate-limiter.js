@@ -4,7 +4,7 @@ class RateLimiter {
     this.options = options;
   }
 
-  async consume(key) {
+  async consume(_key) {
     // デフォルトではレート制限に引っかからない
     return Promise.resolve({
       remainingPoints: 10,
@@ -14,11 +14,11 @@ class RateLimiter {
     });
   }
 
-  async delete(key) {
+  async delete(_key) {
     return Promise.resolve();
   }
 
-  async get(key) {
+  async get(_key) {
     return Promise.resolve({
       remainingPoints: 10,
       msBeforeNext: 0,

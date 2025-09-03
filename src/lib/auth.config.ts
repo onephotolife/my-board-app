@@ -22,7 +22,7 @@ export const authConfig = {
 
           await connectDB();
           
-          console.log('🔐 認証試行:', credentials.email);
+          console.warn('🔐 認証試行:', credentials.email);
           
           // まずユーザーの存在を確認
           const user = await User.findOne({ 
@@ -30,7 +30,7 @@ export const authConfig = {
           });
           
           if (user) {
-            console.log('👤 ユーザー情報:', {
+            console.warn('👤 ユーザー情報:', {
               email: user.email,
               emailVerified: user.emailVerified,
               hasPassword: !!user.password
@@ -50,7 +50,7 @@ export const authConfig = {
           // オブジェクトに変換して確実にフィールドを取得
           const userObject = latestUser ? latestUser.toObject() : null;
           
-          console.log('🔄 最新ユーザーデータ:', {
+          console.warn('🔄 最新ユーザーデータ:', {
             emailVerified: userObject?.emailVerified,
             emailVerifiedType: typeof userObject?.emailVerified,
             hasEmailVerified: 'emailVerified' in (userObject || {}),
@@ -69,16 +69,16 @@ export const authConfig = {
           
           // undefinedまたはnullの場合は、古いユーザーとして扱う
           if (userObject?.emailVerified === undefined || userObject?.emailVerified === null) {
-            console.log('⚠️ emailVerifiedが未設定のユーザー:', user.email);
+            console.warn('⚠️ emailVerifiedが未設定のユーザー:', user.email);
             // 2024年以前のユーザーは自動的に確認済みとする
             const createdAt = userObject?.createdAt || new Date('2023-01-01');
             const isOldUser = new Date(createdAt) < new Date('2024-01-01');
             
             if (isOldUser) {
-              console.log('✅ 古いユーザーとして自動承認:', user.email);
+              console.warn('✅ 古いユーザーとして自動承認:', user.email);
               // 古いユーザーは承認済みとして扱う
             } else if (!skipEmailVerification && !isEmailVerified) {
-              console.log('⛔ メール未確認のためログイン拒否:', {
+              console.warn('⛔ メール未確認のためログイン拒否:', {
                 emailVerified: userObject?.emailVerified,
                 type: typeof userObject?.emailVerified
               });
@@ -91,7 +91,7 @@ export const authConfig = {
               };
             }
           } else if (!skipEmailVerification && !isEmailVerified) {
-            console.log('⛔ メール未確認のためログイン拒否:', {
+            console.warn('⛔ メール未確認のためログイン拒否:', {
               emailVerified: userObject?.emailVerified,
               type: typeof userObject?.emailVerified
             });
@@ -105,14 +105,14 @@ export const authConfig = {
           }
 
           const isPasswordValid = await latestUser?.comparePassword(credentials.password as string);
-          console.log('🔑 パスワード検証:', isPasswordValid ? '✅ 成功' : '❌ 失敗');
+          console.warn('🔑 パスワード検証:', isPasswordValid ? '✅ 成功' : '❌ 失敗');
 
           if (!isPasswordValid) {
             // パスワードが間違っている（セキュリティのため詳細は隠す）
             return null;
           }
 
-          console.log('✅ 認証成功:', latestUser.email);
+          console.warn('✅ 認証成功:', latestUser.email);
           return {
             id: latestUser._id.toString(),
             email: latestUser.email,
@@ -135,7 +135,7 @@ export const authConfig = {
   callbacks: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async signIn({ user, account }: any) {
-      console.log('🎯 signInコールバック開始:', {
+      console.warn('🎯 signInコールバック開始:', {
         provider: account?.provider,
         userId: user?.id,
         userEmail: user?.email,
@@ -146,13 +146,13 @@ export const authConfig = {
       if (account?.provider === 'credentials') {
         // ユーザーオブジェクトがない場合は、認証失敗
         if (!user) {
-          console.log('❌ signIn: ユーザーオブジェクトなし');
+          console.warn('❌ signIn: ユーザーオブジェクトなし');
           return false;
         }
         // メール未確認チェック
         if (user.id === "email-not-verified") {
           // メール未確認の場合はfalseを返す（エラーはクライアント側で処理）
-          console.log('📧 メール未確認のためログイン拒否');
+          console.warn('📧 メール未確認のためログイン拒否');
           return false;
         }
         
@@ -164,13 +164,13 @@ export const authConfig = {
               $inc: { loginCount: 1 },
               lastLogin: new Date()
             });
-            console.log('✅ ログイン統計更新完了');
+            console.warn('✅ ログイン統計更新完了');
           } catch (error) {
             console.error('Failed to update login stats:', error);
           }
         }
       }
-      console.log('✅ signInコールバック: trueを返します');
+      console.warn('✅ signInコールバック: trueを返します');
       return true;
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

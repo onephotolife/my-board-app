@@ -223,5 +223,5 @@ export const CloseIcon = dynamic(
 
 // デバッグログ
 if (process.env.NODE_ENV === 'development') {
-  console.log('[PERF] LazyMUI: Material-UI components configured for dynamic import');
+  console.warn('[PERF] LazyMUI: Material-UI components configured for dynamic import');
 }

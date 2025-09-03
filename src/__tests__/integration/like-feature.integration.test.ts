@@ -18,13 +18,13 @@ const REQUIRED_AUTH = {
 
 describe('Like Feature - Integration Tests (認証必須)', () => {
   beforeAll(async () => {
-    console.log('[LIKE-INTEGRATION-DEBUG] 🚀 Setting up integration test environment');
+    console.warn('[LIKE-INTEGRATION-DEBUG] 🚀 Setting up integration test environment');
     
     // インメモリMongoDBサーバーを起動
     mongoServer = await MongoMemoryServer.create();
     const mongoUri = mongoServer.getUri();
     await mongoose.connect(mongoUri);
-    console.log('[LIKE-INTEGRATION-DEBUG] ✅ MongoDB Memory Server connected');
+    console.warn('[LIKE-INTEGRATION-DEBUG] ✅ MongoDB Memory Server connected');
 
     // 🔐 必須: 指定された認証情報でテストユーザーを作成
     const hashedPassword = await bcrypt.hash(REQUIRED_AUTH.password, 10);
@@ -36,7 +36,7 @@ describe('Like Feature - Integration Tests (認証必須)', () => {
       emailVerified: true,
     });
     
-    console.log('[LIKE-INTEGRATION-DEBUG] ✅ Required auth user created:', {
+    console.warn('[LIKE-INTEGRATION-DEBUG] ✅ Required auth user created:', {
       email: testUser.email,
       emailVerified: testUser.emailVerified,
       userId: testUser._id.toString()
@@ -56,7 +56,7 @@ describe('Like Feature - Integration Tests (認証必須)', () => {
       likes: [], // 初期状態：いいねなし
     });
     
-    console.log('[LIKE-INTEGRATION-DEBUG] ✅ Test post created:', {
+    console.warn('[LIKE-INTEGRATION-DEBUG] ✅ Test post created:', {
       postId: testPost._id.toString(),
       authorId: testPost.author._id,
       initialLikes: testPost.likes.length
@@ -64,19 +64,19 @@ describe('Like Feature - Integration Tests (認証必須)', () => {
   });
 
   afterAll(async () => {
-    console.log('[LIKE-INTEGRATION-DEBUG] 🧹 Cleaning up integration test environment');
+    console.warn('[LIKE-INTEGRATION-DEBUG] 🧹 Cleaning up integration test environment');
     await mongoose.disconnect();
     await mongoServer.stop();
-    console.log('[LIKE-INTEGRATION-DEBUG] ✅ MongoDB Memory Server stopped');
+    console.warn('[LIKE-INTEGRATION-DEBUG] ✅ MongoDB Memory Server stopped');
   });
 
   beforeEach(() => {
-    console.log('[LIKE-INTEGRATION-DEBUG] 🔄 Starting new integration test case');
+    console.warn('[LIKE-INTEGRATION-DEBUG] 🔄 Starting new integration test case');
   });
 
   describe('🔐 認証統合テスト', () => {
     it('✅ [INT-AUTH-001] 指定認証情報でのログイン検証', async () => {
-      console.log('[LIKE-INTEGRATION-DEBUG] Testing required authentication credentials');
+      console.warn('[LIKE-INTEGRATION-DEBUG] Testing required authentication credentials');
       
       // パスワード検証
       const isValidPassword = await bcrypt.compare(REQUIRED_AUTH.password, testUser.password);
@@ -85,7 +85,7 @@ describe('Like Feature - Integration Tests (認証必須)', () => {
       expect(testUser.emailVerified).toBe(true);
       expect(isValidPassword).toBe(true);
       
-      console.log('[LIKE-INTEGRATION-DEBUG] ✅ Required auth credentials validated:', {
+      console.warn('[LIKE-INTEGRATION-DEBUG] ✅ Required auth credentials validated:', {
         email: 'one.photolife+1@gmail.com',
         passwordVerified: isValidPassword,
         emailVerified: testUser.emailVerified
@@ -93,7 +93,7 @@ describe('Like Feature - Integration Tests (認証必須)', () => {
     });
 
     it('✅ [INT-AUTH-002] セッションベース認証フロー', () => {
-      console.log('[LIKE-INTEGRATION-DEBUG] Testing session-based auth flow');
+      console.warn('[LIKE-INTEGRATION-DEBUG] Testing session-based auth flow');
       
       const mockSession = {
         user: {
@@ -109,19 +109,19 @@ describe('Like Feature - Integration Tests (認証必須)', () => {
       expect(mockSession.user.email).toBe(REQUIRED_AUTH.email);
       expect(mockSession.user.emailVerified).toBe(true);
       
-      console.log('[LIKE-INTEGRATION-DEBUG] ✅ Session-based auth flow verified');
+      console.warn('[LIKE-INTEGRATION-DEBUG] ✅ Session-based auth flow verified');
     });
   });
 
   describe('🎯 いいね機能統合テスト', () => {
     it('✅ [INT-LIKE-001] toggleLikeメソッド - いいね追加', async () => {
-      console.log('[LIKE-INTEGRATION-DEBUG] Testing toggleLike method - add like');
+      console.warn('[LIKE-INTEGRATION-DEBUG] Testing toggleLike method - add like');
       
       const userId = testUser._id.toString();
       
       // いいね前の状態確認
       expect(testPost.likes).toEqual([]);
-      console.log('[LIKE-INTEGRATION-DEBUG] Initial state - no likes:', testPost.likes);
+      console.warn('[LIKE-INTEGRATION-DEBUG] Initial state - no likes:', testPost.likes);
       
       // いいね追加
       await testPost.toggleLike(userId);
@@ -131,7 +131,7 @@ describe('Like Feature - Integration Tests (認証必須)', () => {
       expect(testPost.likes).toContain(userId);
       expect(testPost.likes.length).toBe(1);
       
-      console.log('[LIKE-INTEGRATION-DEBUG] ✅ Like added successfully:', {
+      console.warn('[LIKE-INTEGRATION-DEBUG] ✅ Like added successfully:', {
         userId,
         newLikesCount: testPost.likes.length,
         likes: testPost.likes
@@ -139,7 +139,7 @@ describe('Like Feature - Integration Tests (認証必須)', () => {
     });
 
     it('✅ [INT-LIKE-002] toggleLikeメソッド - いいね削除', async () => {
-      console.log('[LIKE-INTEGRATION-DEBUG] Testing toggleLike method - remove like');
+      console.warn('[LIKE-INTEGRATION-DEBUG] Testing toggleLike method - remove like');
       
       const userId = testUser._id.toString();
       
@@ -147,7 +147,7 @@ describe('Like Feature - Integration Tests (認証必須)', () => {
       await testPost.toggleLike(userId);
       await testPost.reload();
       expect(testPost.likes).toContain(userId);
-      console.log('[LIKE-INTEGRATION-DEBUG] Pre-state - like exists:', testPost.likes);
+      console.warn('[LIKE-INTEGRATION-DEBUG] Pre-state - like exists:', testPost.likes);
       
       // いいね削除
       await testPost.toggleLike(userId);
@@ -157,7 +157,7 @@ describe('Like Feature - Integration Tests (認証必須)', () => {
       expect(testPost.likes).not.toContain(userId);
       expect(testPost.likes.length).toBe(0);
       
-      console.log('[LIKE-INTEGRATION-DEBUG] ✅ Like removed successfully:', {
+      console.warn('[LIKE-INTEGRATION-DEBUG] ✅ Like removed successfully:', {
         userId,
         newLikesCount: testPost.likes.length,
         likes: testPost.likes
@@ -165,7 +165,7 @@ describe('Like Feature - Integration Tests (認証必須)', () => {
     });
 
     it('✅ [INT-LIKE-003] 複数ユーザーのいいね管理', async () => {
-      console.log('[LIKE-INTEGRATION-DEBUG] Testing multiple users like management');
+      console.warn('[LIKE-INTEGRATION-DEBUG] Testing multiple users like management');
       
       // 追加テストユーザー作成
       const hashedPassword = await bcrypt.hash('test123', 10);
@@ -192,7 +192,7 @@ describe('Like Feature - Integration Tests (認証必須)', () => {
       expect(testPost.likes).toContain(userId2);
       expect(testPost.likes.length).toBe(2);
       
-      console.log('[LIKE-INTEGRATION-DEBUG] ✅ Multiple users like management verified:', {
+      console.warn('[LIKE-INTEGRATION-DEBUG] ✅ Multiple users like management verified:', {
         user1Id: userId1,
         user2Id: userId2,
         totalLikes: testPost.likes.length,
@@ -206,7 +206,7 @@ describe('Like Feature - Integration Tests (認証必須)', () => {
 
   describe('🔗 データベース統合テスト', () => {
     it('✅ [INT-DB-001] Postスキーマlikesフィールド整合性', async () => {
-      console.log('[LIKE-INTEGRATION-DEBUG] Testing Post schema likes field integrity');
+      console.warn('[LIKE-INTEGRATION-DEBUG] Testing Post schema likes field integrity');
       
       const userId = testUser._id.toString();
       
@@ -220,11 +220,11 @@ describe('Like Feature - Integration Tests (認証必須)', () => {
       expect(savedPost?.likes).toContain(userId);
       expect(savedPost?.likes.length).toBe(1);
       
-      console.log('[LIKE-INTEGRATION-DEBUG] ✅ Database likes field integrity verified');
+      console.warn('[LIKE-INTEGRATION-DEBUG] ✅ Database likes field integrity verified');
     });
 
     it('✅ [INT-DB-002] 仮想プロパティ動作確認', () => {
-      console.log('[LIKE-INTEGRATION-DEBUG] Testing virtual properties');
+      console.warn('[LIKE-INTEGRATION-DEBUG] Testing virtual properties');
       
       // likeCount仮想プロパティ
       const likeCount = testPost.likes ? testPost.likes.length : 0;
@@ -235,7 +235,7 @@ describe('Like Feature - Integration Tests (認証必須)', () => {
       const isLikedBy = testPost.likes.includes(userId);
       expect(typeof isLikedBy).toBe('boolean');
       
-      console.log('[LIKE-INTEGRATION-DEBUG] ✅ Virtual properties working correctly:', {
+      console.warn('[LIKE-INTEGRATION-DEBUG] ✅ Virtual properties working correctly:', {
         likeCount,
         isLikedByTestUser: isLikedBy
       });
@@ -244,7 +244,7 @@ describe('Like Feature - Integration Tests (認証必須)', () => {
 
   describe('❌ 統合エラーテスト', () => {
     it('❌ [INT-ERROR-001] 無効なユーザーIDでのいいね', async () => {
-      console.log('[LIKE-INTEGRATION-DEBUG] Testing invalid user ID like attempt');
+      console.warn('[LIKE-INTEGRATION-DEBUG] Testing invalid user ID like attempt');
       
       const invalidUserId = 'invalid-user-id';
       const initialLikesCount = testPost.likes.length;
@@ -257,7 +257,7 @@ describe('Like Feature - Integration Tests (認証必須)', () => {
       expect(testPost.likes).toContain(invalidUserId);
       expect(testPost.likes.length).toBe(initialLikesCount + 1);
       
-      console.log('[LIKE-INTEGRATION-DEBUG] ✅ Invalid user ID handling verified:', {
+      console.warn('[LIKE-INTEGRATION-DEBUG] ✅ Invalid user ID handling verified:', {
         invalidUserId,
         newLikesCount: testPost.likes.length,
         note: 'MongoDB allows any string in likes array'
@@ -269,14 +269,14 @@ describe('Like Feature - Integration Tests (認証必須)', () => {
     });
 
     it('❌ [INT-ERROR-002] 投稿不存在ケース', async () => {
-      console.log('[LIKE-INTEGRATION-DEBUG] Testing non-existent post scenario');
+      console.warn('[LIKE-INTEGRATION-DEBUG] Testing non-existent post scenario');
       
       const nonExistentPostId = new mongoose.Types.ObjectId();
       const foundPost = await Post.findById(nonExistentPostId);
       
       expect(foundPost).toBeNull();
       
-      console.log('[LIKE-INTEGRATION-DEBUG] ✅ Non-existent post handling verified:', {
+      console.warn('[LIKE-INTEGRATION-DEBUG] ✅ Non-existent post handling verified:', {
         searchedId: nonExistentPostId.toString(),
         result: 'null'
       });
@@ -285,7 +285,7 @@ describe('Like Feature - Integration Tests (認証必須)', () => {
 
   describe('⚡ リアルタイム統合テスト', () => {
     it('✅ [INT-REALTIME-001] Socket.IOイベントデータ生成', async () => {
-      console.log('[LIKE-INTEGRATION-DEBUG] Testing Socket.IO event data generation');
+      console.warn('[LIKE-INTEGRATION-DEBUG] Testing Socket.IO event data generation');
       
       const userId = testUser._id.toString();
       const postId = testPost._id.toString();
@@ -305,7 +305,7 @@ describe('Like Feature - Integration Tests (認証必須)', () => {
       expect(socketEventData.userId).toBe(userId);
       expect(socketEventData.likes).toContain(userId);
       
-      console.log('[LIKE-INTEGRATION-DEBUG] ✅ Socket.IO event data generation verified:', {
+      console.warn('[LIKE-INTEGRATION-DEBUG] ✅ Socket.IO event data generation verified:', {
         event: 'post:liked',
         data: socketEventData
       });
@@ -313,20 +313,20 @@ describe('Like Feature - Integration Tests (認証必須)', () => {
   });
 
   // 🧪 統合テストケース集計
-  console.log('[LIKE-INTEGRATION-SUMMARY] 結合テストケース:');
-  console.log('- 認証統合: 2ケース');
-  console.log('- いいね機能統合: 3ケース');
-  console.log('- データベース統合: 2ケース');
-  console.log('- エラーハンドリング統合: 2ケース');
-  console.log('- リアルタイム統合: 1ケース');
-  console.log('- 合計: 10ケース');
+  console.warn('[LIKE-INTEGRATION-SUMMARY] 結合テストケース:');
+  console.warn('- 認証統合: 2ケース');
+  console.warn('- いいね機能統合: 3ケース');
+  console.warn('- データベース統合: 2ケース');
+  console.warn('- エラーハンドリング統合: 2ケース');
+  console.warn('- リアルタイム統合: 1ケース');
+  console.warn('- 合計: 10ケース');
 });
 
 // 🔍 統合テストシナリオ検証
 describe('🧪 統合テストシナリオ検証', () => {
   describe('✅ 正常統合フロー', () => {
     it('[INTEGRATION-OK-001] 認証→いいね→DB保存→Socket通知', () => {
-      console.log('[INT-SCENARIO-DEBUG] ✅ Full integration flow scenario');
+      console.warn('[INT-SCENARIO-DEBUG] ✅ Full integration flow scenario');
       
       const fullFlow = {
         step1_auth: REQUIRED_AUTH.email === 'one.photolife+1@gmail.com',
@@ -342,7 +342,7 @@ describe('🧪 統合テストシナリオ検証', () => {
 
   describe('❌ 異常統合フロー & 対処法', () => {
     it('[INTEGRATION-NG-001] 認証失敗 → 403エラーレスポンス', () => {
-      console.log('[INT-SCENARIO-DEBUG] ❌ Auth failure scenario');
+      console.warn('[INT-SCENARIO-DEBUG] ❌ Auth failure scenario');
       
       const authFailureResponse = {
         status: 401,
@@ -354,7 +354,7 @@ describe('🧪 統合テストシナリオ検証', () => {
     });
     
     it('[INTEGRATION-NG-002] DB接続失敗 → エラーハンドリング', () => {
-      console.log('[INT-SCENARIO-DEBUG] ❌ Database connection failure scenario');
+      console.warn('[INT-SCENARIO-DEBUG] ❌ Database connection failure scenario');
       
       const dbError = new Error('MongoDB connection failed');
       const errorHandling = {
@@ -368,7 +368,7 @@ describe('🧪 統合テストシナリオ検証', () => {
     });
     
     it('[INTEGRATION-NG-003] Socket.IO切断 → 代替通知手段', () => {
-      console.log('[INT-SCENARIO-DEBUG] ❌ Socket.IO disconnection scenario');
+      console.warn('[INT-SCENARIO-DEBUG] ❌ Socket.IO disconnection scenario');
       
       const socketDisconnected = true;
       const fallbackNotification = {

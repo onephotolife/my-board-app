@@ -42,7 +42,7 @@ class CacheManager {
 
         await this.redisClient.connect();
         this.isRedisAvailable = true;
-        console.log('Redis cache initialized');
+        console.warn('Redis cache initialized');
       } catch (error) {
         console.warn('Redis unavailable, falling back to memory cache');
         this.isRedisAvailable = false;

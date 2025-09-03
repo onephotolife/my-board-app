@@ -18,7 +18,7 @@ export async function PUT(req: NextRequest) {
     const body = await req.json();
     const { name, bio } = body;
     
-    console.log('[TEST API] Received:', { name, bio });
+    console.warn('[TEST API] Received:', { name, bio });
 
     // MongoDB接続
     if (mongoose.connection.readyState !== 1) {
@@ -31,7 +31,7 @@ export async function PUT(req: NextRequest) {
     
     // 更新前のデータを確認
     const beforeUser = await usersCollection.findOne({ email: session.user.email });
-    console.log('[TEST API] Before update - bio:', beforeUser?.bio);
+    console.warn('[TEST API] Before update - bio:', beforeUser?.bio);
     
     // 更新実行
     const updateResult = await usersCollection.updateOne(
@@ -45,11 +45,11 @@ export async function PUT(req: NextRequest) {
       }
     );
     
-    console.log('[TEST API] Update result:', updateResult);
+    console.warn('[TEST API] Update result:', updateResult);
     
     // 更新後のデータを取得
     const afterUser = await usersCollection.findOne({ email: session.user.email });
-    console.log('[TEST API] After update - bio:', afterUser?.bio);
+    console.warn('[TEST API] After update - bio:', afterUser?.bio);
     
     // レスポンス作成
     const userProfile = {

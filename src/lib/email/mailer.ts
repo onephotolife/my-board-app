@@ -37,7 +37,7 @@ export class EmailService {
     try {
       const config = getEmailConfig();
       
-      console.log('🔧 メールサービス初期化:', {
+      console.warn('🔧 メールサービス初期化:', {
         host: config.host,
         port: config.port,
         secure: config.secure,
@@ -52,7 +52,7 @@ export class EmailService {
       const sakuraUser = config.auth.user || 'noreply@blankinai.com';
       const sakuraPass = config.auth.pass;
       
-      console.log('🌸 さくらSMTP設定 (強制):', {
+      console.warn('🌸 さくらSMTP設定 (強制):', {
         host: sakuraHost,
         port: sakuraPort,
         user: sakuraUser,
@@ -88,15 +88,15 @@ export class EmailService {
         transportConfig.debug = true;
       }
 
-      console.log('🚀 nodemailer.createTransport()実行中...');
+      console.warn('🚀 nodemailer.createTransport()実行中...');
       this.transporter = nodemailer.createTransport(transportConfig);
 
       // Verify connection - 一時的にverifyをスキップして問題を特定
-      console.log('⚠️  SMTP verifyをスキップ中 (デバッグ目的)');
+      console.warn('⚠️  SMTP verifyをスキップ中 (デバッグ目的)');
       // if (process.env.NODE_ENV === 'production' || process.env.SEND_EMAILS === 'true') {
-      //   console.log('🔍 SMTPサーバーへの接続を検証中...');
+      //   console.warn('🔍 SMTPサーバーへの接続を検証中...');
       //   await this.transporter.verify();
-      //   console.log('✅ Email service connected successfully');
+      //   console.warn('✅ Email service connected successfully');
       // }
 
       this.initialized = true;
@@ -175,7 +175,7 @@ export class EmailService {
         );
       }
 
-      console.log('📧 メール送信開始:', {
+      console.warn('📧 メール送信開始:', {
         to: options.to,
         subject: options.subject,
         environment: process.env.NODE_ENV,
@@ -217,7 +217,7 @@ export class EmailService {
         attachments: options.attachments,
       };
 
-      console.log('📮 メール送信オプション:', {
+      console.warn('📮 メール送信オプション:', {
         from: mailOptions.from,
         to: mailOptions.to,
         subject: mailOptions.subject,
@@ -228,7 +228,7 @@ export class EmailService {
 
       const info = await this.transporter.sendMail(mailOptions);
 
-      console.log('✅ メール送信成功:', {
+      console.warn('✅ メール送信成功:', {
         messageId: info.messageId,
         response: info.response,
       });

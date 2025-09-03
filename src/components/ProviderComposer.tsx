@@ -47,14 +47,14 @@ export function ProviderComposer({ children }: { children: React.ReactNode }) {
 
     if (event === 'start') {
       metric.initStart = Date.now();
-      console.log(`[PROVIDER-COMPOSER] ${provider} initialization started`);
+      console.warn(`[PROVIDER-COMPOSER] ${provider} initialization started`);
     } else if (event === 'end') {
       metric.initEnd = Date.now();
       const duration = metric.initEnd - metric.initStart;
-      console.log(`[PROVIDER-COMPOSER] ${provider} initialized in ${duration}ms`);
+      console.warn(`[PROVIDER-COMPOSER] ${provider} initialized in ${duration}ms`);
     } else if (event === 'api') {
       metric.apiCalls++;
-      console.log(`[PROVIDER-COMPOSER] ${provider} API call #${metric.apiCalls}`, data);
+      console.warn(`[PROVIDER-COMPOSER] ${provider} API call #${metric.apiCalls}`, data);
     } else if (event === 'error') {
       metric.errors.push(data);
       console.error(`[PROVIDER-COMPOSER] ${provider} error:`, data);
@@ -154,14 +154,14 @@ export function ProvidersWithComposer({ children }: { children: React.ReactNode 
     
     useEffect(() => {
       if (session && !initialData) {
-        console.log('[PROVIDER-COMPOSER] Starting parallel data fetch');
+        console.warn('[PROVIDER-COMPOSER] Starting parallel data fetch');
         const startTime = Date.now();
         
         fetchInitialDataClient().then((data) => {
           const fetchTime = Date.now() - startTime;
           
           if (data) {
-            console.log('[PROVIDER-COMPOSER] Initial data fetched:', {
+            console.warn('[PROVIDER-COMPOSER] Initial data fetched:', {
               fetchTime: `${fetchTime}ms`,
               hasUserProfile: !!data.userProfile,
               hasPermissions: !!data.permissions,

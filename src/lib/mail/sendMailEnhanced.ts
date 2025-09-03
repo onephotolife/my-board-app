@@ -45,31 +45,31 @@ export function getGmailOptimizedHtml(content: string): string {
 }
 
 export async function sendEmailEnhanced({ to, subject, html }: EmailOptions) {
-  console.log('\n🚀 Enhanced Email Sending - Starting multi-method delivery');
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  console.warn('\n🚀 Enhanced Email Sending - Starting multi-method delivery');
+  console.warn('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   
   // Method 1: Try Resend first (best for Gmail delivery)
   if (process.env.RESEND_API_KEY) {
-    console.log('📧 Method 1: Attempting Resend...');
+    console.warn('📧 Method 1: Attempting Resend...');
     const resendResult = await sendEmailWithResend({ to, subject, html });
     if (resendResult.success) {
-      console.log('✅ Success with Resend!');
+      console.warn('✅ Success with Resend!');
       return resendResult;
     }
-    console.log('⚠️ Resend failed, trying next method...');
+    console.warn('⚠️ Resend failed, trying next method...');
   }
   
   // Method 2: Try SMTP
-  console.log('📧 Method 2: Attempting SMTP...');
+  console.warn('📧 Method 2: Attempting SMTP...');
   const smtpResult = await sendEmailSMTP({ to, subject, html });
   if (smtpResult.success && !smtpResult.devMode) {
-    console.log('✅ Success with SMTP!');
+    console.warn('✅ Success with SMTP!');
     return smtpResult;
   }
   
   // Method 3: Log to file as last resort
   if (!smtpResult.success || smtpResult.devMode) {
-    console.log('📧 Method 3: Logging to file...');
+    console.warn('📧 Method 3: Logging to file...');
     const fs = require('fs').promises;
     const path = require('path');
     
@@ -94,8 +94,8 @@ export async function sendEmailEnhanced({ to, subject, html }: EmailOptions) {
       logs.push(emailLog);
       await fs.writeFile(logPath, JSON.stringify(logs, null, 2));
       
-      console.log('✅ Email logged to file: email-logs.json');
-      console.log('📋 Email details:', emailLog);
+      console.warn('✅ Email logged to file: email-logs.json');
+      console.warn('📋 Email details:', emailLog);
       
       return { 
         success: true, 

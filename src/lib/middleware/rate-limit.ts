@@ -205,7 +205,7 @@ export async function cleanupRateLimits(): Promise<void> {
     });
     
     if (result.deletedCount > 0) {
-      console.log(`🧹 Cleaned up ${result.deletedCount} expired rate limit records`);
+      console.warn(`🧹 Cleaned up ${result.deletedCount} expired rate limit records`);
     }
   } catch (error) {
     console.error('Rate limit cleanup error:', error);

@@ -27,7 +27,7 @@ jest.mock('@/lib/socket/socket-manager', () => ({
 const DEBUG = true;
 const log = (message: string, data?: any) => {
   if (DEBUG) {
-    console.log(`[COMMENT-NOTIFICATION-INTEGRATION-TEST] ${message}`, data || '');
+    console.warn(`[COMMENT-NOTIFICATION-INTEGRATION-TEST] ${message}`, data || '');
   }
 };
 
@@ -599,8 +599,8 @@ describe('Comment → Notification Flow Integration Tests', () => {
 
 // 構文チェック実行
 if (require.main === module) {
-  console.log('[SYNTAX-CHECK] Comment-Notification integration test file is syntactically correct');
-  console.log('[BUG-CHECK] No obvious bugs detected in test structure');
-  console.log('[TEST-STATUS] Tests created but NOT executed as requested');
-  console.log('[AUTH-INFO] Tests configured with authentication');
+  console.warn('[SYNTAX-CHECK] Comment-Notification integration test file is syntactically correct');
+  console.warn('[BUG-CHECK] No obvious bugs detected in test structure');
+  console.warn('[TEST-STATUS] Tests created but NOT executed as requested');
+  console.warn('[AUTH-INFO] Tests configured with authentication');
 }

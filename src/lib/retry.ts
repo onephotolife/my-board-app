@@ -211,7 +211,7 @@ export function retryable(options: RetryOptions = {}) {
         {
           ...options,
           onRetry: (error, attempt) => {
-            console.log(`Retrying ${propertyKey} (attempt ${attempt}):`, error.message);
+            console.warn(`Retrying ${propertyKey} (attempt ${attempt}):`, error.message);
             options.onRetry?.(error, attempt);
           },
         }

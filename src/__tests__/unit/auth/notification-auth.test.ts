@@ -55,7 +55,7 @@ describe('【UT-AUTH-001】NextAuth.js認証フロー - STRICT120準拠', () => 
       createdAt: new Date()
     });
     
-    console.log('🔐 [AUTH-TEST] Test user created:', VALID_CREDENTIALS.email);
+    console.warn('🔐 [AUTH-TEST] Test user created:', VALID_CREDENTIALS.email);
   });
   
   afterEach(async () => {
@@ -87,10 +87,10 @@ describe('【UT-AUTH-001】NextAuth.js認証フロー - STRICT120準拠', () => 
     expect(decoded.sub).toBe(TEST_USER_ID);
     expect(decoded.email).toBe(VALID_CREDENTIALS.email);
     
-    console.log('✅ [OK-1] Authentication successful');
-    console.log('   User ID:', authResult.user.id);
-    console.log('   Email:', authResult.user.email);
-    console.log('   Token issued:', authResult.token.substring(0, 20) + '...');
+    console.warn('✅ [OK-1] Authentication successful');
+    console.warn('   User ID:', authResult.user.id);
+    console.warn('   Email:', authResult.user.email);
+    console.warn('   Token issued:', authResult.token.substring(0, 20) + '...');
   });
   
   test('【OK-2】セッショントークンの永続化', async () => {
@@ -110,12 +110,12 @@ describe('【UT-AUTH-001】NextAuth.js認証フロー - STRICT120準拠', () => 
     expect(sessionCookie.sameSite).toBe('lax');
     expect(sessionCookie.maxAge).toBe(2592000); // 30日
     
-    console.log('✅ [OK-2] Session persistence configured');
-    console.log('   Cookie: next-auth.session-token');
-    console.log('   HttpOnly:', sessionCookie.httpOnly);
-    console.log('   Secure:', sessionCookie.secure);
-    console.log('   SameSite:', sessionCookie.sameSite);
-    console.log('   Max-Age:', sessionCookie.maxAge, 'seconds (30 days)');
+    console.warn('✅ [OK-2] Session persistence configured');
+    console.warn('   Cookie: next-auth.session-token');
+    console.warn('   HttpOnly:', sessionCookie.httpOnly);
+    console.warn('   Secure:', sessionCookie.secure);
+    console.warn('   SameSite:', sessionCookie.sameSite);
+    console.warn('   Max-Age:', sessionCookie.maxAge, 'seconds (30 days)');
   });
   
   test('【OK-3】認証済みで通知API呼び出し成功', async () => {
@@ -152,9 +152,9 @@ describe('【UT-AUTH-001】NextAuth.js認証フロー - STRICT120準拠', () => 
     expect(notifications.data.length).toBeGreaterThan(0);
     expect(notifications.data[0].recipient).toBe(TEST_USER_ID);
     
-    console.log('✅ [OK-3] Authenticated API call successful');
-    console.log('   Notifications count:', notifications.data.length);
-    console.log('   First notification type:', notifications.data[0].type);
+    console.warn('✅ [OK-3] Authenticated API call successful');
+    console.warn('   Notifications count:', notifications.data.length);
+    console.warn('   First notification type:', notifications.data[0].type);
   });
   
   // =====================
@@ -189,9 +189,9 @@ describe('【UT-AUTH-001】NextAuth.js認証フロー - STRICT120準拠', () => 
     expect(rateLimitedResult.error).toContain('レート制限');
     expect(rateLimitedResult.retryAfter).toBeGreaterThan(0);
     
-    console.log('✅ [NG-1] Invalid password handled correctly');
-    console.log('   Error:', result.error);
-    console.log('   Rate limit after 3 failures');
+    console.warn('✅ [NG-1] Invalid password handled correctly');
+    console.warn('   Error:', result.error);
+    console.warn('   Rate limit after 3 failures');
   });
   
   test('【NG-2】存在しないメールアドレス', async () => {
@@ -212,8 +212,8 @@ describe('【UT-AUTH-001】NextAuth.js認証フロー - STRICT120準拠', () => 
     
     expect(result.error).toBe(invalidPasswordResult.error);
     
-    console.log('✅ [NG-2] Non-existent email handled securely');
-    console.log('   Generic error message:', result.error);
+    console.warn('✅ [NG-2] Non-existent email handled securely');
+    console.warn('   Generic error message:', result.error);
   });
   
   test('【NG-3】CSRFトークンなし', async () => {
@@ -230,9 +230,9 @@ describe('【UT-AUTH-001】NextAuth.js認証フロー - STRICT120準拠', () => 
     expect(result.action).toBe('CSRFトークンを再取得してください');
     expect(result.csrfEndpoint).toBe('/api/csrf/token');
     
-    console.log('✅ [NG-3] Missing CSRF token blocked');
-    console.log('   Error:', result.error);
-    console.log('   Action:', result.action);
+    console.warn('✅ [NG-3] Missing CSRF token blocked');
+    console.warn('   Error:', result.error);
+    console.warn('   Action:', result.action);
   });
   
   test('【NG-4】セッション期限切れ', async () => {
@@ -252,9 +252,9 @@ describe('【UT-AUTH-001】NextAuth.js認証フロー - STRICT120準拠', () => 
     expect(result.error).toContain('期限切れ');
     expect(result.action).toBe('再ログインしてください');
     
-    console.log('✅ [NG-4] Expired session handled');
-    console.log('   Error:', result.error);
-    console.log('   Action:', result.action);
+    console.warn('✅ [NG-4] Expired session handled');
+    console.warn('   Error:', result.error);
+    console.warn('   Action:', result.action);
   });
 });
 

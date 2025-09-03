@@ -338,7 +338,7 @@ export default function RealtimeBoard() {
     if (!socket || !isConnected) return;
 
     const handlePostCreated = (newPost: any) => {
-      console.log('New post received:', newPost);
+      console.warn('New post received:', newPost);
       const normalizedPost = normalizePostToUnified(newPost);
       // 新しい投稿を最初に追加（新着フラグ付き・競合状態対策）
       setPosts(prevPosts => {
@@ -356,7 +356,7 @@ export default function RealtimeBoard() {
     };
 
     const handlePostUpdated = (updatedPost: any) => {
-      console.log('Post updated:', updatedPost);
+      console.warn('Post updated:', updatedPost);
       const normalizedPost = normalizePostToUnified(updatedPost);
       setPosts(prevPosts => 
         prevPosts.map(p => p._id === normalizedPost._id ? normalizedPost : p)
@@ -364,12 +364,12 @@ export default function RealtimeBoard() {
     };
 
     const handlePostDeleted = (deletedPostId: string) => {
-      console.log('Post deleted:', deletedPostId);
+      console.warn('Post deleted:', deletedPostId);
       setPosts(prevPosts => prevPosts.filter(p => p._id !== deletedPostId));
     };
 
     const handlePostLiked = ({ postId, userId, likes }: { postId: string; userId: string; likes: string[] }) => {
-      console.log('Post liked:', { postId, userId, likes });
+      console.warn('Post liked:', { postId, userId, likes });
       setPosts(prevPosts => 
         prevPosts.map(p => {
           if (p._id === postId) {
@@ -385,7 +385,7 @@ export default function RealtimeBoard() {
     };
 
     const handlePostUnliked = ({ postId, userId, likes }: { postId: string; userId: string; likes: string[] }) => {
-      console.log('Post unliked:', { postId, userId, likes });
+      console.warn('Post unliked:', { postId, userId, likes });
       setPosts(prevPosts => 
         prevPosts.map(p => {
           if (p._id === postId) {
@@ -401,7 +401,7 @@ export default function RealtimeBoard() {
     };
 
     const handleViewsIncremented = ({ postId, views }: { postId: string; views: number }) => {
-      console.log('Views incremented:', { postId, views });
+      console.warn('Views incremented:', { postId, views });
       setPosts(prevPosts => 
         prevPosts.map(p => p._id === postId ? { ...p, views } : p)
       );
@@ -441,7 +441,7 @@ export default function RealtimeBoard() {
       if (uniqueAuthorIds.length === 0) return;
       
       try {
-        console.log('🔍 [Follow Status] Fetching for authors:', uniqueAuthorIds);
+        console.warn('🔍 [Follow Status] Fetching for authors:', uniqueAuthorIds);
         
         const response = await secureFetch('/api/follow/status/batch', {
           method: 'POST',
@@ -451,7 +451,7 @@ export default function RealtimeBoard() {
         
         if (response.ok) {
           const data = await response.json();
-          console.log('✅ [Follow Status] Received:', data.followingIds);
+          console.warn('✅ [Follow Status] Received:', data.followingIds);
           setFollowingUsers(new Set(data.followingIds));
         } else {
           console.error('❌ [Follow Status] API error:', response.status);
@@ -488,7 +488,7 @@ export default function RealtimeBoard() {
   // いいねハンドラー
   const handleLike = async (postId: string) => {
     // デバッグログ：事前検証
-    console.log('[LIKE-DEBUG] Pre-validation:', {
+    console.warn('[LIKE-DEBUG] Pre-validation:', {
       hasSession: !!session,
       hasCSRFToken: !!csrfToken,
       tokenPreview: csrfToken ? csrfToken.substring(0, 20) + '...' : 'null',
@@ -497,7 +497,7 @@ export default function RealtimeBoard() {
 
     // 解決策2: CSRFトークン初期化の保証強化
     if (!session) {
-      console.log('[LIKE-AUTH] No session, redirecting to signin');
+      console.warn('[LIKE-AUTH] No session, redirecting to signin');
       router.push('/auth/signin');
       return;
     }
@@ -509,7 +509,7 @@ export default function RealtimeBoard() {
     }
 
     // デバッグログ追加
-    console.log('[LIKE-DEBUG] handleLike called:', {
+    console.warn('[LIKE-DEBUG] handleLike called:', {
       postId,
       session: !!session,
       csrfToken: csrfToken ? csrfToken.substring(0, 20) + '...' : 'null',
@@ -525,7 +525,7 @@ export default function RealtimeBoard() {
       const method = isLiked ? 'DELETE' : 'POST';
 
       // デバッグログ：リクエスト前
-      console.log('[LIKE-DEBUG] Request details:', {
+      console.warn('[LIKE-DEBUG] Request details:', {
         endpoint,
         method,
         hasCSRFToken: !!csrfToken,
@@ -548,7 +548,7 @@ export default function RealtimeBoard() {
       const data = await response.json();
       
       // デバッグログ：レスポンス
-      console.log('[LIKE-RESPONSE] Received:', {
+      console.warn('[LIKE-RESPONSE] Received:', {
         status: response.status,
         data: data
       });

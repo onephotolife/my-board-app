@@ -10,14 +10,14 @@ export async function POST(request: NextRequest) {
   try {
     const { email } = await request.json();
     
-    console.log('Test endpoint - Request for email:', email);
-    console.log('MONGODB_URI:', process.env.MONGODB_URI);
+    console.warn('Test endpoint - Request for email:', email);
+    console.warn('MONGODB_URI:', process.env.MONGODB_URI);
     
     await dbConnect();
     
     const user = await User.findOne({ email }).select('name email emailVerified');
     
-    console.log('Found user:', user ? { email: user.email, emailVerified: user.emailVerified } : 'null');
+    console.warn('Found user:', user ? { email: user.email, emailVerified: user.emailVerified } : 'null');
     
     if (!user || !user.emailVerified) {
       return NextResponse.json({

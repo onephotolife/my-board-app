@@ -45,7 +45,7 @@ export class EmailService {
 
       const config = getEmailConfig();
       
-      console.log('🔧 Initializing email service with config:', {
+      console.warn('🔧 Initializing email service with config:', {
         host: config.host,
         port: config.port,
         user: config.auth.user,
@@ -58,7 +58,7 @@ export class EmailService {
       const sakuraUser = config.auth.user || 'noreply@blankinai.com';
       const sakuraPass = config.auth.pass;
 
-      console.log('🌸 Forcing Sakura Internet SMTP:', {
+      console.warn('🌸 Forcing Sakura Internet SMTP:', {
         host: sakuraHost,
         port: sakuraPort,
         user: sakuraUser,
@@ -99,7 +99,7 @@ export class EmailService {
       // Verify connection
       try {
         await this.transporter.verify();
-        console.log('✅ Email service connected and verified successfully');
+        console.warn('✅ Email service connected and verified successfully');
       } catch (verifyError: any) {
         console.error('⚠️ Email verification warning:', verifyError.message);
         // Continue anyway - verification might fail but sending could still work
@@ -177,10 +177,10 @@ export class EmailService {
 
         // In development, optionally log email instead of sending
         if (process.env.NODE_ENV === 'development' && process.env.SEND_EMAILS !== 'true') {
-          console.log('📧 Email Preview (Development Mode):');
-          console.log('To:', options.to);
-          console.log('Subject:', options.subject);
-          console.log('Preview:', options.text?.substring(0, 100) || 'HTML email');
+          console.warn('📧 Email Preview (Development Mode):');
+          console.warn('To:', options.to);
+          console.warn('Subject:', options.subject);
+          console.warn('Preview:', options.text?.substring(0, 100) || 'HTML email');
           
           return {
             success: true,
@@ -189,7 +189,7 @@ export class EmailService {
           };
         }
 
-        console.log(`📤 Sending email (attempt ${attempt}/${maxRetries})...`);
+        console.warn(`📤 Sending email (attempt ${attempt}/${maxRetries})...`);
 
         // Send email with timeout
         const sendPromise = this.transporter.sendMail({
@@ -208,7 +208,7 @@ export class EmailService {
 
         const info = await Promise.race([sendPromise, timeoutPromise]) as any;
 
-        console.log('✅ Email sent successfully:', info.messageId);
+        console.warn('✅ Email sent successfully:', info.messageId);
 
         return {
           success: true,
@@ -227,7 +227,7 @@ export class EmailService {
 
         // For ESTREAM errors, try to reinitialize
         if (error.code === 'ESTREAM' || error.code === 'ECONNECTION') {
-          console.log('🔄 Reinitializing connection...');
+          console.warn('🔄 Reinitializing connection...');
           this.initialized = false;
           this.transporter = null;
           

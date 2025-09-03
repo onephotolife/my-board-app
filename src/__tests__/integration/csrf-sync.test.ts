@@ -167,7 +167,7 @@ describe('CSRF同期メカニズム 統合テスト', () => {
       
       expect(isValid).toBe(true);
       
-      console.log('[TEST-EVIDENCE] 検証成功:', {
+      console.warn('[TEST-EVIDENCE] 検証成功:', {
         tokenSample: tokenInfo.token.substring(0, 10) + '...',
         sessionId: sessionId,
         valid: isValid,
@@ -187,7 +187,7 @@ describe('CSRF同期メカニズム 統合テスト', () => {
       
       expect(isValid).toBe(false);
       
-      console.log('[TEST-EVIDENCE] セッションバインディング検証:', {
+      console.warn('[TEST-EVIDENCE] セッションバインディング検証:', {
         expectedSession: sessionId1,
         providedSession: sessionId2,
         valid: isValid,
@@ -203,7 +203,7 @@ describe('CSRF同期メカニズム 統合テスト', () => {
       
       expect(isValid).toBe(false);
       
-      console.log('[TEST-EVIDENCE] 無効トークン検証:', {
+      console.warn('[TEST-EVIDENCE] 無効トークン検証:', {
         token: 'invalid-token-123',
         valid: isValid,
         timestamp: new Date().toISOString()
@@ -231,7 +231,7 @@ describe('CSRF同期メカニズム 統合テスト', () => {
       
       await limitedManager.shutdown();
       
-      console.log('[TEST-EVIDENCE] 使用回数制限テスト:', {
+      console.warn('[TEST-EVIDENCE] 使用回数制限テスト:', {
         firstAttempt: valid1,
         secondAttempt: valid2,
         maxUseCount: 1,
@@ -256,7 +256,7 @@ describe('CSRF同期メカニズム 統合テスト', () => {
       const validAfter = await manager.verifyToken(tokenInfo.token, sessionId);
       expect(validAfter).toBe(false);
       
-      console.log('[TEST-EVIDENCE] トークン失効テスト:', {
+      console.warn('[TEST-EVIDENCE] トークン失効テスト:', {
         validBefore,
         validAfter,
         tokenState: 'REVOKED',
@@ -280,7 +280,7 @@ describe('CSRF同期メカニズム 統合テスト', () => {
       expect(await manager.verifyToken(token1.token, sessionId)).toBe(false);
       expect(await manager.verifyToken(token2.token, sessionId + '-other')).toBe(true);
       
-      console.log('[TEST-EVIDENCE] セッション失効テスト:', {
+      console.warn('[TEST-EVIDENCE] セッション失効テスト:', {
         revokedSession: sessionId,
         activeSession: sessionId + '-other',
         timestamp: new Date().toISOString()
@@ -312,7 +312,7 @@ describe('CSRF同期メカニズム 統合テスト', () => {
       });
       
       // ヘッダー確認のためのログ
-      console.log('[DEBUG] Request headers:', {
+      console.warn('[DEBUG] Request headers:', {
         'x-csrf-token': request.headers.get('x-csrf-token'),
         'Content-Type': request.headers.get('Content-Type'),
         allHeaders: Array.from(request.headers.entries())
@@ -355,7 +355,7 @@ describe('CSRF同期メカニズム 統合テスト', () => {
         developmentBypass: false
       });
       
-      console.log('[TEST-EVIDENCE] ミドルウェア検証詳細:', {
+      console.warn('[TEST-EVIDENCE] ミドルウェア検証詳細:', {
         tokenProvided: !!token,
         tokenValue: token,
         validationResult: result.valid,
@@ -375,7 +375,7 @@ describe('CSRF同期メカニズム 統合テスト', () => {
       expect(body.error).toBe('Test error');
       expect(body.code).toBe('CSRF_VALIDATION_FAILED');
       
-      console.log('[TEST-EVIDENCE] エラーレスポンス:', {
+      console.warn('[TEST-EVIDENCE] エラーレスポンス:', {
         status: response.status,
         error: body.error,
         code: body.code,
@@ -399,7 +399,7 @@ describe('CSRF同期メカニズム 統合テスト', () => {
       expect(stats.activeTokens).toBeGreaterThanOrEqual(1);
       expect(stats.revokedTokens).toBeGreaterThanOrEqual(1);
       
-      console.log('[TEST-EVIDENCE] 統計情報:', {
+      console.warn('[TEST-EVIDENCE] 統計情報:', {
         ...stats,
         timestamp: new Date().toISOString()
       });
@@ -417,7 +417,7 @@ describe('CSRF同期メカニズム 統合テスト', () => {
  * - [x] 統計情報の提供
  * 
  * 証拠:
- * - 各テストケースでconsole.logによる証跡を出力
+ * - 各テストケースでconsole.warnによる証跡を出力
  * - トークン長、状態、検証結果を明示的に記録
  * - タイムスタンプ付きで監査証跡を生成
  */

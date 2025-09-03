@@ -9,14 +9,14 @@ const getMongoUri = () => {
   if (mongoEnv === 'atlas' || mongoEnv === 'production') {
     if (process.env.MONGODB_URI_PRODUCTION && 
         !process.env.MONGODB_URI_PRODUCTION.includes('username:password')) {
-      console.log('[MongoDB] 🌐 Using MongoDB Atlas (Online)');
+      console.warn('[MongoDB] 🌐 Using MongoDB Atlas (Online)');
       return process.env.MONGODB_URI_PRODUCTION;
     } else {
       console.error('[MongoDB] ❌ MONGODB_ENV=atlas but MONGODB_URI_PRODUCTION is not configured');
       console.error('[MongoDB] 💡 Please set MONGODB_URI_PRODUCTION in .env.local or .env.production');
       console.error('[MongoDB] 📖 See MONGODB_ATLAS_SETUP.md for instructions');
       // フォールバックとしてローカルを使用
-      console.log('[MongoDB] ⚠️ Falling back to local MongoDB');
+      console.warn('[MongoDB] ⚠️ Falling back to local MongoDB');
     }
   }
   
@@ -24,12 +24,12 @@ const getMongoUri = () => {
   if (process.env.NODE_ENV === 'production') {
     if (process.env.MONGODB_URI_PRODUCTION && 
         !process.env.MONGODB_URI_PRODUCTION.includes('username:password')) {
-      console.log('[MongoDB] 🌐 Using MongoDB Atlas (Production)');
+      console.warn('[MongoDB] 🌐 Using MongoDB Atlas (Production)');
       return process.env.MONGODB_URI_PRODUCTION;
     }
     // 本番環境でもMONGODB_URIが設定されていれば使用
     if (process.env.MONGODB_URI) {
-      console.log('[MongoDB] ⚠️ Using MONGODB_URI in production mode');
+      console.warn('[MongoDB] ⚠️ Using MONGODB_URI in production mode');
       return process.env.MONGODB_URI;
     }
   }
@@ -37,11 +37,11 @@ const getMongoUri = () => {
   // デフォルトはローカルMongoDB
   if (process.env.MONGODB_URI) {
     const isLocal = process.env.MONGODB_URI.includes('localhost') || process.env.MONGODB_URI.includes('127.0.0.1');
-    console.log(`[MongoDB] 💾 Using ${isLocal ? 'local' : 'remote'} MongoDB: ${process.env.MONGODB_URI.replace(/\/\/.*@/, '//***@')}`);
+    console.warn(`[MongoDB] 💾 Using ${isLocal ? 'local' : 'remote'} MongoDB: ${process.env.MONGODB_URI.replace(/\/\/.*@/, '//***@')}`);
     return process.env.MONGODB_URI;
   }
   
-  console.log('[MongoDB] 💾 Using default local MongoDB');
+  console.warn('[MongoDB] 💾 Using default local MongoDB');
   return 'mongodb://localhost:27017/boardDB';
 };
 
@@ -81,15 +81,15 @@ function logConnectionStatus(status: string, details?: any) {
   const timestamp = new Date().toISOString();
   const message = `[${timestamp}] MongoDB Connection: ${status}`;
   
-  console.log(message);
+  console.warn(message);
   if (details) {
     if (typeof details === 'object' && details.message) {
-      console.log('Error:', details.message);
+      console.warn('Error:', details.message);
       if (details.stack && process.env.NODE_ENV !== 'production') {
-        console.log('Stack:', details.stack);
+        console.warn('Stack:', details.stack);
       }
     } else {
-      console.log('Details:', JSON.stringify(details, null, 2));
+      console.warn('Details:', JSON.stringify(details, null, 2));
     }
   }
 }

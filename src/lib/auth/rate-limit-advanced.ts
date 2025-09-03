@@ -134,7 +134,7 @@ export async function cleanupRateLimits(): Promise<number> {
       createdAt: { $lt: oneDayAgo }
     });
     
-    console.log(`🧹 レート制限クリーンアップ: ${result.deletedCount}件削除`);
+    console.warn(`🧹 レート制限クリーンアップ: ${result.deletedCount}件削除`);
     return result.deletedCount;
   } catch (error) {
     console.error('レート制限クリーンアップエラー:', error);
@@ -150,7 +150,7 @@ export async function resetRateLimit(identifier: string, action: string): Promis
   
   try {
     await RateLimit.deleteMany({ key });
-    console.log(`🔄 レート制限リセット: ${key}`);
+    console.warn(`🔄 レート制限リセット: ${key}`);
     return true;
   } catch (error) {
     console.error('レート制限リセットエラー:', error);

@@ -22,7 +22,7 @@ import User from '@/lib/models/User';
 const DEBUG = true;
 const log = (message: string, data?: any) => {
   if (DEBUG) {
-    console.log(`[NOTIFICATION-E2E-TEST] ${message}`, data || '');
+    console.warn(`[NOTIFICATION-E2E-TEST] ${message}`, data || '');
   }
 };
 
@@ -108,7 +108,7 @@ describe('Notification System E2E Tests', () => {
     // デバッグ用: コンソールログ出力
     page.on('console', msg => {
       if (DEBUG) {
-        console.log(`[BROWSER-CONSOLE] ${msg.text()}`);
+        console.warn(`[BROWSER-CONSOLE] ${msg.text()}`);
       }
     });
     
@@ -715,11 +715,11 @@ async function createTestNotifications(recipientId: string, count: number) {
 
 // 構文チェック実行
 if (require.main === module) {
-  console.log('[SYNTAX-CHECK] Notification System E2E test file is syntactically correct');
-  console.log('[BUG-CHECK] No obvious bugs detected in test structure');
-  console.log('[TEST-STATUS] Tests created but NOT executed as requested');
-  console.log('[AUTH-INFO] Tests configured with Playwright authentication:');
-  console.log('  Primary: one.photolife+1@gmail.com / ?@thc123THC@?');
-  console.log('  Secondary: two.photolife+2@gmail.com / ?@thc456THC@?');
-  console.log('  Tertiary: three.photolife+3@gmail.com / ?@thc789THC@?');
+  console.warn('[SYNTAX-CHECK] Notification System E2E test file is syntactically correct');
+  console.warn('[BUG-CHECK] No obvious bugs detected in test structure');
+  console.warn('[TEST-STATUS] Tests created but NOT executed as requested');
+  console.warn('[AUTH-INFO] Tests configured with Playwright authentication:');
+  console.warn('  Primary: one.photolife+1@gmail.com / ?@thc123THC@?');
+  console.warn('  Secondary: two.photolife+2@gmail.com / ?@thc456THC@?');
+  console.warn('  Tertiary: three.photolife+3@gmail.com / ?@thc789THC@?');
 }

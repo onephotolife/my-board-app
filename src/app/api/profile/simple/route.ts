@@ -24,7 +24,7 @@ export async function PUT(req: NextRequest) {
       { $set: { bio: bio || '' } }
     );
     
-    console.log('Simple update result:', result);
+    console.warn('Simple update result:', result);
     
     // 更新後のデータを取得
     const user = await db.collection('users').findOne(
@@ -32,7 +32,7 @@ export async function PUT(req: NextRequest) {
       { projection: { bio: 1, name: 1 } }
     );
     
-    console.log('Updated bio:', user?.bio);
+    console.warn('Updated bio:', user?.bio);
     
     return NextResponse.json({
       success: true,

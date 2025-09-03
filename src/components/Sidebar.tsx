@@ -44,7 +44,7 @@ export default function Sidebar() {
   };
 
   const handleSignOut = async () => {
-    console.log('🚪 ログアウト処理開始');
+    console.warn('🚪 ログアウト処理開始');
     await signOut({ redirect: false });
     router.push('/auth/signin');
   };

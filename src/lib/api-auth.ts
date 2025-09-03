@@ -27,13 +27,13 @@ export class ApiAuthError extends Error {
  * @throws ApiAuthError - 認証失敗時
  */
 export async function requireEmailVerifiedSession() {
-  console.log('🔐 [API Security] メール確認済みセッションチェック開始');
+  console.warn('🔐 [API Security] メール確認済みセッションチェック開始');
   
   try {
     // NextAuth v4 セッション取得
     const session = await getServerSession(authOptions);
     
-    console.log('🔍 [API Security] セッション状態:', {
+    console.warn('🔍 [API Security] セッション状態:', {
       hasSession: !!session,
       hasUser: !!session?.user,
       email: session?.user?.email,
@@ -43,7 +43,7 @@ export async function requireEmailVerifiedSession() {
     
     // 未認証チェック
     if (!session?.user?.email) {
-      console.log('❌ [API Security] 未認証のためアクセス拒否');
+      console.warn('❌ [API Security] 未認証のためアクセス拒否');
       throw new ApiAuthError(
         'UNAUTHORIZED',
         401,
@@ -53,7 +53,7 @@ export async function requireEmailVerifiedSession() {
     
     // メール確認チェック（会員制掲示板として必須）
     if (!session.user.emailVerified) {
-      console.log('📧 [API Security] メール未確認のためアクセス拒否');
+      console.warn('📧 [API Security] メール未確認のためアクセス拒否');
       throw new ApiAuthError(
         'EMAIL_NOT_VERIFIED',
         403,
@@ -61,7 +61,7 @@ export async function requireEmailVerifiedSession() {
       );
     }
     
-    console.log('✅ [API Security] 認証成功:', session.user.email);
+    console.warn('✅ [API Security] 認証成功:', session.user.email);
     return session;
     
   } catch (error) {
@@ -85,12 +85,12 @@ export async function requireEmailVerifiedSession() {
  * @returns Promise<Session | null> - セッション（null許可）
  */
 export async function getOptionalSession() {
-  console.log('🔓 [API Security] オプショナル認証チェック開始');
+  console.warn('🔓 [API Security] オプショナル認証チェック開始');
   
   try {
     const session = await getServerSession(authOptions);
     
-    console.log('🔍 [API Security] オプショナルセッション状態:', {
+    console.warn('🔍 [API Security] オプショナルセッション状態:', {
       hasSession: !!session,
       hasUser: !!session?.user,
       email: session?.user?.email || null,
@@ -112,7 +112,7 @@ export async function getOptionalSession() {
  * @returns NextResponse - 標準化されたエラーレスポンス
  */
 export function createApiErrorResponse(error: ApiAuthError): NextResponse {
-  console.log(`🚫 [API Security] エラーレスポンス作成: ${error.code} - ${error.message}`);
+  console.warn(`🚫 [API Security] エラーレスポンス作成: ${error.code} - ${error.message}`);
   
   const response = {
     error: error.message,
@@ -176,7 +176,7 @@ export function withApiAuth(
  */
 export function hasAdminPermission(session: any): boolean {
   const isAdmin = session?.user?.role === 'admin';
-  console.log(`🔑 [API Security] 管理者権限チェック: ${isAdmin ? '✅' : '❌'}`);
+  console.warn(`🔑 [API Security] 管理者権限チェック: ${isAdmin ? '✅' : '❌'}`);
   return isAdmin;
 }
 
@@ -188,6 +188,6 @@ export function hasAdminPermission(session: any): boolean {
  */
 export function hasModeratorPermission(session: any): boolean {
   const isModerator = session?.user?.role === 'moderator' || hasAdminPermission(session);
-  console.log(`🔑 [API Security] モデレーター権限チェック: ${isModerator ? '✅' : '❌'}`);
+  console.warn(`🔑 [API Security] モデレーター権限チェック: ${isModerator ? '✅' : '❌'}`);
   return isModerator;
 }

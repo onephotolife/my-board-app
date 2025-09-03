@@ -34,7 +34,7 @@ export function getEmailConfig(): EmailConfig {
   const user = process.env.EMAIL_SERVER_USER || process.env.GMAIL_USER || 'noreply@blankinai.com';
   const pass = process.env.EMAIL_SERVER_PASSWORD || process.env.GMAIL_APP_PASSWORD || '';
   
-  console.log('🔐 メール設定確認:', {
+  console.warn('🔐 メール設定確認:', {
     host,
     port: 587,
     user,

@@ -82,7 +82,7 @@ class TimelineDebugLogger {
       component: 'Timeline.tsx'
     };
     this.logs.push(entry);
-    console.log('[TIMELINE-DEBUG]', JSON.stringify(entry));
+    console.warn('[TIMELINE-DEBUG]', JSON.stringify(entry));
   }
   
   getAll() {

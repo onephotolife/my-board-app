@@ -75,27 +75,27 @@ async function tryAtlasConnection(): Promise<mongoose.Connection | null> {
   const atlasUri = CONNECTION_CONFIG.ATLAS_URI;
   
   if (!atlasUri) {
-    console.log('📌 MongoDB Atlas URIが設定されていません');
+    console.warn('📌 MongoDB Atlas URIが設定されていません');
     return null;
   }
   
   const validation = validateUri(atlasUri);
   if (!validation.valid) {
-    console.log(`⚠️ MongoDB Atlas URI検証失敗: ${validation.reason}`);
+    console.warn(`⚠️ MongoDB Atlas URI検証失敗: ${validation.reason}`);
     return null;
   }
   
   try {
-    console.log('🌐 MongoDB Atlasへの接続を試みています...');
+    console.warn('🌐 MongoDB Atlasへの接続を試みています...');
     const maskedUri = atlasUri.replace(/\/\/[^@]+@/, '//***@').substring(0, 60);
-    console.log(`📍 接続先: ${maskedUri}...`);
+    console.warn(`📍 接続先: ${maskedUri}...`);
     
     const conn = await mongoose.connect(atlasUri, {
       ...CONNECTION_OPTIONS,
       serverSelectionTimeoutMS: CONNECTION_CONFIG.CONNECTION_TIMEOUT,
     });
     
-    console.log('✅ MongoDB Atlas接続成功！');
+    console.warn('✅ MongoDB Atlas接続成功！');
     cached.type = 'atlas';
     cached.failureCount = 0;
     return conn.connection;
@@ -106,11 +106,11 @@ async function tryAtlasConnection(): Promise<mongoose.Connection | null> {
     
     // エラー詳細の提供
     if (error.message.includes('authentication')) {
-      console.log('💡 ヒント: Database Accessでユーザー認証情報を確認してください');
+      console.warn('💡 ヒント: Database Accessでユーザー認証情報を確認してください');
     } else if (error.message.includes('network')) {
-      console.log('💡 ヒント: Network Accessで0.0.0.0/0が許可されているか確認してください');
+      console.warn('💡 ヒント: Network Accessで0.0.0.0/0が許可されているか確認してください');
     } else if (error.message.includes('ENOTFOUND')) {
-      console.log('💡 ヒント: クラスターURLが正しいか確認してください');
+      console.warn('💡 ヒント: クラスターURLが正しいか確認してください');
     }
     
     return null;
@@ -124,12 +124,12 @@ async function tryLocalConnection(): Promise<mongoose.Connection | null> {
   const localUri = CONNECTION_CONFIG.LOCAL_URI;
   
   try {
-    console.log('📌 ローカルMongoDBへの接続を試みています...');
-    console.log(`📍 接続先: ${localUri}`);
+    console.warn('📌 ローカルMongoDBへの接続を試みています...');
+    console.warn(`📍 接続先: ${localUri}`);
     
     const conn = await mongoose.connect(localUri, CONNECTION_OPTIONS);
     
-    console.log('✅ ローカルMongoDB接続成功！');
+    console.warn('✅ ローカルMongoDB接続成功！');
     cached.type = 'local';
     return conn.connection;
     
@@ -137,8 +137,8 @@ async function tryLocalConnection(): Promise<mongoose.Connection | null> {
     console.error('❌ ローカルMongoDB接続失敗:', error.message);
     
     if (error.message.includes('ECONNREFUSED')) {
-      console.log('💡 ヒント: MongoDBが起動していることを確認してください');
-      console.log('   実行: brew services start mongodb-community');
+      console.warn('💡 ヒント: MongoDBが起動していることを確認してください');
+      console.warn('   実行: brew services start mongodb-community');
     }
     
     return null;
@@ -176,11 +176,11 @@ export async function connectSmartDB(): Promise<mongoose.Connection> {
     const mongoEnv = process.env.MONGODB_ENV || 'local';
     let connection: mongoose.Connection | null = null;
     
-    console.log('');
-    console.log('╔══════════════════════════════════════════════════════════╗');
-    console.log('║          MongoDB スマート接続マネージャー v2.0           ║');
-    console.log('╚══════════════════════════════════════════════════════════╝');
-    console.log(`📋 環境設定: MONGODB_ENV=${mongoEnv}`);
+    console.warn('');
+    console.warn('╔══════════════════════════════════════════════════════════╗');
+    console.warn('║          MongoDB スマート接続マネージャー v2.0           ║');
+    console.warn('╚══════════════════════════════════════════════════════════╝');
+    console.warn(`📋 環境設定: MONGODB_ENV=${mongoEnv}`);
     
     // Atlas優先モード
     if (mongoEnv === 'atlas' || mongoEnv === 'production') {
@@ -189,8 +189,8 @@ export async function connectSmartDB(): Promise<mongoose.Connection> {
       
       // Atlas失敗時はローカルにフォールバック
       if (!connection) {
-        console.log('');
-        console.log('🔄 フォールバック: ローカルMongoDBに切り替えます...');
+        console.warn('');
+        console.warn('🔄 フォールバック: ローカルMongoDBに切り替えます...');
         connection = await tryLocalConnection();
       }
     } 
@@ -200,8 +200,8 @@ export async function connectSmartDB(): Promise<mongoose.Connection> {
       
       // ローカル失敗時、Atlasが設定されていれば試行
       if (!connection && CONNECTION_CONFIG.ATLAS_URI) {
-        console.log('');
-        console.log('🔄 フォールバック: MongoDB Atlasを試行します...');
+        console.warn('');
+        console.warn('🔄 フォールバック: MongoDB Atlasを試行します...');
         connection = await tryAtlasConnection();
       }
     }
@@ -232,11 +232,11 @@ export async function connectSmartDB(): Promise<mongoose.Connection> {
     }
     
     // 接続成功サマリー
-    console.log('');
-    console.log('╔══════════════════════════════════════════════════════════╗');
-    console.log(`║ ✅ 接続成功: ${cached.type === 'atlas' ? 'MongoDB Atlas (クラウド)' : 'ローカルMongoDB'}     ║`);
-    console.log('╚══════════════════════════════════════════════════════════╝');
-    console.log('');
+    console.warn('');
+    console.warn('╔══════════════════════════════════════════════════════════╗');
+    console.warn(`║ ✅ 接続成功: ${cached.type === 'atlas' ? 'MongoDB Atlas (クラウド)' : 'ローカルMongoDB'}     ║`);
+    console.warn('╚══════════════════════════════════════════════════════════╝');
+    console.warn('');
     
     cached.lastAttempt = new Date();
     return connection;
@@ -277,7 +277,7 @@ export async function resetConnection() {
   cached.promise = null;
   cached.type = null;
   cached.failureCount = 0;
-  console.log('🔄 MongoDB接続をリセットしました');
+  console.warn('🔄 MongoDB接続をリセットしました');
 }
 
 // エクスポート

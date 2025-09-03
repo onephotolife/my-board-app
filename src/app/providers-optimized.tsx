@@ -52,10 +52,10 @@ function useProviderMetrics(name: string) {
     const initTime = Date.now() - mountTimeRef.current;
     globalMetrics[name].initTime = initTime;
     
-    console.log(`[METRICS] ${name} mounted (count: ${globalMetrics[name].mountCount}, time: ${initTime}ms)`);
+    console.warn(`[METRICS] ${name} mounted (count: ${globalMetrics[name].mountCount}, time: ${initTime}ms)`);
     
     return () => {
-      console.log(`[METRICS] ${name} unmounting`);
+      console.warn(`[METRICS] ${name} unmounting`);
     };
   }, [name]);
   
@@ -81,7 +81,7 @@ function OptimizedProviders({ children }: { children: React.ReactNode }) {
     if (session && status === 'authenticated') {
       dataFetchRef.current = true;
       
-      console.log('[OPTIMIZED] Starting unified data fetch');
+      console.warn('[OPTIMIZED] Starting unified data fetch');
       const startTime = Date.now();
       
       // 全データを並列フェッチ
@@ -90,7 +90,7 @@ function OptimizedProviders({ children }: { children: React.ReactNode }) {
           const fetchTime = Date.now() - startTime;
           
           if (data) {
-            console.log('[OPTIMIZED] All data fetched in', fetchTime, 'ms:', {
+            console.warn('[OPTIMIZED] All data fetched in', fetchTime, 'ms:', {
               userProfile: !!data.userProfile,
               permissions: !!data.permissions,
               csrfToken: !!data.csrfToken
@@ -175,10 +175,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
       
       return () => {
         const endTime = performance.now();
-        console.log('[PERFORMANCE] Total Provider initialization time:', (endTime - startTime).toFixed(2), 'ms');
+        console.warn('[PERFORMANCE] Total Provider initialization time:', (endTime - startTime).toFixed(2), 'ms');
         
         // メトリクスサマリー出力
-        console.log('[METRICS SUMMARY]', globalMetrics);
+        console.warn('[METRICS SUMMARY]', globalMetrics);
       };
     }
   }, []);

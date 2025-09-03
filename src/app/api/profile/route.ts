@@ -172,7 +172,7 @@ export async function PUT(req: NextRequest) {
     const educationValue = education !== undefined && education !== null ? String(education).trim() : undefined;
     const websiteValue = website !== undefined && website !== null ? String(website).trim() : undefined;
     
-    console.log('[DEBUG] Update request:', {
+    console.warn('[DEBUG] Update request:', {
       email: session.user.email,
       name: name.trim(),
       bio: bioValue,
@@ -202,7 +202,7 @@ export async function PUT(req: NextRequest) {
       { $set: updateFields }
     );
     
-    console.log('[DEBUG] MongoDB update result:', {
+    console.warn('[DEBUG] MongoDB update result:', {
       acknowledged: result.acknowledged,
       modifiedCount: result.modifiedCount,
       matchedCount: result.matchedCount
@@ -211,7 +211,7 @@ export async function PUT(req: NextRequest) {
     // 更新後のユーザー情報を取得
     const updatedUser = await User.findOne({ email: session.user.email }).select('-password');
     
-    console.log('[DEBUG] Updated user bio:', updatedUser?.bio);
+    console.warn('[DEBUG] Updated user bio:', updatedUser?.bio);
 
     if (!updatedUser) {
       return NextResponse.json(

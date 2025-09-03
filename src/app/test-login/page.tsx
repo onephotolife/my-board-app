@@ -13,7 +13,7 @@ export default function TestLoginPage() {
 
   const handleLogin = async () => {
     setLoading(true);
-    console.log('🧪 テストログイン開始');
+    console.warn('🧪 テストログイン開始');
     
     const res = await signIn('credentials', {
       email,
@@ -21,7 +21,7 @@ export default function TestLoginPage() {
       redirect: false,
     });
     
-    console.log('📊 ログイン結果:', res);
+    console.warn('📊 ログイン結果:', res);
     setResult(res);
     setLoading(false);
     
@@ -29,7 +29,7 @@ export default function TestLoginPage() {
     setTimeout(async () => {
       const sessionRes = await fetch('/api/debug/session');
       const sessionData = await sessionRes.json();
-      console.log('🔍 セッション状態:', sessionData);
+      console.warn('🔍 セッション状態:', sessionData);
     }, 1000);
   };
 

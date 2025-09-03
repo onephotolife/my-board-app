@@ -93,13 +93,13 @@ export async function verifyCSRFToken(
   try {
     // 🔍 詳細デバッグ: Cookie解析の詳細ログを追加
     const rawCookieHeader = request.headers.get('cookie') || '';
-    console.log('[CSRF-DEBUG] Raw cookie header:', rawCookieHeader.substring(0, 200) + '...');
+    console.warn('[CSRF-DEBUG] Raw cookie header:', rawCookieHeader.substring(0, 200) + '...');
     
     // NextRequest.cookiesの全取得を試行
     const allCookies = new Map();
     request.cookies.getAll().forEach(cookie => {
       allCookies.set(cookie.name, cookie.value);
-      console.log(`[CSRF-DEBUG] Found cookie: ${cookie.name}=${cookie.value.substring(0, 10)}...`);
+      console.warn(`[CSRF-DEBUG] Found cookie: ${cookie.name}=${cookie.value.substring(0, 10)}...`);
     });
     
     // Cookieからトークンを取得（新CSRFシステムを最優先）
@@ -111,14 +111,14 @@ export async function verifyCSRFToken(
       'app-csrf-token'      // 旧システムのフォールバック2
     ];
     
-    console.log('[CSRF-DEBUG] Looking for cookies:', cookieNames);
+    console.warn('[CSRF-DEBUG] Looking for cookies:', cookieNames);
     
     for (const cookieName of cookieNames) {
       const token = request.cookies.get(cookieName)?.value;
-      console.log(`[CSRF-DEBUG] Checking ${cookieName}: ${token ? token.substring(0, 10) + '...' : 'null'}`);
+      console.warn(`[CSRF-DEBUG] Checking ${cookieName}: ${token ? token.substring(0, 10) + '...' : 'null'}`);
       if (token) {
         cookieToken = token;
-        console.log(`[CSRF-DEBUG] Found token in cookie: ${cookieName}`);
+        console.warn(`[CSRF-DEBUG] Found token in cookie: ${cookieName}`);
         break;
       }
     }
@@ -129,16 +129,16 @@ export async function verifyCSRFToken(
     
     // 1. ヘッダーから取得
     requestToken = request.headers.get(CSRF_HEADER_NAME);
-    console.log(`[CSRF-DEBUG] Header token (${CSRF_HEADER_NAME}):`, requestToken ? requestToken.substring(0, 10) + '...' : 'null');
+    console.warn(`[CSRF-DEBUG] Header token (${CSRF_HEADER_NAME}):`, requestToken ? requestToken.substring(0, 10) + '...' : 'null');
     
     // 2. ボディから取得（JSON）
     if (!requestToken && request.headers.get('content-type')?.includes('application/json')) {
       try {
         const body = await request.clone().json();
         requestToken = body[CSRF_TOKEN_NAME] || body._csrf || body.csrfToken;
-        console.log('[CSRF-DEBUG] JSON body token:', requestToken ? requestToken.substring(0, 10) + '...' : 'null');
+        console.warn('[CSRF-DEBUG] JSON body token:', requestToken ? requestToken.substring(0, 10) + '...' : 'null');
       } catch {
-        console.log('[CSRF-DEBUG] JSON body parse failed');
+        console.warn('[CSRF-DEBUG] JSON body parse failed');
       }
     }
     
@@ -147,14 +147,14 @@ export async function verifyCSRFToken(
       try {
         const formData = await request.clone().formData();
         requestToken = formData.get(CSRF_TOKEN_NAME) as string;
-        console.log('[CSRF-DEBUG] Form data token:', requestToken ? requestToken.substring(0, 10) + '...' : 'null');
+        console.warn('[CSRF-DEBUG] Form data token:', requestToken ? requestToken.substring(0, 10) + '...' : 'null');
       } catch {
-        console.log('[CSRF-DEBUG] Form data parse failed');
+        console.warn('[CSRF-DEBUG] Form data parse failed');
       }
     }
 
     // 結果のログ出力
-    console.log('[CSRF] Missing tokens:', {
+    console.warn('[CSRF] Missing tokens:', {
       hasCookie: !!cookieToken,
       hasHeader: !!requestToken,
       hasSession: !!sessionToken,
@@ -178,7 +178,7 @@ export async function verifyCSRFToken(
     
     // トークンの比較（タイミング攻撃対策）
     if (process.env.NODE_ENV === 'development') {
-      console.log('[CSRF] Token comparison:', {
+      console.warn('[CSRF] Token comparison:', {
         cookieToken: cookieToken.substring(0, 10) + '...',
         requestToken: requestToken.substring(0, 10) + '...',
         cookieTokenLength: cookieToken.length,
@@ -211,7 +211,7 @@ export async function verifyCSRFToken(
       return false;
     }
     
-    console.log('[CSRF-SUCCESS] Token validation successful');
+    console.warn('[CSRF-SUCCESS] Token validation successful');
     return true;
   } catch (error) {
     console.error('CSRF verification error:', error);

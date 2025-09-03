@@ -61,7 +61,7 @@ class SocketClient {
   // Socket接続の初期化
   connect(userId: string, token?: string): Socket {
     if (this.socket?.connected && this.userId === userId) {
-      console.log('[Socket] Already connected for user:', userId);
+      console.warn('[Socket] Already connected for user:', userId);
       return this.socket;
     }
 
@@ -98,7 +98,7 @@ class SocketClient {
 
     // 接続イベント
     this.socket.on('connect', () => {
-      console.log('[Socket] Connected successfully');
+      console.warn('[Socket] Connected successfully');
       this.connectionStatus = 'connected';
       this.emit('status:changed', { status: 'connected' });
       this.startHeartbeat();
@@ -111,7 +111,7 @@ class SocketClient {
 
     // 切断イベント
     this.socket.on('disconnect', () => {
-      console.log('[Socket] Disconnected');
+      console.warn('[Socket] Disconnected');
       this.connectionStatus = 'disconnected';
       this.emit('status:changed', { status: 'disconnected' });
       this.stopHeartbeat();
@@ -132,7 +132,7 @@ class SocketClient {
     this.socket.emit('subscribe:timeline', { userId });
     this.socket.emit('subscribe:notifications', { userId });
     
-    console.log('[Socket] Subscribed to user events:', userId);
+    console.warn('[Socket] Subscribed to user events:', userId);
   }
 
   // ハートビート開始
@@ -220,7 +220,7 @@ class SocketClient {
       this.connectionStatus = 'disconnected';
       this.listeners.clear();
       
-      console.log('[Socket] Disconnected and cleaned up');
+      console.warn('[Socket] Disconnected and cleaned up');
     }
   }
 

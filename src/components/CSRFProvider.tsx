@@ -94,7 +94,7 @@ export function CSRFProvider({ children, initialToken }: CSRFProviderProps) {
     
     window.__API_CALL_TRACKER__[endpoint] = tracker;
     
-    console.log(`[API_TRACK] ${endpoint}:`, {
+    console.warn(`[API_TRACK] ${endpoint}:`, {
       totalCalls: tracker.count,
       recentStatus: status,
       last5Calls: tracker.timestamps.slice(-5)
@@ -105,7 +105,7 @@ export function CSRFProvider({ children, initialToken }: CSRFProviderProps) {
     try {
       // initialTokenがあり、強制リフレッシュでない場合はスキップ
       if (initialToken && !force && !isInitialized) {
-        console.log('[PERF] Using initial CSRF token, skipping API call');
+        console.warn('[PERF] Using initial CSRF token, skipping API call');
         setToken(initialToken);
         setIsInitialized(true);
         setIsLoading(false);
@@ -116,7 +116,7 @@ export function CSRFProvider({ children, initialToken }: CSRFProviderProps) {
         tokenManagerRef.current = CSRFTokenManager.getInstance();
       }
 
-      console.log('🔄 [CSRF Provider] トークン取得開始', {
+      console.warn('🔄 [CSRF Provider] トークン取得開始', {
         sessionStatus: status,
         hasSession: !!session,
         timestamp: new Date().toISOString(),
@@ -139,7 +139,7 @@ export function CSRFProvider({ children, initialToken }: CSRFProviderProps) {
       
       setToken(newToken);
       
-      console.log('✅ [CSRF Provider] トークン更新完了', {
+      console.warn('✅ [CSRF Provider] トークン更新完了', {
         tokenPreview: newToken?.substring(0, 20) + '...',
         timestamp: new Date().toISOString()
       });
@@ -165,7 +165,7 @@ export function CSRFProvider({ children, initialToken }: CSRFProviderProps) {
       instanceId: Math.random().toString(36).substr(2, 9)
     };
     
-    console.log('[DEBUG] CSRFProvider mount:', mountInfo);
+    console.warn('[DEBUG] CSRFProvider mount:', mountInfo);
     
     // グローバル配列に記録
     window.__CSRF_MOUNT_HISTORY__ = window.__CSRF_MOUNT_HISTORY__ || [];
@@ -175,10 +175,10 @@ export function CSRFProvider({ children, initialToken }: CSRFProviderProps) {
     if (typeof window !== 'undefined') {
       // 既に初期化中の場合は、既存のPromiseを待機
       if (window.__CSRF_INIT_IN_PROGRESS__) {
-        console.log('[CSRF] ⏳ Token initialization already in progress, waiting...');
+        console.warn('[CSRF] ⏳ Token initialization already in progress, waiting...');
         if (window.__CSRF_INIT_PROMISE__) {
           window.__CSRF_INIT_PROMISE__.then(token => {
-            console.log('[CSRF] ✅ Received token from global promise');
+            console.warn('[CSRF] ✅ Received token from global promise');
             setToken(token);
             setIsInitialized(true);
             setIsLoading(false);
@@ -193,7 +193,7 @@ export function CSRFProvider({ children, initialToken }: CSRFProviderProps) {
       
       // キャッシュされたトークンが存在する場合
       if (window.__CSRF_TOKEN_CACHE__) {
-        console.log('[CSRF] ✅ Using cached token');
+        console.warn('[CSRF] ✅ Using cached token');
         setToken(window.__CSRF_TOKEN_CACHE__);
         setIsInitialized(true);
         setIsLoading(false);
@@ -206,7 +206,7 @@ export function CSRFProvider({ children, initialToken }: CSRFProviderProps) {
         
         // initialTokenがある場合はAPIコールをスキップ
         if (initialToken) {
-          console.log('[PERF] Using initial CSRF token from SSR, skipping API call');
+          console.warn('[PERF] Using initial CSRF token from SSR, skipping API call');
           setToken(initialToken);
           setIsInitialized(true);
           setIsLoading(false);
@@ -256,7 +256,7 @@ export function CSRFProvider({ children, initialToken }: CSRFProviderProps) {
     document.addEventListener('visibilitychange', handleFocus);
     
     return () => {
-      console.log('[DEBUG] CSRFProvider unmount:', {
+      console.warn('[DEBUG] CSRFProvider unmount:', {
         instanceId: mountInfo.instanceId,
         lifetime: Date.now() - new Date(mountInfo.timestamp).getTime()
       });
@@ -273,7 +273,7 @@ export function CSRFProvider({ children, initialToken }: CSRFProviderProps) {
     const currentSessionId = session?.user?.id || session?.user?.email || null;
     
     if (status === 'authenticated' && currentSessionId && currentSessionId !== previousSessionId) {
-      console.log('🔑 [CSRF] 新しいセッション確立を検知、CSRFトークンを再取得', {
+      console.warn('🔑 [CSRF] 新しいセッション確立を検知、CSRFトークンを再取得', {
         previousSessionId,
         currentSessionId,
         userEmail: session?.user?.email
@@ -356,7 +356,7 @@ export function useSecureFetch() {
         tokenManagerRef.current = CSRFTokenManager.getInstance();
       }
       
-      console.log('🔐 [SecureFetch] CSRFトークン取得中...', {
+      console.warn('🔐 [SecureFetch] CSRFトークン取得中...', {
         url,
         method,
         timestamp: new Date().toISOString()
@@ -365,7 +365,7 @@ export function useSecureFetch() {
       // ensureToken() で確実にトークンを取得（初期化保証）
       csrfToken = await tokenManagerRef.current.ensureToken();
       
-      console.log('✅ [SecureFetch] CSRFトークン取得成功', {
+      console.warn('✅ [SecureFetch] CSRFトークン取得成功', {
         url,
         method,
         tokenPreview: csrfToken?.substring(0, 20) + '...'
@@ -387,7 +387,7 @@ export function useSecureFetch() {
     
     if (csrfToken) {
       headers.set(header, csrfToken);
-      console.log('🔒 [SecureFetch] トークンをリクエストに添付', {
+      console.warn('🔒 [SecureFetch] トークンをリクエストに添付', {
         url,
         method,
         hasToken: true,

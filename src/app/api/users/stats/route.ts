@@ -64,7 +64,7 @@ export async function GET(request: NextRequest) {
       role: user.role
     };
 
-    console.log('[User Stats API] 統計情報取得成功:', {
+    console.warn('[User Stats API] 統計情報取得成功:', {
       email: session.user.email,
       memberSince: stats.memberSince,
       totalPosts: stats.totalPosts

@@ -33,7 +33,7 @@ describe('RealtimeBoard Like Feature - Unit Tests', () => {
   beforeEach(() => {
     // Mock global fetch
     global.fetch = jest.fn() as jest.MockedFunction<typeof fetch>;
-    console.log = jest.fn();
+    console.warn = jest.fn();
     console.error = jest.fn();
     
     // Mock window.alert
@@ -46,18 +46,18 @@ describe('RealtimeBoard Like Feature - Unit Tests', () => {
   describe('🔐 認証テスト', () => {
     it('✅ [UNIT-AUTH-001] 未認証ユーザーのリダイレクトロジック', () => {
       // Debug log
-      console.log('[LIKE-UNIT-TEST-DEBUG] Testing unauthenticated user redirect logic');
+      console.warn('[LIKE-UNIT-TEST-DEBUG] Testing unauthenticated user redirect logic');
       
       const session = null;
       const shouldRedirect = !session;
       
       expect(shouldRedirect).toBe(true);
-      console.log('[LIKE-UNIT-TEST-DEBUG] ✅ Unauthenticated redirect logic test passed');
+      console.warn('[LIKE-UNIT-TEST-DEBUG] ✅ Unauthenticated redirect logic test passed');
     });
 
     it('✅ [UNIT-AUTH-002] 認証済みユーザーの処理継続ロジック', () => {
       // Debug log
-      console.log('[LIKE-UNIT-TEST-DEBUG] Testing authenticated user processing logic');
+      console.warn('[LIKE-UNIT-TEST-DEBUG] Testing authenticated user processing logic');
       
       const session = mockSession;
       const shouldProceed = !!session && !!session.user && !!session.user.id;
@@ -66,14 +66,14 @@ describe('RealtimeBoard Like Feature - Unit Tests', () => {
       expect(session.user.id).toBe('68b00bb9e2d2d61e174b2204');
       expect(session.user.email).toBe('one.photolife+1@gmail.com');
       
-      console.log('[LIKE-UNIT-TEST-DEBUG] ✅ Authenticated user processing test passed');
+      console.warn('[LIKE-UNIT-TEST-DEBUG] ✅ Authenticated user processing test passed');
     });
   });
 
   describe('🎯 handleLikeロジックテスト', () => {
     it('✅ [UNIT-LOGIC-001] いいね追加のエンドポイント選択', () => {
       // Debug log
-      console.log('[LIKE-UNIT-TEST-DEBUG] Testing like endpoint selection');
+      console.warn('[LIKE-UNIT-TEST-DEBUG] Testing like endpoint selection');
       
       const postId = 'test-post-id';
       const isLiked = false; // 未いいね状態
@@ -83,12 +83,12 @@ describe('RealtimeBoard Like Feature - Unit Tests', () => {
         : `/api/posts/${postId}/like`;
       
       expect(endpoint).toBe(`/api/posts/${postId}/like`);
-      console.log('[LIKE-UNIT-TEST-DEBUG] ✅ Like endpoint selection test passed');
+      console.warn('[LIKE-UNIT-TEST-DEBUG] ✅ Like endpoint selection test passed');
     });
 
     it('✅ [UNIT-LOGIC-002] いいね削除のエンドポイント選択', () => {
       // Debug log
-      console.log('[LIKE-UNIT-TEST-DEBUG] Testing unlike endpoint selection');
+      console.warn('[LIKE-UNIT-TEST-DEBUG] Testing unlike endpoint selection');
       
       const postId = 'test-post-id';
       const isLiked = true; // いいね済み状態
@@ -98,12 +98,12 @@ describe('RealtimeBoard Like Feature - Unit Tests', () => {
         : `/api/posts/${postId}/like`;
       
       expect(endpoint).toBe(`/api/posts/${postId}/unlike`);
-      console.log('[LIKE-UNIT-TEST-DEBUG] ✅ Unlike endpoint selection test passed');
+      console.warn('[LIKE-UNIT-TEST-DEBUG] ✅ Unlike endpoint selection test passed');
     });
 
     it('✅ [UNIT-LOGIC-003] 楽観的更新ロジック', () => {
       // Debug log
-      console.log('[LIKE-UNIT-TEST-DEBUG] Testing optimistic update logic');
+      console.warn('[LIKE-UNIT-TEST-DEBUG] Testing optimistic update logic');
       
       const currentPost = { ...mockPost, isLikedByUser: false, likes: [] };
       const postId = currentPost._id;
@@ -119,14 +119,14 @@ describe('RealtimeBoard Like Feature - Unit Tests', () => {
       expect(updatedPost.isLikedByUser).toBe(true);
       expect(updatedPost.likes).toContain('68b00bb9e2d2d61e174b2204');
       
-      console.log('[LIKE-UNIT-TEST-DEBUG] ✅ Optimistic update logic test passed');
+      console.warn('[LIKE-UNIT-TEST-DEBUG] ✅ Optimistic update logic test passed');
     });
   });
 
   describe('❌ エラーハンドリングテスト', () => {
     it('❌ [UNIT-ERROR-001] API失敗レスポンス処理', async () => {
       // Debug log
-      console.log('[LIKE-UNIT-TEST-DEBUG] Testing API error response handling');
+      console.warn('[LIKE-UNIT-TEST-DEBUG] Testing API error response handling');
       
       const mockErrorResponse = {
         ok: false,
@@ -148,12 +148,12 @@ describe('RealtimeBoard Like Feature - Unit Tests', () => {
         expect((err as Error).message).toBe('CSRF token validation failed');
       }
       
-      console.log('[LIKE-UNIT-TEST-DEBUG] ✅ API error handling test passed');
+      console.warn('[LIKE-UNIT-TEST-DEBUG] ✅ API error handling test passed');
     });
 
     it('❌ [UNIT-NETWORK-001] ネットワークエラー処理', async () => {
       // Debug log
-      console.log('[LIKE-UNIT-TEST-DEBUG] Testing network error handling');
+      console.warn('[LIKE-UNIT-TEST-DEBUG] Testing network error handling');
       
       (global.fetch as jest.MockedFunction<typeof fetch>).mockRejectedValueOnce(
         new Error('Network Error')
@@ -166,12 +166,12 @@ describe('RealtimeBoard Like Feature - Unit Tests', () => {
         expect((err as Error).message).toBe('Network Error');
       }
       
-      console.log('[LIKE-UNIT-TEST-DEBUG] ✅ Network error test passed');
+      console.warn('[LIKE-UNIT-TEST-DEBUG] ✅ Network error test passed');
     });
 
     it('❌ [UNIT-ERROR-002] 投稿不存在エラー', () => {
       // Debug log
-      console.log('[LIKE-UNIT-TEST-DEBUG] Testing post not found error');
+      console.warn('[LIKE-UNIT-TEST-DEBUG] Testing post not found error');
       
       const posts = [mockPost];
       const targetPostId = 'non-existent-post';
@@ -182,18 +182,18 @@ describe('RealtimeBoard Like Feature - Unit Tests', () => {
       
       // 投稿が見つからない場合のearly return
       if (!post) {
-        console.log('[LIKE-UNIT-TEST-DEBUG] Post not found - early return');
+        console.warn('[LIKE-UNIT-TEST-DEBUG] Post not found - early return');
         expect(true).toBe(true); // Early return success
       }
       
-      console.log('[LIKE-UNIT-TEST-DEBUG] ✅ Post not found error test passed');
+      console.warn('[LIKE-UNIT-TEST-DEBUG] ✅ Post not found error test passed');
     });
   });
 
   describe('🎨 UI状態テスト', () => {
     it('✅ [UNIT-UI-001] いいね状態アイコン判定', () => {
       // Debug log
-      console.log('[LIKE-UNIT-TEST-DEBUG] Testing icon state determination');
+      console.warn('[LIKE-UNIT-TEST-DEBUG] Testing icon state determination');
       
       // いいね済み状態
       const likedPost = { ...mockPost, isLikedByUser: true };
@@ -207,12 +207,12 @@ describe('RealtimeBoard Like Feature - Unit Tests', () => {
       
       expect(notLikedIcon).toBe('FavoriteBorderIcon');
       
-      console.log('[LIKE-UNIT-TEST-DEBUG] ✅ Icon state determination test passed');
+      console.warn('[LIKE-UNIT-TEST-DEBUG] ✅ Icon state determination test passed');
     });
 
     it('✅ [UNIT-UI-002] いいね数表示ロジック', () => {
       // Debug log
-      console.log('[LIKE-UNIT-TEST-DEBUG] Testing like count display logic');
+      console.warn('[LIKE-UNIT-TEST-DEBUG] Testing like count display logic');
       
       const postWithLikes = {
         ...mockPost,
@@ -231,14 +231,14 @@ describe('RealtimeBoard Like Feature - Unit Tests', () => {
       
       expect(shouldHideCount).toBe(true);
       
-      console.log('[LIKE-UNIT-TEST-DEBUG] ✅ Like count display logic test passed');
+      console.warn('[LIKE-UNIT-TEST-DEBUG] ✅ Like count display logic test passed');
     });
   });
 
   describe('🔒 セキュリティテスト', () => {
     it('✅ [UNIT-SEC-001] CSRF エラーレスポンス検証', () => {
       // Debug log  
-      console.log('[LIKE-UNIT-TEST-DEBUG] Testing CSRF error response validation');
+      console.warn('[LIKE-UNIT-TEST-DEBUG] Testing CSRF error response validation');
       
       const mockCSRFError = {
         ok: false,
@@ -252,12 +252,12 @@ describe('RealtimeBoard Like Feature - Unit Tests', () => {
       expect(mockCSRFError.status).toBe(403);
       expect(mockCSRFError.error.code).toBe('CSRF_VALIDATION_FAILED');
       
-      console.log('[LIKE-UNIT-TEST-DEBUG] ✅ CSRF error validation test passed');
+      console.warn('[LIKE-UNIT-TEST-DEBUG] ✅ CSRF error validation test passed');
     });
 
     it('✅ [UNIT-SEC-002] 認証トークン検証ロジック', () => {
       // Debug log
-      console.log('[LIKE-UNIT-TEST-DEBUG] Testing auth token validation logic');
+      console.warn('[LIKE-UNIT-TEST-DEBUG] Testing auth token validation logic');
       
       // 有効なセッション
       const validSession = mockSession;
@@ -274,14 +274,14 @@ describe('RealtimeBoard Like Feature - Unit Tests', () => {
       
       expect(isInvalidSession).toBe(true);
       
-      console.log('[LIKE-UNIT-TEST-DEBUG] ✅ Auth token validation logic test passed');
+      console.warn('[LIKE-UNIT-TEST-DEBUG] ✅ Auth token validation logic test passed');
     });
   });
 
   describe('⚡ Socket.IOイベントテスト', () => {
     it('✅ [UNIT-SOCKET-001] post:likedイベントデータ処理', () => {
       // Debug log
-      console.log('[LIKE-UNIT-TEST-DEBUG] Testing post:liked event data processing');
+      console.warn('[LIKE-UNIT-TEST-DEBUG] Testing post:liked event data processing');
       
       const mockSocketEvent = {
         postId: 'test-post-id',
@@ -303,12 +303,12 @@ describe('RealtimeBoard Like Feature - Unit Tests', () => {
       
       expect(updatedPost.isLikedByUser).toBe(true);
       
-      console.log('[LIKE-UNIT-TEST-DEBUG] ✅ Socket event data processing test passed');
+      console.warn('[LIKE-UNIT-TEST-DEBUG] ✅ Socket event data processing test passed');
     });
 
     it('✅ [UNIT-SOCKET-002] post:unlikedイベントデータ処理', () => {
       // Debug log
-      console.log('[LIKE-UNIT-TEST-DEBUG] Testing post:unliked event data processing');
+      console.warn('[LIKE-UNIT-TEST-DEBUG] Testing post:unliked event data processing');
       
       const mockSocketEvent = {
         postId: 'test-post-id',
@@ -326,26 +326,26 @@ describe('RealtimeBoard Like Feature - Unit Tests', () => {
       expect(updatedPost.isLikedByUser).toBe(false);
       expect(updatedPost.likes.length).toBe(0);
       
-      console.log('[LIKE-UNIT-TEST-DEBUG] ✅ Socket unliked event processing test passed');
+      console.warn('[LIKE-UNIT-TEST-DEBUG] ✅ Socket unliked event processing test passed');
     });
   });
 
   // 🧪 テストケース集計
-  console.log('[LIKE-UNIT-TEST-SUMMARY] 単体テストケース:');
-  console.log('- 認証テスト: 2ケース');
-  console.log('- ロジックテスト: 3ケース');  
-  console.log('- エラーハンドリング: 3ケース');
-  console.log('- UIテスト: 2ケース');
-  console.log('- セキュリティテスト: 2ケース');
-  console.log('- Socket.IOテスト: 2ケース');
-  console.log('- 合計: 14ケース');
+  console.warn('[LIKE-UNIT-TEST-SUMMARY] 単体テストケース:');
+  console.warn('- 認証テスト: 2ケース');
+  console.warn('- ロジックテスト: 3ケース');  
+  console.warn('- エラーハンドリング: 3ケース');
+  console.warn('- UIテスト: 2ケース');
+  console.warn('- セキュリティテスト: 2ケース');
+  console.warn('- Socket.IOテスト: 2ケース');
+  console.warn('- 合計: 14ケース');
 });
 
 // 🔍 テストパターン検証
 describe('🧪 テストパターン検証', () => {
   describe('✅ OK パターン', () => {
     it('[OK-001] 認証済み + 有効投稿 + 正常API', () => {
-      console.log('[TEST-PATTERN-DEBUG] ✅ OK-001: 理想的な実行フロー');
+      console.warn('[TEST-PATTERN-DEBUG] ✅ OK-001: 理想的な実行フロー');
       
       const conditions = {
         hasValidSession: true,
@@ -361,7 +361,7 @@ describe('🧪 テストパターン検証', () => {
     });
     
     it('[OK-002] 未認証 + セキュリティリダイレクト', () => {
-      console.log('[TEST-PATTERN-DEBUG] ✅ OK-002: セキュリティリダイレクト');
+      console.warn('[TEST-PATTERN-DEBUG] ✅ OK-002: セキュリティリダイレクト');
       
       const session = null;
       const shouldRedirect = !session;
@@ -372,7 +372,7 @@ describe('🧪 テストパターン検証', () => {
     });
     
     it('[OK-003] Socket.IO同期正常', () => {
-      console.log('[TEST-PATTERN-DEBUG] ✅ OK-003: リアルタイム同期');
+      console.warn('[TEST-PATTERN-DEBUG] ✅ OK-003: リアルタイム同期');
       
       const socketEvent = 'post:liked';
       const eventData = { postId: 'test', userId: 'user', likes: ['user'] };
@@ -384,7 +384,7 @@ describe('🧪 テストパターン検証', () => {
 
   describe('❌ NG パターン & 対処法', () => {
     it('[NG-001] CSRF失敗 → トークン再取得', () => {
-      console.log('[TEST-PATTERN-DEBUG] ❌ NG-001 対処: CSRFトークン再取得フロー');
+      console.warn('[TEST-PATTERN-DEBUG] ❌ NG-001 対処: CSRFトークン再取得フロー');
       
       const csrfError = { status: 403, code: 'CSRF_VALIDATION_FAILED' };
       const shouldRetryWithNewToken = csrfError.status === 403 && 
@@ -394,7 +394,7 @@ describe('🧪 テストパターン検証', () => {
     });
     
     it('[NG-002] ネットワーク失敗 → リトライ', () => {
-      console.log('[TEST-PATTERN-DEBUG] ❌ NG-002 対処: 自動リトライメカニズム');
+      console.warn('[TEST-PATTERN-DEBUG] ❌ NG-002 対処: 自動リトライメカニズム');
       
       const networkError = new Error('Network Error');
       const shouldRetry = networkError.message.includes('Network');
@@ -405,7 +405,7 @@ describe('🧪 テストパターン検証', () => {
     });
     
     it('[NG-003] 投稿不存在 → ユーザーフレンドリーエラー', () => {
-      console.log('[TEST-PATTERN-DEBUG] ❌ NG-003 対処: ユーザーフレンドリーエラー');
+      console.warn('[TEST-PATTERN-DEBUG] ❌ NG-003 対処: ユーザーフレンドリーエラー');
       
       const posts: any[] = [];
       const targetPost = posts.find(p => p._id === 'non-existent');

@@ -56,7 +56,7 @@ function VerifyEmailContent() {
 
     const verifyEmail = async () => {
       try {
-        console.log('🔍 メール確認開始:', { token: tokenParam });
+        console.warn('🔍 メール確認開始:', { token: tokenParam });
         
         const response = await fetch(`/api/auth/verify?token=${encodeURIComponent(tokenParam)}`, {
           method: 'GET',
@@ -66,7 +66,7 @@ function VerifyEmailContent() {
         });
         
         const data = await response.json();
-        console.log('📦 レスポンスデータ:', data);
+        console.warn('📦 レスポンスデータ:', data);
         
         if (data.success) {
           setStatus('success');

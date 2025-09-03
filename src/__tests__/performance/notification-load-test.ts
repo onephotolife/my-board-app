@@ -65,9 +65,9 @@ describe('【PERF-001】通知システムパフォーマンステスト', () =>
     // 認証トークン取得
     authToken = await getAuthToken();
     metrics.startTime = Date.now();
-    console.log('🚀 [PERF] パフォーマンステスト開始');
-    console.log('   認証: one.photolife+1@gmail.com');
-    console.log('   開始時刻:', new Date(metrics.startTime).toISOString());
+    console.warn('🚀 [PERF] パフォーマンステスト開始');
+    console.warn('   認証: one.photolife+1@gmail.com');
+    console.warn('   開始時刻:', new Date(metrics.startTime).toISOString());
   });
 
   afterAll(() => {
@@ -77,21 +77,21 @@ describe('【PERF-001】通知システムパフォーマンステスト', () =>
     // メトリクス集計
     const stats = calculateStatistics(metrics.responseTimes);
     
-    console.log('📊 [PERF] パフォーマンステスト結果');
-    console.log('   実行時間:', duration, '秒');
-    console.log('   総リクエスト数:', metrics.totalRequests);
-    console.log('   エラー数:', metrics.errors);
-    console.log('   エラー率:', ((metrics.errors / metrics.totalRequests) * 100).toFixed(2), '%');
-    console.log('   スループット:', (metrics.totalRequests / duration).toFixed(2), 'req/sec');
-    console.log('   レスポンスタイム:');
-    console.log('     P50:', stats.p50, 'ms');
-    console.log('     P95:', stats.p95, 'ms');
-    console.log('     P99:', stats.p99, 'ms');
+    console.warn('📊 [PERF] パフォーマンステスト結果');
+    console.warn('   実行時間:', duration, '秒');
+    console.warn('   総リクエスト数:', metrics.totalRequests);
+    console.warn('   エラー数:', metrics.errors);
+    console.warn('   エラー率:', ((metrics.errors / metrics.totalRequests) * 100).toFixed(2), '%');
+    console.warn('   スループット:', (metrics.totalRequests / duration).toFixed(2), 'req/sec');
+    console.warn('   レスポンスタイム:');
+    console.warn('     P50:', stats.p50, 'ms');
+    console.warn('     P95:', stats.p95, 'ms');
+    console.warn('     P99:', stats.p99, 'ms');
   });
 
   test('【NORMAL】通常負荷テスト（100ユーザー）', async () => {
     const pattern = LOAD_PATTERNS.normal;
-    console.log(`\n🔄 ${pattern.description}`);
+    console.warn(`\n🔄 ${pattern.description}`);
     
     const results = await runLoadTest(pattern, authToken);
     
@@ -105,12 +105,12 @@ describe('【PERF-001】通知システムパフォーマンステスト', () =>
     metrics.errors += results.errors;
     metrics.totalRequests += results.totalRequests;
     
-    console.log('✅ 通常負荷テスト合格');
+    console.warn('✅ 通常負荷テスト合格');
   });
 
   test('【PEAK】ピーク負荷テスト（1000ユーザー）', async () => {
     const pattern = LOAD_PATTERNS.peak;
-    console.log(`\n🔄 ${pattern.description}`);
+    console.warn(`\n🔄 ${pattern.description}`);
     
     const results = await runLoadTest(pattern, authToken);
     
@@ -123,12 +123,12 @@ describe('【PERF-001】通知システムパフォーマンステスト', () =>
     metrics.errors += results.errors;
     metrics.totalRequests += results.totalRequests;
     
-    console.log('✅ ピーク負荷テスト合格');
+    console.warn('✅ ピーク負荷テスト合格');
   });
 
   test('【SPIKE】スパイク負荷テスト（10000ユーザー）', async () => {
     const pattern = LOAD_PATTERNS.spike;
-    console.log(`\n🔄 ${pattern.description}`);
+    console.warn(`\n🔄 ${pattern.description}`);
     
     const results = await runLoadTest(pattern, authToken);
     
@@ -140,12 +140,12 @@ describe('【PERF-001】通知システムパフォーマンステスト', () =>
     const recoveryTime = await measureRecoveryTime(authToken);
     expect(recoveryTime).toBeLessThan(10000); // 10秒以内に回復
     
-    console.log('✅ スパイク負荷テスト合格');
-    console.log('   リカバリー時間:', recoveryTime, 'ms');
+    console.warn('✅ スパイク負荷テスト合格');
+    console.warn('   リカバリー時間:', recoveryTime, 'ms');
   });
 
   test('【MEMORY】メモリリークテスト', async () => {
-    console.log('\n🔄 メモリリークテスト（1000回繰り返し）');
+    console.warn('\n🔄 メモリリークテスト（1000回繰り返し）');
     
     const initialMemory = process.memoryUsage().heapUsed / 1024 / 1024;
     
@@ -158,7 +158,7 @@ describe('【PERF-001】通知システムパフォーマンステスト', () =>
       if (i % 100 === 0) {
         global.gc?.(); // GC実行（--expose-gcフラグ必要）
         const currentMemory = process.memoryUsage().heapUsed / 1024 / 1024;
-        console.log(`   ${i}/1000: メモリ使用量 ${currentMemory.toFixed(2)} MB`);
+        console.warn(`   ${i}/1000: メモリ使用量 ${currentMemory.toFixed(2)} MB`);
       }
     }
     
@@ -167,14 +167,14 @@ describe('【PERF-001】通知システムパフォーマンステスト', () =>
     
     expect(memoryIncrease).toBeLessThan(100); // 100MB以下の増加
     
-    console.log('✅ メモリリークテスト合格');
-    console.log('   初期メモリ:', initialMemory.toFixed(2), 'MB');
-    console.log('   最終メモリ:', finalMemory.toFixed(2), 'MB');
-    console.log('   増加量:', memoryIncrease.toFixed(2), 'MB');
+    console.warn('✅ メモリリークテスト合格');
+    console.warn('   初期メモリ:', initialMemory.toFixed(2), 'MB');
+    console.warn('   最終メモリ:', finalMemory.toFixed(2), 'MB');
+    console.warn('   増加量:', memoryIncrease.toFixed(2), 'MB');
   });
 
   test('【CONCURRENT】並行処理テスト', async () => {
-    console.log('\n🔄 並行処理テスト（100並列）');
+    console.warn('\n🔄 並行処理テスト（100並列）');
     
     const promises = [];
     const concurrency = 100;
@@ -194,10 +194,10 @@ describe('【PERF-001】通知システムパフォーマンステスト', () =>
     
     expect(successful).toBeGreaterThan(concurrency * 0.95); // 95%以上成功
     
-    console.log('✅ 並行処理テスト合格');
-    console.log('   成功:', successful);
-    console.log('   失敗:', failed);
-    console.log('   実行時間:', endTime - startTime, 'ms');
+    console.warn('✅ 並行処理テスト合格');
+    console.warn('   成功:', successful);
+    console.warn('   失敗:', failed);
+    console.warn('   実行時間:', endTime - startTime, 'ms');
   });
 });
 

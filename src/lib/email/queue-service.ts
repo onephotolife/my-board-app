@@ -73,7 +73,7 @@ export class EmailQueueService {
     
     this.queue.splice(insertIndex, 0, queuedJob);
     
-    console.log(`📧 メールジョブ追加: ${jobId}, タイプ: ${job.type}, 優先度: ${job.priority || 'normal'}`);
+    console.warn(`📧 メールジョブ追加: ${jobId}, タイプ: ${job.type}, 優先度: ${job.priority || 'normal'}`);
     this.metrics.record('email.queue.added', { type: job.type, priority: job.priority });
     
     // すぐに処理を試みる
@@ -103,7 +103,7 @@ export class EmailQueueService {
       job.status = 'processing';
       job.attempts++;
       
-      console.log(`📮 メール送信開始: ${job.id}, タイプ: ${job.type}, 試行: ${job.attempts}`);
+      console.warn(`📮 メール送信開始: ${job.id}, タイプ: ${job.type}, 試行: ${job.attempts}`);
       
       try {
         // メール送信
@@ -111,7 +111,7 @@ export class EmailQueueService {
         
         // 成功
         job.status = 'completed';
-        console.log(`✅ メール送信成功: ${job.id}`);
+        console.warn(`✅ メール送信成功: ${job.id}`);
         this.metrics.record('email.sent', { type: job.type, attempt: job.attempts });
         
         // 完了したジョブを削除
@@ -143,7 +143,7 @@ export class EmailQueueService {
           
           // バックオフ遅延を適用
           const delay = this.calculateBackoffDelay(job);
-          console.log(`🔄 リトライ予定: ${job.id}, 遅延: ${delay}ms`);
+          console.warn(`🔄 リトライ予定: ${job.id}, 遅延: ${delay}ms`);
           
           setTimeout(() => {
             if (this.queue.find(j => j.id === job.id)) {
@@ -177,12 +177,12 @@ export class EmailQueueService {
         
       case 'password-reset':
         // パスワードリセットメール（未実装）
-        console.log('パスワードリセットメール送信:', job.to);
+        console.warn('パスワードリセットメール送信:', job.to);
         break;
         
       case 'welcome':
         // ウェルカムメール（未実装）
-        console.log('ウェルカムメール送信:', job.to);
+        console.warn('ウェルカムメール送信:', job.to);
         break;
         
       default:
@@ -211,7 +211,7 @@ export class EmailQueueService {
    * デッドレターキューへの移動（簡易実装）
    */
   private moveToDeadLetterQueue(job: QueuedJob): void {
-    console.log(`🔴 DLQに移動: ${job.id}`);
+    console.warn(`🔴 DLQに移動: ${job.id}`);
     
     // 実際の実装では、別のストレージに保存
     // ここでは簡略化のため、キューから削除のみ
@@ -290,6 +290,6 @@ export class EmailQueueService {
       j.status !== 'completed' && j.status !== 'failed'
     );
     
-    console.log(`🧹 キュークリーンアップ完了: ${this.queue.length}件のジョブが残っています`);
+    console.warn(`🧹 キュークリーンアップ完了: ${this.queue.length}件のジョブが残っています`);
   }
 }

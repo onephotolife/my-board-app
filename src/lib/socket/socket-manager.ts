@@ -12,7 +12,7 @@ export function getSocketIO(): SocketIOServer | undefined {
 
 export function initSocketIO(httpServer: HTTPServer): SocketIOServer {
   if (!global.io) {
-    console.log('Initializing Socket.io server...');
+    console.warn('Initializing Socket.io server...');
     
     global.io = new SocketIOServer(httpServer, {
       cors: {
@@ -24,12 +24,12 @@ export function initSocketIO(httpServer: HTTPServer): SocketIOServer {
     });
 
     global.io.on('connection', (socket) => {
-      console.log(`Client connected: ${socket.id}`);
+      console.warn(`Client connected: ${socket.id}`);
       
       socket.join('board-updates');
       
       socket.on('disconnect', () => {
-        console.log(`Client disconnected: ${socket.id}`);
+        console.warn(`Client disconnected: ${socket.id}`);
       });
     });
   }
@@ -41,6 +41,6 @@ export function broadcastEvent(event: string, data: any) {
   const io = getSocketIO();
   if (io) {
     io.to('board-updates').emit(event, data);
-    console.log(`Broadcasting event: ${event}`, data);
+    console.warn(`Broadcasting event: ${event}`, data);
   }
 }

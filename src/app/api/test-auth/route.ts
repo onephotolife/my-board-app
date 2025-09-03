@@ -11,20 +11,20 @@ export async function POST(req: NextRequest) {
     
     await connectDB();
     
-    console.log('🔍 テスト認証開始:', email);
+    console.warn('🔍 テスト認証開始:', email);
     
     // ユーザーを検索
     const user = await User.findOne({ email });
     
     if (!user) {
-      console.log('❌ ユーザーが見つかりません');
+      console.warn('❌ ユーザーが見つかりません');
       return NextResponse.json({ 
         success: false, 
         error: 'User not found' 
       }, { status: 404 });
     }
     
-    console.log('📝 ユーザー情報:', {
+    console.warn('📝 ユーザー情報:', {
       id: user._id.toString(),
       email: user.email,
       emailVerified: user.emailVerified,
@@ -36,12 +36,12 @@ export async function POST(req: NextRequest) {
     let isValidMethod = false;
     if (user.comparePassword) {
       isValidMethod = await user.comparePassword(password);
-      console.log('🔐 comparePasswordメソッド:', isValidMethod ? '✅' : '❌');
+      console.warn('🔐 comparePasswordメソッド:', isValidMethod ? '✅' : '❌');
     }
     
     // パスワード検証（直接bcrypt）
     const isValidDirect = await bcrypt.compare(password, user.password);
-    console.log('🔐 bcrypt.compare直接:', isValidDirect ? '✅' : '❌');
+    console.warn('🔐 bcrypt.compare直接:', isValidDirect ? '✅' : '❌');
     
     // emailVerifiedチェック
     const emailVerifiedCheck = {
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
       value: user.emailVerified,
       type: typeof user.emailVerified
     };
-    console.log('📧 emailVerified検証:', emailVerifiedCheck);
+    console.warn('📧 emailVerified検証:', emailVerifiedCheck);
     
     return NextResponse.json({
       success: true,

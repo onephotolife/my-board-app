@@ -57,7 +57,7 @@ export async function GET(req: NextRequest) {
 
     io.on('connection', (socket) => {
       const user = socket.data.user;
-      console.log(`🔌 User connected: ${user.email} (${socket.id})`);
+      console.warn(`🔌 User connected: ${user.email} (${socket.id})`);
       
       socket.join('board-updates');
       
@@ -128,7 +128,7 @@ export async function GET(req: NextRequest) {
       });
 
       socket.on('disconnect', () => {
-        console.log(`🔌 User disconnected: ${user.email} (${socket.id})`);
+        console.warn(`🔌 User disconnected: ${user.email} (${socket.id})`);
         
         io?.to('board-updates').emit('user:offline', {
           userId: user.id,
@@ -137,7 +137,7 @@ export async function GET(req: NextRequest) {
     });
 
     global.io = io;
-    console.log('✅ Socket.io server initialized');
+    console.warn('✅ Socket.io server initialized');
   }
 
   return NextResponse.json({ status: 'Socket.io server ready' });

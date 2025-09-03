@@ -4,7 +4,7 @@ import { signIn } from '@/lib/auth';
 import { auth } from '@/lib/auth';
 
 export async function POST(request: Request) {
-  console.log('🧪 テストログイン開始');
+  console.warn('🧪 テストログイン開始');
   
   try {
     const body = await request.json();
@@ -16,7 +16,7 @@ export async function POST(request: Request) {
       }, { status: 400 });
     }
     
-    console.log('📧 ログイン試行:', email);
+    console.warn('📧 ログイン試行:', email);
     
     // signIn関数を直接呼び出してテスト
     // ※ このアプローチは通常推奨されませんが、デバッグ目的で使用
@@ -26,7 +26,7 @@ export async function POST(request: Request) {
     
     // セッション確認（ログイン前）
     const sessionBefore = await auth();
-    console.log('📊 ログイン前のセッション:', sessionBefore);
+    console.warn('📊 ログイン前のセッション:', sessionBefore);
     
     // ログイン試行の結果を返す
     const result = {
@@ -44,7 +44,7 @@ export async function POST(request: Request) {
       ],
     };
     
-    console.log('🎯 テストログイン結果:', result);
+    console.warn('🎯 テストログイン結果:', result);
     
     return NextResponse.json(result);
   } catch (error) {

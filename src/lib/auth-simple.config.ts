@@ -14,10 +14,10 @@ export const simpleAuthConfig = {
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        console.log('🔐 [SimpleAuth] 認証開始:', credentials?.email);
+        console.warn('🔐 [SimpleAuth] 認証開始:', credentials?.email);
         
         if (!credentials?.email || !credentials?.password) {
-          console.log('❌ [SimpleAuth] 認証情報不足');
+          console.warn('❌ [SimpleAuth] 認証情報不足');
           return null;
         }
 
@@ -27,7 +27,7 @@ export const simpleAuthConfig = {
           const user = await User.findOne({ email: credentials.email });
           
           if (!user) {
-            console.log('❌ [SimpleAuth] ユーザーが見つかりません');
+            console.warn('❌ [SimpleAuth] ユーザーが見つかりません');
             return null;
           }
 
@@ -35,17 +35,17 @@ export const simpleAuthConfig = {
           const isValidPassword = await bcrypt.compare(credentials.password, user.password);
           
           if (!isValidPassword) {
-            console.log('❌ [SimpleAuth] パスワードが一致しません');
+            console.warn('❌ [SimpleAuth] パスワードが一致しません');
             return null;
           }
 
           // メール確認は会員制掲示板の必須要件
           if (!user.emailVerified) {
-            console.log('⛔ [SimpleAuth] メール未確認のためログイン拒否');
+            console.warn('⛔ [SimpleAuth] メール未確認のためログイン拒否');
             return null;
           }
 
-          console.log('✅ [SimpleAuth] 認証成功:', user.email);
+          console.warn('✅ [SimpleAuth] 認証成功:', user.email);
           
           return {
             id: user._id.toString(),
@@ -68,7 +68,7 @@ export const simpleAuthConfig = {
   
   callbacks: {
     async jwt({ token, user }: any) {
-      console.log('🎫 [JWT Callback]:', {
+      console.warn('🎫 [JWT Callback]:', {
         hasUser: !!user,
         hasToken: !!token,
         userId: user?.id,
@@ -85,7 +85,7 @@ export const simpleAuthConfig = {
     },
     
     async session({ session, token }: any) {
-      console.log('📊 [Session Callback]:', {
+      console.warn('📊 [Session Callback]:', {
         hasSession: !!session,
         hasToken: !!token,
         tokenId: token?.id,

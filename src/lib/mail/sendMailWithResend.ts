@@ -12,14 +12,14 @@ interface EmailOptions {
 
 export async function sendEmailWithResend({ to, subject, html }: EmailOptions) {
   try {
-    console.log('\n📧 Resend Email Request:');
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log(`To: ${to}`);
-    console.log(`Subject: ${subject}`);
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+    console.warn('\n📧 Resend Email Request:');
+    console.warn('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.warn(`To: ${to}`);
+    console.warn(`Subject: ${subject}`);
+    console.warn('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
     
     if (!process.env.RESEND_API_KEY || !resend) {
-      console.log('⚠️ Resend API key not configured');
+      console.warn('⚠️ Resend API key not configured');
       return { success: false, error: 'Resend not configured' };
     }
     
@@ -30,8 +30,8 @@ export async function sendEmailWithResend({ to, subject, html }: EmailOptions) {
       html,
     });
     
-    console.log('✅ Email sent via Resend!');
-    console.log('   Email ID:', data.data?.id);
+    console.warn('✅ Email sent via Resend!');
+    console.warn('   Email ID:', data.data?.id);
     
     return { success: true, messageId: data.data?.id };
   } catch (error) {

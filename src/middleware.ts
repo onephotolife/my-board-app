@@ -107,7 +107,7 @@ export async function middleware(request: NextRequest) {
     
     // デバッグログ
     if (isDevExcluded) {
-      console.log('[RateLimit] Development exclusion applied:', {
+      console.warn('[RateLimit] Development exclusion applied:', {
         pathname,
         isDevelopment,
         skipRateLimit: true,
@@ -314,12 +314,12 @@ export async function middleware(request: NextRequest) {
   
   // 認証チェック（ページルート）
   if (isProtectedPath(pathname)) {
-    console.log('🔍 Middleware: 保護されたパス:', pathname);
+    console.warn('🔍 Middleware: 保護されたパス:', pathname);
     
     // JWTトークンを取得（NextAuth v4対応）
     // デバッグ情報を追加
     const cookieHeader = request.headers.get('cookie');
-    console.log('🍪 [Middleware Debug] クッキーヘッダー:', cookieHeader);
+    console.warn('🍪 [Middleware Debug] クッキーヘッダー:', cookieHeader);
     
     const token = await getToken({ 
       req: request,
@@ -329,7 +329,7 @@ export async function middleware(request: NextRequest) {
       cookieName: process.env.NODE_ENV === 'production' ? '__Secure-next-auth.session-token' : 'next-auth.session-token'
     });
     
-    console.log('🎫 Middleware: トークン状態:', {
+    console.warn('🎫 Middleware: トークン状態:', {
       exists: !!token,
       id: token?.id,
       email: token?.email,
@@ -348,7 +348,7 @@ export async function middleware(request: NextRequest) {
       const callbackUrl = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : '');
       url.searchParams.set('callbackUrl', callbackUrl);
       
-      console.log('🚫 Middleware: 未認証のためリダイレクト:', url.toString());
+      console.warn('🚫 Middleware: 未認証のためリダイレクト:', url.toString());
       return NextResponse.redirect(url);
     }
     
@@ -356,7 +356,7 @@ export async function middleware(request: NextRequest) {
     if (token && !token.emailVerified) {
       // メール未確認の場合、確認ページへリダイレクト
       const url = new URL('/auth/email-not-verified', request.url);
-      console.log('📧 Middleware: メール未確認のためリダイレクト');
+      console.warn('📧 Middleware: メール未確認のためリダイレクト');
       return NextResponse.redirect(url);
     }
   }
@@ -364,7 +364,7 @@ export async function middleware(request: NextRequest) {
   // 認証チェック（APIエンドポイント）
   if (isProtectedApiPath(pathname)) {
     const cookieHeader = request.headers.get('cookie');
-    console.log('🍪 [Middleware API Debug] クッキーヘッダー:', cookieHeader);
+    console.warn('🍪 [Middleware API Debug] クッキーヘッダー:', cookieHeader);
     
     const token = await getToken({ 
       req: request,
@@ -373,7 +373,7 @@ export async function middleware(request: NextRequest) {
       cookieName: process.env.NODE_ENV === 'production' ? '__Secure-next-auth.session-token' : 'next-auth.session-token'
     });
     
-    console.log('🔍 [Middleware API] 認証チェック:', {
+    console.warn('🔍 [Middleware API] 認証チェック:', {
       pathname,
       hasToken: !!token,
       userId: token?.id,
@@ -405,7 +405,7 @@ export async function middleware(request: NextRequest) {
   // これにより無限ループを防止
   if (pathname.startsWith('/auth/signin') || pathname.startsWith('/auth/signup')) {
     const cookieHeader = request.headers.get('cookie');
-    console.log('🍪 [Middleware Auth Debug] クッキーヘッダー:', cookieHeader);
+    console.warn('🍪 [Middleware Auth Debug] クッキーヘッダー:', cookieHeader);
     
     const token = await getToken({ 
       req: request,
@@ -414,7 +414,7 @@ export async function middleware(request: NextRequest) {
       cookieName: process.env.NODE_ENV === 'production' ? '__Secure-next-auth.session-token' : 'next-auth.session-token'
     });
     
-    console.log('🔍 [Middleware] 認証ページアクセス:', {
+    console.warn('🔍 [Middleware] 認証ページアクセス:', {
       pathname,
       hasToken: !!token,
       tokenId: token?.id,
@@ -426,7 +426,7 @@ export async function middleware(request: NextRequest) {
     // 重要: 認証済みでもサインインページへのアクセスを許可
     // リダイレクトはログイン処理後にクライアント側で実行
     if (token && token.id && token.emailVerified) {
-      console.log('ℹ️ [Middleware] 認証済みユーザーですが、サインインページへのアクセスを許可');
+      console.warn('ℹ️ [Middleware] 認証済みユーザーですが、サインインページへのアクセスを許可');
       // リダイレクトせずにページを表示
       return NextResponse.next();
     }

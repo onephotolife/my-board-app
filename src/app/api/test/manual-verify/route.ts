@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     user.emailVerificationTokenExpiry = undefined;
     await user.save();
 
-    console.log('✅ 手動メール確認完了:', email);
+    console.warn('✅ 手動メール確認完了:', email);
 
     return NextResponse.json({
       message: 'メール確認が完了しました',

@@ -17,7 +17,7 @@ export class UnifiedCSRFProtection {
    * CSRFトークンの生成（Edge Runtime対応）
    */
   static generateToken(): string {
-    console.log('[CSRF-UNIFIED-DEBUG] Generating new token');
+    console.warn('[CSRF-UNIFIED-DEBUG] Generating new token');
     const array = new Uint8Array(this.TOKEN_LENGTH);
     if (typeof globalThis.crypto !== 'undefined' && globalThis.crypto.getRandomValues) {
       globalThis.crypto.getRandomValues(array);
@@ -28,7 +28,7 @@ export class UnifiedCSRFProtection {
       }
     }
     const token = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
-    console.log('[CSRF-UNIFIED-DEBUG] Token generated:', token.substring(0, 10) + '...');
+    console.warn('[CSRF-UNIFIED-DEBUG] Token generated:', token.substring(0, 10) + '...');
     return token;
   }
   
@@ -69,7 +69,7 @@ export class UnifiedCSRFProtection {
     const token = this.generateToken();
     const sessionToken = this.generateSessionToken();
     
-    console.log('[CSRF-UNIFIED-DEBUG] Setting tokens in response');
+    console.warn('[CSRF-UNIFIED-DEBUG] Setting tokens in response');
     
     // CSRFトークンをCookieに設定
     response.cookies.set(this.COOKIE_NAME, token, {
@@ -120,7 +120,7 @@ export class UnifiedCSRFProtection {
   static verifyToken(request: NextRequest): boolean {
     // GETリクエストはスキップ
     if (request.method === 'GET' || request.method === 'HEAD' || request.method === 'OPTIONS') {
-      console.log('[CSRF-UNIFIED-DEBUG] Skipping GET/HEAD/OPTIONS request');
+      console.warn('[CSRF-UNIFIED-DEBUG] Skipping GET/HEAD/OPTIONS request');
       return true;
     }
     
@@ -134,14 +134,14 @@ export class UnifiedCSRFProtection {
     ];
     
     if (excludePaths.some(path => pathname.startsWith(path))) {
-      console.log('[CSRF-UNIFIED-DEBUG] Excluded path:', pathname);
+      console.warn('[CSRF-UNIFIED-DEBUG] Excluded path:', pathname);
       return true;
     }
     
     const { cookieToken, headerToken, sessionToken } = this.getTokenFromRequest(request);
     
     // デバッグログ
-    console.log('[CSRF-UNIFIED-DEBUG] Verification details:', {
+    console.warn('[CSRF-UNIFIED-DEBUG] Verification details:', {
       path: pathname,
       method: request.method,
       hasCookie: !!cookieToken,
@@ -178,7 +178,7 @@ export class UnifiedCSRFProtection {
       return false;
     }
     
-    console.log('[CSRF-UNIFIED-DEBUG] CSRF validation passed');
+    console.warn('[CSRF-UNIFIED-DEBUG] CSRF validation passed');
     return true;
   }
   

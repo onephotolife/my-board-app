@@ -18,7 +18,7 @@ import { isValidObjectId, debugObjectId } from '@/lib/validators/objectId';
 
 // Solution debug logging
 function logSolutionDebug(solution: string, action: string, data: any) {
-  console.log(`🔧 [Sol-Debug] ${solution} | ${action}:`, {
+  console.warn(`🔧 [Sol-Debug] ${solution} | ${action}:`, {
     timestamp: new Date().toISOString(),
     ...data
   });
@@ -37,7 +37,7 @@ export async function GET(
     
     // デバッグログ追加 + Solution tracking
     const idDebug = debugObjectId(userId);
-    console.log('[Follow API GET] ID validation:', idDebug);
+    console.warn('[Follow API GET] ID validation:', idDebug);
     
     logSolutionDebug('SOL-1', 'ObjectID validation (lib/validators)', {
       userId,
@@ -190,7 +190,7 @@ export async function POST(
     
     // デバッグログ追加 + Solution tracking
     const idDebug = debugObjectId(userId);
-    console.log('[Follow API POST] ID validation:', idDebug);
+    console.warn('[Follow API POST] ID validation:', idDebug);
     
     logSolutionDebug('SOL-1', 'ObjectID validation (lib/validators)', {
       userId,
@@ -350,7 +350,7 @@ export async function DELETE(
     
     // デバッグログ追加 + Solution tracking
     const idDebug = debugObjectId(userId);
-    console.log('[Follow API DELETE] ID validation:', idDebug);
+    console.warn('[Follow API DELETE] ID validation:', idDebug);
     
     logSolutionDebug('SOL-1', 'ObjectID validation (lib/validators)', {
       userId,

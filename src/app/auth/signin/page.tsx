@@ -32,7 +32,7 @@ function SignInForm() {
 
   // 🔐 41人天才会議: 確実なリダイレクト処理（window.location.replace使用）
   useEffect(() => {
-    console.log('🔍 [SignIn] セッション状態チェック:', {
+    console.warn('🔍 [SignIn] セッション状態チェック:', {
       status,
       hasSession: !!session,
       emailVerified: session?.user?.emailVerified,
@@ -48,24 +48,24 @@ function SignInForm() {
 
     // メール確認を促すメッセージが表示されている場合は自動リダイレクトをスキップ
     if (message === 'verify-email') {
-      console.log('📧 メール確認メッセージ表示中、自動リダイレクトをスキップ');
+      console.warn('📧 メール確認メッセージ表示中、自動リダイレクトをスキップ');
       return;
     }
 
     // 一度でもリダイレクトフラグがあるかチェック
     const hasRedirectedFlag = sessionStorage.getItem('auth-redirected');
     if (hasRedirectedFlag) {
-      console.log('🛡️ 既にリダイレクト実行済み、処理をスキップ');
+      console.warn('🛡️ 既にリダイレクト実行済み、処理をスキップ');
       sessionStorage.removeItem('auth-redirected'); // フラグをクリア
       return;
     }
 
     // 認証済みかつメール確認済みの場合のみリダイレクト
     if (status === 'authenticated' && session?.user?.emailVerified) {
-      console.log('✅ 認証済み・確認済みユーザー、useEffect内即座リダイレクト');
+      console.warn('✅ 認証済み・確認済みユーザー、useEffect内即座リダイレクト');
       const finalUrl = callbackUrl.includes('/auth/') ? '/dashboard' : callbackUrl;
       
-      console.log('🔄 useEffect内即座にwindow.location.href実行:', finalUrl);
+      console.warn('🔄 useEffect内即座にwindow.location.href実行:', finalUrl);
       
       // 1. 即座にwindow.location.hrefで確実リダイレクト
       window.location.href = finalUrl;
@@ -81,7 +81,7 @@ function SignInForm() {
 
     // 認証済みだがメール未確認の場合
     if (status === 'authenticated' && !session?.user?.emailVerified) {
-      console.log('⚠️ メール未確認ユーザー、確認ページへリダイレクト');
+      console.warn('⚠️ メール未確認ユーザー、確認ページへリダイレクト');
       sessionStorage.setItem('auth-redirected', 'true');
       window.location.replace('/auth/email-not-verified');
       return;
@@ -112,15 +112,15 @@ function SignInForm() {
     setErrorAction('');
     setLoading(true);
 
-    console.log('🔐 ログイン試行開始:', { email, timestamp: new Date().toISOString() });
+    console.warn('🔐 ログイン試行開始:', { email, timestamp: new Date().toISOString() });
 
     try {
       const finalUrl = callbackUrl.includes('/auth/') ? '/dashboard' : callbackUrl;
       
-      console.log('🎯 ログイン試行:', { email, callbackUrl: finalUrl });
+      console.warn('🎯 ログイン試行:', { email, callbackUrl: finalUrl });
       
       // 🚀 41人天才会議：NextAuth v4サーバーサイドリダイレクト使用
-      console.log('🌐 NextAuthサーバーサイドリダイレクト実行:', finalUrl);
+      console.warn('🌐 NextAuthサーバーサイドリダイレクト実行:', finalUrl);
       
       // NextAuth v4でのsignIn関数を使用（エラーハンドリングのためredirect: false）
       const result = await signIn('credentials', {
@@ -130,10 +130,10 @@ function SignInForm() {
         callbackUrl: finalUrl,
       });
 
-      console.log('📊 signIn結果:', result);
+      console.warn('📊 signIn結果:', result);
       
       if (result?.error) {
-        console.log('❌ ログインエラー:', result.error);
+        console.warn('❌ ログインエラー:', result.error);
         
         // メール未確認をチェック
         try {
@@ -172,7 +172,7 @@ function SignInForm() {
         }
       } else if (result?.ok) {
         // ログイン成功
-        console.log('✅ ログイン成功、リダイレクト中...');
+        console.warn('✅ ログイン成功、リダイレクト中...');
         router.replace(finalUrl);
       }
     } catch (error) {

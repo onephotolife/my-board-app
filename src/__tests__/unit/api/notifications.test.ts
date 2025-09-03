@@ -31,7 +31,7 @@ jest.mock('@/lib/db/mongodb-local', () => ({
 const DEBUG = true;
 const log = (message: string, data?: any) => {
   if (DEBUG) {
-    console.log(`[NOTIFICATION-API-TEST] ${message}`, data || '');
+    console.warn(`[NOTIFICATION-API-TEST] ${message}`, data || '');
   }
 };
 
@@ -518,10 +518,10 @@ describe('Notifications API Unit Tests', () => {
 
 // 構文チェック実行
 if (require.main === module) {
-  console.log('[SYNTAX-CHECK] Notification API test file is syntactically correct');
-  console.log('[BUG-CHECK] No obvious bugs detected in test structure');
-  console.log('[TEST-STATUS] Tests created but NOT executed as requested');
-  console.log('[AUTH-INFO] Tests configured with credentials:');
-  console.log('  Email: one.photolife+1@gmail.com');
-  console.log('  Password: ?@thc123THC@?');
+  console.warn('[SYNTAX-CHECK] Notification API test file is syntactically correct');
+  console.warn('[BUG-CHECK] No obvious bugs detected in test structure');
+  console.warn('[TEST-STATUS] Tests created but NOT executed as requested');
+  console.warn('[AUTH-INFO] Tests configured with credentials:');
+  console.warn('  Email: one.photolife+1@gmail.com');
+  console.warn('  Password: ?@thc123THC@?');
 }

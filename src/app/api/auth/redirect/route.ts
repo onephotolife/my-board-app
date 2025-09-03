@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     // セッションを取得
     const session = await getServerSession(authOptions);
     
-    console.log('🔍 [Redirect API] セッション状態:', {
+    console.warn('🔍 [Redirect API] セッション状態:', {
       hasSession: !!session,
       email: session?.user?.email,
       emailVerified: session?.user?.emailVerified,
@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
     
     // 認証済みの場合、指定されたURLへリダイレクト
     if (session?.user?.emailVerified) {
-      console.log('✅ [Redirect API] 認証済み、リダイレクト実行:', callbackUrl);
+      console.warn('✅ [Redirect API] 認証済み、リダイレクト実行:', callbackUrl);
       
       // 安全なURLかチェック
       const safeUrl = callbackUrl.startsWith('/') ? callbackUrl : '/dashboard';
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
     }
     
     // 未認証の場合はサインインページへ
-    console.log('⚠️ [Redirect API] 未認証、サインインページへリダイレクト');
+    console.warn('⚠️ [Redirect API] 未認証、サインインページへリダイレクト');
     return NextResponse.redirect(new URL('/auth/signin', request.url), {
       status: 303,
       headers: {

@@ -217,7 +217,7 @@ export function getObjectIdErrorMessage(id: unknown): string {
 
 // 開発環境でのテスト用エクスポート（SSR対応）
 if (process.env.NODE_ENV === 'development') {
-  console.log('[DEBUG] ObjectID Validator module loading:', {
+  console.warn('[DEBUG] ObjectID Validator module loading:', {
     timestamp: new Date().toISOString(),
     environment: typeof window !== 'undefined' ? 'client' : 'server',
     nodeEnv: process.env.NODE_ENV
@@ -233,8 +233,8 @@ if (process.env.NODE_ENV === 'development') {
       getObjectIdErrorMessage,
       OBJECT_ID_REGEX
     };
-    console.log('[DEBUG] ObjectID Validator attached to window for client-side debugging');
+    console.warn('[DEBUG] ObjectID Validator attached to window for client-side debugging');
   } else {
-    console.log('[DEBUG] ObjectID Validator server-side loading (window unavailable)');
+    console.warn('[DEBUG] ObjectID Validator server-side loading (window unavailable)');
   }
 }

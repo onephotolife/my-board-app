@@ -9,7 +9,7 @@ export default function HydrationMonitor() {
       const entries = list.getEntries();
       entries.forEach((entry) => {
         if (entry.name === 'Next.js-hydration') {
-          console.log('Hydration completed in:', entry.duration, 'ms');
+          console.warn('Hydration completed in:', entry.duration, 'ms');
         }
       });
     });

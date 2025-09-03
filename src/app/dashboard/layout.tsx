@@ -19,13 +19,13 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  console.log('🛡️ [Server] ダッシュボード サーバーサイド認証チェック開始');
+  console.warn('🛡️ [Server] ダッシュボード サーバーサイド認証チェック開始');
   
   try {
     // NextAuth v4 サーバーサイド認証チェック
     const session = await getServerSession(authOptions);
     
-    console.log('🔍 [Server] セッション状態:', {
+    console.warn('🔍 [Server] セッション状態:', {
       hasSession: !!session,
       userId: session?.user?.id,
       email: session?.user?.email,
@@ -35,17 +35,17 @@ export default async function DashboardLayout({
     
     // 未認証チェック
     if (!session || !session.user) {
-      console.log('🚫 [Server] 未認証のためログインページへリダイレクト');
+      console.warn('🚫 [Server] 未認証のためログインページへリダイレクト');
       redirect('/auth/signin?callbackUrl=%2Fdashboard');
     }
     
     // メール確認チェック（会員制掲示板として必須）
     if (!session.user.emailVerified) {
-      console.log('📧 [Server] メール未確認のため確認ページへリダイレクト');
+      console.warn('📧 [Server] メール未確認のため確認ページへリダイレクト');
       redirect('/auth/email-not-verified');
     }
     
-    console.log('✅ [Server] ダッシュボード サーバーサイド認証成功');
+    console.warn('✅ [Server] ダッシュボード サーバーサイド認証成功');
     
     // 認証済みの場合、子コンポーネントをレンダリング
     return (

@@ -102,7 +102,7 @@ export default function EnhancedPostCard({
   );
   
   // デバッグ用ログ
-  console.log('PostCard ownership:', {
+  console.warn('PostCard ownership:', {
     postId: post._id,
     canEdit: post.canEdit,
     canDelete: post.canDelete,
@@ -180,7 +180,7 @@ export default function EnhancedPostCard({
 
       // 削除成功後、コメント一覧を再取得
       await fetchComments();
-      console.log('[COMMENT-DELETE-SUCCESS]', targetCommentId);
+      console.warn('[COMMENT-DELETE-SUCCESS]', targetCommentId);
       
       // 成功通知を表示
       setSnackbar({
@@ -405,7 +405,7 @@ export default function EnhancedPostCard({
                   // 成功メッセージを3秒後に非表示
                   setTimeout(() => setSubmitSuccess(false), 3000);
                   
-                  console.log('[COMMENT-SUCCESS]', data);
+                  console.warn('[COMMENT-SUCCESS]', data);
                   
                 } catch (error) {
                   console.error('[COMMENT-ERROR]', error);

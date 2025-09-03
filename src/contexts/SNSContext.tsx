@@ -55,7 +55,7 @@ export function SNSProvider({ children }: SNSProviderProps) {
     });
 
     socketInstance.on('connect', () => {
-      console.log('[SNS] Socket connected');
+      console.warn('[SNS] Socket connected');
       setIsConnected(true);
 
       // Subscribe to user's timeline and notifications
@@ -66,13 +66,13 @@ export function SNSProvider({ children }: SNSProviderProps) {
     });
 
     socketInstance.on('disconnect', () => {
-      console.log('[SNS] Socket disconnected');
+      console.warn('[SNS] Socket disconnected');
       setIsConnected(false);
     });
 
     // Handle real-time timeline updates
     socketInstance.on('timeline:new-post', (data: { post: SNSPost }) => {
-      console.log('[SNS] New timeline post:', data.post._id);
+      console.warn('[SNS] New timeline post:', data.post._id);
       if (featureFlags.timeline) {
         addToTimeline(data.post);
       }
@@ -80,7 +80,7 @@ export function SNSProvider({ children }: SNSProviderProps) {
 
     // Handle real-time notifications
     socketInstance.on('notification:new', (data: { notification: Notification }) => {
-      console.log('[SNS] New notification:', data.notification.type);
+      console.warn('[SNS] New notification:', data.notification.type);
       if (featureFlags.notifications) {
         addNotification(data.notification);
       }
@@ -88,7 +88,7 @@ export function SNSProvider({ children }: SNSProviderProps) {
 
     // Handle notification count updates
     socketInstance.on('notification:update-count', (data: { unreadCount: number }) => {
-      console.log('[SNS] Notification count update:', data.unreadCount);
+      console.warn('[SNS] Notification count update:', data.unreadCount);
       if (featureFlags.notifications) {
         updateUnreadCount(data.unreadCount);
       }
@@ -96,7 +96,7 @@ export function SNSProvider({ children }: SNSProviderProps) {
 
     // Handle post engagement updates
     socketInstance.on('post:engagement-update', (data: { postId: string; engagement: PostEngagement }) => {
-      console.log('[SNS] Post engagement update:', data.postId);
+      console.warn('[SNS] Post engagement update:', data.postId);
       if (featureFlags.timeline) {
         updateTimelinePost(data.postId, { engagement: data.engagement });
       }
@@ -105,7 +105,7 @@ export function SNSProvider({ children }: SNSProviderProps) {
     setSocket(socketInstance);
 
     return () => {
-      console.log('[SNS] Cleaning up socket connection');
+      console.warn('[SNS] Cleaning up socket connection');
       socketInstance.disconnect();
       setSocket(null);
       setIsConnected(false);

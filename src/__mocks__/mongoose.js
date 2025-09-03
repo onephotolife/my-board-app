@@ -9,7 +9,7 @@ const mockSchema = function Schema(definition, options) {
   this.post = jest.fn();
   this.index = jest.fn();
   this.set = jest.fn();
-  this.virtual = jest.fn((name) => ({
+  this.virtual = jest.fn((_name) => ({
     get: jest.fn(),
     set: jest.fn(),
   }));
@@ -59,7 +59,7 @@ const mongoose = {
     collections: {},
   },
   Schema: mockSchema,
-  model: jest.fn((name, schema) => {
+  model: jest.fn((_name, _schema) => {
     const Model = function(data) {
       Object.assign(this, data);
       this.save = jest.fn(() => Promise.resolve(this));

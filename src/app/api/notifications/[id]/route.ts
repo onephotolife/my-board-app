@@ -21,7 +21,7 @@ async function getAuthenticatedUser(req: NextRequest): Promise<AuthUser | null> 
         : 'next-auth.session-token'
     });
 
-    console.log('[NOTIFICATION-DELETE-AUTH-DEBUG] Token validation:', {
+    console.warn('[NOTIFICATION-DELETE-AUTH-DEBUG] Token validation:', {
       hasToken: !!token,
       environment: process.env.NODE_ENV,
       secureCookie: process.env.NODE_ENV === 'production',
@@ -29,13 +29,13 @@ async function getAuthenticatedUser(req: NextRequest): Promise<AuthUser | null> 
     });
 
     if (!token) {
-      console.log('[NOTIFICATION-DELETE-AUTH-DEBUG] No token found');
+      console.warn('[NOTIFICATION-DELETE-AUTH-DEBUG] No token found');
       return null;
     }
 
     // メール確認チェック
     if (!token.emailVerified) {
-      console.log('[NOTIFICATION-DELETE-AUTH-DEBUG] Email not verified');
+      console.warn('[NOTIFICATION-DELETE-AUTH-DEBUG] Email not verified');
       return null;
     }
 
@@ -100,7 +100,7 @@ export async function DELETE(
     // 最新の未読数を取得
     const unreadCount = await Notification.countUnread(user.id);
 
-    console.log('[NOTIFICATION-DELETE-SUCCESS] Notification deleted:', {
+    console.warn('[NOTIFICATION-DELETE-SUCCESS] Notification deleted:', {
       notificationId: id,
       userId: user.id,
       unreadCount,

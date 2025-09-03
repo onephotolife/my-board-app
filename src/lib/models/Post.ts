@@ -191,7 +191,7 @@ PostSchema.methods.updateCommentCount = async function() {
     // ObjectIdを文字列に変換
     const postIdString = this._id.toString();
     
-    console.log('[POST-DEBUG] updateCommentCount called for:', {
+    console.warn('[POST-DEBUG] updateCommentCount called for:', {
       postId: postIdString,
       originalType: typeof this._id
     });
@@ -225,7 +225,7 @@ PostSchema.methods.updateCommentCount = async function() {
     };
     this.lastCommentAt = lastComment?.createdAt || null;
 
-    console.log('[POST-DEBUG] Comment stats updated:', {
+    console.warn('[POST-DEBUG] Comment stats updated:', {
       postId: this._id,
       commentCount: this.commentCount,
       stats: this.commentStats,

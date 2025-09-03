@@ -24,7 +24,7 @@ async function getAuthenticatedUser(req: NextRequest): Promise<AuthUser | null> 
         : 'next-auth.session-token'
     });
 
-    console.log('[AUTH-DEBUG] Token validation:', {
+    console.warn('[AUTH-DEBUG] Token validation:', {
       hasToken: !!token,
       environment: process.env.NODE_ENV,
       secureCookie: process.env.NODE_ENV === 'production',
@@ -35,7 +35,7 @@ async function getAuthenticatedUser(req: NextRequest): Promise<AuthUser | null> 
     });
 
     if (!token) {
-      console.log('[AUTH-DEBUG] No token found');
+      console.warn('[AUTH-DEBUG] No token found');
       return null;
     }
 

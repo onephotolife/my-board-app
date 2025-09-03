@@ -38,7 +38,7 @@ export function PerformanceTracker() {
 
       // コンソールログ（デバッグ用）
       if (process.env.NODE_ENV === 'development') {
-        console.log(`🚀 App ready in ${perfData.time.toFixed(2)}ms`);
+        console.warn(`🚀 App ready in ${perfData.time.toFixed(2)}ms`);
       }
 
       // パフォーマンスメトリクス収集
@@ -122,7 +122,7 @@ export function PerformanceTracker() {
       }).then(response => {
         if (process.env.NODE_ENV === 'development') {
           if (response.ok) {
-            console.log('📊 Performance data sent successfully');
+            console.warn('📊 Performance data sent successfully');
           } else {
             console.warn('⚠️ Failed to send performance data:', response.status);
           }

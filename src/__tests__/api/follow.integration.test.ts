@@ -208,6 +208,6 @@ describe('パフォーマンステスト', () => {
     // バリデーションが50ms以内に完了すること
     expect(duration).toBeLessThan(50);
     
-    console.log(`API validation completed in ${duration.toFixed(2)}ms`);
+    console.warn(`API validation completed in ${duration.toFixed(2)}ms`);
   });
 });

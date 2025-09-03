@@ -27,13 +27,13 @@ class DatabaseConnectionManager {
     
     try {
       if (mongoose.connection.readyState === 1) {
-        console.log('✅ MongoDB: 既存の接続を使用');
+        console.warn('✅ MongoDB: 既存の接続を使用');
         this.state.isConnected = true;
         this.state.warmupCompleted = true;
         return;
       }
 
-      console.log('🔄 MongoDB: 接続を初期化中...');
+      console.warn('🔄 MongoDB: 接続を初期化中...');
       
       // 接続オプションの最適化
       await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/board-app', {
@@ -47,7 +47,7 @@ class DatabaseConnectionManager {
       this.state.isConnected = true;
       this.state.connectionTime = Date.now() - startTime;
       
-      console.log(`✅ MongoDB: 接続完了 (${this.state.connectionTime}ms)`);
+      console.warn(`✅ MongoDB: 接続完了 (${this.state.connectionTime}ms)`);
       
       // Warm-up実行
       await this.performWarmup();
@@ -78,7 +78,7 @@ class DatabaseConnectionManager {
       const warmupTime = Date.now() - startTime;
       this.state.warmupCompleted = true;
       
-      console.log(`🔥 MongoDB: Warm-up完了 (${warmupTime}ms)`);
+      console.warn(`🔥 MongoDB: Warm-up完了 (${warmupTime}ms)`);
     } catch (error) {
       console.warn('⚠️ MongoDB: Warm-up警告', error);
       // Warm-upの失敗は致命的ではない
@@ -193,7 +193,7 @@ class DatabaseConnectionManager {
 
     if (mongoose.connection.readyState !== 0) {
       await mongoose.disconnect();
-      console.log('🔌 MongoDB: 接続を終了');
+      console.warn('🔌 MongoDB: 接続を終了');
     }
 
     this.state.isConnected = false;

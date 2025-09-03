@@ -18,13 +18,13 @@ export async function executeWithOptionalTransaction<T>(
   
   if (!shouldUseTransaction) {
     // Execute without transaction
-    console.log('[Transaction Helper] Executing without transaction (MONGODB_USE_TRANSACTION=false)');
+    console.warn('[Transaction Helper] Executing without transaction (MONGODB_USE_TRANSACTION=false)');
     return await operation();
   }
   
   let session: ClientSession | null = null;
   try {
-    console.log('[Transaction Helper] Starting transaction session...');
+    console.warn('[Transaction Helper] Starting transaction session...');
     session = await mongoose.startSession();
     let result: T;
     
@@ -32,7 +32,7 @@ export async function executeWithOptionalTransaction<T>(
       result = await operation(session);
     });
     
-    console.log('[Transaction Helper] Transaction completed successfully');
+    console.warn('[Transaction Helper] Transaction completed successfully');
     return result!;
   } catch (error: any) {
     console.error('[Transaction Helper] Transaction error:', error.message);
@@ -50,7 +50,7 @@ export async function executeWithOptionalTransaction<T>(
   } finally {
     if (session) {
       await session.endSession();
-      console.log('[Transaction Helper] Session ended');
+      console.warn('[Transaction Helper] Session ended');
     }
   }
 }

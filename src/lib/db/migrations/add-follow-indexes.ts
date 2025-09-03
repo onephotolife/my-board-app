@@ -20,18 +20,18 @@ async function migrateFollowFeature() {
     // MongoDB接続
     const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/board-app';
     await mongoose.connect(MONGODB_URI);
-    console.log('✅ MongoDB接続成功');
+    console.warn('✅ MongoDB接続成功');
     
     const db = mongoose.connection.db;
     
     // 1. Followコレクションのインデックス作成
-    console.log('📋 Followコレクションのインデックスを作成中...');
+    console.warn('📋 Followコレクションのインデックスを作成中...');
     
     const followCollection = db.collection('follows');
     
     // 既存のインデックスを確認
     const existingIndexes = await followCollection.indexes();
-    console.log('既存インデックス:', existingIndexes.map(idx => idx.name));
+    console.warn('既存インデックス:', existingIndexes.map(idx => idx.name));
     
     // インデックス作成（重複防止）
     const indexesToCreate = [
@@ -58,10 +58,10 @@ async function migrateFollowFeature() {
           name: index.name,
           background: true  // バックグラウンドで作成（本番環境向け）
         });
-        console.log(`✅ インデックス作成成功: ${index.name}`);
+        console.warn(`✅ インデックス作成成功: ${index.name}`);
       } catch (error: any) {
         if (error.code === 11000 || error.code === 85) {
-          console.log(`⚠️  インデックス既存: ${index.name}`);
+          console.warn(`⚠️  インデックス既存: ${index.name}`);
         } else {
           console.error(`❌ インデックス作成失敗: ${index.name}`, error.message);
         }
@@ -69,7 +69,7 @@ async function migrateFollowFeature() {
     }
     
     // 2. Userコレクションの既存ドキュメントにフォロー関連フィールドを追加
-    console.log('\n📋 Userコレクションのマイグレーション中...');
+    console.warn('\n📋 Userコレクションのマイグレーション中...');
     
     const userCollection = db.collection('users');
     
@@ -92,44 +92,44 @@ async function migrateFollowFeature() {
       }
     );
     
-    console.log(`✅ ${updateResult.modifiedCount}件のユーザードキュメントを更新`);
+    console.warn(`✅ ${updateResult.modifiedCount}件のユーザードキュメントを更新`);
     
     // 3. パフォーマンステスト用のインデックス統計
-    console.log('\n📊 インデックス統計:');
+    console.warn('\n📊 インデックス統計:');
     
     const followStats = await followCollection.stats();
-    console.log(`- Followコレクション:
+    console.warn(`- Followコレクション:
       - ドキュメント数: ${followStats.count}
       - インデックス数: ${followStats.nindexes}
       - インデックスサイズ: ${(followStats.totalIndexSize / 1024 / 1024).toFixed(2)} MB`);
     
     const userStats = await userCollection.stats();
-    console.log(`- Userコレクション:
+    console.warn(`- Userコレクション:
       - ドキュメント数: ${userStats.count}
       - インデックス数: ${userStats.nindexes}
       - インデックスサイズ: ${(userStats.totalIndexSize / 1024 / 1024).toFixed(2)} MB`);
     
     // 4. サンプルクエリのExplain実行計画
-    console.log('\n🔍 クエリ実行計画の検証:');
+    console.warn('\n🔍 クエリ実行計画の検証:');
     
     // フォロワー取得クエリの実行計画
     const explainResult = await followCollection
       .find({ following: new mongoose.Types.ObjectId() })
       .explain('executionStats');
     
-    console.log(`- フォロワー取得クエリ:
+    console.warn(`- フォロワー取得クエリ:
       - 使用インデックス: ${explainResult.executionStats.executionStages.indexName || 'なし'}
       - 検査ドキュメント数: ${explainResult.executionStats.totalDocsExamined}
       - 実行時間: ${explainResult.executionStats.executionTimeMillis}ms`);
     
-    console.log('\n✅ マイグレーション完了');
+    console.warn('\n✅ マイグレーション完了');
     
   } catch (error) {
     console.error('❌ マイグレーションエラー:', error);
     process.exit(1);
   } finally {
     await mongoose.disconnect();
-    console.log('🔌 MongoDB接続終了');
+    console.warn('🔌 MongoDB接続終了');
   }
 }
 

@@ -13,7 +13,7 @@ import notificationService from '@/lib/services/notificationService';
 // 認証チェックヘルパー
 async function getAuthenticatedUser(req: NextRequest): Promise<AuthUser | null> {
   try {
-    console.log('[LIKE-API-DEBUG] Detailed auth debug:', {
+    console.warn('[LIKE-API-DEBUG] Detailed auth debug:', {
       headers: Object.fromEntries(req.headers.entries()),
       cookies: req.headers.get('cookie'),
       url: req.url,
@@ -27,7 +27,7 @@ async function getAuthenticatedUser(req: NextRequest): Promise<AuthUser | null> 
       cookieName: process.env.NODE_ENV === 'production' ? '__Secure-next-auth.session-token' : 'next-auth.session-token'
     });
 
-    console.log('[LIKE-API-DEBUG] Token details:', {
+    console.warn('[LIKE-API-DEBUG] Token details:', {
       hasToken: !!token,
       token: token ? {
         id: token.id,
@@ -41,8 +41,8 @@ async function getAuthenticatedUser(req: NextRequest): Promise<AuthUser | null> 
     });
 
     if (!token) {
-      console.log('[LIKE-API-DEBUG] ❌ No token found - checking environment');
-      console.log('[LIKE-API-DEBUG] Environment check:', {
+      console.warn('[LIKE-API-DEBUG] ❌ No token found - checking environment');
+      console.warn('[LIKE-API-DEBUG] Environment check:', {
         hasAuthSecret: !!process.env.AUTH_SECRET,
         hasNextAuthSecret: !!process.env.NEXTAUTH_SECRET,
         authSecretLength: process.env.AUTH_SECRET?.length || 0,
@@ -53,7 +53,7 @@ async function getAuthenticatedUser(req: NextRequest): Promise<AuthUser | null> 
 
     // メール確認チェック
     if (!token.emailVerified) {
-      console.log('[LIKE-API-DEBUG] ❌ Email not verified:', {
+      console.warn('[LIKE-API-DEBUG] ❌ Email not verified:', {
         email: token.email,
         emailVerified: token.emailVerified,
       });
@@ -67,7 +67,7 @@ async function getAuthenticatedUser(req: NextRequest): Promise<AuthUser | null> 
       emailVerified: true,
     };
 
-    console.log('[LIKE-API-DEBUG] ✅ Authentication successful:', {
+    console.warn('[LIKE-API-DEBUG] ✅ Authentication successful:', {
       userId: user.id,
       email: user.email,
       emailVerified: user.emailVerified,
@@ -96,7 +96,7 @@ export async function POST(
       return createErrorResponse('CSRFトークンが無効です', 403, 'CSRF_VALIDATION_FAILED');
     }
 
-    console.log('[LIKE-API-DEBUG] 🚀 Like POST request started:', {
+    console.warn('[LIKE-API-DEBUG] 🚀 Like POST request started:', {
       method: 'POST',
       timestamp: new Date().toISOString(),
     });
@@ -104,12 +104,12 @@ export async function POST(
     // 認証チェック
     const user = await getAuthenticatedUser(req);
     if (!user) {
-      console.log('[LIKE-API-DEBUG] ❌ Authentication failed for POST');
+      console.warn('[LIKE-API-DEBUG] ❌ Authentication failed for POST');
       return createErrorResponse('認証が必要です', 401, 'UNAUTHORIZED');
     }
 
     const { id: postId } = await params;
-    console.log('[LIKE-API-DEBUG] Like action started:', {
+    console.warn('[LIKE-API-DEBUG] Like action started:', {
       postId,
       userId: user.id,
       action: 'like',
@@ -120,13 +120,13 @@ export async function POST(
     // 投稿を取得
     const post = await Post.findById(postId);
     if (!post) {
-      console.log('[LIKE-API-DEBUG] ❌ Post not found:', postId);
+      console.warn('[LIKE-API-DEBUG] ❌ Post not found:', postId);
       return createErrorResponse('投稿が見つかりません', 404, 'NOT_FOUND');
     }
 
     // 削除済みの投稿はいいねできない
     if (post.status === 'deleted') {
-      console.log('[LIKE-API-DEBUG] ❌ Post is deleted:', postId);
+      console.warn('[LIKE-API-DEBUG] ❌ Post is deleted:', postId);
       return createErrorResponse('投稿が見つかりません', 404, 'NOT_FOUND');
     }
 
@@ -134,7 +134,7 @@ export async function POST(
     const initialLikesCount = post.likes ? post.likes.length : 0;
     const wasLiked = post.likes ? post.likes.includes(user.id) : false;
 
-    console.log('[LIKE-API-DEBUG] Pre-like state:', {
+    console.warn('[LIKE-API-DEBUG] Pre-like state:', {
       postId,
       userId: user.id,
       initialLikesCount,
@@ -144,7 +144,7 @@ export async function POST(
 
     // 既にいいね済みの場合は何もしない
     if (wasLiked) {
-      console.log('[LIKE-API-DEBUG] ⚠️ Already liked, no action taken');
+      console.warn('[LIKE-API-DEBUG] ⚠️ Already liked, no action taken');
       return NextResponse.json({
         success: true,
         data: {
@@ -160,7 +160,7 @@ export async function POST(
     }
 
     // $addToSetを使用してユーザーIDを重複なしで追加
-    console.log('[LIKE-API-DEBUG] Before update - postId:', postId, 'userId:', user.id);
+    console.warn('[LIKE-API-DEBUG] Before update - postId:', postId, 'userId:', user.id);
     
     const updatedPost = await Post.findByIdAndUpdate(
       postId,
@@ -168,7 +168,7 @@ export async function POST(
       { new: true }
     );
 
-    console.log('[LIKE-API-DEBUG] Update result:', {
+    console.warn('[LIKE-API-DEBUG] Update result:', {
       success: !!updatedPost,
       postId: updatedPost?._id,
       likes: updatedPost?.likes,
@@ -178,13 +178,13 @@ export async function POST(
     });
 
     if (!updatedPost) {
-      console.log('[LIKE-API-DEBUG] ❌ Failed to update post');
+      console.warn('[LIKE-API-DEBUG] ❌ Failed to update post');
       return createErrorResponse('いいねの処理に失敗しました', 500, 'LIKE_ERROR');
     }
 
     const finalLikesCount = updatedPost.likes ? updatedPost.likes.length : 0;
 
-    console.log('[LIKE-API-DEBUG] ✅ Like added successfully:', {
+    console.warn('[LIKE-API-DEBUG] ✅ Like added successfully:', {
       postId,
       userId: user.id,
       initialLikesCount,
@@ -203,7 +203,7 @@ export async function POST(
       action: 'liked',
     };
 
-    console.log('[LIKE-API-DEBUG] Broadcasting socket event:', eventData);
+    console.warn('[LIKE-API-DEBUG] Broadcasting socket event:', eventData);
     broadcastEvent('post:liked', eventData);
 
     // 通知作成（投稿者へ）
@@ -257,7 +257,7 @@ export async function DELETE(
       return createErrorResponse('CSRFトークンが無効です', 403, 'CSRF_VALIDATION_FAILED');
     }
 
-    console.log('[LIKE-API-DEBUG] 🚀 Unlike DELETE request started:', {
+    console.warn('[LIKE-API-DEBUG] 🚀 Unlike DELETE request started:', {
       method: 'DELETE',
       timestamp: new Date().toISOString(),
     });
@@ -265,12 +265,12 @@ export async function DELETE(
     // 認証チェック
     const user = await getAuthenticatedUser(req);
     if (!user) {
-      console.log('[LIKE-API-DEBUG] ❌ Authentication failed for DELETE');
+      console.warn('[LIKE-API-DEBUG] ❌ Authentication failed for DELETE');
       return createErrorResponse('認証が必要です', 401, 'UNAUTHORIZED');
     }
 
     const { id: postId } = await params;
-    console.log('[LIKE-API-DEBUG] Unlike action started:', {
+    console.warn('[LIKE-API-DEBUG] Unlike action started:', {
       postId,
       userId: user.id,
       action: 'unlike',
@@ -281,13 +281,13 @@ export async function DELETE(
     // 投稿を取得
     const post = await Post.findById(postId);
     if (!post) {
-      console.log('[LIKE-API-DEBUG] ❌ Post not found:', postId);
+      console.warn('[LIKE-API-DEBUG] ❌ Post not found:', postId);
       return createErrorResponse('投稿が見つかりません', 404, 'NOT_FOUND');
     }
 
     // 削除済みの投稿は処理しない
     if (post.status === 'deleted') {
-      console.log('[LIKE-API-DEBUG] ❌ Post is deleted:', postId);
+      console.warn('[LIKE-API-DEBUG] ❌ Post is deleted:', postId);
       return createErrorResponse('投稿が見つかりません', 404, 'NOT_FOUND');
     }
 
@@ -295,7 +295,7 @@ export async function DELETE(
     const initialLikesCount = post.likes ? post.likes.length : 0;
     const wasLiked = post.likes ? post.likes.includes(user.id) : false;
 
-    console.log('[LIKE-API-DEBUG] Pre-unlike state:', {
+    console.warn('[LIKE-API-DEBUG] Pre-unlike state:', {
       postId,
       userId: user.id,
       initialLikesCount,
@@ -305,7 +305,7 @@ export async function DELETE(
 
     // いいねしていない場合は何もしない
     if (!wasLiked) {
-      console.log('[LIKE-API-DEBUG] ⚠️ Not liked, no action taken');
+      console.warn('[LIKE-API-DEBUG] ⚠️ Not liked, no action taken');
       return NextResponse.json({
         success: true,
         data: {
@@ -328,13 +328,13 @@ export async function DELETE(
     );
 
     if (!updatedPost) {
-      console.log('[LIKE-API-DEBUG] ❌ Failed to update post');
+      console.warn('[LIKE-API-DEBUG] ❌ Failed to update post');
       return createErrorResponse('いいね取り消しの処理に失敗しました', 500, 'UNLIKE_ERROR');
     }
 
     const finalLikesCount = updatedPost.likes ? updatedPost.likes.length : 0;
 
-    console.log('[LIKE-API-DEBUG] ✅ Like removed successfully:', {
+    console.warn('[LIKE-API-DEBUG] ✅ Like removed successfully:', {
       postId,
       userId: user.id,
       initialLikesCount,
@@ -353,7 +353,7 @@ export async function DELETE(
       action: 'unliked',
     };
 
-    console.log('[LIKE-API-DEBUG] Broadcasting socket event:', eventData);
+    console.warn('[LIKE-API-DEBUG] Broadcasting socket event:', eventData);
     broadcastEvent('post:unliked', eventData);
 
     return NextResponse.json({

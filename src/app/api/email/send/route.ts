@@ -165,7 +165,7 @@ export async function POST(request: NextRequest) {
 
     // Log success in production
     if (process.env.NODE_ENV === 'production') {
-      console.log(`Email sent successfully: ${template} to ${to}`);
+      console.warn(`Email sent successfully: ${template} to ${to}`);
     }
 
     return NextResponse.json(

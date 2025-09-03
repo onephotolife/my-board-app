@@ -267,7 +267,7 @@ export default function TestFollowPage() {
               <Button
                 variant="outlined"
                 onClick={() => {
-                  console.log('テスト: 無効なユーザーID形式');
+                  console.warn('テスト: 無効なユーザーID形式');
                   // この機能は別途実装が必要
                 }}
               >
@@ -276,7 +276,7 @@ export default function TestFollowPage() {
               <Button
                 variant="outlined"
                 onClick={() => {
-                  console.log('テスト: ネットワークエラー');
+                  console.warn('テスト: ネットワークエラー');
                   // この機能は別途実装が必要
                 }}
               >

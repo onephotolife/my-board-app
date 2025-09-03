@@ -43,7 +43,7 @@ export class NotificationService {
   }
   
   private constructor() {
-    console.log('[NOTIFICATION-SERVICE] Service initialized');
+    console.warn('[NOTIFICATION-SERVICE] Service initialized');
   }
   
   /**
@@ -51,7 +51,7 @@ export class NotificationService {
    */
   async createAndDeliver(params: CreateNotificationParams): Promise<INotification> {
     try {
-      console.log('[NOTIFICATION-SERVICE-DEBUG] Creating notification:', {
+      console.warn('[NOTIFICATION-SERVICE-DEBUG] Creating notification:', {
         type: params.type,
         recipient: params.recipient,
         actor: params.actor._id,
@@ -60,7 +60,7 @@ export class NotificationService {
       
       // 自分自身への通知は作成しない
       if (params.recipient === params.actor._id) {
-        console.log('[NOTIFICATION-SERVICE] Skipping self-notification');
+        console.warn('[NOTIFICATION-SERVICE] Skipping self-notification');
         return null as any;
       }
       
@@ -80,7 +80,7 @@ export class NotificationService {
       // 保存
       await notification.save();
       
-      console.log('[NOTIFICATION-SERVICE-SUCCESS] Notification created:', {
+      console.warn('[NOTIFICATION-SERVICE-SUCCESS] Notification created:', {
         id: notification._id,
         type: notification.type,
         recipient: notification.recipient
@@ -146,7 +146,7 @@ export class NotificationService {
         timestamp: new Date().toISOString()
       });
       
-      console.log('[NOTIFICATION-SERVICE] Realtime delivery sent:', {
+      console.warn('[NOTIFICATION-SERVICE] Realtime delivery sent:', {
         recipient: notification.recipient,
         type: notification.type
       });
@@ -170,7 +170,7 @@ export class NotificationService {
         timestamp: new Date().toISOString()
       });
       
-      console.log('[NOTIFICATION-SERVICE] Unread count updated:', {
+      console.warn('[NOTIFICATION-SERVICE] Unread count updated:', {
         recipient: recipientId,
         unreadCount
       });
@@ -288,7 +288,7 @@ export class NotificationService {
       // 未読数を更新
       await this.updateUnreadCount(recipientId);
       
-      console.log('[NOTIFICATION-SERVICE] Marked as read:', {
+      console.warn('[NOTIFICATION-SERVICE] Marked as read:', {
         count: result.modifiedCount,
         recipient: recipientId
       });
@@ -314,7 +314,7 @@ export class NotificationService {
         timestamp: new Date().toISOString()
       });
       
-      console.log('[NOTIFICATION-SERVICE] Marked all as read:', {
+      console.warn('[NOTIFICATION-SERVICE] Marked all as read:', {
         count: result.modifiedCount,
         recipient: recipientId
       });
@@ -338,7 +338,7 @@ export class NotificationService {
       });
       
       if (!notification) {
-        console.log('[NOTIFICATION-SERVICE] Notification not found:', notificationId);
+        console.warn('[NOTIFICATION-SERVICE] Notification not found:', notificationId);
         return false;
       }
       
@@ -349,7 +349,7 @@ export class NotificationService {
         await this.updateUnreadCount(recipientId);
       }
       
-      console.log('[NOTIFICATION-SERVICE] Notification deleted:', notificationId);
+      console.warn('[NOTIFICATION-SERVICE] Notification deleted:', notificationId);
       return true;
       
     } catch (error) {
@@ -365,7 +365,7 @@ export class NotificationService {
     try {
       const result = await Notification.deleteExpired();
       
-      console.log('[NOTIFICATION-SERVICE] Expired notifications cleaned up:', {
+      console.warn('[NOTIFICATION-SERVICE] Expired notifications cleaned up:', {
         count: result.deletedCount,
         timestamp: new Date().toISOString()
       });

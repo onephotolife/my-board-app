@@ -54,7 +54,7 @@ export function PermissionProvider({ children, initialData }: PermissionProvider
     const fetchUserPermissions = async () => {
       // initialDataがある場合は、APIコールをスキップ
       if (initialData && session?.user?.email) {
-        console.log('[PERF] Using initial permissions data, skipping API call');
+        console.warn('[PERF] Using initial permissions data, skipping API call');
         return;
       }
 

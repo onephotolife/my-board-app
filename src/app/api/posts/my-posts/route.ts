@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   try {
     // デバッグ: ヘッダー確認
     const cookieHeader = req.headers.get('cookie');
-    console.log('🍪 [API Debug] リクエストヘッダー:', {
+    console.warn('🍪 [API Debug] リクエストヘッダー:', {
       cookie: cookieHeader,
       hasCookie: !!cookieHeader,
       cookiePreview: cookieHeader ? cookieHeader.substring(0, 100) + '...' : 'なし',
@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
     if (cookieHeader) {
       const hasSessionToken = cookieHeader.includes('next-auth.session-token');
       const hasSecureToken = cookieHeader.includes('__Secure-next-auth.session-token');
-      console.log('🔎 [API Debug] セッショントークン検出:', {
+      console.warn('🔎 [API Debug] セッショントークン検出:', {
         hasSessionToken,
         hasSecureToken,
         env: process.env.NODE_ENV,
@@ -31,10 +31,10 @@ export async function GET(req: NextRequest) {
     }
     
     // App Router対応: getServerSessionを使用
-    console.log('🔧 [API Debug] getServerSession呼び出し開始...');
+    console.warn('🔧 [API Debug] getServerSession呼び出し開始...');
     const session = await getServerSession(authOptions);
     
-    console.log('🔍 [API] /my-posts セッション確認:', {
+    console.warn('🔍 [API] /my-posts セッション確認:', {
       hasSession: !!session,
       userId: session?.user?.id,
       email: session?.user?.email,
@@ -44,12 +44,12 @@ export async function GET(req: NextRequest) {
     });
 
     if (!session || !session.user) {
-      console.log('❌ [API] セッションが見つかりません');
+      console.warn('❌ [API] セッションが見つかりません');
       return createErrorResponse('認証が必要です', 401, 'UNAUTHORIZED');
     }
 
     if (!session.user.emailVerified) {
-      console.log('❌ [API] メール未確認');
+      console.warn('❌ [API] メール未確認');
       return createErrorResponse('メールアドレスの確認が必要です', 403, 'EMAIL_NOT_VERIFIED');
     }
 
@@ -74,7 +74,7 @@ export async function GET(req: NextRequest) {
       .sort({ createdAt: -1 })
       .lean();
 
-    console.log(`📊 [API] /my-posts 取得結果: ${posts.length}件の投稿`);
+    console.warn(`📊 [API] /my-posts 取得結果: ${posts.length}件の投稿`);
 
     // 権限情報を追加
     const postsWithPermissions = posts.map((post: any) => ({

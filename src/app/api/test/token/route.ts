@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
 export async function GET(request: Request) {
-  console.log('🔍 トークン取得テスト開始');
+  console.warn('🔍 トークン取得テスト開始');
   
   try {
     const results = [];

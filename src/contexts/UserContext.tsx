@@ -61,7 +61,7 @@ export function UserProvider({ children, initialData }: UserProviderProps) {
   const fetchUserProfile = useCallback(async () => {
     // initialDataがある場合は、初回フェッチをスキップ
     if (initialData?.user && !user) {
-      console.log('[PERF] Using initial user data, skipping API call');
+      console.warn('[PERF] Using initial user data, skipping API call');
       setUser(initialData.user);
       setLoading(false);
       return;

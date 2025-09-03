@@ -111,7 +111,7 @@ const NotificationSchema = new Schema<INotification>(
       maxlength: [200, 'メッセージは200文字以内'],
       validate: {
         validator: function(v: string) {
-          console.log('[NOTIFICATION-MODEL-DEBUG] Message validation:', {
+          console.warn('[NOTIFICATION-MODEL-DEBUG] Message validation:', {
             message: v.substring(0, 50),
             length: v.length,
             timestamp: new Date().toISOString()
@@ -327,7 +327,7 @@ NotificationSchema.pre('save', function(next) {
 
 // デバッグログ用ミドルウェア
 NotificationSchema.pre('save', function(next) {
-  console.log('[NOTIFICATION-DEBUG] Saving notification:', {
+  console.warn('[NOTIFICATION-DEBUG] Saving notification:', {
     type: this.type,
     recipient: this.recipient,
     actor: this.actor._id,

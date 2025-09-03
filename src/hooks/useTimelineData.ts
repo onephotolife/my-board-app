@@ -59,7 +59,7 @@ class HookDebugLogger {
       hook: 'useTimelineData'
     };
     this.logs.push(entry);
-    console.log('[HOOK-TIMELINE-DEBUG]', JSON.stringify(entry));
+    console.warn('[HOOK-TIMELINE-DEBUG]', JSON.stringify(entry));
   }
   
   getAll() {

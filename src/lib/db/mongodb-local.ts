@@ -6,7 +6,7 @@ const getMongodbUri = () => {
   if (process.env.NODE_ENV === 'production') {
     const productionUri = process.env.MONGODB_URI_PRODUCTION || process.env.MONGODB_URI;
     if (productionUri && productionUri !== 'mongodb://localhost:27017/board-app') {
-      console.log('🌐 [MongoDB] 本番データベース使用');
+      console.warn('🌐 [MongoDB] 本番データベース使用');
       return productionUri;
     }
     console.warn('⚠️ [MongoDB] 本番環境でローカルDBにフォールバック');
@@ -38,20 +38,20 @@ if (!global.mongoose) {
 export async function connectDB(): Promise<typeof mongoose> {
   // 既に接続済みの場合
   if (cached.conn) {
-    console.log('✅ MongoDB: 既存の接続を使用');
+    console.warn('✅ MongoDB: 既存の接続を使用');
     return cached.conn;
   }
 
   // 接続中の場合
   if (cached.promise) {
-    console.log('⏳ MongoDB: 接続待機中...');
+    console.warn('⏳ MongoDB: 接続待機中...');
     cached.conn = await cached.promise;
     return cached.conn;
   }
 
   try {
-    console.log('🔄 MongoDB: 接続を初期化中...');
-    console.log('🔍 [MongoDB Debug]:', {
+    console.warn('🔄 MongoDB: 接続を初期化中...');
+    console.warn('🔍 [MongoDB Debug]:', {
       uri: MONGODB_URI.replace(/\/\/.*@/, '//***@'),
       environment: process.env.NODE_ENV,
       hasMongodbUri: !!process.env.MONGODB_URI,
@@ -72,8 +72,8 @@ export async function connectDB(): Promise<typeof mongoose> {
 
     cached.conn = await cached.promise;
     
-    console.log('✅ MongoDB: 接続成功');
-    console.log('📊 [MongoDB Info]:', {
+    console.warn('✅ MongoDB: 接続成功');
+    console.warn('📊 [MongoDB Info]:', {
       database: cached.conn.connection.db?.databaseName,
       host: cached.conn.connection.host,
       readyState: cached.conn.connection.readyState

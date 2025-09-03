@@ -166,7 +166,7 @@ export function useCSRFSync(options: UseCSRFSyncOptions = {}): CSRFTokenData & {
       // 再試行カウンターをリセット
       retryCountRef.current = 0;
       
-      console.log('[useCSRFSync] Token fetched successfully');
+      console.warn('[useCSRFSync] Token fetched successfully');
       
     } catch (error) {
       console.error('[useCSRFSync] Failed to fetch token:', error);
@@ -182,7 +182,7 @@ export function useCSRFSync(options: UseCSRFSyncOptions = {}): CSRFTokenData & {
       // 再試行ロジック
       if (mergedOptions.retryOnError && retryCountRef.current < mergedOptions.maxRetries!) {
         retryCountRef.current++;
-        console.log(`[useCSRFSync] Retrying... (${retryCountRef.current}/${mergedOptions.maxRetries})`);
+        console.warn(`[useCSRFSync] Retrying... (${retryCountRef.current}/${mergedOptions.maxRetries})`);
         
         setTimeout(() => {
           if (isMountedRef.current) {
@@ -222,7 +222,7 @@ export function useCSRFSync(options: UseCSRFSyncOptions = {}): CSRFTokenData & {
     const delay = Math.max(0, refreshTime - now);
     
     if (delay > 0) {
-      console.log(`[useCSRFSync] Scheduled refresh in ${Math.round(delay / 1000)}s`);
+      console.warn(`[useCSRFSync] Scheduled refresh in ${Math.round(delay / 1000)}s`);
       
       refreshTimerRef.current = setTimeout(() => {
         if (isMountedRef.current) {

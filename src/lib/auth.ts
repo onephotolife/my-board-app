@@ -9,10 +9,10 @@ import UserModel from "@/lib/models/User";
 import { EmailNotVerifiedError, InvalidPasswordError, UserNotFoundError } from "@/lib/auth-errors";
 
 // ROOT CAUSE デバッグ - プロバイダー作成前
-console.log('🔍 [ROOT CAUSE] Creating authOptions at:', new Date().toISOString());
+console.warn('🔍 [ROOT CAUSE] Creating authOptions at:', new Date().toISOString());
 
 // Phase 1 環境変数確認
-console.log('🔧 [PHASE1-CONFIG] Environment:', {
+console.warn('🔧 [PHASE1-CONFIG] Environment:', {
   NODE_ENV: process.env.NODE_ENV,
   httpOnly: process.env.NODE_ENV === 'production',
   timestamp: new Date().toISOString()
@@ -29,7 +29,7 @@ export const authOptions: AuthOptions = {
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        console.log('🔐 [Auth v4] [SOL-2] 認証開始:', {
+        console.warn('🔐 [Auth v4] [SOL-2] 認証開始:', {
           email: credentials?.email,
           hasPassword: !!credentials?.password,
           timestamp: new Date().toISOString(),
@@ -38,7 +38,7 @@ export const authOptions: AuthOptions = {
         });
         
         if (!credentials?.email || !credentials?.password) {
-          console.log('❌ [Auth v4] [SOL-2] 認証情報不足:', {
+          console.warn('❌ [Auth v4] [SOL-2] 認証情報不足:', {
             hasEmail: !!credentials?.email,
             hasPassword: !!credentials?.password,
             credentials: credentials
@@ -47,12 +47,12 @@ export const authOptions: AuthOptions = {
         }
 
         try {
-          console.log('🔧 [SOL-2] DB接続開始...');
+          console.warn('🔧 [SOL-2] DB接続開始...');
           await connectDB();
-          console.log('✅ [Auth v4] [SOL-2] DB接続成功');
+          console.warn('✅ [Auth v4] [SOL-2] DB接続成功');
           
           const user = await UserModel.findOne({ email: credentials.email });
-          console.log('🔍 [Auth v4] [SOL-2] ユーザー検索結果:', {
+          console.warn('🔍 [Auth v4] [SOL-2] ユーザー検索結果:', {
             found: !!user,
             email: user?.email,
             hasPassword: !!user?.password,
@@ -62,7 +62,7 @@ export const authOptions: AuthOptions = {
           });
           
           if (!user) {
-            console.log('❌ [Auth v4] [SOL-2] ユーザーが見つかりません:', {
+            console.warn('❌ [Auth v4] [SOL-2] ユーザーが見つかりません:', {
               searchEmail: credentials.email,
               solution: 'SOL-2_USER_NOT_FOUND'
             });
@@ -77,44 +77,44 @@ export const authOptions: AuthOptions = {
           
           // undefinedまたはnullの場合は、古いユーザーとして扱う
           if (user.emailVerified === undefined || user.emailVerified === null) {
-            console.log('⚠️ [Auth v4] emailVerifiedが未設定のユーザー:', user.email);
+            console.warn('⚠️ [Auth v4] emailVerifiedが未設定のユーザー:', user.email);
             // 2024年以前のユーザーは自動的に確認済みとする
             const createdAt = user.createdAt || new Date('2023-01-01');
             const isOldUser = new Date(createdAt) < new Date('2024-01-01');
             
             if (isOldUser) {
-              console.log('✅ [Auth v4] 古いユーザーとして自動承認:', user.email);
+              console.warn('✅ [Auth v4] 古いユーザーとして自動承認:', user.email);
               // DBは後で修正するが、一時的に承認
             } else if (!isEmailVerified) {
-              console.log('❌ [Auth v4] メール未確認のユーザー:', user.email);
+              console.warn('❌ [Auth v4] メール未確認のユーザー:', user.email);
               throw new Error('EmailNotVerified');
             }
           } else if (!isEmailVerified) {
-            console.log('❌ [Auth v4] メール未確認のユーザー:', user.email);
+            console.warn('❌ [Auth v4] メール未確認のユーザー:', user.email);
             throw new Error('EmailNotVerified');
           }
 
           // パスワード検証
-          console.log('🔑 [Auth v4] [SOL-2] パスワード検証開始:', {
+          console.warn('🔑 [Auth v4] [SOL-2] パスワード検証開始:', {
             hasUserPassword: !!user.password,
             passwordLength: user.password?.length,
             inputPasswordLength: credentials.password?.length
           });
           const isValidPassword = await bcrypt.compare(credentials.password, user.password);
-          console.log('🔐 [Auth v4] [SOL-2] パスワード検証結果:', {
+          console.warn('🔐 [Auth v4] [SOL-2] パスワード検証結果:', {
             isValid: isValidPassword,
             solution: 'SOL-2_PASSWORD_CHECK'
           });
           
           if (!isValidPassword) {
-            console.log('❌ [Auth v4] [SOL-2] パスワードが一致しません:', {
+            console.warn('❌ [Auth v4] [SOL-2] パスワードが一致しません:', {
               email: credentials.email,
               solution: 'SOL-2_INVALID_PASSWORD'
             });
             return null;
           }
 
-          console.log('✅ [Auth v4] [SOL-2] 認証成功:', {
+          console.warn('✅ [Auth v4] [SOL-2] 認証成功:', {
             email: user.email,
             userId: user._id.toString(),
             emailVerified: true,
@@ -141,7 +141,7 @@ export const authOptions: AuthOptions = {
             }
           }
           
-          console.log('📅 [Auth v4] createdAt詳細:', {
+          console.warn('📅 [Auth v4] createdAt詳細:', {
             email: user.email,
             hasCreatedAt: !!user.createdAt,
             createdAtString
@@ -174,7 +174,7 @@ export const authOptions: AuthOptions = {
   
   events: {
     async signIn({ user, account }) {
-      console.log('🎉 [Auth v4] signIn event:', { 
+      console.warn('🎉 [Auth v4] signIn event:', { 
         user: user?.email, 
         account: account?.provider 
       });
@@ -183,7 +183,7 @@ export const authOptions: AuthOptions = {
   
   callbacks: {
     async signIn({ user, account }) {
-      console.log('🔍 [signIn callback v4]:', { 
+      console.warn('🔍 [signIn callback v4]:', { 
         user: user?.email, 
         emailVerified: user?.emailVerified,
         account: account?.provider 
@@ -191,7 +191,7 @@ export const authOptions: AuthOptions = {
       
       // メール未確認ユーザーはサインインを拒否
       if (user && !user.emailVerified) {
-        console.log('❌ [signIn callback v4] メール未確認ユーザーのサインインを拒否');
+        console.warn('❌ [signIn callback v4] メール未確認ユーザーのサインインを拒否');
         return false;
       }
       
@@ -200,37 +200,37 @@ export const authOptions: AuthOptions = {
     
     // 🚀 41人天才会議：サーバーサイド確実リダイレクト実装
     async redirect({ url, baseUrl }) {
-      console.log('🌐 [Redirect callback v4]:', { url, baseUrl });
+      console.warn('🌐 [Redirect callback v4]:', { url, baseUrl });
       
       // 認証関連のURLの場合は会員制掲示板にリダイレクト
       if (url.includes('/auth/signin') || url.includes('/auth/')) {
         const dashboardUrl = `${baseUrl}/dashboard`;
-        console.log('🔄 [Server Redirect] auth URL detected, redirecting to:', dashboardUrl);
+        console.warn('🔄 [Server Redirect] auth URL detected, redirecting to:', dashboardUrl);
         return dashboardUrl;
       }
       
       // デフォルトで会員制掲示板に
       if (url.startsWith('/')) {
         const fullUrl = `${baseUrl}${url}`;
-        console.log('🔄 [Server Redirect] relative URL to full URL:', fullUrl);
+        console.warn('🔄 [Server Redirect] relative URL to full URL:', fullUrl);
         return fullUrl;
       }
       
       // 外部URLチェック
       if (url.startsWith(baseUrl)) {
-        console.log('🔄 [Server Redirect] same origin URL:', url);
+        console.warn('🔄 [Server Redirect] same origin URL:', url);
         return url;
       }
       
       // フォールバック：会員制掲示板
       const fallbackUrl = `${baseUrl}/dashboard`;
-      console.log('🔄 [Server Redirect] fallback to dashboard:', fallbackUrl);
+      console.warn('🔄 [Server Redirect] fallback to dashboard:', fallbackUrl);
       return fallbackUrl;
     },
     
     async jwt({ token, user }: { token: JWT; user?: User }) {
       // SOL-2: JWT-Session間のデータ伝播強化
-      console.log('🎫 [JWT v4] [SOL-2]:', {
+      console.warn('🎫 [JWT v4] [SOL-2]:', {
         hasUser: !!user,
         hasToken: !!token,
         userId: user?.id,
@@ -248,7 +248,7 @@ export const authOptions: AuthOptions = {
         token.role = user.role;
         token.createdAt = user.createdAt;
         
-        console.log('🔧 [Sol-Debug] SOL-2 | JWT token populated:', {
+        console.warn('🔧 [Sol-Debug] SOL-2 | JWT token populated:', {
           timestamp: new Date().toISOString(),
           tokenId: token.id,
           email: token.email,
@@ -261,7 +261,7 @@ export const authOptions: AuthOptions = {
     
     async session({ session, token }: { session: Session; token: JWT }) {
       // SOL-2: セッションデータの確実な伝播
-      console.log('📊 [Session v4] [SOL-2]:', {
+      console.warn('📊 [Session v4] [SOL-2]:', {
         hasSession: !!session,
         hasToken: !!token,
         tokenId: token?.id,
@@ -271,7 +271,7 @@ export const authOptions: AuthOptions = {
       });
       
       // Phase 1: セッション確立の詳細ログ
-      console.log('🔐 [PHASE1-SESSION] Session establishment:', {
+      console.warn('🔐 [PHASE1-SESSION] Session establishment:', {
         httpOnlyEnabled: process.env.NODE_ENV === 'production',
         sessionEstablished: !!(token && token.id),
         timestamp: new Date().toISOString()
@@ -292,7 +292,7 @@ export const authOptions: AuthOptions = {
         session.user.role = token.role as string || 'user';
         session.user.createdAt = token.createdAt as string;
         
-        console.log('🔧 [Sol-Debug] SOL-2 | Session populated:', {
+        console.warn('🔧 [Sol-Debug] SOL-2 | Session populated:', {
           timestamp: new Date().toISOString(),
           userId: session.user.id,
           email: session.user.email,
@@ -302,7 +302,7 @@ export const authOptions: AuthOptions = {
         });
         
         // Phase 1: セッション確立成功の確認
-        console.log('✅ [PHASE1-SESSION-ESTABLISHED]', {
+        console.warn('✅ [PHASE1-SESSION-ESTABLISHED]', {
           userId: session.user.id,
           email: session.user.email,
           timestamp: new Date().toISOString()

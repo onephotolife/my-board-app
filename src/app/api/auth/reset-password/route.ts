@@ -290,7 +290,7 @@ export async function POST(request: NextRequest) {
         throw new Error('Failed to update user password');
       }
       
-      console.log(`Password reset successful for ${user.email}, emailVerified: ${user.emailVerified}`);
+      console.warn(`Password reset successful for ${user.email}, emailVerified: ${user.emailVerified}`);
 
       // Mark the reset token as used
       passwordReset.used = true;
@@ -303,7 +303,7 @@ export async function POST(request: NextRequest) {
       });
 
       // Performance Expert: Log successful password reset for monitoring
-      console.log(`Password successfully reset for user: ${user.email} at ${new Date().toISOString()}`);
+      console.warn(`Password successfully reset for user: ${user.email} at ${new Date().toISOString()}`);
       
       // セキュリティ監査ログ
       const userAgent = request.headers.get('user-agent') || 'unknown';
@@ -353,10 +353,10 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const token = searchParams.get('token');
 
-    console.log('🔍 パスワードリセットトークン検証:', token);
+    console.warn('🔍 パスワードリセットトークン検証:', token);
 
     if (!token) {
-      console.log('⚠️ トークンが提供されていません');
+      console.warn('⚠️ トークンが提供されていません');
       return NextResponse.json(
         { valid: false, error: 'トークンが必要です' },
         { status: 400 }
@@ -365,7 +365,7 @@ export async function GET(request: NextRequest) {
 
     // トークン形式のチェック（64文字の16進数）
     if (!/^[a-f0-9]{64}$/i.test(token)) {
-      console.log('⚠️ トークン形式が不正:', token.length, '文字');
+      console.warn('⚠️ トークン形式が不正:', token.length, '文字');
       return NextResponse.json(
         { valid: false, error: '無効なトークン形式です' },
         { status: 400 }
@@ -375,7 +375,7 @@ export async function GET(request: NextRequest) {
     // データベース接続
     try {
       await dbConnect();
-      console.log('✅ MongoDB接続成功');
+      console.warn('✅ MongoDB接続成功');
     } catch (dbError) {
       console.error('❌ MongoDB接続エラー:', dbError);
       return NextResponse.json(
@@ -392,7 +392,7 @@ export async function GET(request: NextRequest) {
     });
 
     if (!passwordReset) {
-      console.log('⚠️ トークンが見つかりませんまたは期限切れ/使用済み');
+      console.warn('⚠️ トークンが見つかりませんまたは期限切れ/使用済み');
       
       // 期限切れのトークンを確認
       const expiredToken = await PasswordReset.findOne({ token });
@@ -431,14 +431,14 @@ export async function GET(request: NextRequest) {
     }
 
     if (!isValid) {
-      console.log('⚠️ トークンが一致しません');
+      console.warn('⚠️ トークンが一致しません');
       return NextResponse.json(
         { valid: false, error: '無効なパスワードリセットリンクです' },
         { status: 400 }
       );
     }
 
-    console.log('✅ トークン検証成功:', passwordReset.email);
+    console.warn('✅ トークン検証成功:', passwordReset.email);
 
     return NextResponse.json(
       { 

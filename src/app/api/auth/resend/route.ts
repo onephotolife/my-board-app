@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
     const clientIp = getClientIp(request);
     const userAgent = request.headers.get('user-agent') || '';
     
-    console.log('📧 メール再送信リクエスト:', {
+    console.warn('📧 メール再送信リクエスト:', {
       email,
       reason,
       ip: clientIp,
@@ -142,11 +142,11 @@ export async function POST(request: NextRequest) {
     await connectDB();
     
     // ユーザー検索
-    console.log('🔍 ユーザー検索:', { email: email.toLowerCase() });
+    console.warn('🔍 ユーザー検索:', { email: email.toLowerCase() });
     const user = await User.findOne({ 
       email: email.toLowerCase() 
     }).select('+emailVerified +emailVerificationToken');
-    console.log('👤 検索結果:', user ? { id: user._id, email: user.email } : 'null');
+    console.warn('👤 検索結果:', user ? { id: user._id, email: user.email } : 'null');
     
     if (!user) {
       // セキュリティのため成功レスポンス
@@ -169,7 +169,7 @@ export async function POST(request: NextRequest) {
     
     // 既に確認済みチェック
     if (user.emailVerified) {
-      console.log('ℹ️ 既にメール確認済み:', email);
+      console.warn('ℹ️ 既にメール確認済み:', email);
       return NextResponse.json({
         success: false,
         error: {
@@ -195,9 +195,9 @@ export async function POST(request: NextRequest) {
         totalAttempts: 0
       });
       await resendHistory.save();  // 追加！
-      console.log('📝 新規ResendHistory作成:', { userId: user._id, email });
+      console.warn('📝 新規ResendHistory作成:', { userId: user._id, email });
     } else {
-      console.log('📋 既存ResendHistory取得:', { 
+      console.warn('📋 既存ResendHistory取得:', { 
         userId: user._id, 
         email,
         currentAttempts: resendHistory.attempts.length,
@@ -207,10 +207,10 @@ export async function POST(request: NextRequest) {
     
     // 再送信回数チェック
     const attemptCount = resendHistory.attempts?.length || 0;
-    console.log('🔢 現在の試行回数:', attemptCount, '/', RESEND_CONFIG.maxAttempts);
+    console.warn('🔢 現在の試行回数:', attemptCount, '/', RESEND_CONFIG.maxAttempts);
     
     if (attemptCount >= RESEND_CONFIG.maxAttempts) {
-      console.log('❌ 再送信回数上限:', email, attemptCount);
+      console.warn('❌ 再送信回数上限:', email, attemptCount);
       
       return NextResponse.json({
         success: false,
@@ -241,7 +241,7 @@ export async function POST(request: NextRequest) {
     });
     
     if (!rateLimit.allowed) {
-      console.log('⏱️ レート制限:', email, rateLimit);
+      console.warn('⏱️ レート制限:', email, rateLimit);
       
       return NextResponse.json({
         success: false,
@@ -292,7 +292,7 @@ export async function POST(request: NextRequest) {
       session.endSession();
     }
     
-    console.log('🔑 新しいトークン生成:', {
+    console.warn('🔑 新しいトークン生成:', {
       email: user.email,
       tokenPrefix: token.substring(0, 8) + '...',
       expiry,
@@ -325,7 +325,7 @@ export async function POST(request: NextRequest) {
         }
       });
       
-      console.log('✅ メールキューに追加:', {
+      console.warn('✅ メールキューに追加:', {
         jobId,
         email: user.email,
         priority: attemptCount > 2 ? 'high' : 'normal'

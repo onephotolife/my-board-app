@@ -61,7 +61,7 @@ async function getAuthenticatedUser(req: NextRequest): Promise<AuthUser | null> 
         : 'next-auth.session-token'
     });
 
-    console.log('[COMMENT-AUTH-DEBUG] Token validation:', {
+    console.warn('[COMMENT-AUTH-DEBUG] Token validation:', {
       hasToken: !!token,
       environment: process.env.NODE_ENV,
       secureCookie: process.env.NODE_ENV === 'production',
@@ -69,13 +69,13 @@ async function getAuthenticatedUser(req: NextRequest): Promise<AuthUser | null> 
     });
 
     if (!token) {
-      console.log('[COMMENT-AUTH-DEBUG] No token found');
+      console.warn('[COMMENT-AUTH-DEBUG] No token found');
       return null;
     }
 
     // メール確認チェック
     if (!token.emailVerified) {
-      console.log('[COMMENT-AUTH-DEBUG] Email not verified');
+      console.warn('[COMMENT-AUTH-DEBUG] Email not verified');
       return null;
     }
 
@@ -167,7 +167,7 @@ export async function GET(
       isLikedByUser: comment.likes ? comment.likes.includes(user.id) : false
     }));
 
-    console.log('[COMMENT-SUCCESS] Comments fetched:', {
+    console.warn('[COMMENT-SUCCESS] Comments fetched:', {
       postId: id,
       userId: user.id,
       count: comments.length,
@@ -268,7 +268,7 @@ export async function POST(
     
     if (!validationResult.success) {
       // エラーの詳細をログ出力
-      console.log('[VALIDATION-ERROR] Validation failed:', {
+      console.warn('[VALIDATION-ERROR] Validation failed:', {
         errors: validationResult.error?.errors || [],
         receivedData: body
       });
@@ -305,7 +305,7 @@ export async function POST(
     // ローカル開発環境では使用せず、楽観的更新を使用
     try {
       // デバッグログ：コメント作成前
-      console.log('[COMMENT-DEBUG] Creating comment with data:', {
+      console.warn('[COMMENT-DEBUG] Creating comment with data:', {
         postId: id,
         content: validationResult.data.content.substring(0, 50),
         userId: user.id,
@@ -320,7 +320,7 @@ export async function POST(
         .replace(/'/g, '&#x27;')
         .replace(/\//g, '&#x2F;');
         
-      console.log('[XSS-BASIC-ESCAPE] Content sanitization:', {
+      console.warn('[XSS-BASIC-ESCAPE] Content sanitization:', {
         original: validationResult.data.content,
         sanitized: sanitizedContent,
         length: { original: validationResult.data.content.length, sanitized: sanitizedContent.length },
@@ -347,7 +347,7 @@ export async function POST(
       // コメントを保存
       await comment.save();
 
-      console.log('[COMMENT-SUCCESS] Comment saved, ID:', comment._id);
+      console.warn('[COMMENT-SUCCESS] Comment saved, ID:', comment._id);
 
       // 投稿のコメント数を非同期で更新（失敗してもコメント投稿は成功とする）
       post.updateCommentCount().catch(error => {
@@ -388,7 +388,7 @@ export async function POST(
       }
 
       // ログ記録
-      console.log('[COMMENT-SUCCESS] Comment created:', {
+      console.warn('[COMMENT-SUCCESS] Comment created:', {
         commentId: comment._id,
         postId: id,
         userId: user.id,

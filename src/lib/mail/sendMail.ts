@@ -2,11 +2,11 @@
 const isEmailEnabled = process.env.EMAIL_ENABLED === 'true' || process.env.NODE_ENV === 'production';
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
-console.log('📧 Email Configuration:');
-console.log('  - Environment:', process.env.NODE_ENV || 'development');
-console.log('  - Email Enabled:', isEmailEnabled);
-console.log('  - SMTP Host:', process.env.EMAIL_SERVER_HOST || 'Not configured');
-console.log('  - SMTP User:', process.env.EMAIL_SERVER_USER || 'Not configured');
+console.warn('📧 Email Configuration:');
+console.warn('  - Environment:', process.env.NODE_ENV || 'development');
+console.warn('  - Email Enabled:', isEmailEnabled);
+console.warn('  - SMTP Host:', process.env.EMAIL_SERVER_HOST || 'Not configured');
+console.warn('  - SMTP User:', process.env.EMAIL_SERVER_USER || 'Not configured');
 
 interface EmailOptions {
   to: string;
@@ -17,26 +17,26 @@ interface EmailOptions {
 export async function sendEmail({ to, subject, html }: EmailOptions) {
   try {
     // Always log email details for debugging
-    console.log('\n📧 Email Request:');
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log(`To: ${to}`);
-    console.log(`Subject: ${subject}`);
-    console.log(`From: ${process.env.EMAIL_FROM || 'noreply@yourapp.com'}`);
+    console.warn('\n📧 Email Request:');
+    console.warn('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.warn(`To: ${to}`);
+    console.warn(`Subject: ${subject}`);
+    console.warn(`From: ${process.env.EMAIL_FROM || 'noreply@yourapp.com'}`);
     
     // Extract URL from HTML for easy access
     const urlMatch = html.match(/href="([^"]+)"/);
     if (urlMatch && urlMatch[1]) {
-      console.log(`🔗 Reset URL: ${urlMatch[1]}`);
+      console.warn(`🔗 Reset URL: ${urlMatch[1]}`);
     }
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+    console.warn('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
     
     if (!isEmailEnabled || !process.env.EMAIL_SERVER_HOST) {
-      console.log('⚠️ Email sending is disabled (EMAIL_ENABLED=false or missing SMTP config)');
-      console.log('To enable email sending, set EMAIL_ENABLED=true in .env.local');
+      console.warn('⚠️ Email sending is disabled (EMAIL_ENABLED=false or missing SMTP config)');
+      console.warn('To enable email sending, set EMAIL_ENABLED=true in .env.local');
       return { success: true, messageId: 'dev-' + Date.now(), devMode: true };
     }
     
-    console.log('🚀 Attempting to send real email via SMTP...');
+    console.warn('🚀 Attempting to send real email via SMTP...');
     
     // Import nodemailer dynamically
     let nodemailer;
@@ -80,7 +80,7 @@ export async function sendEmail({ to, subject, html }: EmailOptions) {
     // Verify transporter configuration before sending
     try {
       await transporter.verify();
-      console.log('✅ SMTP connection verified successfully');
+      console.warn('✅ SMTP connection verified successfully');
     } catch (verifyError: any) {
       console.error('❌ SMTP verification failed:', verifyError);
       console.error('   Error details:', verifyError.message || verifyError);
@@ -101,11 +101,11 @@ export async function sendEmail({ to, subject, html }: EmailOptions) {
     };
     
     const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Email sent successfully!');
-    console.log('   Message ID:', info.messageId);
-    console.log('   Response:', info.response);
-    console.log('   Accepted:', info.accepted);
-    console.log('   Rejected:', info.rejected);
+    console.warn('✅ Email sent successfully!');
+    console.warn('   Message ID:', info.messageId);
+    console.warn('   Response:', info.response);
+    console.warn('   Accepted:', info.accepted);
+    console.warn('   Rejected:', info.rejected);
     
     return { success: true, messageId: info.messageId, info };
   } catch (error) {

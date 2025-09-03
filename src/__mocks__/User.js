@@ -77,28 +77,28 @@ class UserMock {
     return obj;
   }
 
-  isModified(field) {
+  isModified(_field) {
     return false;
   }
 }
 
 // findOneをより柔軟にモック可能にする
-UserMock.findOne = jest.fn(async (query) => {
+UserMock.findOne = jest.fn(async (_query) => {
   // モックの戻り値は各テストで設定される
   return null;
 });
 
-UserMock.findById = jest.fn((id) => ({
+UserMock.findById = jest.fn((_id) => ({
   exec: jest.fn(() => Promise.resolve(null)),
   lean: jest.fn(() => ({
     exec: jest.fn(() => Promise.resolve(null))
   }))
 }));
-UserMock.findByIdAndUpdate = jest.fn((id, update, options) => {
+UserMock.findByIdAndUpdate = jest.fn((_id, update, _options) => {
   const user = new UserMock(update);
   return Promise.resolve(user);
 });
-UserMock.findByIdAndDelete = jest.fn((id) => Promise.resolve({ deletedCount: 1 }));
+UserMock.findByIdAndDelete = jest.fn((_id) => Promise.resolve({ deletedCount: 1 }));
 UserMock.create = jest.fn((data) => {
   const user = new UserMock(data);
   // save()と同じ処理を行う
@@ -109,7 +109,7 @@ UserMock.create = jest.fn((data) => {
 });
 UserMock.deleteMany = jest.fn(() => Promise.resolve({ deletedCount: 0 }));
 UserMock.countDocuments = jest.fn(() => Promise.resolve(0));
-UserMock.findOneAndUpdate = jest.fn((query, update, options) => {
+UserMock.findOneAndUpdate = jest.fn((_query, update, _options) => {
   const user = new UserMock(update);
   return Promise.resolve(user);
 });

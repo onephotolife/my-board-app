@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
   try {
     const startTime = Date.now();
     
-    console.log('🔍 [MongoDB診断] 開始');
+    console.warn('🔍 [MongoDB診断] 開始');
     
     // 基本環境変数情報
     const envInfo = {
@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
       NEXTAUTH_SECRET_exists: !!process.env.NEXTAUTH_SECRET,
     };
     
-    console.log('📋 [環境変数]:', envInfo);
+    console.warn('📋 [環境変数]:', envInfo);
     
     // 接続テスト
     let connectionResult = {
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
     };
     
     try {
-      console.log('🔄 [MongoDB] 接続テスト開始...');
+      console.warn('🔄 [MongoDB] 接続テスト開始...');
       const conn = await connectDB();
       const connectTime = Date.now() - startTime;
       
@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
         }
       };
       
-      console.log('✅ [MongoDB] 接続成功:', connectionResult);
+      console.warn('✅ [MongoDB] 接続成功:', connectionResult);
       
     } catch (error) {
       const connectTime = Date.now() - startTime;
@@ -115,7 +115,7 @@ export async function GET(request: NextRequest) {
       totalDuration: Date.now() - startTime
     };
     
-    console.log('📊 [診断完了]:', result);
+    console.warn('📊 [診断完了]:', result);
     
     return NextResponse.json(result, {
       status: 200,

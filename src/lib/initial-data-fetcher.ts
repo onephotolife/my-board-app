@@ -19,7 +19,7 @@ export interface InitialData {
  */
 export async function fetchInitialData(session?: Session | null): Promise<InitialData | null> {
   if (!session) {
-    console.log('[PERF] No session, skipping initial data fetch');
+    console.warn('[PERF] No session, skipping initial data fetch');
     return null;
   }
 
@@ -98,7 +98,7 @@ export async function fetchInitialData(session?: Session | null): Promise<Initia
 
     const fetchTime = performance.now() - startTime;
     console.timeEnd('[PERF] Parallel initial data fetch');
-    console.log(`[PERF] Initial data fetched in ${fetchTime.toFixed(2)}ms`);
+    console.warn(`[PERF] Initial data fetched in ${fetchTime.toFixed(2)}ms`);
 
     // 結果の処理
     const result: InitialData = {
@@ -110,7 +110,7 @@ export async function fetchInitialData(session?: Session | null): Promise<Initia
 
     // デバッグログ
     if (process.env.NODE_ENV === 'development') {
-      console.log('[DEBUG] Initial data fetch results:', {
+      console.warn('[DEBUG] Initial data fetch results:', {
         userProfile: result.userProfile ? 'Success' : 'Failed',
         permissions: result.permissions ? 'Success' : 'Failed',
         csrfToken: result.csrfToken ? 'Success' : 'Failed',
@@ -132,7 +132,7 @@ export async function fetchInitialData(session?: Session | null): Promise<Initia
 export async function fetchInitialDataClient(): Promise<InitialData | null> {
   // クライアントサイドではセッション情報を直接取得できないため、
   // 認証済みを前提として実行
-  console.log('[PERF] Starting client-side initial data fetch');
+  console.warn('[PERF] Starting client-side initial data fetch');
   
   return fetchInitialData({ 
     user: { email: 'authenticated' },

@@ -146,7 +146,7 @@ export async function POST(request: NextRequest) {
     // データベース接続
     try {
       await connectDB();
-      console.log('✅ 登録API: MongoDB接続成功');
+      console.warn('✅ 登録API: MongoDB接続成功');
     } catch (dbError) {
       console.error('Database connection error:', dbError);
       return NextResponse.json(
@@ -193,7 +193,7 @@ export async function POST(request: NextRequest) {
     const emailVerificationToken = generateEmailVerificationToken();
     const tokenExpiry = generateTokenExpiry(24); // 24時間有効
     
-    console.log('📝 トークン生成:', {
+    console.warn('📝 トークン生成:', {
       token: emailVerificationToken,
       expiry: tokenExpiry.toISOString(),
       email: email,
@@ -211,7 +211,7 @@ export async function POST(request: NextRequest) {
       });
 
       await user.save();
-      console.log('✅ ユーザー作成成功:', email);
+      console.warn('✅ ユーザー作成成功:', email);
     } catch (saveError: any) {
       console.error('User save error:', saveError);
       
@@ -288,7 +288,7 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      console.log('✅ 確認メール送信成功:', email);
+      console.warn('✅ 確認メール送信成功:', email);
 
       // 成功レスポンス
       return NextResponse.json(
@@ -347,7 +347,7 @@ export async function POST(request: NextRequest) {
     if (user && user._id) {
       try {
         await User.findByIdAndDelete(user._id);
-        console.log('ロールバック: ユーザー削除完了');
+        console.warn('ロールバック: ユーザー削除完了');
       } catch (rollbackError) {
         console.error('ロールバックエラー:', rollbackError);
       }

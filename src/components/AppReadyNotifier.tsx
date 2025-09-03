@@ -44,7 +44,7 @@ export function AppReadyNotifier() {
     // PerformanceTrackerコンポーネントがグローバル変数で代替
 
     // 4. コンソールログ（デバッグ用）
-    console.log(`🚀 App ready in ${readyTime.toFixed(2)}ms`);
+    console.warn(`🚀 App ready in ${readyTime.toFixed(2)}ms`);
 
     // 5. パフォーマンス計測とデータ送信
     if ('performance' in window && 'mark' in performance) {
@@ -181,7 +181,7 @@ export function AppReadyNotifier() {
         body: JSON.stringify(performanceData),
       }).then(response => {
         if (response.ok) {
-          console.log('📊 Performance data sent successfully');
+          console.warn('📊 Performance data sent successfully');
         } else {
           console.warn('⚠️ Failed to send performance data:', response.status);
         }

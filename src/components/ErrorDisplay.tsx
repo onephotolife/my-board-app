@@ -494,7 +494,7 @@ const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
             <button
               onClick={() => {
                 // サポートチャット起動の処理
-                console.log('サポートチャット起動');
+                console.warn('サポートチャット起動');
               }}
               style={{
                 ...buttonStyle,

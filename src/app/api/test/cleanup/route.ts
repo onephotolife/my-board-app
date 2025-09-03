@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log('🗑️ テストユーザー削除:', email);
+    console.warn('🗑️ テストユーザー削除:', email);
 
     return NextResponse.json({
       message: 'ユーザーを削除しました',

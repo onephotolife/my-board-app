@@ -46,7 +46,7 @@ describe('【UT-NOTIF-001】通知取得API（GET /api/notifications）', () => 
       emailVerified: new Date()
     });
     
-    console.log('🔔 [NOTIF-TEST] Test environment initialized');
+    console.warn('🔔 [NOTIF-TEST] Test environment initialized');
   });
   
   afterEach(async () => {
@@ -67,7 +67,7 @@ describe('【UT-NOTIF-001】通知取得API（GET /api/notifications）', () => 
     expect(data.notifications).toEqual([]);
     expect(data.unreadCount).toBe(0);
     
-    console.log('✅ Empty notifications returned correctly');
+    console.warn('✅ Empty notifications returned correctly');
   });
   
   test('【OK】通知複数件取得', async () => {
@@ -86,9 +86,9 @@ describe('【UT-NOTIF-001】通知取得API（GET /api/notifications）', () => 
     const dates = data.notifications.map((n: any) => new Date(n.createdAt).getTime());
     expect(dates).toEqual([...dates].sort((a, b) => b - a));
     
-    console.log('✅ Multiple notifications retrieved');
-    console.log('   Total:', data.notifications.length);
-    console.log('   Unread:', data.unreadCount);
+    console.warn('✅ Multiple notifications retrieved');
+    console.warn('   Total:', data.notifications.length);
+    console.warn('   Unread:', data.unreadCount);
   });
   
   test('【OK】ページネーション動作確認', async () => {
@@ -113,9 +113,9 @@ describe('【UT-NOTIF-001】通知取得API（GET /api/notifications）', () => 
     expect(data2.notifications).toHaveLength(5);
     expect(data2.currentPage).toBe(2);
     
-    console.log('✅ Pagination working correctly');
-    console.log('   Page 1:', data1.notifications.length, 'items');
-    console.log('   Page 2:', data2.notifications.length, 'items');
+    console.warn('✅ Pagination working correctly');
+    console.warn('   Page 1:', data1.notifications.length, 'items');
+    console.warn('   Page 2:', data2.notifications.length, 'items');
   });
   
   test('【OK】フィルタリング（type別）', async () => {
@@ -129,9 +129,9 @@ describe('【UT-NOTIF-001】通知取得API（GET /api/notifications）', () => 
     const allLikes = data.notifications.every((n: any) => n.type === 'like');
     expect(allLikes).toBe(true);
     
-    console.log('✅ Type filtering works');
-    console.log('   Filter: type=like');
-    console.log('   Results:', data.notifications.length);
+    console.warn('✅ Type filtering works');
+    console.warn('   Filter: type=like');
+    console.warn('   Results:', data.notifications.length);
   });
   
   // =====================
@@ -148,9 +148,9 @@ describe('【UT-NOTIF-001】通知取得API（GET /api/notifications）', () => 
     expect(response.status).toBe(401);
     expect(data.error).toContain('Authentication required');
     
-    console.log('✅ Unauthenticated access blocked');
-    console.log('   Status:', response.status);
-    console.log('   Error:', data.error);
+    console.warn('✅ Unauthenticated access blocked');
+    console.warn('   Status:', response.status);
+    console.warn('   Error:', data.error);
   });
   
   test('【NG】無効なユーザーID', async () => {
@@ -167,7 +167,7 @@ describe('【UT-NOTIF-001】通知取得API（GET /api/notifications）', () => 
     expect(response.status).toBe(404);
     expect(data.error).toContain('User not found');
     
-    console.log('✅ Invalid user ID handled');
+    console.warn('✅ Invalid user ID handled');
   });
   
   test('【NG】不正なページ番号', async () => {
@@ -178,7 +178,7 @@ describe('【UT-NOTIF-001】通知取得API（GET /api/notifications）', () => 
     expect(response.status).toBe(400);
     expect(data.error).toContain('Invalid page number');
     
-    console.log('✅ Invalid pagination parameters handled');
+    console.warn('✅ Invalid pagination parameters handled');
   });
 });
 
@@ -232,7 +232,7 @@ describe('【UT-NOTIF-002】通知更新API（POST /api/notifications）', () =>
     const updated = await Notification.findById(notification._id);
     expect(updated?.isRead).toBe(true);
     
-    console.log('✅ Single notification marked as read');
+    console.warn('✅ Single notification marked as read');
   });
   
   test('【OK】全既読マーク', async () => {
@@ -257,8 +257,8 @@ describe('【UT-NOTIF-002】通知更新API（POST /api/notifications）', () =>
     });
     expect(unreadCount).toBe(0);
     
-    console.log('✅ All notifications marked as read');
-    console.log('   Updated count:', data.updatedCount);
+    console.warn('✅ All notifications marked as read');
+    console.warn('   Updated count:', data.updatedCount);
   });
   
   test('【NG】他人の通知を既読マーク試行', async () => {
@@ -290,7 +290,7 @@ describe('【UT-NOTIF-002】通知更新API（POST /api/notifications）', () =>
     const unchanged = await Notification.findById(otherNotification._id);
     expect(unchanged?.isRead).toBe(false);
     
-    console.log('✅ Cross-user access prevented');
+    console.warn('✅ Cross-user access prevented');
   });
 });
 
@@ -344,7 +344,7 @@ describe('【UT-NOTIF-003】通知削除API（DELETE /api/notifications/[id]）'
     const deleted = await Notification.findById(notification._id);
     expect(deleted).toBeNull();
     
-    console.log('✅ Notification deleted successfully');
+    console.warn('✅ Notification deleted successfully');
   });
   
   test('【NG】他人の通知を削除試行', async () => {
@@ -377,7 +377,7 @@ describe('【UT-NOTIF-003】通知削除API（DELETE /api/notifications/[id]）'
     const stillExists = await Notification.findById(otherNotification._id);
     expect(stillExists).toBeDefined();
     
-    console.log('✅ Cross-user deletion prevented');
+    console.warn('✅ Cross-user deletion prevented');
   });
   
   test('【NG】存在しない通知IDで削除試行', async () => {
@@ -395,7 +395,7 @@ describe('【UT-NOTIF-003】通知削除API（DELETE /api/notifications/[id]）'
     expect(response.status).toBe(404);
     expect(data.error).toContain('not found');
     
-    console.log('✅ Non-existent notification handled');
+    console.warn('✅ Non-existent notification handled');
   });
 });
 

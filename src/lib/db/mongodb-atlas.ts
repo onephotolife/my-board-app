@@ -43,9 +43,9 @@ function logConnectionStatus(status: string, details?: any) {
   const message = `[${timestamp}] MongoDB Connection: ${status}`;
   
   if (isDevelopment || status === 'ERROR') {
-    console.log(message);
+    console.warn(message);
     if (details) {
-      console.log('Details:', details);
+      console.warn('Details:', details);
     }
   }
 }

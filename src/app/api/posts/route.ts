@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
       cookieName: process.env.NODE_ENV === 'production' ? '__Secure-next-auth.session-token' : 'next-auth.session-token'
     });
 
-    console.log('🔍 [API] 認証トークン確認:', {
+    console.warn('🔍 [API] 認証トークン確認:', {
       hasToken: !!token,
       userId: token?.id || token?.sub,
       email: token?.email,
@@ -207,7 +207,7 @@ export async function POST(req: NextRequest) {
       cookieName: process.env.NODE_ENV === 'production' ? '__Secure-next-auth.session-token' : 'next-auth.session-token'
     });
 
-    console.log('🔍 [API] 認証トークン確認:', {
+    console.warn('🔍 [API] 認証トークン確認:', {
       hasToken: !!token,
       userId: token?.id || token?.sub,
       email: token?.email,

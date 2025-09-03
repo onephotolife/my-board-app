@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
     // MongoDB接続
     try {
       await dbConnect();
-      console.log('✅ パスワードリセット: MongoDB接続成功');
+      console.warn('✅ パスワードリセット: MongoDB接続成功');
     } catch (dbError) {
       console.error('❌ MongoDB接続エラー:', dbError);
       // 開発環境では詳細なエラーを返す
@@ -167,14 +167,14 @@ export async function POST(request: NextRequest) {
         if (!emailResult.success) {
           console.error('メール送信失敗:', emailResult);
         } else {
-          console.log('✅ パスワードリセットメール送信成功:', email);
+          console.warn('✅ パスワードリセットメール送信成功:', email);
         }
       } catch (emailError) {
         console.error('メール送信エラー:', emailError);
         // メール送信エラーでも成功レスポンスを返す（セキュリティのため）
       }
     } else {
-      console.log('ℹ️ ユーザーが存在しないか、メール未確認:', email);
+      console.warn('ℹ️ ユーザーが存在しないか、メール未確認:', email);
     }
 
     // タイミング攻撃防止（最小500ms応答時間）

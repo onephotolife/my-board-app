@@ -14,7 +14,7 @@ import { postFilterSchema } from '@/lib/validations/post';
 
 // デバッグログ用ヘルパー
 function debugLog(section: string, data: any) {
-  console.log(`🔍 [Timeline API] ${section}:`, {
+  console.warn(`🔍 [Timeline API] ${section}:`, {
     timestamp: new Date().toISOString(),
     ...data
   });

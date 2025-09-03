@@ -72,7 +72,7 @@ describe('DatabaseConnectionManager - Null Safety Test', () => {
         expect(result.error).toBeUndefined();
       } catch (error) {
         // MongoDB接続エラーの場合はテストをスキップ
-        console.log('MongoDB connection test skipped (MongoDB not available)');
+        console.warn('MongoDB connection test skipped (MongoDB not available)');
       }
     });
   });

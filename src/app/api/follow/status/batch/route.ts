@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     
     await connectDB();
     
-    console.log('🔍 [Batch Follow Status] Request:', {
+    console.warn('🔍 [Batch Follow Status] Request:', {
       requestUserId: session.user.id,
       targetUserIds: userIds,
       count: userIds.length
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     
     const followingIds = follows.map(f => f.following.toString());
     
-    console.log('✅ [Batch Follow Status] Response:', {
+    console.warn('✅ [Batch Follow Status] Response:', {
       requestUserId: session.user.id,
       followingCount: followingIds.length,
       followingIds: followingIds

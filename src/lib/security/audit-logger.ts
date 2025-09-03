@@ -105,7 +105,7 @@ export class AuditLogger {
       // 統計情報の更新
       await this.updateStatistics(entry.event, entry.userId);
       
-      console.log(`[AUDIT] ${entry.event}:`, {
+      console.warn(`[AUDIT] ${entry.event}:`, {
         userId: entry.userId,
         email: entry.email,
         severity,

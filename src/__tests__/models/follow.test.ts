@@ -27,7 +27,7 @@ beforeAll(async () => {
   const mongoUri = mongoServer.getUri();
   await mongoose.connect(mongoUri);
   
-  console.log('✅ Test MongoDB connected');
+  console.warn('✅ Test MongoDB connected');
 });
 
 // 各テスト前の初期化
@@ -58,14 +58,14 @@ beforeEach(async () => {
     emailVerified: true,
   });
   
-  console.log('📝 Test users created');
+  console.warn('📝 Test users created');
 });
 
 // テスト環境のクリーンアップ
 afterAll(async () => {
   await mongoose.disconnect();
   await mongoServer.stop();
-  console.log('🔌 Test MongoDB disconnected');
+  console.warn('🔌 Test MongoDB disconnected');
 });
 
 describe('フォロー機能テスト', () => {
@@ -404,7 +404,7 @@ describe('フォロー機能テスト', () => {
       const endTime = Date.now();
       
       const executionTime = endTime - startTime;
-      console.log(`updateFollowCounts実行時間: ${executionTime}ms`);
+      console.warn(`updateFollowCounts実行時間: ${executionTime}ms`);
       
       // 1秒以内に完了することを確認
       expect(executionTime).toBeLessThan(1000);

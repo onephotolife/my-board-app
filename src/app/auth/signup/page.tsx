@@ -56,7 +56,7 @@ export default function SignUpPage() {
     // これにより前のユーザーのセッションが残っていても自動ログインしない
     const clearExistingSession = async () => {
       if (status === 'authenticated' && session) {
-        console.log('📝 新規登録ページ: 既存セッションをクリア');
+        console.warn('📝 新規登録ページ: 既存セッションをクリア');
         await signOut({ redirect: false });
       }
     };
@@ -349,7 +349,7 @@ export default function SignUpPage() {
       } else {
         // 登録成功時も念のためセッションをクリア（自動ログイン防止）
         if (status === 'authenticated') {
-          console.log('📝 登録成功: セッションをクリア');
+          console.warn('📝 登録成功: セッションをクリア');
           await signOut({ redirect: false });
         }
         

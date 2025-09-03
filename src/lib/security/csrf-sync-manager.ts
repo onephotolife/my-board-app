@@ -393,7 +393,7 @@ export class CSRFSyncManager {
       this.memoryStore.delete(key);
     }
 
-    console.log(`[CSRF-SYNC] Cleaned up ${expiredKeys.length} expired tokens`);
+    console.warn(`[CSRF-SYNC] Cleaned up ${expiredKeys.length} expired tokens`);
   }
 
   /**

@@ -103,7 +103,7 @@ export function log(level: LogLevel, message: string, details?: any) {
         console.warn(formattedMessage);
         break;
       default:
-        console.log(formattedMessage);
+        console.warn(formattedMessage);
     }
   }
 }
@@ -254,29 +254,29 @@ export function getConnectionStats() {
  * デバッグ情報の出力
  */
 export function printDebugInfo() {
-  console.log('\n' + '='.repeat(60));
-  console.log('MongoDB接続デバッグ情報');
-  console.log('='.repeat(60));
+  console.warn('\n' + '='.repeat(60));
+  console.warn('MongoDB接続デバッグ情報');
+  console.warn('='.repeat(60));
   
   // 環境変数
-  console.log('\n[環境変数]');
-  console.log(`MONGODB_URI: ${process.env.MONGODB_URI ? '設定済み' : '未設定'}`);
-  console.log(`MONGODB_URI_PRODUCTION: ${process.env.MONGODB_URI_PRODUCTION ? '設定済み' : '未設定'}`);
-  console.log(`MONGODB_ENV: ${process.env.MONGODB_ENV || '未設定'}`);
-  console.log(`NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
+  console.warn('\n[環境変数]');
+  console.warn(`MONGODB_URI: ${process.env.MONGODB_URI ? '設定済み' : '未設定'}`);
+  console.warn(`MONGODB_URI_PRODUCTION: ${process.env.MONGODB_URI_PRODUCTION ? '設定済み' : '未設定'}`);
+  console.warn(`MONGODB_ENV: ${process.env.MONGODB_ENV || '未設定'}`);
+  console.warn(`NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
   
   // 接続状態
-  console.log('\n[接続状態]');
+  console.warn('\n[接続状態]');
   const status = logConnectionStatus();
   
   // 接続統計
-  console.log('\n[接続統計]');
+  console.warn('\n[接続統計]');
   const stats = getConnectionStats();
-  console.log(`総イベント数: ${stats.totalEvents}`);
-  console.log(`接続回数: ${stats.connects}`);
-  console.log(`切断回数: ${stats.disconnects}`);
-  console.log(`エラー回数: ${stats.errors}`);
-  console.log(`再試行回数: ${stats.retries}`);
+  console.warn(`総イベント数: ${stats.totalEvents}`);
+  console.warn(`接続回数: ${stats.connects}`);
+  console.warn(`切断回数: ${stats.disconnects}`);
+  console.warn(`エラー回数: ${stats.errors}`);
+  console.warn(`再試行回数: ${stats.retries}`);
   
   if (stats.lastConnect) {
     const uptimeSeconds = Math.floor(stats.uptime / 1000);
@@ -284,24 +284,24 @@ export function printDebugInfo() {
     const uptimeHours = Math.floor(uptimeMinutes / 60);
     
     if (uptimeHours > 0) {
-      console.log(`アップタイム: ${uptimeHours}時間${uptimeMinutes % 60}分`);
+      console.warn(`アップタイム: ${uptimeHours}時間${uptimeMinutes % 60}分`);
     } else if (uptimeMinutes > 0) {
-      console.log(`アップタイム: ${uptimeMinutes}分${uptimeSeconds % 60}秒`);
+      console.warn(`アップタイム: ${uptimeMinutes}分${uptimeSeconds % 60}秒`);
     } else {
-      console.log(`アップタイム: ${uptimeSeconds}秒`);
+      console.warn(`アップタイム: ${uptimeSeconds}秒`);
     }
   }
   
   // 最近のイベント
-  console.log('\n[最近の接続イベント]');
+  console.warn('\n[最近の接続イベント]');
   const recentEvents = getConnectionHistory(5);
   recentEvents.forEach(event => {
     const time = event.timestamp.toLocaleTimeString();
     const type = event.type.toUpperCase().padEnd(10);
-    console.log(`${time} | ${type} | ${event.message}`);
+    console.warn(`${time} | ${type} | ${event.message}`);
   });
   
-  console.log('='.repeat(60) + '\n');
+  console.warn('='.repeat(60) + '\n');
 }
 
 // エクスポート

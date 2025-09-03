@@ -60,7 +60,7 @@ export function SNSProvider({ children }: SNSProviderProps) {
       return;
     }
 
-    console.log('[SNS] Connecting socket for user:', session.user.id);
+    console.warn('[SNS] Connecting socket for user:', session.user.id);
     socketClient.connect(session.user.id, session.user.email || undefined);
     
     // 接続状態の監視
@@ -75,7 +75,7 @@ export function SNSProvider({ children }: SNSProviderProps) {
   }, [session?.user, featureFlags.realtimeNotifications]);
 
   const disconnect = useCallback(() => {
-    console.log('[SNS] Disconnecting socket');
+    console.warn('[SNS] Disconnecting socket');
     socketClient.disconnect();
     setIsConnected(false);
     setConnectionStatus('disconnected');
@@ -94,7 +94,7 @@ export function SNSProvider({ children }: SNSProviderProps) {
 
     // タイムラインの新投稿
     const handleNewPost = (data: { post: SNSPost }) => {
-      console.log('[SNS] New timeline post received:', data.post._id);
+      console.warn('[SNS] New timeline post received:', data.post._id);
       
       if (featureFlags.timeline) {
         // Zustandストアを更新
@@ -109,7 +109,7 @@ export function SNSProvider({ children }: SNSProviderProps) {
 
     // 新着通知
     const handleNewNotification = (data: { notification: Notification }) => {
-      console.log('[SNS] New notification received:', data.notification.type);
+      console.warn('[SNS] New notification received:', data.notification.type);
       
       if (featureFlags.notifications) {
         // Zustandストアを更新
@@ -132,7 +132,7 @@ export function SNSProvider({ children }: SNSProviderProps) {
 
     // 通知カウント更新
     const handleNotificationCount = (data: { unreadCount: number }) => {
-      console.log('[SNS] Notification count update:', data.unreadCount);
+      console.warn('[SNS] Notification count update:', data.unreadCount);
       
       if (featureFlags.notifications) {
         updateUnreadCount(data.unreadCount);
@@ -147,7 +147,7 @@ export function SNSProvider({ children }: SNSProviderProps) {
 
     // エンゲージメント更新
     const handleEngagementUpdate = (data: { postId: string; engagement: PostEngagement }) => {
-      console.log('[SNS] Post engagement update:', data.postId);
+      console.warn('[SNS] Post engagement update:', data.postId);
       
       if (featureFlags.timeline) {
         // Zustandストアを更新

@@ -37,7 +37,7 @@ function VerifyEmailContent() {
 
     const verifyEmail = async () => {
       try {
-        console.log('🔍 メール確認開始:', { token });
+        console.warn('🔍 メール確認開始:', { token });
         
         const response = await fetch(`/api/auth/verify-email?token=${encodeURIComponent(token)}`, {
           method: 'GET',
@@ -46,10 +46,10 @@ function VerifyEmailContent() {
           },
         });
         
-        console.log('📡 レスポンスステータス:', response.status);
+        console.warn('📡 レスポンスステータス:', response.status);
         
         const data = await response.json();
-        console.log('📦 レスポンスデータ:', data);
+        console.warn('📦 レスポンスデータ:', data);
         
         if (response.ok) {
           if (data.alreadyVerified) {

@@ -22,7 +22,7 @@ export const setupTestDatabase = async () => {
   }
   
   await mongoose.connect(mongoUri);
-  console.log('🧪 Test database connected:', mongoUri);
+  console.warn('🧪 Test database connected:', mongoUri);
 };
 
 export const cleanupTestDatabase = async () => {
@@ -34,7 +34,7 @@ export const cleanupTestDatabase = async () => {
   if (mongoServer) {
     await mongoServer.stop();
   }
-  console.log('🧹 Test database cleaned up');
+  console.warn('🧹 Test database cleaned up');
 };
 
 // テストユーザーファクトリー

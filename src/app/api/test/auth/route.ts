@@ -4,12 +4,12 @@ import { getToken } from 'next-auth/jwt';
 import { auth } from '@/lib/auth';
 
 export async function GET(request: Request) {
-  console.log('🧪 認証テストAPI開始');
+  console.warn('🧪 認証テストAPI開始');
   
   try {
     // 1. 通常のセッション取得
     const session = await auth();
-    console.log('📊 Session:', session);
+    console.warn('📊 Session:', session);
     
     // 2. JWTトークン取得（複数の方法で試す）
     let token = null;
@@ -20,7 +20,7 @@ export async function GET(request: Request) {
         req: request as any,
         secret: process.env.NEXTAUTH_SECRET 
       });
-      console.log('🎫 Token (方法1):', token);
+      console.warn('🎫 Token (方法1):', token);
     } catch (e) {
       console.error('Token取得エラー (方法1):', e);
     }
@@ -32,7 +32,7 @@ export async function GET(request: Request) {
           req: request as any,
           secret: process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production'
         });
-        console.log('🎫 Token (方法2):', token);
+        console.warn('🎫 Token (方法2):', token);
       } catch (e) {
         console.error('Token取得エラー (方法2):', e);
       }
@@ -43,7 +43,7 @@ export async function GET(request: Request) {
     const sessionToken = cookieHeader?.split(';')
       .find(c => c.trim().startsWith('authjs.session-token') || c.trim().startsWith('__Secure-authjs.session-token'));
     
-    console.log('🍪 Session Token Cookie:', sessionToken ? 'あり' : 'なし');
+    console.warn('🍪 Session Token Cookie:', sessionToken ? 'あり' : 'なし');
     
     // 4. 環境変数確認
     const env = {
@@ -51,7 +51,7 @@ export async function GET(request: Request) {
       NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET ? '設定済み' : '未設定',
       NODE_ENV: process.env.NODE_ENV,
     };
-    console.log('🔧 環境変数:', env);
+    console.warn('🔧 環境変数:', env);
     
     const result = {
       timestamp: new Date().toISOString(),

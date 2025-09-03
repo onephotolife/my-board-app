@@ -26,12 +26,12 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    console.log('🔍 メール確認トークン検証開始:', token);
+    console.warn('🔍 メール確認トークン検証開始:', token);
 
     // データベース接続
     try {
       await connectDB();
-      console.log('✅ データベース接続成功');
+      console.warn('✅ データベース接続成功');
     } catch (dbError) {
       console.error('❌ データベース接続エラー:', dbError);
       throw new AuthError(
@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
     const user = await User.findOne({ emailVerificationToken: token });
     
     if (!user) {
-      console.log('⚠️ トークンに一致するユーザーが見つかりません');
+      console.warn('⚠️ トークンに一致するユーザーが見つかりません');
       throw new AuthError(
         AuthErrorCode.INVALID_TOKEN,
         'トークンが無効です。メール内のリンクが正しいか確認してください。',
@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
     
     // 既に確認済みの場合
     if (user.emailVerified) {
-      console.log('ℹ️ 既にメール確認済み:', user.email);
+      console.warn('ℹ️ 既にメール確認済み:', user.email);
       const response: AuthSuccessResponse = {
         success: true,
         message: 'メールアドレスは既に確認済みです。',
@@ -72,7 +72,7 @@ export async function GET(request: NextRequest) {
 
     // 有効期限チェック
     if (!isTokenValid(user.emailVerificationTokenExpiry)) {
-      console.log('⚠️ トークンが期限切れ:', {
+      console.warn('⚠️ トークンが期限切れ:', {
         expiry: user.emailVerificationTokenExpiry,
         now: new Date()
       });
@@ -96,14 +96,14 @@ export async function GET(request: NextRequest) {
       user.emailVerificationTokenExpiry = undefined;
       await user.save();
 
-      console.log('✅ メール確認完了:', {
+      console.warn('✅ メール確認完了:', {
         email: user.email,
         _id: user._id
       });
       
       // 更新の確認
       const updatedUser = await User.findById(user._id);
-      console.log('🔍 更新確認:', {
+      console.warn('🔍 更新確認:', {
         emailVerified: updatedUser?.emailVerified,
         tokenCleared: !updatedUser?.emailVerificationToken
       });

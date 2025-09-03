@@ -11,17 +11,17 @@ export async function GET(request: NextRequest) {
     // テストユーザーを検索
     const email = 'test1@example.com';
     
-    console.log('🔍 Userモデル検索開始:', email);
+    console.warn('🔍 Userモデル検索開始:', email);
     const user = await User.findOne({ email });
-    console.log('👤 検索結果:', user ? { id: user._id, email: user.email } : 'null');
+    console.warn('👤 検索結果:', user ? { id: user._id, email: user.email } : 'null');
     
     // 全ユーザー数も確認
     const count = await User.countDocuments();
-    console.log('📊 総ユーザー数:', count);
+    console.warn('📊 総ユーザー数:', count);
     
     // 最初の3件を取得
     const samples = await User.find({}).limit(3).select('email name');
-    console.log('📋 サンプル:', samples.map(u => ({ email: u.email, name: u.name })));
+    console.warn('📋 サンプル:', samples.map(u => ({ email: u.email, name: u.name })));
     
     return NextResponse.json({
       found: !!user,

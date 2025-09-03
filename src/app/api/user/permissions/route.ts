@@ -47,7 +47,7 @@ export async function GET(req: NextRequest) {
     
     // 🚨 メール未確認ユーザーの場合はゲスト扱い（会員制掲示板として必須）
     if (effectiveSession.user.email && !effectiveSession.user.emailVerified) {
-      console.log('📧 [API Security] メール未確認ユーザーをゲスト扱い:', effectiveSession.user.email);
+      console.warn('📧 [API Security] メール未確認ユーザーをゲスト扱い:', effectiveSession.user.email);
       return NextResponse.json(
         { 
           role: UserRole.GUEST,
@@ -83,7 +83,7 @@ export async function GET(req: NextRequest) {
 
     // 🚨 データベース情報での再度のメール確認チェック（念の為）
     if (!user.emailVerified) {
-      console.log('📧 [API Security] DB情報でメール未確認を確認:', user.email);
+      console.warn('📧 [API Security] DB情報でメール未確認を確認:', user.email);
       return NextResponse.json(
         { 
           role: UserRole.GUEST,

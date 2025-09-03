@@ -86,7 +86,7 @@ export default function DashboardPage() {
   const [loadingPosts, setLoadingPosts] = useState(true);
 
   useEffect(() => {
-    console.log('📊 ダッシュボード - セッション状態:', {
+    console.warn('📊 ダッシュボード - セッション状態:', {
       status,
       session: session ? 'あり' : 'なし',
       user: session?.user,
@@ -95,7 +95,7 @@ export default function DashboardPage() {
 
     // ダッシュボードに到達したら、リダイレクトフラグをクリア
     if (typeof window !== 'undefined' && sessionStorage.getItem('auth-redirecting') === 'true') {
-      console.log('✅ ダッシュボードに到達、リダイレクトフラグをクリア');
+      console.warn('✅ ダッシュボードに到達、リダイレクトフラグをクリア');
       sessionStorage.removeItem('auth-redirecting');
     }
 
@@ -104,7 +104,7 @@ export default function DashboardPage() {
     }
 
     if (status === 'unauthenticated') {
-      console.log('⚠️ 未認証のためサインインページへリダイレクト');
+      console.warn('⚠️ 未認証のためサインインページへリダイレクト');
       router.push('/auth/signin');
       return;
     }
@@ -140,7 +140,7 @@ export default function DashboardPage() {
       if (response.ok) {
         const { data } = await response.json();
         
-        console.log('[Dashboard] ユーザー統計取得成功:', {
+        console.warn('[Dashboard] ユーザー統計取得成功:', {
           email: data.email,
           memberSince: data.memberSince,
           totalPosts: data.totalPosts

@@ -150,6 +150,6 @@ describe('ObjectID Validator Performance', () => {
     // 10000回のバリデーションが100ms以内に完了すること
     expect(duration).toBeLessThan(100);
     
-    console.log(`Performance: ${iterations} validations in ${duration.toFixed(2)}ms`);
+    console.warn(`Performance: ${iterations} validations in ${duration.toFixed(2)}ms`);
   });
 });

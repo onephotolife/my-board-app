@@ -65,7 +65,7 @@ export function initSocketServer(httpServer: HTTPServer) {
 
   io.on('connection', (socket) => {
     const user = socket.data.user as SocketUser;
-    console.log(`🔌 User connected: ${user.email} (${socket.id})`);
+    console.warn(`🔌 User connected: ${user.email} (${socket.id})`);
     
     connectedUsers.set(socket.id, user);
     
@@ -153,7 +153,7 @@ export function initSocketServer(httpServer: HTTPServer) {
     });
 
     socket.on('disconnect', () => {
-      console.log(`🔌 User disconnected: ${user.email} (${socket.id})`);
+      console.warn(`🔌 User disconnected: ${user.email} (${socket.id})`);
       connectedUsers.delete(socket.id);
       
       io?.to('board-updates').emit('user:offline', {

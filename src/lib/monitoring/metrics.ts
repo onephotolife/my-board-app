@@ -39,7 +39,7 @@ export class MetricsService {
 
     // コンソールログ（開発環境）
     if (process.env.NODE_ENV === 'development') {
-      console.log(`📊 Metric: ${name}`, data || '');
+      console.warn(`📊 Metric: ${name}`, data || '');
     }
 
     // バッチ送信のためのバッファリング
@@ -111,7 +111,7 @@ export class MetricsService {
 
       // 現在はログ出力のみ
       if (process.env.NODE_ENV === 'development') {
-        console.log(`📊 Flushing ${metricsToSend.length} metrics`);
+        console.warn(`📊 Flushing ${metricsToSend.length} metrics`);
       }
 
       // ローカルストレージに保存（分析用）

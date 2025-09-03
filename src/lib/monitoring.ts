@@ -145,7 +145,7 @@ class PerformanceMonitor {
    */
   private triggerGarbageCollection(): void {
     if (global.gc) {
-      console.log('Triggering garbage collection...');
+      console.warn('Triggering garbage collection...');
       global.gc();
     }
   }
@@ -231,7 +231,7 @@ export function measurePerformance() {
         const duration = performance.now() - start;
         const memoryDelta = process.memoryUsage().heapUsed - startMemory;
         
-        console.log(`📊 ${propertyKey} completed:`, {
+        console.warn(`📊 ${propertyKey} completed:`, {
           duration: `${duration.toFixed(2)}ms`,
           memoryDelta: `${(memoryDelta / 1024 / 1024).toFixed(2)}MB`,
         });
@@ -346,7 +346,7 @@ export async function collectAPIMetrics(
 
     // メトリクスをログに記録
     if (process.env.NODE_ENV === 'development') {
-      console.log('API Metrics:', metrics);
+      console.warn('API Metrics:', metrics);
     }
 
     return { result, metrics };

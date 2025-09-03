@@ -30,7 +30,7 @@ export async function GET(
     
     // デバッグログ追加（Priority 2実装用）
     const idDebug = debugObjectId(userId);
-    console.log('[User Exists API GET] ID validation:', idDebug);
+    console.warn('[User Exists API GET] ID validation:', idDebug);
     
     // ID形式の検証（400エラーとして返す）
     if (!isValidObjectId(userId)) {

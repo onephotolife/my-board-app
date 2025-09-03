@@ -52,7 +52,7 @@ export function SocketProvider({ children }: SocketProviderProps) {
     const isSocketEnabled = process.env.NEXT_PUBLIC_ENABLE_SOCKET !== 'false';
     
     if (!isSocketEnabled) {
-      console.log('🔌 Socket.io is disabled');
+      console.warn('🔌 Socket.io is disabled');
       return;
     }
     
@@ -75,17 +75,17 @@ export function SocketProvider({ children }: SocketProviderProps) {
           });
 
           socketInstance.on('connect', () => {
-            console.log('🔌 Connected to Socket.io server');
+            console.warn('🔌 Connected to Socket.io server');
             setIsConnected(true);
           });
 
           socketInstance.on('disconnect', () => {
-            console.log('🔌 Disconnected from Socket.io server');
+            console.warn('🔌 Disconnected from Socket.io server');
             setIsConnected(false);
           });
 
           socketInstance.on('connected', (data) => {
-            console.log('✅ Authenticated connection:', data);
+            console.warn('✅ Authenticated connection:', data);
           });
 
           socketInstance.on('user:online', (data) => {
@@ -171,22 +171,22 @@ export function useRealtimeUpdates(handlers: {
     if (!socket) return;
 
     const handleNewPost = (data: any) => {
-      console.log('📝 New post received:', data);
+      console.warn('📝 New post received:', data);
       handlers.onNewPost?.(data);
     };
 
     const handlePostUpdated = (data: any) => {
-      console.log('✏️ Post updated:', data);
+      console.warn('✏️ Post updated:', data);
       handlers.onPostUpdated?.(data);
     };
 
     const handlePostDeleted = (data: any) => {
-      console.log('🗑️ Post deleted:', data);
+      console.warn('🗑️ Post deleted:', data);
       handlers.onPostDeleted?.(data);
     };
 
     const handlePostLiked = (data: any) => {
-      console.log('❤️ Post liked:', data);
+      console.warn('❤️ Post liked:', data);
       handlers.onPostLiked?.(data);
     };
 

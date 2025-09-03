@@ -22,7 +22,7 @@ async function getAuthenticatedUser(req: NextRequest): Promise<AuthUser | null> 
         : 'next-auth.session-token'
     });
 
-    console.log('[NOTIFICATION-AUTH-DEBUG] Token validation:', {
+    console.warn('[NOTIFICATION-AUTH-DEBUG] Token validation:', {
       hasToken: !!token,
       environment: process.env.NODE_ENV,
       secureCookie: process.env.NODE_ENV === 'production',
@@ -30,13 +30,13 @@ async function getAuthenticatedUser(req: NextRequest): Promise<AuthUser | null> 
     });
 
     if (!token) {
-      console.log('[NOTIFICATION-AUTH-DEBUG] No token found');
+      console.warn('[NOTIFICATION-AUTH-DEBUG] No token found');
       return null;
     }
 
     // メール確認チェック
     if (!token.emailVerified) {
-      console.log('[NOTIFICATION-AUTH-DEBUG] Email not verified');
+      console.warn('[NOTIFICATION-AUTH-DEBUG] Email not verified');
       return null;
     }
 
@@ -61,7 +61,7 @@ export async function GET(req: NextRequest) {
       return createErrorResponse('認証が必要です', 401, 'UNAUTHORIZED');
     }
 
-    console.log('[NOTIFICATION-API-DEBUG] Fetching notifications for user:', {
+    console.warn('[NOTIFICATION-API-DEBUG] Fetching notifications for user:', {
       userId: user.id,
       userEmail: user.email,
       timestamp: new Date().toISOString()
@@ -95,7 +95,7 @@ export async function GET(req: NextRequest) {
       Notification.countUnread(user.id)
     ]);
 
-    console.log('[NOTIFICATION-SUCCESS] Notifications fetched:', {
+    console.warn('[NOTIFICATION-SUCCESS] Notifications fetched:', {
       userId: user.id,
       count: notifications.length,
       total,
@@ -173,7 +173,7 @@ export async function POST(req: NextRequest) {
       
       result = await Notification.markAsRead(validIds, user.id);
       
-      console.log('[NOTIFICATION-SUCCESS] Marked as read:', {
+      console.warn('[NOTIFICATION-SUCCESS] Marked as read:', {
         userId: user.id,
         notificationIds: validIds,
         updatedCount: result.modifiedCount,
@@ -184,7 +184,7 @@ export async function POST(req: NextRequest) {
       // 全て既読にする
       result = await Notification.markAllAsRead(user.id);
       
-      console.log('[NOTIFICATION-SUCCESS] Marked all as read:', {
+      console.warn('[NOTIFICATION-SUCCESS] Marked all as read:', {
         userId: user.id,
         updatedCount: result.modifiedCount,
         timestamp: new Date().toISOString()

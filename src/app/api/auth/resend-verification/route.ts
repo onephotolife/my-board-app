@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     user.emailVerificationTokenExpiry = tokenExpiry;
     await user.save();
 
-    console.log('📝 新しいトークン生成:', {
+    console.warn('📝 新しいトークン生成:', {
       email: email,
       token: emailVerificationToken,
       expiry: tokenExpiry.toISOString(),
@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      console.log('✅ 確認メール再送信成功:', email);
+      console.warn('✅ 確認メール再送信成功:', email);
 
       return NextResponse.json({
         message: '確認メールを再送信しました',

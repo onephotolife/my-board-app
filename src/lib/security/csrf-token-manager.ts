@@ -36,18 +36,18 @@ export class CSRFTokenManager {
   async ensureToken(): Promise<string> {
     // 既存の有効なトークンがあれば即座に返す
     if (this.token && !this.isTokenExpired()) {
-      console.log('✅ [CSRF] 既存の有効なトークンを使用');
+      console.warn('✅ [CSRF] 既存の有効なトークンを使用');
       return this.token;
     }
     
     // 初期化中なら待機
     if (this.initPromise) {
-      console.log('⏳ [CSRF] トークン初期化待機中...');
+      console.warn('⏳ [CSRF] トークン初期化待機中...');
       return this.initPromise;
     }
     
     // 新規初期化開始
-    console.log('🔄 [CSRF] トークン初期化開始');
+    console.warn('🔄 [CSRF] トークン初期化開始');
     this.initPromise = this.initializeToken();
     
     try {
@@ -92,7 +92,7 @@ export class CSRFTokenManager {
         this.updateMetaTag(data.token);
       }
       
-      console.log('✅ [CSRF] トークン初期化成功', {
+      console.warn('✅ [CSRF] トークン初期化成功', {
         tokenPreview: data.token.substring(0, 20) + '...',
         expiryTime: new Date(this.tokenExpiry).toISOString()
       });
@@ -107,7 +107,7 @@ export class CSRFTokenManager {
         this.retryCount++;
         const delay = Math.pow(2, this.retryCount) * 1000; // 2秒、4秒、8秒
         
-        console.log(`🔄 [CSRF] リトライ ${this.retryCount}/${this.maxRetries}（${delay}ms後）`);
+        console.warn(`🔄 [CSRF] リトライ ${this.retryCount}/${this.maxRetries}（${delay}ms後）`);
         
         await new Promise(resolve => setTimeout(resolve, delay));
         return this.initializeToken(); // 再帰的にリトライ
@@ -133,7 +133,7 @@ export class CSRFTokenManager {
       }
       
       metaTag.setAttribute('content', token);
-      console.log('✅ [CSRF] メタタグ更新完了');
+      console.warn('✅ [CSRF] メタタグ更新完了');
     } catch (error) {
       console.warn('⚠️  [CSRF] メタタグ更新エラー:', error);
     }
@@ -143,7 +143,7 @@ export class CSRFTokenManager {
    * トークンを強制的にリフレッシュ
    */
   async refreshToken(): Promise<string> {
-    console.log('🔄 [CSRF] トークン強制リフレッシュ');
+    console.warn('🔄 [CSRF] トークン強制リフレッシュ');
     this.token = null;
     this.tokenExpiry = null;
     this.retryCount = 0;
@@ -164,7 +164,7 @@ export class CSRFTokenManager {
    * トークンを手動設定（initialTokenからの初期化用）
    */
   setToken(token: string): void {
-    console.log('📝 [CSRF] トークンを手動設定');
+    console.warn('📝 [CSRF] トークンを手動設定');
     this.token = token;
     this.tokenExpiry = Date.now() + this.tokenTTL;
     this.retryCount = 0;

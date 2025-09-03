@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 
-import mongoose, { Schema, Document } from 'mongoose';
+import type { Document } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
 export interface IPasswordReset extends Document {
   email: string;

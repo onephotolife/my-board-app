@@ -1,5 +1,6 @@
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { useSession } from 'next-auth/react';
+
 import { useNotifications } from '@/hooks/useNotifications';
 
 // Mock next-auth

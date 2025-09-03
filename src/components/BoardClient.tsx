@@ -3,8 +3,10 @@
 import { useState, useCallback, memo } from 'react';
 import Alert from '@mui/material/Alert';
 import dynamic from 'next/dynamic';
+
 import { useSecureFetch } from '@/components/CSRFProvider';
-import { UnifiedPost, normalizePostToUnified } from '@/types/post';
+import type { UnifiedPost} from '@/types/post';
+import { normalizePostToUnified } from '@/types/post';
 
 // 動的インポートでバンドルサイズを削減
 const PostForm = dynamic(() => import('./PostForm'), { 

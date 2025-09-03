@@ -321,7 +321,7 @@ export default function ModerationDashboard() {
                   </Avatar>
                 </ListItemAvatar>
                 <ListItemText
-                  primary={
+                  primary={(
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <Typography variant="subtitle1">
                         {report.postId?.title || '削除済みの投稿'}
@@ -338,8 +338,8 @@ export default function ModerationDashboard() {
                         color={report.status === 'pending' ? 'warning' : 'default'}
                       />
                     </Box>
-                  }
-                  secondary={
+                  )}
+                  secondary={(
                     <Box sx={{ mt: 1 }}>
                       <Typography variant="body2" sx={{ mb: 1 }}>
                         {report.description}
@@ -363,7 +363,7 @@ export default function ModerationDashboard() {
                         </Box>
                       )}
                     </Box>
-                  }
+                  )}
                 />
                 <ListItemSecondaryAction>
                   <Stack direction="row" spacing={1}>

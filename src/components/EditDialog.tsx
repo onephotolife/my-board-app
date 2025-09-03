@@ -18,8 +18,9 @@ import {
   Stack,
   Typography
 } from '@mui/material';
+
 import { usePermissions } from '@/contexts/PermissionContext';
-import { UnifiedPost } from '@/types/post';
+import type { UnifiedPost } from '@/types/post';
 
 interface EditDialogProps {
   open: boolean;

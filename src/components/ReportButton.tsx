@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useSecureFetch } from '@/components/CSRFProvider';
 import {
   Button,
   Dialog,
@@ -22,6 +21,8 @@ import {
   Report as ReportIcon,
   Close as CloseIcon,
 } from '@mui/icons-material';
+
+import { useSecureFetch } from '@/components/CSRFProvider';
 
 interface ReportButtonProps {
   postId: string;

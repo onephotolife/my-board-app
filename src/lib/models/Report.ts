@@ -1,4 +1,5 @@
-import mongoose, { Document, Schema, Model } from 'mongoose';
+import type { Document, Model } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
 export interface IReport extends Document {
   postId: mongoose.Types.ObjectId;

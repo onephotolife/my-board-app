@@ -1,11 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest} from 'next/server';
+import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getToken } from 'next-auth/jwt';
 
 import { connectDB } from '@/lib/db/mongodb-local';
 import Post from '@/lib/models/Post';
 import User from '@/lib/models/User';
-import { checkRateLimit, createErrorResponse, AuthUser } from '@/lib/middleware/auth';
+import type { AuthUser } from '@/lib/middleware/auth';
+import { checkRateLimit, createErrorResponse } from '@/lib/middleware/auth';
 import { createPostSchema, postFilterSchema, sanitizePostInput, formatValidationErrors } from '@/lib/validations/post';
 import { broadcastEvent } from '@/lib/socket/socket-manager';
 import { normalizePostDocuments, normalizePostDocument } from '@/lib/api/post-normalizer';

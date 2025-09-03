@@ -1,5 +1,6 @@
 import rateLimit from 'express-rate-limit';
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest} from 'next/server';
+import { NextResponse } from 'next/server';
 
 /**
  * レート制限設定

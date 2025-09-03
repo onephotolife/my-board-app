@@ -5,7 +5,9 @@
 
 import { getToken } from 'next-auth/jwt';
 import jwt from 'jsonwebtoken';
+
 import User from '@/lib/models/User';
+
 import {
   setupTestDatabase,
   cleanupTestDatabase,

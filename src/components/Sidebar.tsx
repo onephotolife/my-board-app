@@ -162,7 +162,7 @@ export default function Sidebar() {
             bgcolor: 'rgba(211, 47, 47, 0.04)'
           }
         }}
-      >
+        >
           ログアウト
         </Button>
       </Box>

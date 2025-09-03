@@ -19,6 +19,7 @@ import {
   Share as ShareIcon,
   Comment as CommentIcon,
 } from '@mui/icons-material';
+
 import FollowButton from './FollowButton';
 
 interface PostCardWithFollowProps {
@@ -84,7 +85,7 @@ export default function PostCardWithFollow({
   return (
     <Card sx={{ mb: 2 }}>
       <CardHeader
-        avatar={
+        avatar={(
           <Avatar
             src={authorAvatar}
             sx={{ bgcolor: 'primary.main' }}
@@ -92,8 +93,8 @@ export default function PostCardWithFollow({
           >
             {!authorAvatar && authorName[0].toUpperCase()}
           </Avatar>
-        }
-        action={
+        )}
+        action={(
           <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
             {!isCurrentUserPost && (
               <FollowButton
@@ -108,12 +109,12 @@ export default function PostCardWithFollow({
               <MoreVertIcon />
             </IconButton>
           </Box>
-        }
-        title={
+        )}
+        title={(
           <Typography variant="subtitle1" fontWeight="medium">
             {authorName}
           </Typography>
-        }
+        )}
         subheader={formatDate(createdAt)}
       />
       

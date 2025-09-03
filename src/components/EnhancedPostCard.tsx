@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { csrfFetch } from '@/hooks/useCSRF';
 import DOMPurify from 'isomorphic-dompurify';
 import {
   Card,
@@ -34,6 +33,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import CommentIcon from '@mui/icons-material/Comment';
 import { formatDistanceToNow } from 'date-fns';
 import { ja } from 'date-fns/locale';
+
+import { csrfFetch } from '@/hooks/useCSRF';
+
 import DeleteConfirmDialog from './DeleteConfirmDialog';
 
 interface Post {
@@ -464,7 +466,7 @@ export default function EnhancedPostCard({
                           </Avatar>
                         </ListItemAvatar>
                         <ListItemText
-                          primary={
+                          primary={(
                             <Box>
                               <Typography variant="body2">
                                 <span
@@ -477,8 +479,8 @@ export default function EnhancedPostCard({
                                 />
                               </Typography>
                             </Box>
-                          }
-                          secondary={
+                          )}
+                          secondary={(
                             <Typography variant="caption" color="text.secondary">
                               {comment.author?.name || comment.author?.email || '匿名'} • 
                               {formatDistanceToNow(new Date(comment.createdAt), {
@@ -486,7 +488,7 @@ export default function EnhancedPostCard({
                                 locale: ja
                               })}
                             </Typography>
-                          }
+                          )}
                         />
                         {comment.canDelete && (
                           <IconButton
@@ -511,7 +513,7 @@ export default function EnhancedPostCard({
           )}
         </Box>
       </Collapse>
-    </Card>
+      </Card>
     
     {/* 削除確認ダイアログ */}
     <DeleteConfirmDialog

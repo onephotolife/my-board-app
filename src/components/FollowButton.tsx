@@ -11,9 +11,11 @@ import {
   PersonAdd as PersonAddIcon,
   Check as CheckIcon 
 } from '@mui/icons-material';
+
 import { useSecureFetch } from '@/components/CSRFProvider';
+import type { 
+  FollowButtonPropsV1} from '@/types/mui-extensions';
 import { 
-  FollowButtonPropsV1, 
   FollowButtonPropsV2, 
   isV2Props, 
   sanitizeButtonProps,

@@ -6,8 +6,10 @@
  * GET /api/users/[userId]/follow - フォロー状態を確認
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest} from 'next/server';
+import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
+
 import dbConnect from '@/lib/mongodb';
 import User from '@/lib/models/User';
 import Follow from '@/lib/models/Follow';

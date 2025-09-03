@@ -1,9 +1,11 @@
 'use client';
 
-import { createContext, useContext, ReactNode, useEffect, useState, useRef, useCallback } from 'react';
+import type { ReactNode} from 'react';
+import { createContext, useContext, useEffect, useState, useRef, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
+
 import { CSRFTokenManager } from '@/lib/security/csrf-token-manager';
 
 // グローバル型定義（Solution 1 - Enhanced）
@@ -296,7 +298,8 @@ export function CSRFProvider({ children, initialToken }: CSRFProviderProps) {
           left: 0, 
           right: 0, 
           zIndex: 9999 
-        }}>
+        }}
+        >
           <LinearProgress />
         </Box>
         
@@ -305,7 +308,8 @@ export function CSRFProvider({ children, initialToken }: CSRFProviderProps) {
           opacity: 0.7, 
           pointerEvents: 'none',
           position: 'relative'
-        }}>
+        }}
+        >
           <CSRFContext.Provider value={{ token, header, refreshToken }}>
             {children}
           </CSRFContext.Provider>

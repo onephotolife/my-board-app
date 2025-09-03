@@ -3,9 +3,11 @@
  * 20人天才エンジニア会議による包括的なテスト
  */
 
+import crypto from 'crypto';
+
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from '@jest/globals';
 import mongoose from 'mongoose';
-import crypto from 'crypto';
+
 import { 
   generateEmailVerificationToken, 
   generateTokenExpiry,

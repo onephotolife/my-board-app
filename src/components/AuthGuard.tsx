@@ -2,7 +2,8 @@
 
 import { useSession } from 'next-auth/react';
 import { useRouter, usePathname } from 'next/navigation';
-import { useEffect, ReactNode } from 'react';
+import type { ReactNode } from 'react';
+import { useEffect } from 'react';
 import {
   Box,
   CircularProgress,

@@ -53,7 +53,7 @@ const PERFORMANCE_THRESHOLDS = {
 
 describe('【PERF-001】通知システムパフォーマンステスト', () => {
   let authToken: string;
-  let metrics: any = {
+  const metrics: any = {
     responseTimes: [],
     errors: 0,
     totalRequests: 0,

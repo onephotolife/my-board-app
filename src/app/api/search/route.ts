@@ -1,10 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest} from 'next/server';
+import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getToken } from 'next-auth/jwt';
+
 import { connectDB } from '@/lib/db/mongodb-local';
 import Post from '@/lib/models/Post';
 import User from '@/lib/models/User';
-import { createErrorResponse, AuthUser } from '@/lib/middleware/auth';
+import type { AuthUser } from '@/lib/middleware/auth';
+import { createErrorResponse } from '@/lib/middleware/auth';
 
 // 検索パラメータのバリデーション
 const searchSchema = z.object({

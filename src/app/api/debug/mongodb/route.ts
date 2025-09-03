@@ -1,6 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { connectDB, checkDBHealth } from '@/lib/db/mongodb-local';
+import type { NextRequest} from 'next/server';
+import { NextResponse } from 'next/server';
 import mongoose from 'mongoose';
+
+import { connectDB, checkDBHealth } from '@/lib/db/mongodb-local';
 
 // MongoDB詳細診断エンドポイント
 export async function GET(request: NextRequest) {

@@ -8,6 +8,7 @@
  */
 
 import { NextRequest } from 'next/server';
+
 import { GET, POST } from '@/app/api/notifications/route';
 import { DELETE } from '@/app/api/notifications/[id]/route';
 import Notification from '@/lib/models/Notification';

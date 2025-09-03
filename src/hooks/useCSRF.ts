@@ -10,7 +10,25 @@ interface CSRFData {
 }
 
 /**
- * CSRFトークンを取得・管理するカスタムフック
+ * 新CSRFシステム（csrf-token-public）からトークンを取得
+ */
+function getCSRFTokenFromCookie(): string | null {
+  if (typeof window === 'undefined') return null;
+  
+  const cookies = document.cookie.split(';');
+  for (const cookie of cookies) {
+    const [name, value] = cookie.trim().split('=');
+    if (name === 'csrf-token-public') {
+      console.log('[useCSRF] Found csrf-token-public:', value ? value.substring(0, 10) + '...' : 'null');
+      return value || null;
+    }
+  }
+  console.log('[useCSRF] csrf-token-public not found in cookies');
+  return null;
+}
+
+/**
+ * CSRFトークンを取得・管理するカスタムフック（新システム優先）
  */
 export function useCSRF(): CSRFData {
   const [token, setToken] = useState<string | null>(null);
@@ -22,37 +40,53 @@ export function useCSRF(): CSRFData {
   useEffect(() => {
     const fetchCSRFToken = async () => {
       try {
-        // CSRFトークンエンドポイントから取得
+        console.log('[useCSRF] Starting token fetch process...');
+        
+        // 優先: 新CSRFシステムのクッキーから取得
+        const cookieToken = getCSRFTokenFromCookie();
+        
+        if (cookieToken) {
+          console.log('[useCSRF] Using token from csrf-token-public cookie');
+          setToken(cookieToken);
+          setError(null);
+          return;
+        }
+        
+        console.log('[useCSRF] Cookie token not found, fetching from /api/csrf...');
+        
+        // フォールバック: /api/csrfエンドポイントから取得（新システム）
         const response = await fetch('/api/csrf', {
           method: 'GET',
           credentials: 'include',
         });
 
         if (!response.ok) {
-          throw new Error('Failed to fetch CSRF token');
+          throw new Error(`Failed to fetch CSRF token: ${response.status}`);
         }
 
         const data = await response.json();
+        console.log('[useCSRF] Fetched token from /api/csrf:', data.token ? data.token.substring(0, 10) + '...' : 'null');
         setToken(data.token);
         
-        // メタタグにも設定（互換性のため）
-        let metaTag = document.querySelector('meta[name="app-csrf-token"]');
-        if (!metaTag) {
-          metaTag = document.createElement('meta');
-          metaTag.setAttribute('name', 'app-csrf-token');
-          document.head.appendChild(metaTag);
-        }
-        metaTag.setAttribute('content', data.token);
+        // 再度クッキーを確認（APIコール後にセットされている可能性）
+        setTimeout(() => {
+          const newCookieToken = getCSRFTokenFromCookie();
+          if (newCookieToken && newCookieToken !== data.token) {
+            console.log('[useCSRF] Cookie updated after API call, using cookie token');
+            setToken(newCookieToken);
+          }
+        }, 100);
         
       } catch (err) {
-        console.error('CSRF token fetch error:', err);
+        console.error('[useCSRF] CSRF token fetch error:', err);
         setError(err instanceof Error ? err : new Error('Unknown error'));
         
-        // フォールバック: メタタグから取得を試みる
+        // 最終フォールバック: 旧システムのメタタグから取得
         const metaTag = document.querySelector('meta[name="app-csrf-token"]');
         if (metaTag) {
           const metaToken = metaTag.getAttribute('content');
           if (metaToken) {
+            console.log('[useCSRF] Using fallback meta tag token');
             setToken(metaToken);
             setError(null);
           }
@@ -74,7 +108,7 @@ export function useCSRF(): CSRFData {
 }
 
 /**
- * CSRFトークンを含むfetchラッパー
+ * CSRFトークンを含むfetchラッパー（新システム統一）
  */
 export async function csrfFetch(
   url: string,
@@ -87,25 +121,24 @@ export async function csrfFetch(
     return fetch(url, options);
   }
   
-  // まずクッキーからトークンを取得を試みる
-  let token = null;
-  const cookies = document.cookie.split(';');
-  for (const cookie of cookies) {
-    const [name, value] = cookie.trim().split('=');
-    if (name === 'csrf-token-public' || name === 'app-csrf-token') {
-      token = value;
-      break;
-    }
-  }
+  console.log(`[csrfFetch] Processing ${method} request to ${url}`);
   
-  // クッキーから取得できない場合はメタタグから取得
+  // 新CSRFシステムからトークンを取得
+  let token = getCSRFTokenFromCookie();
+  
+  // フォールバック: 旧システムのメタタグから取得
   if (!token) {
     const metaTag = document.querySelector('meta[name="app-csrf-token"]');
     token = metaTag?.getAttribute('content');
+    if (token) {
+      console.log('[csrfFetch] Using fallback meta tag token');
+    }
   }
   
   if (!token) {
-    console.warn('CSRF token not found for request:', url);
+    console.warn('[csrfFetch] CSRF token not found for request:', url);
+  } else {
+    console.log('[csrfFetch] Using token:', token.substring(0, 10) + '...');
   }
   
   // ヘッダーにCSRFトークンを追加
@@ -122,18 +155,32 @@ export async function csrfFetch(
 }
 
 /**
- * フォーム送信用のCSRFトークン付きデータ
+ * フォーム送信用のCSRFトークン付きデータ（新システム統一）
  */
 export function appendCSRFToken(formData: FormData | Record<string, any>): FormData | Record<string, any> {
-  const metaTag = document.querySelector('meta[name="app-csrf-token"]');
-  const token = metaTag?.getAttribute('content');
+  console.log('[appendCSRFToken] Processing form data...');
+  
+  // 新CSRFシステムからトークンを取得
+  let token = getCSRFTokenFromCookie();
+  
+  // フォールバック: 旧システムのメタタグから取得
+  if (!token) {
+    const metaTag = document.querySelector('meta[name="app-csrf-token"]');
+    token = metaTag?.getAttribute('content');
+    if (token) {
+      console.log('[appendCSRFToken] Using fallback meta tag token');
+    }
+  }
   
   if (token) {
+    console.log('[appendCSRFToken] Appending token:', token.substring(0, 10) + '...');
     if (formData instanceof FormData) {
-      formData.append('app-csrf-token', token);
+      formData.append('csrf-token', token);
     } else {
-      return { ...formData, 'app-csrf-token': token };
+      return { ...formData, 'csrf-token': token };
     }
+  } else {
+    console.warn('[appendCSRFToken] CSRF token not found');
   }
   
   return formData;

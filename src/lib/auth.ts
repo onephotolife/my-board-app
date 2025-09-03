@@ -1,7 +1,8 @@
-import NextAuth, { AuthOptions, Session, User } from "next-auth";
+import type { AuthOptions, Session, User } from "next-auth";
+import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import { JWT } from "next-auth/jwt";
+import type { JWT } from "next-auth/jwt";
 
 import { connectDB } from "@/lib/db/mongodb-local";
 import UserModel from "@/lib/models/User";

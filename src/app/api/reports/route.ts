@@ -1,10 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest} from 'next/server';
+import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getToken } from 'next-auth/jwt';
+
 import { connectDB } from '@/lib/db/mongodb-local';
 import Report from '@/lib/models/Report';
 import Post from '@/lib/models/Post';
-import { createErrorResponse, AuthUser } from '@/lib/middleware/auth';
+import type { AuthUser } from '@/lib/middleware/auth';
+import { createErrorResponse } from '@/lib/middleware/auth';
 import { broadcastEvent } from '@/lib/socket/socket-manager';
 
 // バリデーションスキーマ

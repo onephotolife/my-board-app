@@ -35,6 +35,7 @@ import {
   Article as ArticleIcon,
   Timeline as TimelineIcon,
 } from '@mui/icons-material';
+
 import NotificationBell from './NotificationBell';
 
 interface AppLayoutProps {

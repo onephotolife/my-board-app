@@ -1,7 +1,9 @@
-import { Server as HTTPServer } from 'http';
+import type { Server as HTTPServer } from 'http';
+import { parse } from 'url';
+
 import { Server as SocketIOServer } from 'socket.io';
 import { getToken } from 'next-auth/jwt';
-import { parse } from 'url';
+
 import { connectDB } from '@/lib/db/mongodb-local';
 import Post from '@/lib/models/Post';
 

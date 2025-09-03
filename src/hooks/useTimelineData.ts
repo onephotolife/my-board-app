@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
+
 import { useSecureFetch } from '@/components/CSRFProvider';
 
 export interface TimelinePost {

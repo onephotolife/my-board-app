@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useCSRFContext } from '@/components/CSRFProvider';
 import {
   Box,
   Container,
@@ -27,6 +26,8 @@ import {
   ThumbUp as ThumbUpIcon,
   PostAdd as PostAddIcon
 } from '@mui/icons-material';
+
+import { useCSRFContext } from '@/components/CSRFProvider';
 import AppLayout from '@/components/AppLayout';
 
 interface Post {
@@ -131,7 +132,8 @@ export default function MyPostsPage() {
         alignItems: 'center', 
         minHeight: '100vh',
         pt: { xs: 8, md: 0 }  // モバイル時はAppBarの高さ分のpadding-topを追加（64px）
-      }}>
+      }}
+      >
         <CircularProgress />
       </Box>
     );

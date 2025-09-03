@@ -7,6 +7,7 @@ import Link from 'next/link';
 
 import { modern2025Styles } from '@/styles/modern-2025';
 import { getAuthErrorMessage } from '@/lib/auth-errors';
+
 import { DebugClient } from './debug-client';
 
 function SignInForm() {
@@ -289,7 +290,8 @@ function SignInForm() {
               color: '#1e40af',
               padding: '12px 16px',
               borderRadius: '8px'
-            }}>
+            }}
+            >
               {infoMessage}
             </div>
           )}

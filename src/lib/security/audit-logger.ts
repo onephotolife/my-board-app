@@ -4,6 +4,7 @@
  */
 
 import mongoose from 'mongoose';
+
 import { AuditLog } from './audit-log';
 
 export enum AuditEvent {

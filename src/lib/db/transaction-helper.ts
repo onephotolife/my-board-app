@@ -1,4 +1,5 @@
-import mongoose, { ClientSession } from 'mongoose';
+import type { ClientSession } from 'mongoose';
+import mongoose from 'mongoose';
 
 /**
  * Execute a database operation with optional transaction support

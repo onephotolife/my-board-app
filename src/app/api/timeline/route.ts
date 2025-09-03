@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest} from 'next/server';
+import { NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import { z } from 'zod';
 
@@ -6,7 +7,8 @@ import { connectDB } from '@/lib/db/mongodb-local';
 import Post from '@/lib/models/Post';
 import User from '@/lib/models/User';
 import Follow from '@/lib/models/Follow';
-import { createErrorResponse, AuthUser } from '@/lib/middleware/auth';
+import type { AuthUser } from '@/lib/middleware/auth';
+import { createErrorResponse } from '@/lib/middleware/auth';
 import { normalizePostDocuments } from '@/lib/api/post-normalizer';
 import { postFilterSchema } from '@/lib/validations/post';
 

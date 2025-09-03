@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
+
 import type { Notification } from '@/types/sns';
 
 interface UseNotificationsReturn {

@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest} from 'next/server';
+import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { generateEmailVerificationToken, generateTokenExpiry } from '@/lib/utils/token-generator';
 
+import { generateEmailVerificationToken, generateTokenExpiry } from '@/lib/utils/token-generator';
 import { connectDB } from '@/lib/db/mongodb-local';
 import User from '@/lib/models/User';
 import { getEmailService } from '@/lib/email/mailer-fixed';

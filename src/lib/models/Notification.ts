@@ -1,4 +1,6 @@
-import mongoose, { Schema, Document, Model } from 'mongoose';
+import type { Document, Model } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
+
 const DOMPurifyImp = require('isomorphic-dompurify');
 const DOMPurify = DOMPurifyImp.default || DOMPurifyImp;
 

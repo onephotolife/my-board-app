@@ -2,9 +2,10 @@
 
 import React from 'react';
 import { Box, Typography, Chip, Paper, Stack, Alert, CircularProgress } from '@mui/material';
-import { useSNSFeatures } from '@/hooks/sns/useSNSFeatures';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
+
+import { useSNSFeatures } from '@/hooks/sns/useSNSFeatures';
 
 export default function SNSFeatureTest() {
   const { 

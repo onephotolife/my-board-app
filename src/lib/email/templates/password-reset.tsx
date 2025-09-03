@@ -8,7 +8,7 @@ import {
   Section,
 } from '@react-email/components';
 
-import { EmailTemplateData } from '@/types/email';
+import type { EmailTemplateData } from '@/types/email';
 
 import { templateConfig } from '../config';
 

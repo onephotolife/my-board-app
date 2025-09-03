@@ -3,8 +3,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, usePathname } from 'next/navigation';
-import AppLayout from '@/components/AppLayout';
-import { isValidObjectId, filterValidObjectIds } from '@/lib/validators/objectId'; // SOL-1: 統合版バリデーターへ移行
 import {
   Container,
   Typography,
@@ -47,13 +45,17 @@ import {
 } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
+
+import { isValidObjectId, filterValidObjectIds } from '@/lib/validators/objectId'; // SOL-1: 統合版バリデーターへ移行
+import AppLayout from '@/components/AppLayout';
 import RealtimeBoardWrapper from '@/components/RealtimeBoardWrapper';
 // import ReportButton from '@/components/ReportButton'; // 通報ボタンを削除
 import { useSocket } from '@/lib/socket/client';
 import { modern2025Styles } from '@/styles/modern-2025';
 import { useCSRFContext, useSecureFetch } from '@/components/CSRFProvider';
 import FollowButton from '@/components/FollowButton';
-import { UnifiedPost, normalizePostToUnified, deduplicatePosts } from '@/types/post';
+import type { UnifiedPost} from '@/types/post';
+import { normalizePostToUnified, deduplicatePosts } from '@/types/post';
 
 export default function RealtimeBoard() {
   const router = useRouter();
@@ -591,7 +593,8 @@ export default function RealtimeBoard() {
         <Container maxWidth="lg" sx={{ 
           py: { xs: 2, md: 4 },
           px: { xs: 2, sm: 3, md: 4 }
-        }}>
+        }}
+        >
         <Box sx={{ mb: 4 }}>
           <Typography 
             variant="h4" 
@@ -878,7 +881,7 @@ export default function RealtimeBoard() {
             </Grid>
           </Grid>
         </Paper>
-      </Box>
+        </Box>
 
       {error && (
         <Alert severity="error" sx={{ mb: 3 }}>
@@ -1142,7 +1145,7 @@ export default function RealtimeBoard() {
         </Box>
       )}
       
-      </Container>
+        </Container>
       </RealtimeBoardWrapper>
     </AppLayout>
   );

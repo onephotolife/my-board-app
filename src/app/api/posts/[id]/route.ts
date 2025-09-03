@@ -1,13 +1,16 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest} from 'next/server';
+import { NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import { z } from 'zod';
 
 import { connectDB } from '@/lib/db/mongodb-local';
 import Post from '@/lib/models/Post';
-import { checkPostOwnership, createErrorResponse, AuthUser } from '@/lib/middleware/auth';
+import type { AuthUser } from '@/lib/middleware/auth';
+import { checkPostOwnership, createErrorResponse } from '@/lib/middleware/auth';
 import { updatePostSchema, formatValidationErrors } from '@/lib/validations/post';
 import { broadcastEvent } from '@/lib/socket/socket-manager';
 import { verifyCSRFToken } from '@/lib/security/csrf';
+import { normalizePostDocument } from '@/lib/api/post-normalizer';
 
 // 認証チェックヘルパー
 async function getAuthenticatedUser(req: NextRequest): Promise<AuthUser | null> {
@@ -160,15 +163,18 @@ export async function PUT(
       return createErrorResponse('投稿の更新に失敗しました', 500, 'UPDATE_ERROR');
     }
     
+    // 正規化（UnifiedPost形式に変換）
+    const normalizedPost = normalizePostDocument(updatedPost.toObject(), user.id);
+    
     // Socket.ioで投稿更新をブロードキャスト
     broadcastEvent('post:updated', {
-      post: updatedPost.toJSON(),
+      post: normalizedPost,
       author: user,
     });
     
     return NextResponse.json({
       success: true,
-      data: updatedPost,
+      data: normalizedPost,
       message: '投稿が更新されました',
     });
   } catch (error) {

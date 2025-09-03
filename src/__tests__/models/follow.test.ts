@@ -10,7 +10,9 @@
 
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import User, { IUser } from '@/lib/models/User';
+
+import type { IUser } from '@/lib/models/User';
+import User from '@/lib/models/User';
 import Follow from '@/lib/models/Follow';
 
 let mongoServer: MongoMemoryServer;
@@ -288,7 +290,7 @@ describe('フォロー機能テスト', () => {
       await userB.follow(userA._id.toString());
       
       // 相互フォロー状態を確認
-      let followAtoB = await Follow.findOne({
+      const followAtoB = await Follow.findOne({
         follower: userA._id,
         following: userB._id,
       });

@@ -7,14 +7,16 @@
  * - Password: ?@thc123THC@?
  */
 
-import { chromium, Browser, BrowserContext, Page } from 'playwright';
+import type { Browser, BrowserContext, Page } from 'playwright';
+import { chromium } from 'playwright';
 import mongoose from 'mongoose';
+import * as socketIO from 'socket.io-client';
+
 import { connectDB } from '@/lib/db/mongodb-local';
 import Post from '@/lib/models/Post';
 import Comment from '@/lib/models/Comment';
 import Notification from '@/lib/models/Notification';
 import User from '@/lib/models/User';
-import * as socketIO from 'socket.io-client';
 
 // デバッグログ設定
 const DEBUG = true;

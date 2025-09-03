@@ -4,6 +4,7 @@
  */
 
 import { NextRequest } from 'next/server';
+
 import User from '@/lib/models/User';
 
 // データベースとメールサービスのモック

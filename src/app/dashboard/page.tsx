@@ -40,6 +40,7 @@ import {
   CheckCircle as CheckCircleIcon
 } from '@mui/icons-material';
 import { signOut } from 'next-auth/react';
+
 import AppLayout from '@/components/AppLayout';
 
 // 日付フォーマット関数（メンバー歴は日数で表示）

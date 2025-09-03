@@ -7,7 +7,7 @@ import Divider from '@mui/material/Divider';
 import Skeleton from '@mui/material/Skeleton';
 import dynamic from 'next/dynamic';
 
-import { UnifiedPost } from '@/types/post';
+import type { UnifiedPost } from '@/types/post';
 
 // PostItemを動的インポート
 const PostItem = dynamic(() => import('./PostItem'), {

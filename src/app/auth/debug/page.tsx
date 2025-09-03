@@ -76,7 +76,8 @@ export default function AuthDebugPage() {
           status,
           session,
           timestamp: new Date().toISOString()
-        }, null, 2)}</pre>
+        }, null, 2)}
+        </pre>
       </div>
       
       <div style={{ background: '#f5f5f5', padding: '15px', marginBottom: '20px' }}>
@@ -107,7 +108,8 @@ export default function AuthDebugPage() {
                 borderBottom: '1px solid #ddd', 
                 padding: '10px',
                 background: log.message?.includes('INFINITE LOOP') ? '#ffcccc' : 'white'
-              }}>
+              }}
+              >
                 <div style={{ color: '#666', fontSize: '12px' }}>
                   {log.timestamp}
                 </div>
@@ -133,7 +135,8 @@ export default function AuthDebugPage() {
           protocol: typeof window !== 'undefined' ? window.location.protocol : '',
           userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
           nodeEnv: process.env.NODE_ENV
-        }, null, 2)}</pre>
+        }, null, 2)}
+        </pre>
       </div>
     </div>
   );

@@ -1,4 +1,3 @@
-import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import {
   Box,
@@ -13,8 +12,11 @@ import {
   ArrowBack as ArrowBackIcon,
   Security as SecurityIcon
 } from '@mui/icons-material';
-import PasswordChangeForm from './PasswordChangeForm';
 import Link from 'next/link';
+
+import { auth } from '@/lib/auth';
+
+import PasswordChangeForm from './PasswordChangeForm';
 
 export default async function ChangePasswordPage() {
   // サーバー側で認証チェック

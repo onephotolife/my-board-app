@@ -1,5 +1,6 @@
+import type { Server as HTTPServer } from 'http';
+
 import { Server as SocketIOServer } from 'socket.io';
-import { Server as HTTPServer } from 'http';
 
 declare global {
   var io: SocketIOServer | undefined;

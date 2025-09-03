@@ -1,5 +1,6 @@
 // Email configuration
-import { EmailConfig, EmailError, EmailErrorType } from '@/types/email';
+import type { EmailConfig} from '@/types/email';
+import { EmailError, EmailErrorType } from '@/types/email';
 
 // Validate environment variables
 function validateEmailConfig(): void {

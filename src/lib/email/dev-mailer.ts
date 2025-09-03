@@ -3,9 +3,10 @@
  * コンソールにメール内容を出力する
  */
 
-import { 
+import type { 
   EmailOptions, 
-  EmailSendResult,
+  EmailSendResult} from '@/types/email';
+import {
   EmailTemplateData 
 } from '@/types/email';
 

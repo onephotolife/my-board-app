@@ -32,6 +32,7 @@ import {
 import { useSession } from 'next-auth/react';
 import { formatDistanceToNow } from 'date-fns';
 import { ja } from 'date-fns/locale';
+
 import type { Notification } from '@/types/sns';
 
 export default function NotificationBell() {
@@ -356,7 +357,7 @@ export default function NotificationBell() {
                       </Avatar>
                     </ListItemAvatar>
                     <ListItemText
-                      primary={
+                      primary={(
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                           <Typography variant="body2" component="span">
                             {notification.message}
@@ -372,8 +373,8 @@ export default function NotificationBell() {
                             />
                           )}
                         </Box>
-                      }
-                      secondary={
+                      )}
+                      secondary={(
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
                           <Typography variant="caption" color="text.secondary">
                             {formatDistanceToNow(new Date(notification.createdAt), {
@@ -387,7 +388,7 @@ export default function NotificationBell() {
                             />
                           )}
                         </Box>
-                      }
+                      )}
                     />
                   </ListItem>
                   {index < notifications.length - 1 && (

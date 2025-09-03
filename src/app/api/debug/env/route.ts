@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest} from 'next/server';
+import { NextResponse } from 'next/server';
 
 // 環境変数デバッグエンドポイント（本番環境診断用）
 export async function GET(request: NextRequest) {

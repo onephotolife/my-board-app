@@ -1,14 +1,16 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest} from 'next/server';
+import { NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import { z } from 'zod';
 
 import { connectDB } from '@/lib/db/mongodb-local';
 import User from '@/lib/models/User';
 import ResendHistory from '@/lib/models/ResendHistory';
+import type { 
+  AuthSuccessResponse} from '@/lib/errors/auth-errors';
 import { 
   AuthError, 
-  AuthErrorCode, 
-  AuthSuccessResponse,
+  AuthErrorCode,
   AUTH_ERROR_MESSAGES 
 } from '@/lib/errors/auth-errors';
 import { generateEmailVerificationToken } from '@/lib/auth/tokens';

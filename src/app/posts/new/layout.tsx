@@ -1,5 +1,6 @@
-import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
+
+import { auth } from '@/lib/auth';
 
 /**
  * 投稿作成保護レイアウト

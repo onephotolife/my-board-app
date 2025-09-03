@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useParams } from 'next/navigation';
-import { useCSRFContext } from '@/components/CSRFProvider';
 import {
   Box,
   Container,
@@ -36,6 +35,8 @@ import {
   Link as LinkIcon,
   Delete as DeleteIcon
 } from '@mui/icons-material';
+
+import { useCSRFContext } from '@/components/CSRFProvider';
 
 // カテゴリー定数
 const CATEGORIES = {
@@ -537,9 +538,9 @@ export default function EditPostPage() {
                     background: saving ? 'grey.400' : 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
                     color: 'white'
                   }}
-                >
+              >
                   {saving ? '更新中...' : '更新'}
-                </Button>
+              </Button>
             </Box>
           </form>
         </Paper>

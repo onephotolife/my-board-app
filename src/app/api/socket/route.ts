@@ -1,6 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest} from 'next/server';
+import { NextResponse } from 'next/server';
 import { Server as SocketIOServer } from 'socket.io';
 import { getToken } from 'next-auth/jwt';
+
 import { connectDB } from '@/lib/db/mongodb-local';
 import Post from '@/lib/models/Post';
 

@@ -11,7 +11,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 
 import { CanEdit, CanDelete } from '@/components/permissions/PermissionGate';
-import { UnifiedPost } from '@/types/post';
+import type { UnifiedPost } from '@/types/post';
 
 interface PostItemProps {
   post: UnifiedPost;

@@ -1,8 +1,11 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, ReactNode } from 'react';
+import type { ReactNode } from 'react';
+import React, { createContext, useContext, useEffect } from 'react';
+import type { Socket } from 'socket.io-client';
+import { io } from 'socket.io-client';
+
 import { useSNSStore } from '@/store/sns-store';
-import { io, Socket } from 'socket.io-client';
 import type { SNSPost, Notification, PostEngagement } from '@/types/sns';
 
 interface SNSContextValue {

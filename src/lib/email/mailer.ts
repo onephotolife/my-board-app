@@ -1,13 +1,15 @@
 // Email service using Nodemailer
-import nodemailer, { Transporter } from 'nodemailer';
+import type { Transporter } from 'nodemailer';
+import nodemailer from 'nodemailer';
 import { render } from '@react-email/render';
 
-import {
+import type {
   EmailOptions,
   EmailSendResult,
+  EmailTemplateData} from '@/types/email';
+import {
   EmailError,
-  EmailErrorType,
-  EmailTemplateData,
+  EmailErrorType
 } from '@/types/email';
 
 import { getEmailConfig, emailAppConfig, rateLimitConfig } from './config';

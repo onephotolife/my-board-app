@@ -7,7 +7,8 @@ import Link from 'next/link';
 
 import { modern2025Styles } from '@/styles/modern-2025';
 import PasswordStrengthIndicator from '@/components/PasswordStrengthIndicator';
-import { PasswordStrengthResult, PasswordStrength } from '@/lib/utils/password-validation';
+import type { PasswordStrengthResult} from '@/lib/utils/password-validation';
+import { PasswordStrength } from '@/lib/utils/password-validation';
 
 interface FormData {
   name: string;

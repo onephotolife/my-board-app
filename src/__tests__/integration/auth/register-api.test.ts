@@ -4,8 +4,10 @@
  */
 
 import { createMocks } from 'node-mocks-http';
+
 import { POST } from '@/app/api/auth/register/route';
 import User from '@/lib/models/User';
+
 import {
   setupTestDatabase,
   cleanupTestDatabase,

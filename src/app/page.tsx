@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
+
 // Material-UIコンポーネントを動的インポートに変更
 import { Container, CircularProgress, Box } from '@/components/LazyMUI';
-
 import { modern2025Styles } from '@/styles/modern-2025';
 import WelcomeSection from '@/components/WelcomeSection';
 import AuthButtons from '@/components/HomePage/AuthButtons';

@@ -1,4 +1,5 @@
-import mongoose, { Schema, Document, Types } from 'mongoose';
+import type { Document, Types } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
 /**
  * 統一されたPost Interfaceと Schema定義
@@ -74,9 +75,6 @@ const PostSchema = new Schema<IPost>(
       type: String,
       trim: true,
       maxlength: [30, 'タグは30文字以内にしてください']
-    }]
-      ref: 'User',
-      default: []
     }]
   },
   {

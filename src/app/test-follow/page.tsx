@@ -24,6 +24,7 @@ import {
   Info as InfoIcon,
   Warning as WarningIcon,
 } from '@mui/icons-material';
+
 import FollowButton from '@/components/FollowButton';
 
 // 有効なMongoDBのObjectID（24文字の16進数）を使用

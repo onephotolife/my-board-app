@@ -1,9 +1,9 @@
 'use client';
 
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 import { usePermissions } from '@/contexts/PermissionContext';
-import { Permission } from '@/lib/permissions/types';
+import type { Permission } from '@/lib/permissions/types';
 
 interface PermissionGateProps {
   children: ReactNode;

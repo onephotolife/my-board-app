@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useParams } from 'next/navigation';
-import { useCSRFContext } from '@/components/CSRFProvider';
 import {
   Box,
   Container,
@@ -37,6 +36,8 @@ import {
   Visibility as VisibilityIcon,
   MoreVert as MoreVertIcon
 } from '@mui/icons-material';
+
+import { useCSRFContext } from '@/components/CSRFProvider';
 
 interface Post {
   _id: string;

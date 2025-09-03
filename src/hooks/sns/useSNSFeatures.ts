@@ -1,6 +1,7 @@
 import { useEffect, useCallback } from 'react';
-import { useSNSStore } from '@/store/sns-store';
 import { useSession } from 'next-auth/react';
+
+import { useSNSStore } from '@/store/sns-store';
 import type { UserProfile } from '@/types/sns';
 
 export function useSNSFeatures() {

@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { useSocket, useRealtimeUpdates } from '@/lib/socket/client';
 import { Alert, Snackbar, Chip, Box } from '@mui/material';
 import { WifiTethering, WifiTetheringOff } from '@mui/icons-material';
+
+import { useSocket, useRealtimeUpdates } from '@/lib/socket/client';
 
 interface RealtimeBoardWrapperProps {
   children: React.ReactNode;

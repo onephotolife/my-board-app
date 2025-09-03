@@ -4,8 +4,8 @@
  * STRICT120準拠
  */
 
-import { ButtonProps as MuiButtonProps } from '@mui/material/Button';
-import { SxProps, Theme } from '@mui/material/styles';
+import type { ButtonProps as MuiButtonProps } from '@mui/material/Button';
+import type { SxProps, Theme } from '@mui/material/styles';
 
 /**
  * HTML属性として無効なprops

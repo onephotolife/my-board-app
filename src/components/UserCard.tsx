@@ -11,6 +11,7 @@ import {
   Chip,
   Stack,
 } from '@mui/material';
+
 import FollowButton from './FollowButton';
 
 interface UserCardProps {
@@ -54,7 +55,7 @@ export default function UserCard({
   return (
     <Card sx={{ height: '100%' }}>
       <CardHeader
-        avatar={
+        avatar={(
           <Avatar
             src={avatar}
             sx={{ 
@@ -66,7 +67,7 @@ export default function UserCard({
           >
             {!avatar && getInitials(name)}
           </Avatar>
-        }
+        )}
         action={
           showFollowButton && !isCurrentUser && (
             <FollowButton
@@ -76,7 +77,7 @@ export default function UserCard({
             />
           )
         }
-        title={
+        title={(
           <Typography variant="h6" component="div">
             {name}
             {isCurrentUser && (
@@ -88,7 +89,7 @@ export default function UserCard({
               />
             )}
           </Typography>
-        }
+        )}
         subheader={email}
       />
       

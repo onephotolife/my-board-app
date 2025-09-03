@@ -3,7 +3,8 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 
-import { UserRole, Permission, UserPermissions } from '@/lib/permissions/types';
+import type { Permission, UserPermissions } from '@/lib/permissions/types';
+import { UserRole } from '@/lib/permissions/types';
 import { 
   canEditPost, 
   canDeletePost, 

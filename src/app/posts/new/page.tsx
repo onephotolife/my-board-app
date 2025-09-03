@@ -26,6 +26,7 @@ import {
   Send as SendIcon,
   Cancel as CancelIcon
 } from '@mui/icons-material';
+
 import AppLayout from '@/components/AppLayout';
 import { csrfFetch } from '@/hooks/useCSRF';
 
@@ -157,7 +158,8 @@ export default function NewPostPage() {
       <Box sx={{ 
         py: { xs: 2, md: 4 },
         px: { xs: 2, sm: 3, md: 4 }
-      }}>
+      }}
+      >
         <Container maxWidth="md">
           {/* ヘッダー */}
           <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>

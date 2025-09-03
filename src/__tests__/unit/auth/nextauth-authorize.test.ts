@@ -3,9 +3,10 @@
  * 認証ロジックのテスト
  */
 
+import bcrypt from 'bcryptjs';
+
 import { authConfig } from '@/lib/auth.config';
 import User from '@/lib/models/User';
-import bcrypt from 'bcryptjs';
 
 // bcryptのモック
 jest.mock('bcryptjs');

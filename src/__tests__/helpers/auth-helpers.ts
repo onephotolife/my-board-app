@@ -1,8 +1,9 @@
-import { NextAuthConfig } from 'next-auth';
+import type { NextAuthConfig } from 'next-auth';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
+
 import User from '@/lib/models/User';
 
 /**

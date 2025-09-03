@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 
-import { checkPasswordStrength, getStrengthLabel, getStrengthColor, PasswordStrength, PasswordStrengthResult } from '@/lib/utils/password-validation';
+import type { PasswordStrengthResult } from '@/lib/utils/password-validation';
+import { checkPasswordStrength, getStrengthLabel, getStrengthColor, PasswordStrength } from '@/lib/utils/password-validation';
 
 interface PasswordStrengthIndicatorProps {
   password: string;

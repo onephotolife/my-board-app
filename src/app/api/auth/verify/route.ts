@@ -1,11 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest} from 'next/server';
+import { NextResponse } from 'next/server';
 
 import { connectDB } from '@/lib/db/mongodb-local';
 import User from '@/lib/models/User';
+import type { 
+  AuthSuccessResponse} from '@/lib/errors/auth-errors';
 import { 
   AuthError, 
-  AuthErrorCode, 
-  AuthSuccessResponse,
+  AuthErrorCode,
   AUTH_ERROR_MESSAGES 
 } from '@/lib/errors/auth-errors';
 import { isTokenValid } from '@/lib/auth/tokens';

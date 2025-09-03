@@ -3,7 +3,8 @@
  * Double Submit Cookie方式の実装
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest} from 'next/server';
+import { NextResponse } from 'next/server';
 
 export class CSRFProtection {
   private static readonly TOKEN_LENGTH = 32;

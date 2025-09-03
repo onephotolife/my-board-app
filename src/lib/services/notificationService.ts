@@ -1,7 +1,10 @@
 import mongoose from 'mongoose';
+
 const DOMPurifyImp = require('isomorphic-dompurify');
+
 const DOMPurify = DOMPurifyImp.default || DOMPurifyImp;
-import Notification, { INotification } from '@/lib/models/Notification';
+import type { INotification } from '@/lib/models/Notification';
+import Notification from '@/lib/models/Notification';
 import { broadcastEvent } from '@/lib/socket/socket-manager';
 
 // 通知作成のインターフェース

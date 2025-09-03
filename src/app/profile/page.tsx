@@ -23,6 +23,7 @@ import {
   Save as SaveIcon,
   Cancel as CancelIcon
 } from '@mui/icons-material';
+
 import AppLayout from '@/components/AppLayout';
 
 export default function ProfilePage() {
@@ -102,7 +103,8 @@ export default function ProfilePage() {
         alignItems: 'center', 
         justifyContent: 'center',
         pt: { xs: 8, md: 0 }
-      }}>
+      }}
+      >
         <CircularProgress />
       </Box>
     );
@@ -275,7 +277,7 @@ export default function ProfilePage() {
               </Stack>
             </CardContent>
           </Card>
-        </Container>
+      </Container>
     </AppLayout>
   );
 }

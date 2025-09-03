@@ -8,6 +8,7 @@
  */
 
 import mongoose from 'mongoose';
+
 import Notification, { INotification } from '@/lib/models/Notification';
 import { connectDB } from '@/lib/db/mongodb-local';
 

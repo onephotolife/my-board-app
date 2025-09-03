@@ -1,9 +1,11 @@
+import type { 
+  PermissionCheck,
+  UserPermissions 
+} from './types';
 import { 
   UserRole, 
   Permission, 
-  ROLE_PERMISSIONS, 
-  PermissionCheck,
-  UserPermissions 
+  ROLE_PERMISSIONS 
 } from './types';
 
 /**

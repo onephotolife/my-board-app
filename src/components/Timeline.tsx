@@ -34,6 +34,7 @@ import {
 } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
+
 import { useSocket } from '@/lib/socket/client';
 import { useCSRFContext, useSecureFetch } from '@/components/CSRFProvider';
 import FollowButton from '@/components/FollowButton';

@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+
 import { DatabaseConnectionManager } from '../connection-manager';
 
 describe('DatabaseConnectionManager - Null Safety Test', () => {

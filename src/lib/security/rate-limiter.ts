@@ -1,5 +1,5 @@
 import { LRUCache } from 'lru-cache';
-import { NextRequest } from 'next/server';
+import type { NextRequest } from 'next/server';
 
 interface RateLimitConfig {
   windowMs: number;       // 時間窓（ミリ秒）

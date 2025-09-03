@@ -1,4 +1,5 @@
-import { NextRequest } from 'next/server';
+import type { NextRequest } from 'next/server';
+
 import { handleCSRFTokenGeneration } from '@/lib/security/csrf-middleware';
 
 /**

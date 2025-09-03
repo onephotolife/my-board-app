@@ -3,9 +3,10 @@
  * テスト専門家による網羅的なテストケース
  */
 
+import type { 
+  ErrorType} from '@/lib/utils/errorMessages';
 import { 
   ERROR_MESSAGES, 
-  ErrorType, 
   createDetailedError,
   getErrorMessage,
   shouldLogError,

@@ -1,6 +1,7 @@
+import { Box, Typography, Container } from '@mui/material';
+
 import SNSFeatureTest from '@/components/SNSFeatureTest';
 import SNSIntegrationTest from '@/components/SNSIntegrationTest';
-import { Box, Typography, Container } from '@mui/material';
 
 export default function TestSNSPage() {
   return (

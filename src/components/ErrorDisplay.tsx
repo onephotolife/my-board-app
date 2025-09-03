@@ -13,7 +13,8 @@
 
 import React, { useState, useEffect } from 'react';
 
-import { ERROR_MESSAGES, ErrorType, ErrorDetails, DetailedError } from '@/lib/utils/errorMessages';
+import type { ErrorType} from '@/lib/utils/errorMessages';
+import { ERROR_MESSAGES, ErrorDetails, DetailedError } from '@/lib/utils/errorMessages';
 import { modern2025Styles } from '@/styles/modern-2025';
 
 export interface ErrorDisplayProps {

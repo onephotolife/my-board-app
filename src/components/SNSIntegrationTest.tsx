@@ -16,15 +16,16 @@ import {
   Chip,
   Grid 
 } from '@mui/material';
-import { useSNSContext } from '@/contexts/SNSContext.v2';
-import { useTimelineQuery, useLikeMutation, useNotificationsQuery } from '@/hooks/sns/useReactQuerySNS';
-import { useSNSStore } from '@/store/sns-store';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
 import PendingIcon from '@mui/icons-material/Pending';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+
+import { useSNSStore } from '@/store/sns-store';
+import { useTimelineQuery, useLikeMutation, useNotificationsQuery } from '@/hooks/sns/useReactQuerySNS';
+import { useSNSContext } from '@/contexts/SNSContext.v2';
 
 export default function SNSIntegrationTest() {
   const { isConnected, connectionStatus, connect, disconnect } = useSNSContext();
@@ -204,7 +205,7 @@ export default function SNSIntegrationTest() {
           {Object.entries(testResults).map(([key, status]) => (
             <ListItem key={key}>
               <ListItemText
-                primary={
+                primary={(
                   <Stack direction="row" spacing={1} alignItems="center">
                     {getStatusIcon(status)}
                     <Typography>{key.toUpperCase()}</Typography>
@@ -215,7 +216,7 @@ export default function SNSIntegrationTest() {
                       variant="outlined"
                     />
                   </Stack>
-                }
+                )}
               />
             </ListItem>
           ))}
@@ -244,7 +245,7 @@ export default function SNSIntegrationTest() {
                   <ListItem>
                     <ListItemText
                       primary={post.content}
-                      secondary={
+                      secondary={(
                         <Stack direction="row" spacing={1} alignItems="center">
                           <Typography variant="caption">
                             {new Date(post.createdAt).toLocaleString('ja-JP')}
@@ -258,7 +259,7 @@ export default function SNSIntegrationTest() {
                             {post.engagement.likes}
                           </Button>
                         </Stack>
-                      }
+                      )}
                     />
                   </ListItem>
                   <Divider />
@@ -302,7 +303,7 @@ export default function SNSIntegrationTest() {
                   <ListItem>
                     <ListItemText
                       primary={notification.message}
-                      secondary={
+                      secondary={(
                         <Stack direction="row" spacing={1} alignItems="center">
                           <Chip
                             label={notification.type}
@@ -313,7 +314,7 @@ export default function SNSIntegrationTest() {
                             {new Date(notification.createdAt).toLocaleString('ja-JP')}
                           </Typography>
                         </Stack>
-                      }
+                      )}
                     />
                   </ListItem>
                   <Divider />

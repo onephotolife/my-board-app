@@ -4,7 +4,7 @@
  * 必要なAPIリクエストを並列実行します
  */
 
-import { Session } from 'next-auth';
+import type { Session } from 'next-auth';
 
 export interface InitialData {
   userProfile: any | null;

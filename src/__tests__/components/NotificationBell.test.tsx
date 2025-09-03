@@ -1,8 +1,10 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import NotificationBell from '@/components/NotificationBell';
 import { useSession } from 'next-auth/react';
+
+import NotificationBell from '@/components/NotificationBell';
+
 import '@testing-library/jest-dom';
 import { 
   waitForPopover, 

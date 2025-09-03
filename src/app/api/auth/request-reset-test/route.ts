@@ -1,5 +1,6 @@
 // Test endpoint that returns the reset URL directly
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest} from 'next/server';
+import { NextResponse } from 'next/server';
 
 import dbConnect from '@/lib/mongodb';
 import User from '@/lib/models/User';

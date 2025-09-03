@@ -4,8 +4,9 @@
  */
 
 import { NextRequest } from 'next/server';
-import { GET, POST, DELETE } from '@/app/api/users/[userId]/follow/route';
 import { getServerSession } from 'next-auth';
+
+import { GET, POST, DELETE } from '@/app/api/users/[userId]/follow/route';
 import dbConnect from '@/lib/mongodb';
 
 // モック

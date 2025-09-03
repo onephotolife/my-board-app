@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest} from 'next/server';
+import { NextResponse } from 'next/server';
 
 import { auth } from '@/lib/auth';
 import { getUnifiedSession, getUserFromSession } from '@/lib/auth/session-helper';
@@ -8,7 +9,8 @@ import connectDB from '@/lib/mongodb';
 import { checkPermissionWithCache } from '@/lib/cache/permission-cache';
 
 import { canPerformAction, hasPermission } from './utils';
-import { UserRole, Permission } from './types';
+import type { Permission } from './types';
+import { UserRole } from './types';
 
 /**
  * 認証チェック（統合セッションヘルパー使用）

@@ -7,8 +7,10 @@
  * 優先度2解決策: フォローAPI前のユーザー存在確認によるUX向上
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest} from 'next/server';
+import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
+
 import dbConnect from '@/lib/mongodb';
 import User from '@/lib/models/User';
 import { authOptions } from '@/lib/auth';

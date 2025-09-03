@@ -1,10 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest} from 'next/server';
+import { NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
+
+import type {
+  CSRFTokenInfo
+} from './csrf-sync-manager';
 import { 
   getCSRFSyncManager, 
   generateCSRFTokenForRequest,
-  verifyCSRFTokenForRequest,
-  CSRFTokenInfo
+  verifyCSRFTokenForRequest
 } from './csrf-sync-manager';
 
 /**
@@ -142,11 +146,13 @@ export async function verifyCSRFMiddleware(
     return { valid: true };
   }
 
-  // 開発環境バイパス
+  // 開発環境バイパス（一時的に無効化してデバッグ）
+  /*
   if (mergedConfig.developmentBypass && process.env.NODE_ENV === 'development') {
     console.warn('[CSRF-MW] Development bypass enabled');
     return { valid: true };
   }
+  */
 
   // トークンの抽出
   const token = await extractCSRFToken(req, mergedConfig);

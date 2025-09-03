@@ -7,7 +7,7 @@
  * @updated 2025-08-28
  */
 
-import { UnifiedPost, UnifiedAuthor } from '@/types/post';
+import type { UnifiedPost, UnifiedAuthor } from '@/types/post';
 import { 
   UnifiedPostSchema, 
   parseMongoDocument,

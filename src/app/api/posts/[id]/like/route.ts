@@ -1,9 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest} from 'next/server';
+import { NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
 import { connectDB } from '@/lib/db/mongodb-local';
 import Post from '@/lib/models/Post';
-import { createErrorResponse, AuthUser } from '@/lib/middleware/auth';
+import type { AuthUser } from '@/lib/middleware/auth';
+import { createErrorResponse } from '@/lib/middleware/auth';
 import { broadcastEvent } from '@/lib/socket/socket-manager';
 import { verifyCSRFToken } from '@/lib/security/csrf';
 import notificationService from '@/lib/services/notificationService';

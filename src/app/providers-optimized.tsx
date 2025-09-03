@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { SessionProvider, useSession } from 'next-auth/react';
+
 import { UserProvider } from '@/contexts/UserContext';
 import { PermissionProvider } from '@/contexts/PermissionContext';
 import { CSRFProvider } from '@/components/CSRFProvider';

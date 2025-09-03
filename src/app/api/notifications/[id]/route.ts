@@ -1,10 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest} from 'next/server';
+import { NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
 import { connectDB } from '@/lib/db/mongodb-local';
 import Notification from '@/lib/models/Notification';
 import notificationService from '@/lib/services/notificationService';
-import { createErrorResponse, AuthUser } from '@/lib/middleware/auth';
+import type { AuthUser } from '@/lib/middleware/auth';
+import { createErrorResponse } from '@/lib/middleware/auth';
 import { verifyCSRFToken } from '@/lib/security/csrf';
 
 // 認証チェックヘルパー

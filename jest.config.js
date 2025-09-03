@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const nextJest = require('next/jest')
 
 const createJestConfig = nextJest({
@@ -23,8 +24,9 @@ const customJestConfig = {
     '^@/lib/models/User$': '<rootDir>/src/__mocks__/User.js',
   },
   testMatch: [
-    '**/__tests__/**/*.[jt]s?(x)',
-    '**/?(*.)+(spec|test).[jt]s?(x)',
+    '<rootDir>/src/**/__tests__/**/*.test.[jt]s?(x)',
+    '<rootDir>/src/**/*.test.[jt]s?(x)',
+    '!<rootDir>/tests/**/*',  // E2Eテスト除外
   ],
   collectCoverageFrom: [
     'src/**/*.{js,jsx,ts,tsx}',
@@ -47,7 +49,9 @@ const customJestConfig = {
     '<rootDir>/node_modules/',
     '<rootDir>/node_modules_old/',
     '<rootDir>/node_modules_backup_*/',
+    '<rootDir>/tests/',  // Playwrightテスト完全除外
     '<rootDir>/e2e/',
+    '<rootDir>/.auth/',  // 認証状態ファイル除外
   ],
   modulePathIgnorePatterns: [
     '<rootDir>/node_modules_old/',
@@ -69,4 +73,5 @@ const customJestConfig = {
 }
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 module.exports = createJestConfig(customJestConfig)

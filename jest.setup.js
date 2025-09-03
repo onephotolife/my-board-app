@@ -90,8 +90,11 @@ jest.mock('mongodb-memory-server', () => ({
   },
 }));
 
-// フェッチAPIのモック
-global.fetch = jest.fn();
+// フェッチAPIのモック（完全実装版を使用）
+import { mockFetch } from './src/__mocks__/fetch-complete';
+
+// グローバルフェッチを置き換え
+global.fetch = mockFetch;
 
 // テスト用ユーティリティ関数
 global.testUtils = {

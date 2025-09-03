@@ -16,7 +16,6 @@ import {
   ListItemButton,
   Button,
   IconButton,
-  Badge,
   Container,
   Drawer,
   useMediaQuery,
@@ -28,8 +27,6 @@ import {
   Forum as ForumIcon,
   Person as PersonIcon,
   Logout as LogoutIcon,
-  Notifications as NotificationsIcon,
-  Settings as SettingsIcon,
   Home as HomeIcon,
   Menu as MenuIcon,
   Close as CloseIcon,
@@ -38,6 +35,7 @@ import {
   Article as ArticleIcon,
   Timeline as TimelineIcon,
 } from '@mui/icons-material';
+import NotificationBell from './NotificationBell';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -351,7 +349,12 @@ export default function AppLayout({ children, title, subtitle }: AppLayoutProps)
                   )}
                 </Box>
               </Box>
-              {/* 通知アイコンと設定アイコンを削除 */}
+              {/* 通知ベル */}
+              {session && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <NotificationBell />
+                </Box>
+              )}
             </Box>
           </Container>
         </Box>

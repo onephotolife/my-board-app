@@ -9,7 +9,7 @@
 - **UIライブラリ**: Material-UI (MUI) v7
 - **データベース**: MongoDB（Mongooseを使用）
 - **スタイリング**: Tailwind CSS v4、Emotion（MUI用）
-- **開発ツール**: ESLint、Turbopack
+- **開発ツール**: ESLint、Prettier、lint-staged、Turbopack
 
 ## プロジェクト構造
 ```
@@ -73,7 +73,41 @@ npm run start
 
 # リント実行
 npm run lint
+npm run lint:fix
+
+# フォーマット
+npm run format
+npm run format:check
+
+# テスト
+npm run test
+npm run test:watch
+npm run test:coverage
+
+# 型チェック
+npm run typecheck
+
+# 全チェック実行
+npm run check
 ```
+
+## 品質管理
+
+### Claude Codeで作業する際の品質チェック
+作業完了時に以下のコマンドを実行してください：
+
+```bash
+# 簡易チェック（リントとフォーマット）
+npm run lint && npm run format:check
+
+# 完全チェック（リント、フォーマット、型チェック、テスト）
+npm run check && npm run typecheck
+```
+
+### 自動チェック（git commit時）
+- lint-stagedにより、コミット時に自動的にESLintとPrettierが実行されます
+- エラーがある場合はコミットがブロックされます
+- スキップする場合: `git commit --no-verify`
 
 ## 環境変数
 - `MONGODB_URI`: MongoDB接続URI（デフォルト: `mongodb://localhost:27017/board-app`）

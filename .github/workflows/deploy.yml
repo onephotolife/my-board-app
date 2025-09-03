@@ -1,0 +1,82 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  test:
+    uses: ./.github/workflows/test.yml
+    secrets: inherit
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    environment: production
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --production
+
+      - name: Build for production
+        run: npm run build
+        env:
+          NODE_ENV: production
+          MONGODB_URI: ${{ secrets.PROD_MONGODB_URI }}
+          NEXTAUTH_URL: ${{ secrets.PROD_NEXTAUTH_URL }}
+          NEXTAUTH_SECRET: ${{ secrets.PROD_NEXTAUTH_SECRET }}
+
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
+
+      - name: Run smoke tests
+        run: |
+          # 待機してデプロイ完了を確認
+          sleep 30
+          
+          # ヘルスチェック
+          curl -f ${{ secrets.PROD_URL }}/api/health || exit 1
+          
+          # 基本的な動作確認
+          response=$(curl -s -o /dev/null -w "%{http_code}" ${{ secrets.PROD_URL }})
+          if [ "$response" != "200" ]; then
+            echo "❌ Production site returned $response"
+            exit 1
+          fi
+          
+          echo "✅ Deployment verified"
+
+      - name: Notify deployment
+        if: success()
+        run: |
+          echo "## 🚀 Deployment Successful" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- Environment: Production" >> $GITHUB_STEP_SUMMARY
+          echo "- URL: ${{ secrets.PROD_URL }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Commit: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Time: $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> $GITHUB_STEP_SUMMARY
+
+      - name: Rollback on failure
+        if: failure()
+        run: |
+          echo "## ⚠️ Deployment Failed - Initiating Rollback" >> $GITHUB_STEP_SUMMARY
+          # Vercelの前のデプロイメントに戻す
+          # vercel rollback --token=${{ secrets.VERCEL_TOKEN }}

@@ -46,10 +46,15 @@ const customJestConfig = {
     '<rootDir>/.next/',
     '<rootDir>/node_modules/',
     '<rootDir>/node_modules_old/',
+    '<rootDir>/node_modules_backup_*/',
     '<rootDir>/e2e/',
   ],
   modulePathIgnorePatterns: [
     '<rootDir>/node_modules_old/',
+    '<rootDir>/node_modules_backup_*/',
+  ],
+  watchPathIgnorePatterns: [
+    '<rootDir>/node_modules_backup_*/',
   ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'mjs'],
   testEnvironmentOptions: {

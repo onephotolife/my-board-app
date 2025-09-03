@@ -355,7 +355,8 @@ export async function POST(
       });
 
       // 通知作成（投稿者へ）
-      if (post.author && post.author.toString() !== user.id) {
+      const postAuthorId = typeof post.author === 'object' ? post.author._id : post.author;
+      if (postAuthorId && postAuthorId !== user.id) {
         notificationService.createCommentNotification(
           user.id,
           {
@@ -364,7 +365,7 @@ export async function POST(
             avatar: null
           },
           id,
-          post.author.toString(),
+          postAuthorId,
           sanitizedContent.substring(0, 50) + '...'
         ).catch(error => {
           console.error('[COMMENT-NOTIFICATION-ERROR] Failed to create notification:', error);

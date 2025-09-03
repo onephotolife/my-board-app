@@ -13,8 +13,7 @@ console.log('🔍 [ROOT CAUSE] Creating authOptions at:', new Date().toISOString
 // Phase 1 環境変数確認
 console.log('🔧 [PHASE1-CONFIG] Environment:', {
   NODE_ENV: process.env.NODE_ENV,
-  TEST_MODE: process.env.NEXT_PUBLIC_TEST_MODE,
-  httpOnly: process.env.NODE_ENV === 'production' || process.env.NEXT_PUBLIC_TEST_MODE !== 'true',
+  httpOnly: process.env.NODE_ENV === 'production',
   timestamp: new Date().toISOString()
 });
 
@@ -272,8 +271,7 @@ export const authOptions: AuthOptions = {
       
       // Phase 1: セッション確立の詳細ログ
       console.log('🔐 [PHASE1-SESSION] Session establishment:', {
-        testMode: process.env.NEXT_PUBLIC_TEST_MODE,
-        httpOnlyEnabled: process.env.NODE_ENV === 'production' || process.env.NEXT_PUBLIC_TEST_MODE !== 'true',
+        httpOnlyEnabled: process.env.NODE_ENV === 'production',
         sessionEstablished: !!(token && token.id),
         timestamp: new Date().toISOString()
       });
@@ -338,9 +336,7 @@ export const authOptions: AuthOptions = {
         ? '__Secure-next-auth.session-token' 
         : 'next-auth.session-token',
       options: {
-        // Phase 1: テスト環境でのみhttpOnlyを無効化
-        httpOnly: process.env.NODE_ENV === 'production' || 
-                  process.env.NEXT_PUBLIC_TEST_MODE !== 'true',
+        httpOnly: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
         path: '/',
         secure: process.env.NODE_ENV === 'production'

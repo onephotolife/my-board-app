@@ -6,6 +6,7 @@
     "node": ">=20.18.1"
   },
   "scripts": {
+    "prebuild": "tsc --noEmit",
     "dev": "node server.js",
     "dev:next": "node scripts/smart-dev.js 3000",
     "dev:safe": "node scripts/port-finder.js 3000 && next dev --turbopack --port 3000",

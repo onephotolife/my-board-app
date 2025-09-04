@@ -67,11 +67,13 @@
   },
   "overrides": {
     "jose": "4.15.9",
+    "tmp": "^0.2.5",
     "@auth/core": {
       "jose": "4.15.9"
     }
   },
   "dependencies": {
+    "@auth/core": "^0.40.0",
     "@auth/mongodb-adapter": "^3.10.0",
     "@emotion/cache": "^11.14.0",
     "@emotion/react": "^11.14.0",
@@ -96,7 +98,7 @@
     "lodash": "^4.17.21",
     "lru-cache": "^11.1.0",
     "mongoose": "^8.17.0",
-    "next": "15.4.5",
+    "next": "^15.5.2",
     "next-auth": "^4.24.11",
     "nodemailer": "^6.10.1",
     "prop-types": "15.8.1",

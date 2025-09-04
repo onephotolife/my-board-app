@@ -1,8 +1,8 @@
 import type { Document, Model } from 'mongoose';
 import mongoose, { Schema } from 'mongoose';
 
-const DOMPurifyImp = require('isomorphic-dompurify');
-const DOMPurify = DOMPurifyImp.default || DOMPurifyImp;
+// const DOMPurifyImp = require('isomorphic-dompurify');
+// const DOMPurify = DOMPurifyImp.default || DOMPurifyImp;
 
 // 通知インターフェース
 export interface INotification extends Document {
@@ -44,7 +44,7 @@ const NotificationSchema = new Schema<INotification>(
       required: [true, '受信者IDは必須です'],
       index: true,
       validate: {
-        validator: function(v: string) {
+        validator: function (v: string) {
           return /^[0-9a-fA-F]{24}$/.test(v); // ObjectId形式
         },
         message: '無効な受信者IDです',
@@ -57,26 +57,26 @@ const NotificationSchema = new Schema<INotification>(
       index: true,
     },
     actor: {
-      _id: { 
-        type: String, 
+      _id: {
+        type: String,
         required: [true, 'アクター IDは必須です'],
         validate: {
-          validator: function(v: string) {
+          validator: function (v: string) {
             return /^[0-9a-fA-F]{24}$/.test(v); // ObjectId形式
           },
           message: '無効なアクターIDです',
         },
       },
-      name: { 
-        type: String, 
+      name: {
+        type: String,
         required: [true, 'アクター名は必須です'],
         maxlength: [50, '名前は50文字以内'],
       },
-      email: { 
-        type: String, 
+      email: {
+        type: String,
         required: [true, 'メールアドレスは必須です'],
         validate: {
-          validator: function(v: string) {
+          validator: function (v: string) {
             return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
           },
           message: '無効なメールアドレス形式です',
@@ -94,7 +94,7 @@ const NotificationSchema = new Schema<INotification>(
         type: String,
         required: [true, 'ターゲットIDは必須です'],
         validate: {
-          validator: function(v: string) {
+          validator: function (v: string) {
             return /^[0-9a-fA-F]{24}$/.test(v); // ObjectId形式
           },
           message: '無効なターゲットIDです',
@@ -110,13 +110,15 @@ const NotificationSchema = new Schema<INotification>(
       required: [true, 'メッセージは必須です'],
       maxlength: [200, 'メッセージは200文字以内'],
       validate: {
-        validator: function(v: string) {
+        validator: function (v: string) {
           console.warn('[NOTIFICATION-MODEL-DEBUG] Message validation:', {
-            message: v.substring(0, 50),
-            length: v.length,
-            timestamp: new Date().toISOString()
+            message: v ? v.substring(0, 50) : '(auto)',
+            length: v ? v.length : 0,
+            timestamp: new Date().toISOString(),
           });
-          
+
+          // v が未設定の場合は pre('validate') で自動生成されるため一旦許容
+          if (!v) return true;
           // 基本的な長さチェックのみ実行（XSSサニタイズはAPI層で処理）
           return v.trim().length > 0 && v.length <= 200;
         },
@@ -141,12 +143,12 @@ const NotificationSchema = new Schema<INotification>(
       type: Date,
       required: true,
       index: true,
-      default: function() {
+      default: function () {
         // タイプに応じた有効期限を設定
         const now = new Date();
         const type = this.type;
-        
-        switch(type) {
+
+        switch (type) {
           case 'system':
             return new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000); // 1年
           case 'follow':
@@ -174,65 +176,67 @@ NotificationSchema.index({ 'actor._id': 1, createdAt: -1 }); // アクター別
 NotificationSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 // 静的メソッド
-NotificationSchema.statics.findByRecipient = function(recipientId: string, page = 1, limit = 20, isRead?: boolean) {
+NotificationSchema.statics.findByRecipient = function (
+  recipientId: string,
+  page = 1,
+  limit = 20,
+  isRead?: boolean
+) {
   const skip = (page - 1) * limit;
-  const query: any = { recipient: recipientId };
-  
+  const query: Record<string, unknown> = { recipient: recipientId };
+
   if (isRead !== undefined) {
     query.isRead = isRead;
   }
-  
-  return this.find(query)
-    .sort({ createdAt: -1 })
-    .skip(skip)
-    .limit(limit);
+
+  return this.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit);
 };
 
-NotificationSchema.statics.countUnread = function(recipientId: string) {
-  return this.countDocuments({ 
-    recipient: recipientId, 
-    isRead: false 
+NotificationSchema.statics.countUnread = function (recipientId: string) {
+  return this.countDocuments({
+    recipient: recipientId,
+    isRead: false,
   });
 };
 
-NotificationSchema.statics.markAllAsRead = function(recipientId: string) {
+NotificationSchema.statics.markAllAsRead = function (recipientId: string) {
   return this.updateMany(
-    { 
+    {
       recipient: recipientId,
-      isRead: false 
+      isRead: false,
     },
-    { 
-      $set: { 
+    {
+      $set: {
         isRead: true,
-        readAt: new Date()
-      } 
+        readAt: new Date(),
+      },
     }
   );
 };
 
-NotificationSchema.statics.markAsRead = function(notificationIds: string[], recipientId: string) {
+NotificationSchema.statics.markAsRead = function (notificationIds: string[], recipientId: string) {
   return this.updateMany(
-    { 
+    {
       _id: { $in: notificationIds },
       recipient: recipientId,
-      isRead: false 
+      isRead: false,
     },
-    { 
-      $set: { 
+    {
+      $set: {
         isRead: true,
-        readAt: new Date()
-      } 
+        readAt: new Date(),
+      },
     }
   );
 };
 
-NotificationSchema.statics.deleteExpired = function() {
+NotificationSchema.statics.deleteExpired = function () {
   const now = new Date();
   return this.deleteMany({ expiresAt: { $lt: now } });
 };
 
 // インスタンスメソッド
-NotificationSchema.methods.markAsRead = function() {
+NotificationSchema.methods.markAsRead = function () {
   if (!this.isRead) {
     this.isRead = true;
     this.readAt = new Date();
@@ -241,22 +245,23 @@ NotificationSchema.methods.markAsRead = function() {
   return Promise.resolve(this);
 };
 
-NotificationSchema.methods.softDelete = function() {
+NotificationSchema.methods.softDelete = function () {
   // 即座に期限切れに設定
   this.expiresAt = new Date();
   return this.save();
 };
 
-NotificationSchema.methods.generateMessage = function() {
-  const { type, actor, target } = this;
-  
-  switch(type) {
+NotificationSchema.methods.generateMessage = function (this: INotification) {
+  const type: INotification['type'] = this.type;
+  const actorName: string = this.actor?.name ?? 'ユーザー';
+
+  switch (type) {
     case 'follow':
-      return `${actor.name}さんがあなたをフォローしました`;
+      return `${actorName}さんがあなたをフォローしました`;
     case 'like':
-      return `${actor.name}さんがあなたの投稿にいいねしました`;
+      return `${actorName}さんがあなたの投稿にいいねしました`;
     case 'comment':
-      return `${actor.name}さんがあなたの投稿にコメントしました`;
+      return `${actorName}さんがあなたの投稿にコメントしました`;
     case 'system':
       return this.message; // システム通知はそのまま使用
     default:
@@ -265,18 +270,18 @@ NotificationSchema.methods.generateMessage = function() {
 };
 
 // 仮想プロパティ
-NotificationSchema.virtual('isExpired').get(function() {
+NotificationSchema.virtual('isExpired').get(function () {
   return this.expiresAt && this.expiresAt < new Date();
 });
 
-NotificationSchema.virtual('timeAgo').get(function() {
+NotificationSchema.virtual('timeAgo').get(function () {
   const now = new Date();
   const diff = now.getTime() - this.createdAt.getTime();
   const seconds = Math.floor(diff / 1000);
   const minutes = Math.floor(seconds / 60);
   const hours = Math.floor(minutes / 60);
   const days = Math.floor(hours / 24);
-  
+
   if (days > 0) return `${days}日前`;
   if (hours > 0) return `${hours}時間前`;
   if (minutes > 0) return `${minutes}分前`;
@@ -288,32 +293,55 @@ NotificationSchema.set('toJSON', {
   virtuals: true,
   transform: function (doc, ret) {
     ret.id = ret._id;
-    delete ret._id;
-    delete ret.__v;
-    
+    if (Object.prototype.hasOwnProperty.call(ret, '_id')) {
+      Reflect.deleteProperty(ret, '_id');
+    }
+    if (Object.prototype.hasOwnProperty.call(ret, '__v')) {
+      Reflect.deleteProperty(ret, '__v');
+    }
+
     // セキュリティ情報の除外
-    delete ret.metadata?.ipAddress;
-    
+    if (ret.metadata && typeof ret.metadata === 'object') {
+      const meta = ret.metadata as {
+        ipAddress?: string;
+        userAgent?: string;
+        clientVersion?: string;
+      };
+      // 再構築して安全に除外
+      ret.metadata = {
+        userAgent: meta.userAgent,
+        clientVersion: meta.clientVersion,
+      };
+    }
+
     return ret;
   },
 });
 
+// バリデーション前：未設定のメッセージを自動生成
+NotificationSchema.pre('validate', function (next) {
+  if (!this.message || this.message === '') {
+    this.message = this.generateMessage();
+  }
+  next();
+});
+
 // 保存前のフック（バリデーション強化）
-NotificationSchema.pre('save', function(next) {
+NotificationSchema.pre('save', function (next) {
   // メッセージの前後空白トリミング
   if (this.isModified('message')) {
     this.message = this.message.trim();
   }
-  
+
   // メッセージ自動生成（未設定の場合）
   if (!this.message || this.message === '') {
     this.message = this.generateMessage();
   }
-  
+
   // 有効期限設定の確認
   if (!this.expiresAt) {
     const now = new Date();
-    switch(this.type) {
+    switch (this.type) {
       case 'system':
         this.expiresAt = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000); // 1年
         break;
@@ -321,12 +349,12 @@ NotificationSchema.pre('save', function(next) {
         this.expiresAt = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000); // 30日
     }
   }
-  
+
   next();
 });
 
 // デバッグログ用ミドルウェア
-NotificationSchema.pre('save', function(next) {
+NotificationSchema.pre('save', function (next) {
   console.warn('[NOTIFICATION-DEBUG] Saving notification:', {
     type: this.type,
     recipient: this.recipient,
@@ -334,12 +362,13 @@ NotificationSchema.pre('save', function(next) {
     target: this.target,
     isRead: this.isRead,
     expiresAt: this.expiresAt,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
   next();
 });
 
 // モデルのエクスポート
-const Notification: Model<INotification> = mongoose.models.Notification || mongoose.model<INotification>('Notification', NotificationSchema);
+const Notification: Model<INotification> =
+  mongoose.models.Notification || mongoose.model<INotification>('Notification', NotificationSchema);
 
 export default Notification;

@@ -5,7 +5,13 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 
 // Socket.io動的インポート用の型定義
-type Socket = any; // socket.io-clientのSocket型
+// 最小限の型でany回避
+type Socket = {
+  on: (event: string, cb: (data?: unknown) => void) => void;
+  off: (event: string, cb: (data?: unknown) => void) => void;
+  emit: (event: string, data?: unknown) => void;
+  disconnect: () => void;
+} | null;
 
 interface SocketContextType {
   socket: Socket | null;
@@ -50,12 +56,12 @@ export function SocketProvider({ children }: SocketProviderProps) {
   useEffect(() => {
     // 🔐 41人天才会議による修正: Socket.ioを条件付きで有効化
     const isSocketEnabled = process.env.NEXT_PUBLIC_ENABLE_SOCKET !== 'false';
-    
+
     if (!isSocketEnabled) {
       console.warn('🔌 Socket.io is disabled');
       return;
     }
-    
+
     if (status === 'authenticated' && session?.user) {
       let socketInstance: Socket | null = null;
 
@@ -89,22 +95,22 @@ export function SocketProvider({ children }: SocketProviderProps) {
           });
 
           socketInstance.on('user:online', (data) => {
-            setOnlineUsers(prev => [...new Set([...prev, data.userId])]);
+            setOnlineUsers((prev) => [...new Set([...prev, data.userId])]);
           });
 
           socketInstance.on('user:offline', (data) => {
-            setOnlineUsers(prev => prev.filter(id => id !== data.userId));
+            setOnlineUsers((prev) => prev.filter((id) => id !== data.userId));
           });
 
           socketInstance.on('user:typing', (data) => {
-            setTypingUsers(prev => {
+            setTypingUsers((prev) => {
               const newMap = new Map(prev);
               newMap.set(data.userId, data.userName);
               return newMap;
             });
 
             setTimeout(() => {
-              setTypingUsers(prev => {
+              setTypingUsers((prev) => {
                 const newMap = new Map(prev);
                 newMap.delete(data.userId);
                 return newMap;
@@ -113,7 +119,7 @@ export function SocketProvider({ children }: SocketProviderProps) {
           });
 
           socketInstance.on('user:stopped-typing', (data) => {
-            setTypingUsers(prev => {
+            setTypingUsers((prev) => {
               const newMap = new Map(prev);
               newMap.delete(data.userId);
               return newMap;
@@ -131,6 +137,27 @@ export function SocketProvider({ children }: SocketProviderProps) {
 
           socketInstance.on('connect_timeout', () => {
             console.warn('⚠️ Socket connection timeout');
+          });
+
+          // 🔔 通知関連イベントリスナー
+          socketInstance.on(`notification:new:${session.user.id}`, (data) => {
+            console.warn('🔔 New notification received:', data);
+            // カスタムイベントを発火して通知フックに通知
+            window.dispatchEvent(
+              new CustomEvent('notification:new', {
+                detail: data.notification,
+              })
+            );
+          });
+
+          socketInstance.on(`notification:count:${session.user.id}`, (data) => {
+            console.warn('🔢 Unread count updated:', data);
+            // カスタムイベントを発火して未読数を更新
+            window.dispatchEvent(
+              new CustomEvent('notification:count', {
+                detail: data.unreadCount,
+              })
+            );
           });
 
           setSocket(socketInstance);
@@ -160,32 +187,32 @@ export function SocketProvider({ children }: SocketProviderProps) {
 }
 
 export function useRealtimeUpdates(handlers: {
-  onNewPost?: (data: any) => void;
-  onPostUpdated?: (data: any) => void;
-  onPostDeleted?: (data: any) => void;
-  onPostLiked?: (data: any) => void;
+  onNewPost?: (data: unknown) => void;
+  onPostUpdated?: (data: unknown) => void;
+  onPostDeleted?: (data: unknown) => void;
+  onPostLiked?: (data: unknown) => void;
 }) {
   const { socket } = useSocket();
 
   useEffect(() => {
     if (!socket) return;
 
-    const handleNewPost = (data: any) => {
+    const handleNewPost = (data: unknown) => {
       console.warn('📝 New post received:', data);
       handlers.onNewPost?.(data);
     };
 
-    const handlePostUpdated = (data: any) => {
+    const handlePostUpdated = (data: unknown) => {
       console.warn('✏️ Post updated:', data);
       handlers.onPostUpdated?.(data);
     };
 
-    const handlePostDeleted = (data: any) => {
+    const handlePostDeleted = (data: unknown) => {
       console.warn('🗑️ Post deleted:', data);
       handlers.onPostDeleted?.(data);
     };
 
-    const handlePostLiked = (data: any) => {
+    const handlePostLiked = (data: unknown) => {
       console.warn('❤️ Post liked:', data);
       handlers.onPostLiked?.(data);
     };

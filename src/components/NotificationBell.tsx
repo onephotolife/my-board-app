@@ -54,40 +54,69 @@ export default function NotificationBell() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session]);
 
+  // リアルタイム通知（CustomEvent）を反映
+  useEffect(() => {
+    if (!session?.user?.id) return;
+
+    const handleNewNotification = (event: Event) => {
+      const custom = event as CustomEvent;
+      const newNotification = custom.detail;
+      if (!newNotification) return;
+      setNotifications((prev) => {
+        // 重複防止
+        if (prev.some((n) => n._id === newNotification._id)) return prev;
+        return [newNotification, ...prev];
+      });
+      setUnreadCount((prev) => prev + 1);
+    };
+
+    const handleUnreadCountUpdate = (event: Event) => {
+      const custom = event as CustomEvent;
+      const newUnreadCount = custom.detail;
+      if (typeof newUnreadCount === 'number' && !Number.isNaN(newUnreadCount)) {
+        setUnreadCount(newUnreadCount);
+      }
+    };
+
+    window.addEventListener('notification:new', handleNewNotification as EventListener);
+    window.addEventListener('notification:count', handleUnreadCountUpdate as EventListener);
+
+    return () => {
+      window.removeEventListener('notification:new', handleNewNotification as EventListener);
+      window.removeEventListener('notification:count', handleUnreadCountUpdate as EventListener);
+    };
+  }, [session?.user?.id]);
+
   // 通知取得
   const fetchNotifications = async (pageNum = 1) => {
     if (!session?.user?.id) return;
-    
+
     setLoading(true);
     setError(null);
-    
+
     try {
-      const response = await fetch(
-        `/api/notifications?page=${pageNum}&limit=20`,
-        {
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      const response = await fetch(`/api/notifications?page=${pageNum}&limit=20`, {
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
       if (!response.ok) {
         throw new Error('通知の取得に失敗しました');
       }
 
       const data = await response.json();
-      
+
       if (pageNum === 1) {
         setNotifications(data.data.notifications);
       } else {
-        setNotifications(prev => [...prev, ...data.data.notifications]);
+        setNotifications((prev) => [...prev, ...data.data.notifications]);
       }
-      
+
       setUnreadCount(data.data.unreadCount);
       setHasMore(data.data.pagination.hasMore);
       setPage(pageNum);
-      
     } catch (err) {
       console.error('Notification fetch error:', err);
       setError(err instanceof Error ? err.message : '不明なエラー');
@@ -99,11 +128,21 @@ export default function NotificationBell() {
   // 既読処理
   const markAsRead = async (notificationIds?: string[]) => {
     if (!session?.user?.id) return;
-    
+
     try {
       const csrfMeta = document.querySelector('meta[name="app-csrf-token"]');
       const csrfToken = csrfMeta?.getAttribute('content');
-      
+
+      // 送信ペイロードを組み立て（空配列は送らない）
+      let finalIds: string[] | undefined = undefined;
+      if (notificationIds && notificationIds.length > 0) {
+        const coerced = notificationIds.map((id) => String(id));
+        const valid = coerced.filter((id) => /^[0-9a-fA-F]{24}$/.test(id));
+        if (valid.length > 0) {
+          finalIds = valid;
+        }
+      }
+
       const response = await fetch('/api/notifications', {
         method: 'POST',
         credentials: 'include',
@@ -111,9 +150,7 @@ export default function NotificationBell() {
           'Content-Type': 'application/json',
           'x-csrf-token': csrfToken || '',
         },
-        body: JSON.stringify({
-          notificationIds: notificationIds || [],
-        }),
+        body: finalIds ? JSON.stringify({ notificationIds: finalIds }) : undefined,
       });
 
       if (!response.ok) {
@@ -122,23 +159,18 @@ export default function NotificationBell() {
 
       const data = await response.json();
       setUnreadCount(data.data.unreadCount);
-      
+
       // 対象通知を既読状態に更新
-      if (notificationIds) {
-        setNotifications(prev =>
-          prev.map(n =>
-            notificationIds.includes(n._id)
-              ? { ...n, isRead: true, readAt: new Date() }
-              : n
+      if (finalIds) {
+        setNotifications((prev) =>
+          prev.map((n) =>
+            finalIds!.includes(n._id) ? { ...n, isRead: true, readAt: new Date() } : n
           )
         );
       } else {
         // 全て既読
-        setNotifications(prev =>
-          prev.map(n => ({ ...n, isRead: true, readAt: new Date() }))
-        );
+        setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true, readAt: new Date() })));
       }
-      
     } catch (err) {
       console.error('Mark as read error:', err);
     }
@@ -182,14 +214,6 @@ export default function NotificationBell() {
     setAnchorEl(event.currentTarget);
     // 開いた時に最新データを取得
     fetchNotifications(1);
-    
-    // 未読通知を既読にする
-    const unreadIds = notifications
-      .filter(n => !n.isRead)
-      .map(n => n._id);
-    if (unreadIds.length > 0) {
-      setTimeout(() => markAsRead(unreadIds), 1000); // 1秒後に既読にする
-    }
   };
 
   const handleClose = () => {
@@ -198,7 +222,7 @@ export default function NotificationBell() {
 
   const handleScroll = () => {
     if (!listRef.current || loading || !hasMore) return;
-    
+
     const { scrollTop, scrollHeight, clientHeight } = listRef.current;
     if (scrollHeight - scrollTop <= clientHeight * 1.5) {
       fetchNotifications(page + 1);
@@ -229,11 +253,7 @@ export default function NotificationBell() {
             },
           }}
         >
-          {unreadCount > 0 ? (
-            <NotificationsIcon />
-          ) : (
-            <NotificationsNoneIcon />
-          )}
+          {unreadCount > 0 ? <NotificationsIcon /> : <NotificationsNoneIcon />}
         </Badge>
       </IconButton>
 
@@ -330,14 +350,12 @@ export default function NotificationBell() {
             // 通知リスト
             <List sx={{ p: 0 }}>
               {notifications.map((notification, index) => (
-                <React.Fragment key={notification._id}>
+                <React.Fragment key={`${notification._id}-${index}`}>
                   <ListItem
                     sx={{
                       py: 2,
                       px: 2,
-                      backgroundColor: notification.isRead
-                        ? 'transparent'
-                        : 'action.hover',
+                      backgroundColor: notification.isRead ? 'transparent' : 'action.hover',
                       '&:hover': {
                         backgroundColor: 'action.selected',
                       },
@@ -351,13 +369,13 @@ export default function NotificationBell() {
                           bgcolor: getNotificationColor(notification.type),
                         }}
                       >
-                        {notification.actor.avatar
-                          ? null
-                          : getNotificationIcon(notification.type)}
+                        {notification.actor.avatar ? null : getNotificationIcon(notification.type)}
                       </Avatar>
                     </ListItemAvatar>
                     <ListItemText
-                      primary={(
+                      primaryTypographyProps={{ component: 'div' }}
+                      secondaryTypographyProps={{ component: 'div' }}
+                      primary={
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                           <Typography variant="body2" component="span">
                             {notification.message}
@@ -373,8 +391,8 @@ export default function NotificationBell() {
                             />
                           )}
                         </Box>
-                      )}
-                      secondary={(
+                      }
+                      secondary={
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
                           <Typography variant="caption" color="text.secondary">
                             {formatDistanceToNow(new Date(notification.createdAt), {
@@ -383,17 +401,13 @@ export default function NotificationBell() {
                             })}
                           </Typography>
                           {notification.isRead && (
-                            <CheckCircleIcon
-                              sx={{ fontSize: 14, color: 'success.main' }}
-                            />
+                            <CheckCircleIcon sx={{ fontSize: 14, color: 'success.main' }} />
                           )}
                         </Box>
-                      )}
+                      }
                     />
                   </ListItem>
-                  {index < notifications.length - 1 && (
-                    <Divider variant="inset" component="li" />
-                  )}
+                  {index < notifications.length - 1 && <Divider variant="inset" component="li" />}
                 </React.Fragment>
               ))}
               {loading && hasMore && (
@@ -416,11 +430,7 @@ export default function NotificationBell() {
               justifyContent: 'center',
             }}
           >
-            <Button
-              size="small"
-              onClick={() => markAsRead()}
-              disabled={unreadCount === 0}
-            >
+            <Button size="small" onClick={() => markAsRead()} disabled={unreadCount === 0}>
               すべて既読にする
             </Button>
           </Box>

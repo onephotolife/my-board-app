@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
+
 const { createServer } = require('http');
 const { parse } = require('url');
+
 const next = require('next');
 
 const dev = process.env.NODE_ENV !== 'production';
@@ -13,12 +16,8 @@ app.prepare().then(() => {
   const httpServer = createServer(async (req, res) => {
     try {
       const parsedUrl = parse(req.url, true);
-      const { pathname } = parsedUrl;
 
-      if (pathname === '/api/socket') {
-        console.log('Socket.io request detected, handling upgrade');
-        return;
-      }
+      // Note: Socket.io uses its own upgrade route; no special handling here
 
       await handle(req, res, parsedUrl);
     } catch (err) {
@@ -28,16 +27,45 @@ app.prepare().then(() => {
     }
   });
 
-  // Socket.io server initialization will be handled by Next.js API route
-  // since we need access to compiled TypeScript modules
-  
+  // Initialize Socket.io server here to ensure availability across the app
+  try {
+    const { Server: SocketIOServer } = require('socket.io');
+    const io = new SocketIOServer(httpServer, {
+      cors: {
+        origin: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+        credentials: true,
+      },
+      path: '/socket.io',
+      transports: ['websocket', 'polling'],
+    });
+
+    // Expose globally so app code can broadcast via global.io
+    global.io = io;
+
+    io.on('connection', (socket) => {
+      try {
+        console.warn(`Client connected: ${socket.id}`);
+        // Default room used by broadcastEvent
+        socket.join('board-updates');
+
+        socket.on('disconnect', () => {
+          console.warn(`Client disconnected: ${socket.id}`);
+        });
+      } catch (e) {
+        console.error('Socket connection handler error:', e);
+      }
+    });
+  } catch (e) {
+    console.error('Failed to initialize Socket.io:', e);
+  }
+
   httpServer
     .once('error', (err) => {
       console.error(err);
       process.exit(1);
     })
     .listen(port, () => {
-      console.log(`> Ready on http://${hostname}:${port}`);
-      console.log('> Socket.io support enabled');
+      console.warn(`> Ready on http://${hostname}:${port}`);
+      console.warn('> Socket.io support enabled');
     });
 });

@@ -1,8 +1,13 @@
-import mongoose from 'mongoose';
+// import mongoose from 'mongoose';
 
-const DOMPurifyImp = require('isomorphic-dompurify');
+import createDOMPurify from 'isomorphic-dompurify';
 
-const DOMPurify = DOMPurifyImp.default || DOMPurifyImp;
+const DOMPurify = createDOMPurify as unknown as {
+  sanitize: (
+    value: string,
+    config?: { ALLOWED_TAGS?: string[]; ALLOWED_ATTR?: string[]; KEEP_CONTENT?: boolean }
+  ) => string;
+};
 import type { INotification } from '@/lib/models/Notification';
 import Notification from '@/lib/models/Notification';
 import { broadcastEvent } from '@/lib/socket/socket-manager';
@@ -33,7 +38,7 @@ export interface CreateNotificationParams {
 // 通知サービスクラス
 export class NotificationService {
   private static instance: NotificationService;
-  
+
   // シングルトンパターン
   public static getInstance(): NotificationService {
     if (!NotificationService.instance) {
@@ -41,32 +46,32 @@ export class NotificationService {
     }
     return NotificationService.instance;
   }
-  
+
   private constructor() {
     console.warn('[NOTIFICATION-SERVICE] Service initialized');
   }
-  
+
   /**
    * 通知を作成して配信
    */
-  async createAndDeliver(params: CreateNotificationParams): Promise<INotification> {
+  async createAndDeliver(params: CreateNotificationParams): Promise<INotification | null> {
     try {
       console.warn('[NOTIFICATION-SERVICE-DEBUG] Creating notification:', {
         type: params.type,
         recipient: params.recipient,
         actor: params.actor._id,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
-      
+
       // 自分自身への通知は作成しない
       if (params.recipient === params.actor._id) {
         console.warn('[NOTIFICATION-SERVICE] Skipping self-notification');
-        return null as any;
+        return null;
       }
-      
+
       // XSSサニタイゼーション（三層防御の第一層）
       const sanitizedParams = this.sanitizeParams(params);
-      
+
       // 通知作成
       const notification = new Notification({
         recipient: sanitizedParams.recipient,
@@ -76,35 +81,34 @@ export class NotificationService {
         message: sanitizedParams.message || '',
         metadata: sanitizedParams.metadata,
       });
-      
+
       // 保存
       await notification.save();
-      
+
       console.warn('[NOTIFICATION-SERVICE-SUCCESS] Notification created:', {
         id: notification._id,
         type: notification.type,
-        recipient: notification.recipient
+        recipient: notification.recipient,
       });
-      
+
       // リアルタイム配信
       await this.deliverRealtime(notification);
-      
+
       // 未読数更新の配信
       await this.updateUnreadCount(notification.recipient);
-      
+
       return notification;
-      
     } catch (error) {
       console.error('[NOTIFICATION-SERVICE-ERROR] Failed to create notification:', {
         error: error.message,
         stack: error.stack,
         params: params,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
       throw error;
     }
   }
-  
+
   /**
    * パラメータのサニタイゼーション
    */
@@ -112,9 +116,9 @@ export class NotificationService {
     const config = {
       ALLOWED_TAGS: [],
       ALLOWED_ATTR: [],
-      KEEP_CONTENT: false
+      KEEP_CONTENT: false,
     };
-    
+
     return {
       ...params,
       actor: {
@@ -123,63 +127,76 @@ export class NotificationService {
       },
       target: {
         ...params.target,
-        preview: params.target.preview 
+        preview: params.target.preview
           ? DOMPurify.sanitize(params.target.preview, config).substring(0, 100)
           : undefined,
       },
-      message: params.message 
+      message: params.message
         ? DOMPurify.sanitize(params.message, config).substring(0, 200)
         : undefined,
     };
   }
-  
+
   /**
    * リアルタイム配信
    */
   private async deliverRealtime(notification: INotification): Promise<void> {
     try {
+      console.warn('[NOTIFICATION-SERVICE] Starting realtime delivery:', {
+        notificationId: notification._id,
+        recipient: notification.recipient,
+        type: notification.type,
+        timestamp: new Date().toISOString(),
+      });
+
       const notificationData = notification.toJSON();
-      
+
+      console.warn('[NOTIFICATION-SERVICE] Broadcasting notification:', {
+        event: `notification:new:${notification.recipient}`,
+        room: 'board-updates',
+        notificationId: notification._id,
+        timestamp: new Date().toISOString(),
+      });
+
       // Socket.IO経由で配信
       broadcastEvent(`notification:new:${notification.recipient}`, {
         notification: notificationData,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
-      
+
       console.warn('[NOTIFICATION-SERVICE] Realtime delivery sent:', {
         recipient: notification.recipient,
-        type: notification.type
+        type: notification.type,
+        event: `notification:new:${notification.recipient}`,
       });
-      
     } catch (error) {
       console.error('[NOTIFICATION-SERVICE-ERROR] Realtime delivery failed:', error);
       // リアルタイム配信の失敗は無視（通知自体は作成済み）
     }
   }
-  
+
   /**
    * 未読数を更新して配信
    */
   private async updateUnreadCount(recipientId: string): Promise<void> {
     try {
       const unreadCount = await Notification.countUnread(recipientId);
-      
+
       // Socket.IO経由で未読数を配信
       broadcastEvent(`notification:count:${recipientId}`, {
         unreadCount,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
-      
+
       console.warn('[NOTIFICATION-SERVICE] Unread count updated:', {
         recipient: recipientId,
-        unreadCount
+        unreadCount,
       });
-      
     } catch (error) {
       console.error('[NOTIFICATION-SERVICE-ERROR] Failed to update unread count:', error);
     }
   }
-  
+
   /**
    * フォロー通知作成
    */
@@ -193,7 +210,7 @@ export class NotificationService {
       type: 'follow',
       actor: {
         _id: followerId,
-        ...followerInfo
+        ...followerInfo,
       },
       target: {
         type: 'user',
@@ -201,7 +218,7 @@ export class NotificationService {
       },
     });
   }
-  
+
   /**
    * いいね通知作成
    */
@@ -217,16 +234,16 @@ export class NotificationService {
       type: 'like',
       actor: {
         _id: likerId,
-        ...likerInfo
+        ...likerInfo,
       },
       target: {
         type: 'post',
         id: postId,
-        preview: postPreview
+        preview: postPreview,
       },
     });
   }
-  
+
   /**
    * コメント通知作成
    */
@@ -242,16 +259,16 @@ export class NotificationService {
       type: 'comment',
       actor: {
         _id: commenterId,
-        ...commenterInfo
+        ...commenterInfo,
       },
       target: {
         type: 'post',
         id: postId,
-        preview: commentPreview
+        preview: commentPreview,
       },
     });
   }
-  
+
   /**
    * システム通知作成
    */
@@ -268,7 +285,7 @@ export class NotificationService {
         _id: '000000000000000000000000', // システムID
         name: 'System',
         email: 'system@blankinai.com',
-        avatar: '/system-avatar.png'
+        avatar: '/system-avatar.png',
       },
       target: {
         type: targetType || 'user',
@@ -277,56 +294,57 @@ export class NotificationService {
       message,
     });
   }
-  
+
   /**
    * 通知を既読にする
    */
-  async markAsRead(notificationIds: string[], recipientId: string): Promise<{ updatedCount: number }> {
+  async markAsRead(
+    notificationIds: string[],
+    recipientId: string
+  ): Promise<{ updatedCount: number }> {
     try {
       const result = await Notification.markAsRead(notificationIds, recipientId);
-      
+
       // 未読数を更新
       await this.updateUnreadCount(recipientId);
-      
+
       console.warn('[NOTIFICATION-SERVICE] Marked as read:', {
         count: result.modifiedCount,
-        recipient: recipientId
+        recipient: recipientId,
       });
-      
+
       return { updatedCount: result.modifiedCount };
-      
     } catch (error) {
       console.error('[NOTIFICATION-SERVICE-ERROR] Failed to mark as read:', error);
       throw error;
     }
   }
-  
+
   /**
    * 全て既読にする
    */
   async markAllAsRead(recipientId: string): Promise<{ updatedCount: number }> {
     try {
       const result = await Notification.markAllAsRead(recipientId);
-      
+
       // 未読数を0に更新
       broadcastEvent(`notification:count:${recipientId}`, {
         unreadCount: 0,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
-      
+
       console.warn('[NOTIFICATION-SERVICE] Marked all as read:', {
         count: result.modifiedCount,
-        recipient: recipientId
+        recipient: recipientId,
       });
-      
+
       return { updatedCount: result.modifiedCount };
-      
     } catch (error) {
       console.error('[NOTIFICATION-SERVICE-ERROR] Failed to mark all as read:', error);
       throw error;
     }
   }
-  
+
   /**
    * 通知を削除
    */
@@ -334,44 +352,42 @@ export class NotificationService {
     try {
       const notification = await Notification.findOne({
         _id: notificationId,
-        recipient: recipientId
+        recipient: recipientId,
       });
-      
+
       if (!notification) {
         console.warn('[NOTIFICATION-SERVICE] Notification not found:', notificationId);
         return false;
       }
-      
+
       await notification.softDelete();
-      
+
       // 未読数を更新
       if (!notification.isRead) {
         await this.updateUnreadCount(recipientId);
       }
-      
+
       console.warn('[NOTIFICATION-SERVICE] Notification deleted:', notificationId);
       return true;
-      
     } catch (error) {
       console.error('[NOTIFICATION-SERVICE-ERROR] Failed to delete notification:', error);
       throw error;
     }
   }
-  
+
   /**
    * 期限切れ通知のクリーンアップ
    */
   async cleanupExpired(): Promise<number> {
     try {
       const result = await Notification.deleteExpired();
-      
+
       console.warn('[NOTIFICATION-SERVICE] Expired notifications cleaned up:', {
         count: result.deletedCount,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
-      
+
       return result.deletedCount;
-      
     } catch (error) {
       console.error('[NOTIFICATION-SERVICE-ERROR] Failed to cleanup expired:', error);
       throw error;

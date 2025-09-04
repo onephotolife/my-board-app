@@ -163,3 +163,4 @@ playwright/
 # Development utilities
 *-csrf-test.js
 clear-cookies-and-test.js
+scripts/mongodb-optimization/mongodb-atlas-optimization.js

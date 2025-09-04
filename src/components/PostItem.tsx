@@ -9,9 +9,12 @@ import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import NextLink from 'next/link';
+import Link from '@mui/material/Link';
 
 import { CanEdit, CanDelete } from '@/components/permissions/PermissionGate';
 import type { UnifiedPost } from '@/types/post';
+import { linkifyHashtags } from '@/app/utils/hashtag';
 
 interface PostItemProps {
   post: UnifiedPost;
@@ -35,13 +38,13 @@ const PostItem = memo(function PostItem({ post, onEdit, onDelete }: PostItemProp
         flexDirection: { xs: 'column', sm: 'row' },
         width: '100%',
         maxWidth: '100%',
-        overflow: 'hidden'
+        overflow: 'hidden',
       }}
-      secondaryAction={(
+      secondaryAction={
         <Box sx={{ display: 'flex', gap: { xs: 0, sm: 1 } }}>
-          <CanEdit 
+          <CanEdit
             resourceOwnerId={post.author}
-            fallback={(
+            fallback={
               <Tooltip title="編集権限がありません">
                 <span>
                   <IconButton edge="end" disabled>
@@ -49,16 +52,16 @@ const PostItem = memo(function PostItem({ post, onEdit, onDelete }: PostItemProp
                   </IconButton>
                 </span>
               </Tooltip>
-            )}
+            }
           >
             <IconButton edge="end" aria-label="edit" onClick={() => onEdit(post)}>
               <EditIcon />
             </IconButton>
           </CanEdit>
-          
-          <CanDelete 
+
+          <CanDelete
             resourceOwnerId={post.author}
-            fallback={(
+            fallback={
               <Tooltip title="削除権限がありません">
                 <span>
                   <IconButton edge="end" disabled>
@@ -66,55 +69,69 @@ const PostItem = memo(function PostItem({ post, onEdit, onDelete }: PostItemProp
                   </IconButton>
                 </span>
               </Tooltip>
-            )}
+            }
           >
             <IconButton edge="end" aria-label="delete" onClick={() => onDelete(post._id)}>
               <DeleteIcon />
             </IconButton>
           </CanDelete>
         </Box>
-      )}
+      }
     >
       <ListItemText
-        primary={(
+        primary={
           <Box>
-            <Typography 
-              variant="h6" 
-              component="div" 
+            <Typography
+              variant="h6"
+              component="div"
               gutterBottom
-              sx={{ 
+              sx={{
                 wordBreak: 'break-all',
-                overflowWrap: 'break-word'
+                overflowWrap: 'break-word',
               }}
             >
               {post.title}
             </Typography>
-            <Typography 
-              variant="body2" 
-              color="text.secondary" 
+            <Typography
+              variant="body2"
+              color="text.secondary"
               gutterBottom
-              sx={{ 
+              sx={{
                 wordBreak: 'break-word',
-                overflowWrap: 'break-word'
+                overflowWrap: 'break-word',
               }}
             >
               投稿者: {post.author} | {formatDate(post.createdAt)}
             </Typography>
           </Box>
-        )}
-        secondary={(
-          <Typography 
-            variant="body1" 
-            sx={{ 
+        }
+        secondary={
+          <Typography
+            variant="body1"
+            sx={{
               mt: 1,
               wordBreak: 'break-all',
               overflowWrap: 'break-word',
-              whiteSpace: 'pre-wrap'
+              whiteSpace: 'pre-wrap',
             }}
           >
-            {post.content}
+            {linkifyHashtags(post.content).map((part, idx) =>
+              typeof part === 'string' ? (
+                <span key={idx}>{part}</span>
+              ) : (
+                <Link
+                  key={idx}
+                  component={NextLink}
+                  href={part.href}
+                  underline="hover"
+                  aria-label={`タグ ${part.text}`}
+                >
+                  {part.text}
+                </Link>
+              )
+            )}
           </Typography>
-        )}
+        }
         sx={{ pr: 10 }}
       />
     </ListItem>

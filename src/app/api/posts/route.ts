@@ -1,45 +1,55 @@
-import type { NextRequest} from 'next/server';
+import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getToken } from 'next-auth/jwt';
 
 import { connectDB } from '@/lib/db/mongodb-local';
 import Post from '@/lib/models/Post';
-import User from '@/lib/models/User';
+import Tag from '@/lib/models/Tag';
 import type { AuthUser } from '@/lib/middleware/auth';
 import { checkRateLimit, createErrorResponse } from '@/lib/middleware/auth';
-import { createPostSchema, postFilterSchema, sanitizePostInput, formatValidationErrors } from '@/lib/validations/post';
+import {
+  createPostSchema,
+  postFilterSchema,
+  sanitizePostInput,
+  formatValidationErrors,
+} from '@/lib/validations/post';
 import { broadcastEvent } from '@/lib/socket/socket-manager';
 import { normalizePostDocuments, normalizePostDocument } from '@/lib/api/post-normalizer';
 import { verifyCSRFMiddleware } from '@/lib/security/csrf-middleware';
-import { 
-  CreatePostRequestSchema, 
-  PostFilterSchema,
-  validateCreateRequest,
-  validatePostFilter
-} from '@/schemas/post.schema';
+import { extractHashtags, normalizeTag } from '@/app/utils/hashtag';
+// NOTE: 追加のスキーマは未使用のためインポートしない（ESLint対策）
 
 // ページネーションのデフォルト値
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 10;
-const MAX_LIMIT = 50;
 
 // GET: 投稿一覧取得（認証必須）
 export async function GET(req: NextRequest) {
   try {
     // クッキーのデバッグ情報
     const cookieDebug = {
-      'next-auth.session-token': req.cookies.get('next-auth.session-token')?.value ? 'present' : 'missing',
-      '__Secure-next-auth.session-token': req.cookies.get('__Secure-next-auth.session-token')?.value ? 'present' : 'missing',
-      cookieHeader: req.headers.get('cookie') ? 'present' : 'missing'
+      'next-auth.session-token': req.cookies.get('next-auth.session-token')?.value
+        ? 'present'
+        : 'missing',
+      '__Secure-next-auth.session-token': req.cookies.get('__Secure-next-auth.session-token')?.value
+        ? 'present'
+        : 'missing',
+      cookieHeader: req.headers.get('cookie') ? 'present' : 'missing',
     };
 
     // 認証チェック（NextAuth v4対応）
     const token = await getToken({
       req,
-      secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
+      secret:
+        process.env.NEXTAUTH_SECRET ||
+        process.env.AUTH_SECRET ||
+        'blankinai-member-board-secret-key-2024-production',
       secureCookie: process.env.NODE_ENV === 'production',
-      cookieName: process.env.NODE_ENV === 'production' ? '__Secure-next-auth.session-token' : 'next-auth.session-token'
+      cookieName:
+        process.env.NODE_ENV === 'production'
+          ? '__Secure-next-auth.session-token'
+          : 'next-auth.session-token',
     });
 
     console.warn('🔍 [API] 認証トークン確認:', {
@@ -51,7 +61,7 @@ export async function GET(req: NextRequest) {
       environment: process.env.NODE_ENV,
       hasAuthSecret: !!process.env.AUTH_SECRET,
       hasNextAuthSecret: !!process.env.NEXTAUTH_SECRET,
-      cookies: cookieDebug
+      cookies: cookieDebug,
     });
 
     if (!token) {
@@ -63,7 +73,7 @@ export async function GET(req: NextRequest) {
     }
 
     const user: AuthUser = {
-      id: token.id as string || token.sub as string,
+      id: (token.id as string) || (token.sub as string),
       email: token.email as string,
       name: token.name as string,
       emailVerified: true,
@@ -88,16 +98,16 @@ export async function GET(req: NextRequest) {
     await connectDB();
 
     // クエリ構築
-    const query: any = { status: 'published' };
-    
+    const query: Record<string, unknown> = { status: 'published' };
+
     if (category && category !== 'all') {
       query.category = category;
     }
-    
+
     if (tag) {
       query.tags = { $in: [tag] };
     }
-    
+
     if (search) {
       const searchRegex = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       query.$or = [
@@ -105,13 +115,13 @@ export async function GET(req: NextRequest) {
         { content: { $regex: searchRegex, $options: 'i' } },
       ];
     }
-    
+
     if (author) {
       query['author._id'] = author;
     }
 
     // ソート順の決定
-    const sortOrder: any = {};
+    const sortOrder: Record<string, 1 | -1> = {};
     if (sort.startsWith('-')) {
       sortOrder[sort.substring(1)] = -1;
     } else {
@@ -123,11 +133,7 @@ export async function GET(req: NextRequest) {
 
     // データ取得（並列実行）
     const [posts, total] = await Promise.all([
-      Post.find(query)
-        .sort(sortOrder)
-        .skip(skip)
-        .limit(limit)
-        .lean(),
+      Post.find(query).sort(sortOrder).skip(skip).limit(limit).lean(),
       Post.countDocuments(query),
     ]);
 
@@ -149,7 +155,7 @@ export async function GET(req: NextRequest) {
     });
   } catch (error) {
     console.error('投稿一覧取得エラー:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         {
@@ -162,7 +168,7 @@ export async function GET(req: NextRequest) {
         { status: 400 }
       );
     }
-    
+
     return createErrorResponse('投稿の取得に失敗しました', 500, 'FETCH_ERROR');
   }
 }
@@ -174,17 +180,17 @@ export async function POST(req: NextRequest) {
     const csrfResult = await verifyCSRFMiddleware(req, {
       developmentBypass: process.env.NODE_ENV === 'development',
       enableSyncManager: true,
-      fallbackToLegacy: true
+      fallbackToLegacy: true,
     });
-    
+
     if (!csrfResult.valid) {
       console.error('[CSRF-ERROR] CSRF token validation failed for post creation', {
         error: csrfResult.error,
         userId: user.id,
         userEmail: user.email,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
-      
+
       if (process.env.NODE_ENV === 'development') {
         console.warn('[CSRF-WARN] Development mode: CSRF validation failed but continuing...');
       } else {
@@ -194,17 +200,27 @@ export async function POST(req: NextRequest) {
 
     // クッキーのデバッグ情報
     const cookieDebug = {
-      'next-auth.session-token': req.cookies.get('next-auth.session-token')?.value ? 'present' : 'missing',
-      '__Secure-next-auth.session-token': req.cookies.get('__Secure-next-auth.session-token')?.value ? 'present' : 'missing',
-      cookieHeader: req.headers.get('cookie') ? 'present' : 'missing'
+      'next-auth.session-token': req.cookies.get('next-auth.session-token')?.value
+        ? 'present'
+        : 'missing',
+      '__Secure-next-auth.session-token': req.cookies.get('__Secure-next-auth.session-token')?.value
+        ? 'present'
+        : 'missing',
+      cookieHeader: req.headers.get('cookie') ? 'present' : 'missing',
     };
 
     // 認証チェック（NextAuth v4対応）
     const token = await getToken({
       req,
-      secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
+      secret:
+        process.env.NEXTAUTH_SECRET ||
+        process.env.AUTH_SECRET ||
+        'blankinai-member-board-secret-key-2024-production',
       secureCookie: process.env.NODE_ENV === 'production',
-      cookieName: process.env.NODE_ENV === 'production' ? '__Secure-next-auth.session-token' : 'next-auth.session-token'
+      cookieName:
+        process.env.NODE_ENV === 'production'
+          ? '__Secure-next-auth.session-token'
+          : 'next-auth.session-token',
     });
 
     console.warn('🔍 [API] 認証トークン確認:', {
@@ -216,7 +232,7 @@ export async function POST(req: NextRequest) {
       environment: process.env.NODE_ENV,
       hasAuthSecret: !!process.env.AUTH_SECRET,
       hasNextAuthSecret: !!process.env.NEXTAUTH_SECRET,
-      cookies: cookieDebug
+      cookies: cookieDebug,
     });
 
     if (!token) {
@@ -228,7 +244,7 @@ export async function POST(req: NextRequest) {
     }
 
     const user: AuthUser = {
-      id: token.id as string || token.sub as string,
+      id: (token.id as string) || (token.sub as string),
       email: token.email as string,
       name: token.name as string,
       emailVerified: true,
@@ -252,30 +268,66 @@ export async function POST(req: NextRequest) {
     // サニタイズ
     validatedData.title = sanitizePostInput(validatedData.title);
     validatedData.content = sanitizePostInput(validatedData.content);
-    validatedData.tags = validatedData.tags?.map(tag => sanitizePostInput(tag)) || [];
+    validatedData.tags = validatedData.tags?.map((tag) => sanitizePostInput(tag)) || [];
 
     await connectDB();
+
+    // ハッシュタグの自動抽出（本文＋提供タグを統合・正規化・ユニーク化・上限適用）
+    const extracted = extractHashtags(validatedData.content || '');
+    const extractedKeys = extracted.map((t) => t.key);
+    const providedKeys = Array.isArray(validatedData.tags)
+      ? validatedData.tags.map((t) => normalizeTag(t)).filter(Boolean)
+      : [];
+    const allTagKeys = Array.from(new Set([...extractedKeys, ...providedKeys])).slice(0, 5);
 
     // 投稿データの作成
     const postData = {
       ...validatedData,
-      author: {        // /src/lib/models/Post.tsのスキーマに合わせる（オブジェクト形式）
+      author: {
+        // /src/lib/models/Post.tsのスキーマに合わせる（オブジェクト形式）
         _id: user.id,
         name: user.name,
         email: user.email,
       },
-      authorInfo: {    // authorInfoフィールドも追加（本番DBのスキーマ要件）
+      authorInfo: {
+        // authorInfoフィールドも追加（本番DBのスキーマ要件）
         name: user.name,
         email: user.email,
-        avatar: null,  // avatarフィールドは現時点でユーザー情報に含まれないためnull
+        avatar: null, // avatarフィールドは現時点でユーザー情報に含まれないためnull
       },
       status: 'published',
       views: 0,
+      // 正規化済みタグを保存（既存スキーマの上限=5に合わせる）
+      tags: allTagKeys,
     };
 
     // 投稿の保存
     const post = await Post.create(postData);
-    
+
+    // 人気タグの記録（1投稿内は同一タグを1回カウント）
+    if (allTagKeys.length > 0) {
+      const now = new Date();
+      const ops = allTagKeys.map((key) => {
+        const display = extracted.find((t) => t.key === key)?.display || key;
+        return {
+          updateOne: {
+            filter: { key },
+            update: {
+              $setOnInsert: { display },
+              $set: { lastUsedAt: now },
+              $inc: { countTotal: 1 },
+            },
+            upsert: true,
+          },
+        } as const;
+      });
+      try {
+        await Tag.bulkWrite(ops);
+      } catch (e) {
+        console.error('[TAGS-BULK-UPsert-ERROR]', e);
+      }
+    }
+
     // 正規化（UnifiedPost形式に変換）
     const normalizedPost = normalizePostDocument(post.toObject(), user.id);
 
@@ -295,7 +347,7 @@ export async function POST(req: NextRequest) {
     );
   } catch (error) {
     console.error('投稿作成エラー:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         {
@@ -308,7 +360,7 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-    
+
     if (error instanceof Error && error.name === 'ValidationError') {
       return NextResponse.json(
         {
@@ -321,7 +373,7 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-    
+
     return createErrorResponse('投稿の作成に失敗しました', 500, 'CREATE_ERROR');
   }
 }

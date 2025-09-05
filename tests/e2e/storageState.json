@@ -57,7 +57,7 @@
       "localStorage": [
         {
           "name": "sns-store",
-          "value": "{\"state\":{\"currentUser\":{\"id\":\"mock-user-id\",\"email\":\"one.photolife+1@gmail.com\",\"name\":\"E2E Test User\"}}}"
+          "value": "{\"state\":{\"currentUser\":{\"id\":\"mock-user-id\",\"email\":\"one.photolife+1@gmail.com\",\"name\":\"E2E Test User\",\"emailVerified\":true}}}"
         }
       ]
     }

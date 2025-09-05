@@ -14,6 +14,7 @@ export const apiLimiter = rateLimit({
   message: 'リクエスト数が多すぎます。しばらく待ってから再試行してください。',
   standardHeaders: true, // `RateLimit-*` ヘッダーを含める
   legacyHeaders: false, // `X-RateLimit-*` ヘッダーを無効化
+  // IPv6対応: keyGeneratorを削除し、express-rate-limitのデフォルトを使用
   handler: (req, res) => {
     res.status(429).json({
       error: 'リクエスト数が多すぎます',
@@ -28,6 +29,7 @@ export const authLimiter = rateLimit({
   max: 5, // 最大5リクエスト
   message: '認証試行回数が多すぎます。',
   skipSuccessfulRequests: true, // 成功したリクエストはカウントしない
+  // IPv6対応: keyGeneratorを削除し、express-rate-limitのデフォルトを使用
 });
 
 // 投稿作成用のレート制限

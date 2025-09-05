@@ -1,20 +1,19 @@
 import crypto from 'crypto';
 
 import { Redis } from 'ioredis';
-import { getServerSession } from 'next-auth';
 
-import { authOptions } from '@/lib/auth';
+import { auth } from '@/lib/auth';
 
 /**
  * CSRFトークンのライフサイクル状態
  */
 export enum TokenState {
-  GENERATED = 'generated',   // 生成済み（未使用）
-  ACTIVE = 'active',         // アクティブ（使用中）
-  USED = 'used',            // 使用済み
-  ROTATING = 'rotating',    // ローテーション中
-  EXPIRED = 'expired',      // 期限切れ
-  REVOKED = 'revoked'       // 失効済み
+  GENERATED = 'generated', // 生成済み（未使用）
+  ACTIVE = 'active', // アクティブ（使用中）
+  USED = 'used', // 使用済み
+  ROTATING = 'rotating', // ローテーション中
+  EXPIRED = 'expired', // 期限切れ
+  REVOKED = 'revoked', // 失効済み
 }
 
 /**
@@ -40,19 +39,19 @@ export interface CSRFTokenInfo {
  * CSRFSyncManager設定
  */
 export interface CSRFSyncConfig {
-  tokenLength?: number;          // トークン長（デフォルト: 32バイト）
-  tokenTTL?: number;             // トークン有効期限（デフォルト: 24時間）
-  maxUseCount?: number;          // 最大使用回数（デフォルト: 100）
-  rotationInterval?: number;     // ローテーション間隔（デフォルト: 1時間）
-  redisKeyPrefix?: string;       // Redisキープレフィックス
+  tokenLength?: number; // トークン長（デフォルト: 32バイト）
+  tokenTTL?: number; // トークン有効期限（デフォルト: 24時間）
+  maxUseCount?: number; // 最大使用回数（デフォルト: 100）
+  rotationInterval?: number; // ローテーション間隔（デフォルト: 1時間）
+  redisKeyPrefix?: string; // Redisキープレフィックス
   enableDoubleSubmit?: boolean; // Double Submit Cookie有効化
   enableSynchronizer?: boolean; // Synchronizer Token Pattern有効化
-  sessionBinding?: boolean;     // セッションバインディング有効化
+  sessionBinding?: boolean; // セッションバインディング有効化
 }
 
 /**
  * CSRF完全同期マネージャー
- * 
+ *
  * Synchronizer Token Patternを実装し、
  * サーバーサイドでトークンの完全なライフサイクル管理を行う
  */
@@ -71,7 +70,7 @@ export class CSRFSyncManager {
       redisKeyPrefix: config.redisKeyPrefix || 'csrf:',
       enableDoubleSubmit: config.enableDoubleSubmit !== false,
       enableSynchronizer: config.enableSynchronizer !== false,
-      sessionBinding: config.sessionBinding !== false
+      sessionBinding: config.sessionBinding !== false,
     };
 
     // Redis接続の初期化（環境変数から）
@@ -113,12 +112,12 @@ export class CSRFSyncManager {
       state: TokenState.GENERATED,
       createdAt: Date.now(),
       expiresAt: Date.now() + this.config.tokenTTL,
-      useCount: 0
+      useCount: 0,
     };
 
     // ストレージに保存
     await this.saveToken(tokenInfo);
-    
+
     // 即座にアクティベート
     await this.activateToken(token);
 
@@ -129,7 +128,7 @@ export class CSRFSyncManager {
    * トークンの検証
    */
   async verifyToken(
-    token: string, 
+    token: string,
     sessionId: string,
     metadata?: CSRFTokenInfo['metadata']
   ): Promise<boolean> {
@@ -149,7 +148,7 @@ export class CSRFSyncManager {
     if (this.config.sessionBinding && tokenInfo.sessionId !== sessionId) {
       console.warn('[CSRF-SYNC] Session mismatch:', {
         expected: sessionId,
-        actual: tokenInfo.sessionId
+        actual: tokenInfo.sessionId,
       });
       return false;
     }
@@ -221,10 +220,13 @@ export class CSRFSyncManager {
     const newToken = await this.generateToken(oldTokenInfo.sessionId, oldTokenInfo.userId);
 
     // 古いトークンを失効（グレースピリオド後）
-    setTimeout(async () => {
-      oldTokenInfo.state = TokenState.REVOKED;
-      await this.saveToken(oldTokenInfo);
-    }, 5 * 60 * 1000); // 5分のグレースピリオド
+    setTimeout(
+      async () => {
+        oldTokenInfo.state = TokenState.REVOKED;
+        await this.saveToken(oldTokenInfo);
+      },
+      5 * 60 * 1000
+    ); // 5分のグレースピリオド
 
     return newToken;
   }
@@ -266,7 +268,7 @@ export class CSRFSyncManager {
    */
   private async getToken(token: string): Promise<CSRFTokenInfo | null> {
     const key = `${this.config.redisKeyPrefix}${token}`;
-    
+
     if (this.redis) {
       try {
         const data = await this.redis.get(key);
@@ -275,7 +277,7 @@ export class CSRFSyncManager {
         console.error('[CSRF-SYNC] Redis get error:', error);
       }
     }
-    
+
     // メモリストアからフォールバック
     return this.memoryStore.get(key) || null;
   }
@@ -285,7 +287,7 @@ export class CSRFSyncManager {
    */
   private async getTokenBySession(sessionId: string): Promise<CSRFTokenInfo | null> {
     const sessionKey = `${this.config.redisKeyPrefix}session:${sessionId}`;
-    
+
     if (this.redis) {
       try {
         const token = await this.redis.get(sessionKey);
@@ -299,12 +301,14 @@ export class CSRFSyncManager {
 
     // メモリストアから検索
     for (const [, tokenInfo] of this.memoryStore) {
-      if (tokenInfo.sessionId === sessionId && 
-          (tokenInfo.state === TokenState.ACTIVE || tokenInfo.state === TokenState.GENERATED)) {
+      if (
+        tokenInfo.sessionId === sessionId &&
+        (tokenInfo.state === TokenState.ACTIVE || tokenInfo.state === TokenState.GENERATED)
+      ) {
         return tokenInfo;
       }
     }
-    
+
     return null;
   }
 
@@ -313,12 +317,12 @@ export class CSRFSyncManager {
    */
   private async getSessionTokens(sessionId: string): Promise<CSRFTokenInfo[]> {
     const tokens: CSRFTokenInfo[] = [];
-    
+
     if (this.redis) {
       try {
         const pattern = `${this.config.redisKeyPrefix}*`;
         const keys = await this.redis.keys(pattern);
-        
+
         for (const key of keys) {
           const data = await this.redis.get(key);
           if (data) {
@@ -350,23 +354,23 @@ export class CSRFSyncManager {
     const key = `${this.config.redisKeyPrefix}${tokenInfo.token}`;
     const sessionKey = `${this.config.redisKeyPrefix}session:${tokenInfo.sessionId}`;
     const ttl = Math.floor((tokenInfo.expiresAt - Date.now()) / 1000);
-    
+
     if (this.redis && ttl > 0) {
       try {
         // トークンを保存
         await this.redis.setex(key, ttl, JSON.stringify(tokenInfo));
-        
+
         // セッションマッピングも保存
         if (tokenInfo.state === TokenState.ACTIVE || tokenInfo.state === TokenState.GENERATED) {
           await this.redis.setex(sessionKey, ttl, tokenInfo.token);
         }
-        
+
         return;
       } catch (error) {
         console.error('[CSRF-SYNC] Redis save error:', error);
       }
     }
-    
+
     // メモリストアにフォールバック
     if (ttl > 0) {
       this.memoryStore.set(key, tokenInfo);
@@ -382,9 +386,11 @@ export class CSRFSyncManager {
 
     // メモリストアのクリーンアップ
     for (const [key, tokenInfo] of this.memoryStore) {
-      if (now > tokenInfo.expiresAt || 
-          tokenInfo.state === TokenState.EXPIRED ||
-          tokenInfo.state === TokenState.REVOKED) {
+      if (
+        now > tokenInfo.expiresAt ||
+        tokenInfo.state === TokenState.EXPIRED ||
+        tokenInfo.state === TokenState.REVOKED
+      ) {
         expiredKeys.push(key);
       }
     }
@@ -406,11 +412,14 @@ export class CSRFSyncManager {
     }
 
     // 10分ごとにクリーンアップ
-    this.cleanupInterval = setInterval(() => {
-      this.cleanup().catch(error => {
-        console.error('[CSRF-SYNC] Cleanup error:', error);
-      });
-    }, 10 * 60 * 1000);
+    this.cleanupInterval = setInterval(
+      () => {
+        this.cleanup().catch((error) => {
+          console.error('[CSRF-SYNC] Cleanup error:', error);
+        });
+      },
+      10 * 60 * 1000
+    );
   }
 
   /**
@@ -448,7 +457,7 @@ export class CSRFSyncManager {
       activeTokens: 0,
       expiredTokens: 0,
       revokedTokens: 0,
-      memoryUsage: 0
+      memoryUsage: 0,
     };
 
     // メモリストアの統計
@@ -495,18 +504,18 @@ export async function generateCSRFTokenForRequest(
   sessionId?: string
 ): Promise<{ token: string; expiresAt: number }> {
   const manager = getCSRFSyncManager();
-  
+
   // セッションIDが提供されていない場合は取得を試みる
   if (!sessionId) {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
     sessionId = session?.user?.id || crypto.randomBytes(16).toString('hex');
   }
 
   const tokenInfo = await manager.generateToken(sessionId);
-  
+
   return {
     token: tokenInfo.token,
-    expiresAt: tokenInfo.expiresAt
+    expiresAt: tokenInfo.expiresAt,
   };
 }
 
@@ -519,7 +528,7 @@ export async function verifyCSRFTokenForRequest(
   metadata?: CSRFTokenInfo['metadata']
 ): Promise<boolean> {
   const manager = getCSRFSyncManager();
-  
+
   // セッションIDが提供されていない場合は取得を試みる
   if (!sessionId) {
     const session = await getServerSession(authOptions);

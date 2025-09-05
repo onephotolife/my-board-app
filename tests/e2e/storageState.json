@@ -1,0 +1,65 @@
+{
+  "cookies": [
+    {
+      "name": "next-auth.session-token",
+      "value": "mock-session-token-for-e2e-testing",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1759619015,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "e2e-mock-auth",
+      "value": "mock-session-token-for-e2e-testing",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1759619015,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "csrf-token",
+      "value": "mock-csrf-token-for-e2e-testing",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1757113415,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Strict"
+    },
+    {
+      "name": "csrf-token-public",
+      "value": "mock-csrf-token-for-e2e-testing",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1757113415,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Strict"
+    },
+    {
+      "name": "next-auth.csrf-token",
+      "value": "mock-csrf-token-for-e2e-testing%7Cmock-csrf-token-for-e2e-testing",
+      "domain": "localhost",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "http://localhost:3000",
+      "localStorage": [
+        {
+          "name": "sns-store",
+          "value": "{\"state\":{\"currentUser\":{\"id\":\"mock-user-id\",\"email\":\"one.photolife+1@gmail.com\",\"name\":\"E2E Test User\"}}}"
+        }
+      ]
+    }
+  ]
+}

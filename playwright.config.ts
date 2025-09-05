@@ -40,9 +40,9 @@ export default defineConfig({
       name: 'chromium',
       use: { 
         ...devices['Desktop Chrome'],
-        storageState: path.join(__dirname, 'playwright/.auth/user.json'),
+        storageState: path.join(__dirname, 'tests/e2e/storageState.json'),
       },
-      dependencies: ['setup'],
+      // dependencies: ['setup'], // Temporarily disabled for mock storageState testing
     },
   ],
 

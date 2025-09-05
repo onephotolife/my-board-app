@@ -54,6 +54,7 @@
     "test:resend:simple": "USE_SIMPLE_API=true node scripts/test-comprehensive-resend.js",
     "setup:db": "node scripts/setup-indexes.js",
     "migrate:follows": "npx ts-node src/lib/db/migrations/add-follow-indexes.ts",
+    "backfill:tags": "npx ts-node --project tsconfig.scripts.json scripts/backfill-tags.ts",
     "test:follow": "npx ts-node scripts/test-follow-feature.ts",
     "test:follow:js": "node scripts/test-follow-feature.js",
     "test:follow:jest": "jest src/__tests__/models/follow.test.ts --verbose",

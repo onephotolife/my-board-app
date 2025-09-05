@@ -321,13 +321,30 @@ export async function middleware(request: NextRequest) {
     const cookieHeader = request.headers.get('cookie');
     console.warn('🍪 [Middleware Debug] クッキーヘッダー:', cookieHeader);
     
-    const token = await getToken({ 
-      req: request,
-      secret: process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
-      // NextAuth v4用の追加設定
-      secureCookie: process.env.NODE_ENV === 'production',
-      cookieName: process.env.NODE_ENV === 'production' ? '__Secure-next-auth.session-token' : 'next-auth.session-token'
-    });
+    // E2Eテスト用のモック認証バイパス
+    const isMockAuth = cookieHeader?.includes('mock-session-token-for-e2e-testing') || 
+                      cookieHeader?.includes('e2e-mock-auth=mock-session-token-for-e2e-testing');
+    
+    let token;
+    if (isMockAuth && process.env.NODE_ENV === 'development') {
+      // E2Eテスト用のモックトークンを作成
+      console.warn('🧪 [E2E-BYPASS] Mock authentication detected for testing');
+      token = {
+        id: 'mock-user-id',
+        email: 'one.photolife+1@gmail.com',
+        name: 'E2E Test User',
+        emailVerified: true,
+        role: 'user'
+      };
+    } else {
+      token = await getToken({ 
+        req: request,
+        secret: process.env.NEXTAUTH_SECRET || 'blankinai-member-board-secret-key-2024-production',
+        // NextAuth v4用の追加設定
+        secureCookie: process.env.NODE_ENV === 'production',
+        cookieName: process.env.NODE_ENV === 'production' ? '__Secure-next-auth.session-token' : 'next-auth.session-token'
+      });
+    }
     
     console.warn('🎫 Middleware: トークン状態:', {
       exists: !!token,

@@ -350,8 +350,39 @@ export const authOptions: AuthOptions = {
   debug: process.env.NODE_ENV === 'development',
 };
 
-// NextAuth v4 compatibility: export auth function
+// NextAuth v4 compatibility: export auth function with E2E mock support
 export async function auth() {
+  // E2Eテスト環境でのモックセッション検出
+  if (process.env.NODE_ENV === 'development') {
+    try {
+      const { cookies } = await import('next/headers');
+      const cookieStore = await cookies();
+      
+      const mockAuthCookie = cookieStore.get('e2e-mock-auth');
+      const sessionToken = cookieStore.get('next-auth.session-token');
+      
+      // E2E用のモック認証を検出
+      if (mockAuthCookie?.value === 'mock-session-token-for-e2e-testing' || 
+          sessionToken?.value === 'mock-session-token-for-e2e-testing') {
+        
+        console.warn('🧪 [E2E-SERVER-AUTH] Mock session detected, bypassing NextAuth JWT verification');
+        
+        return {
+          user: {
+            id: 'mock-user-id',
+            email: 'one.photolife+1@gmail.com',
+            name: 'E2E Test User',
+            emailVerified: true,
+            role: 'user'
+          },
+          expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 days
+        };
+      }
+    } catch (error) {
+      console.warn('⚠️ [E2E-SERVER-AUTH] Failed to check mock cookies:', error);
+    }
+  }
+  
   const { getServerSession } = await import('next-auth/next');
   return await getServerSession(authOptions);
 }

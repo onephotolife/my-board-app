@@ -56,6 +56,7 @@ const PostForm = memo(function PostForm({ onSubmit }: PostFormProps) {
             placeholder="タイトルを入力"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
+            data-testid="title-input"
             slotProps={{
               htmlInput: { maxLength: 100 }
             }}
@@ -68,6 +69,7 @@ const PostForm = memo(function PostForm({ onSubmit }: PostFormProps) {
             placeholder="お名前を入力"
             value={author}
             onChange={(e) => setAuthor(e.target.value)}
+            data-testid="author-input"
             slotProps={{
               htmlInput: { maxLength: 50 }
             }}
@@ -83,6 +85,7 @@ const PostForm = memo(function PostForm({ onSubmit }: PostFormProps) {
           placeholder="投稿内容を入力してください"
           value={content}
           onChange={(e) => setContent(e.target.value)}
+          data-testid="content-input"
           sx={{ mb: 2 }}
           slotProps={{
             htmlInput: { maxLength: 200 }
@@ -94,6 +97,7 @@ const PostForm = memo(function PostForm({ onSubmit }: PostFormProps) {
           variant="contained"
           color="primary"
           disabled={!title.trim() || !content.trim() || !author.trim() || submitting}
+          data-testid="submit-button"
           fullWidth
         >
           投稿する

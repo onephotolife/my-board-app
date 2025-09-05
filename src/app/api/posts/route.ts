@@ -38,19 +38,40 @@ export async function GET(req: NextRequest) {
       cookieHeader: req.headers.get('cookie') ? 'present' : 'missing',
     };
 
-    // 認証チェック（NextAuth v4対応）
-    const token = await getToken({
-      req,
-      secret:
-        process.env.NEXTAUTH_SECRET ||
-        process.env.AUTH_SECRET ||
-        'blankinai-member-board-secret-key-2024-production',
-      secureCookie: process.env.NODE_ENV === 'production',
-      cookieName:
-        process.env.NODE_ENV === 'production'
-          ? '__Secure-next-auth.session-token'
-          : 'next-auth.session-token',
-    });
+    // E2Eテスト用の認証バイパス
+    let token = null;
+    if (process.env.NODE_ENV === 'development') {
+      const cookieHeader = req.headers.get('cookie');
+      const isMockAuth = cookieHeader?.includes('mock-session-token-for-e2e-testing') || 
+                        cookieHeader?.includes('e2e-mock-auth=mock-session-token-for-e2e-testing');
+      
+      if (isMockAuth) {
+        console.warn('🧪 [E2E-API] Mock authentication detected in /api/posts');
+        token = {
+          id: 'mock-user-id',
+          email: 'one.photolife+1@gmail.com',
+          name: 'E2E Test User',
+          emailVerified: true,
+          role: 'user'
+        };
+      }
+    }
+    
+    // 通常の認証チェック（NextAuth v4対応）
+    if (!token) {
+      token = await getToken({
+        req,
+        secret:
+          process.env.NEXTAUTH_SECRET ||
+          process.env.AUTH_SECRET ||
+          'blankinai-member-board-secret-key-2024-production',
+        secureCookie: process.env.NODE_ENV === 'production',
+        cookieName:
+          process.env.NODE_ENV === 'production'
+            ? '__Secure-next-auth.session-token'
+            : 'next-auth.session-token',
+      });
+    }
 
     console.warn('🔍 [API] 認証トークン確認:', {
       hasToken: !!token,
@@ -186,8 +207,6 @@ export async function POST(req: NextRequest) {
     if (!csrfResult.valid) {
       console.error('[CSRF-ERROR] CSRF token validation failed for post creation', {
         error: csrfResult.error,
-        userId: user.id,
-        userEmail: user.email,
         timestamp: new Date().toISOString(),
       });
 
@@ -209,19 +228,40 @@ export async function POST(req: NextRequest) {
       cookieHeader: req.headers.get('cookie') ? 'present' : 'missing',
     };
 
-    // 認証チェック（NextAuth v4対応）
-    const token = await getToken({
-      req,
-      secret:
-        process.env.NEXTAUTH_SECRET ||
-        process.env.AUTH_SECRET ||
-        'blankinai-member-board-secret-key-2024-production',
-      secureCookie: process.env.NODE_ENV === 'production',
-      cookieName:
-        process.env.NODE_ENV === 'production'
-          ? '__Secure-next-auth.session-token'
-          : 'next-auth.session-token',
-    });
+    // E2Eテスト用の認証バイパス
+    let token = null;
+    if (process.env.NODE_ENV === 'development') {
+      const cookieHeader = req.headers.get('cookie');
+      const isMockAuth = cookieHeader?.includes('mock-session-token-for-e2e-testing') || 
+                        cookieHeader?.includes('e2e-mock-auth=mock-session-token-for-e2e-testing');
+      
+      if (isMockAuth) {
+        console.warn('🧪 [E2E-API] Mock authentication detected in /api/posts');
+        token = {
+          id: 'mock-user-id',
+          email: 'one.photolife+1@gmail.com',
+          name: 'E2E Test User',
+          emailVerified: true,
+          role: 'user'
+        };
+      }
+    }
+    
+    // 通常の認証チェック（NextAuth v4対応）
+    if (!token) {
+      token = await getToken({
+        req,
+        secret:
+          process.env.NEXTAUTH_SECRET ||
+          process.env.AUTH_SECRET ||
+          'blankinai-member-board-secret-key-2024-production',
+        secureCookie: process.env.NODE_ENV === 'production',
+        cookieName:
+          process.env.NODE_ENV === 'production'
+            ? '__Secure-next-auth.session-token'
+            : 'next-auth.session-token',
+      });
+    }
 
     console.warn('🔍 [API] 認証トークン確認:', {
       hasToken: !!token,

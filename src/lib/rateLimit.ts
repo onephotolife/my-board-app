@@ -1,5 +1,5 @@
 import rateLimit from 'express-rate-limit';
-import type { NextRequest} from 'next/server';
+import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
 /**
@@ -35,10 +35,7 @@ export const createPostLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1時間
   max: 30, // 最大30投稿
   message: '投稿数が制限を超えました。1時間後に再試行してください。',
-  keyGenerator: (req) => {
-    // ユーザーIDベースでレート制限
-    return req.headers.get('x-user-id') || req.ip || 'anonymous';
-  },
+  // IPv6対応: keyGeneratorを削除し、express-rate-limitのデフォルトを使用
 });
 
 // Next.js App Router用のレート制限ミドルウェア
@@ -51,53 +48,62 @@ export async function withRateLimit(
     message?: string;
   }
 ): Promise<NextResponse> {
-  const ip = request.headers.get('x-forwarded-for') || 
-             request.headers.get('x-real-ip') || 
-             'unknown';
-  
+  // Get IP address with proper IPv6 handling
+  let ip =
+    request.headers.get('x-forwarded-for') ||
+    request.headers.get('x-real-ip') ||
+    request.ip ||
+    'unknown';
+
+  // Normalize IPv6 addresses
+  if (ip && ip.includes(':')) {
+    // For IPv6, use a simplified key to avoid rate limit library issues
+    ip = 'ipv6:' + ip.split(':')[0];
+  }
+
   // シンプルなメモリベースのレート制限実装
   const key = `${ip}:${request.nextUrl.pathname}`;
   const now = Date.now();
   const windowMs = limiterConfig?.windowMs || 15 * 60 * 1000;
   const max = limiterConfig?.max || 100;
-  
+
   // TODO: 本番環境ではRedisを使用
   const requests = global.rateLimitStore?.get(key) || [];
   const recentRequests = requests.filter((time: number) => now - time < windowMs);
-  
+
   if (recentRequests.length >= max) {
     return NextResponse.json(
-      { 
+      {
         error: limiterConfig?.message || 'リクエスト数が多すぎます',
-        retryAfter: Math.ceil(windowMs / 1000)
+        retryAfter: Math.ceil(windowMs / 1000),
       },
-      { 
+      {
         status: 429,
         headers: {
           'Retry-After': String(Math.ceil(windowMs / 1000)),
           'X-RateLimit-Limit': String(max),
           'X-RateLimit-Remaining': '0',
-          'X-RateLimit-Reset': new Date(now + windowMs).toISOString()
-        }
+          'X-RateLimit-Reset': new Date(now + windowMs).toISOString(),
+        },
       }
     );
   }
-  
+
   // リクエストを記録
   recentRequests.push(now);
   if (!global.rateLimitStore) {
     global.rateLimitStore = new Map();
   }
   global.rateLimitStore.set(key, recentRequests);
-  
+
   // ハンドラーを実行
   const response = await handler(request);
-  
+
   // レート制限ヘッダーを追加
   response.headers.set('X-RateLimit-Limit', String(max));
   response.headers.set('X-RateLimit-Remaining', String(max - recentRequests.length));
   response.headers.set('X-RateLimit-Reset', new Date(now + windowMs).toISOString());
-  
+
   return response;
 }
 

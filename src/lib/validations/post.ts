@@ -9,7 +9,7 @@ export const PostCategory = {
   ANNOUNCEMENT: 'announcement',
 } as const;
 
-export type PostCategoryType = typeof PostCategory[keyof typeof PostCategory];
+export type PostCategoryType = (typeof PostCategory)[keyof typeof PostCategory];
 
 // カテゴリーの日本語ラベル
 export const PostCategoryLabels: Record<PostCategoryType, string> = {
@@ -22,21 +22,25 @@ export const PostCategoryLabels: Record<PostCategoryType, string> = {
 
 // 基本的な投稿スキーマ
 export const postSchema = z.object({
-  title: z.string()
+  title: z
+    .string()
     .min(1, 'タイトルを入力してください')
     .max(100, 'タイトルは100文字以内で入力してください')
     .regex(/^[^<>]*$/, '使用できない文字が含まれています'),
-  
-  content: z.string()
+
+  content: z
+    .string()
     .min(1, '本文を入力してください')
     .max(1000, '本文は1000文字以内で入力してください'),
-  
-  tags: z.array(z.string().max(20, 'タグは20文字以内で入力してください'))
+
+  tags: z
+    .array(z.string().max(20, 'タグは20文字以内で入力してください'))
     .max(5, 'タグは最大5個までです')
     .optional()
     .default([]),
-  
-  category: z.enum(['general', 'tech', 'question', 'discussion', 'announcement'])
+
+  category: z
+    .enum(['general', 'tech', 'question', 'discussion', 'announcement'])
     .default('general'),
 });
 
@@ -54,7 +58,18 @@ export const postFilterSchema = z.object({
   tag: z.string().optional(),
   search: z.string().optional(),
   author: z.string().optional(),
-  sort: z.enum(['createdAt', '-createdAt', 'updatedAt', '-updatedAt', 'views', '-views']).default('-createdAt'),
+  sort: z
+    .enum([
+      'createdAt',
+      '-createdAt',
+      'updatedAt',
+      '-updatedAt',
+      'views',
+      '-views',
+      'likes',
+      '-likes',
+    ])
+    .default('-createdAt'),
 });
 
 // 型のエクスポート
@@ -64,7 +79,9 @@ export type UpdatePostInput = z.infer<typeof updatePostSchema>;
 export type PostFilter = z.infer<typeof postFilterSchema>;
 
 // バリデーション関数
-export const validatePost = (data: unknown): { success: boolean; data?: PostInput; errors?: z.ZodError } => {
+export const validatePost = (
+  data: unknown
+): { success: boolean; data?: PostInput; errors?: z.ZodError } => {
   try {
     const validatedData = postSchema.parse(data);
     return { success: true, data: validatedData };
@@ -95,11 +112,11 @@ export const countCharacters = (text: string): number => {
 // エラーメッセージのフォーマット
 export const formatValidationErrors = (errors: z.ZodError): Record<string, string> => {
   const formatted: Record<string, string> = {};
-  
+
   errors.issues.forEach((issue) => {
     const path = issue.path.join('.');
     formatted[path] = issue.message;
   });
-  
+
   return formatted;
 };

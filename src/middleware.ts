@@ -21,6 +21,8 @@ const protectedPaths = [
   '/board/*/edit', // ワイルドカードパターン
   '/posts/new',
   '/posts/*/edit', // ワイルドカードパターン
+  '/tags', // タグ一覧ページ
+  '/tags/*', // タグ詳細ページ
 ];
 
 // 保護されたAPIエンドポイント（認証が必要）
@@ -30,6 +32,7 @@ const protectedApiPaths = [
   '/api/users/update',
   '/api/users/delete',
   '/api/admin',
+  '/api/tags', // タグ関連API
 ];
 
 // 公開パス（認証不要）

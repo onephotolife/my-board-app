@@ -4,7 +4,6 @@ import { useState } from 'react';
 import {
   Card,
   CardContent,
-  CardActions,
   Typography,
   IconButton,
   Box,
@@ -26,6 +25,8 @@ import { formatDistanceToNow } from 'date-fns';
 import { ja } from 'date-fns/locale';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+
+import { linkifyHashtags } from '@/app/utils/hashtag';
 
 interface PostCardProps {
   post: {
@@ -104,10 +105,7 @@ export default function PostCard({ post, currentUserId, onRefresh }: PostCardPro
         <CardContent>
           {/* ヘッダー */}
           <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
-            <Avatar
-              src={post.authorInfo.avatar}
-              sx={{ width: 40, height: 40, mr: 2 }}
-            >
+            <Avatar src={post.authorInfo.avatar} sx={{ width: 40, height: 40, mr: 2 }}>
               {post.authorInfo.name[0]}
             </Avatar>
             <Box sx={{ flexGrow: 1 }}>
@@ -119,11 +117,7 @@ export default function PostCard({ post, currentUserId, onRefresh }: PostCardPro
               </Typography>
             </Box>
             {isOwner && (
-              <IconButton
-                size="small"
-                onClick={handleMenuOpen}
-                aria-label="メニュー"
-              >
+              <IconButton size="small" onClick={handleMenuOpen} aria-label="メニュー">
                 <MoreVertIcon />
               </IconButton>
             )}
@@ -135,8 +129,29 @@ export default function PostCard({ post, currentUserId, onRefresh }: PostCardPro
           </Typography>
 
           {/* 本文 */}
-          <Typography variant="body1" paragraph>
-            {post.content}
+          <Typography variant="body1" paragraph component="div">
+            {linkifyHashtags(post.content).map((part, idx) =>
+              typeof part === 'string' ? (
+                <span key={idx}>{part}</span>
+              ) : (
+                <Link
+                  key={idx}
+                  href={part.href}
+                  style={{
+                    color: '#1976d2',
+                    textDecoration: 'none',
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.target as HTMLElement).style.textDecoration = 'underline';
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.target as HTMLElement).style.textDecoration = 'none';
+                  }}
+                >
+                  {part.text}
+                </Link>
+              )
+            )}
           </Typography>
 
           {/* タグ */}
@@ -161,11 +176,7 @@ export default function PostCard({ post, currentUserId, onRefresh }: PostCardPro
       </Card>
 
       {/* メニュー */}
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
-      >
+      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
         <MenuItem onClick={handleEdit}>
           <EditIcon fontSize="small" sx={{ mr: 1 }} />
           編集
@@ -177,25 +188,14 @@ export default function PostCard({ post, currentUserId, onRefresh }: PostCardPro
       </Menu>
 
       {/* 削除確認ダイアログ */}
-      <Dialog
-        open={deleteDialogOpen}
-        onClose={() => setDeleteDialogOpen(false)}
-      >
+      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
         <DialogTitle>投稿を削除しますか？</DialogTitle>
         <DialogContent>
-          <Typography>
-            この操作は取り消せません。本当に削除してもよろしいですか？
-          </Typography>
+          <Typography>この操作は取り消せません。本当に削除してもよろしいですか？</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDeleteDialogOpen(false)}>
-            キャンセル
-          </Button>
-          <Button
-            onClick={handleDeleteConfirm}
-            color="error"
-            variant="contained"
-          >
+          <Button onClick={() => setDeleteDialogOpen(false)}>キャンセル</Button>
+          <Button onClick={handleDeleteConfirm} color="error" variant="contained">
             削除
           </Button>
         </DialogActions>

@@ -42,9 +42,10 @@ export async function GET(req: NextRequest) {
     let token = null;
     if (process.env.NODE_ENV === 'development') {
       const cookieHeader = req.headers.get('cookie');
-      const isMockAuth = cookieHeader?.includes('mock-session-token-for-e2e-testing') || 
-                        cookieHeader?.includes('e2e-mock-auth=mock-session-token-for-e2e-testing');
-      
+      const isMockAuth =
+        cookieHeader?.includes('mock-session-token-for-e2e-testing') ||
+        cookieHeader?.includes('e2e-mock-auth=mock-session-token-for-e2e-testing');
+
       if (isMockAuth) {
         console.warn('🧪 [E2E-API] Mock authentication detected in /api/posts');
         token = {
@@ -52,11 +53,11 @@ export async function GET(req: NextRequest) {
           email: 'one.photolife+1@gmail.com',
           name: 'E2E Test User',
           emailVerified: true,
-          role: 'user'
+          role: 'user',
         };
       }
     }
-    
+
     // 通常の認証チェック（NextAuth v4対応）
     if (!token) {
       token = await getToken({
@@ -143,20 +144,41 @@ export async function GET(req: NextRequest) {
 
     // ソート順の決定
     const sortOrder: Record<string, 1 | -1> = {};
-    if (sort.startsWith('-')) {
-      sortOrder[sort.substring(1)] = -1;
+    let useAggregateForLikes = false;
+    let likesOrder: 1 | -1 = -1;
+    if (sort.includes('likes')) {
+      // likesは配列。人気順は配列サイズでソートするため集計パイプラインを使用
+      useAggregateForLikes = true;
+      likesOrder = sort.startsWith('-') ? -1 : 1;
     } else {
-      sortOrder[sort] = 1;
+      if (sort.startsWith('-')) {
+        sortOrder[sort.substring(1)] = -1;
+      } else {
+        sortOrder[sort] = 1;
+      }
     }
 
     // ページネーション計算
     const skip = (page - 1) * limit;
 
-    // データ取得（並列実行）
-    const [posts, total] = await Promise.all([
-      Post.find(query).sort(sortOrder).skip(skip).limit(limit).lean(),
-      Post.countDocuments(query),
-    ]);
+    let posts: unknown[] = [];
+    const totalPromise = Post.countDocuments(query);
+
+    if (useAggregateForLikes) {
+      // likes配列の要素数でソート
+      const pipeline: Record<string, unknown>[] = [
+        { $match: query },
+        { $addFields: { likesCount: { $size: { $ifNull: ['$likes', []] } } } },
+        { $sort: { likesCount: likesOrder, _id: -1 } },
+        { $skip: skip },
+        { $limit: limit },
+      ];
+      posts = await Post.aggregate(pipeline);
+    } else {
+      posts = await Post.find(query).sort(sortOrder).skip(skip).limit(limit).lean();
+    }
+
+    const total = await totalPromise;
 
     // 正規化と権限情報追加（UnifiedPost形式に変換）
     const normalizedPosts = normalizePostDocuments(posts, user.id);
@@ -232,9 +254,10 @@ export async function POST(req: NextRequest) {
     let token = null;
     if (process.env.NODE_ENV === 'development') {
       const cookieHeader = req.headers.get('cookie');
-      const isMockAuth = cookieHeader?.includes('mock-session-token-for-e2e-testing') || 
-                        cookieHeader?.includes('e2e-mock-auth=mock-session-token-for-e2e-testing');
-      
+      const isMockAuth =
+        cookieHeader?.includes('mock-session-token-for-e2e-testing') ||
+        cookieHeader?.includes('e2e-mock-auth=mock-session-token-for-e2e-testing');
+
       if (isMockAuth) {
         console.warn('🧪 [E2E-API] Mock authentication detected in /api/posts');
         token = {
@@ -242,11 +265,11 @@ export async function POST(req: NextRequest) {
           email: 'one.photolife+1@gmail.com',
           name: 'E2E Test User',
           emailVerified: true,
-          role: 'user'
+          role: 'user',
         };
       }
     }
-    
+
     // 通常の認証チェック（NextAuth v4対応）
     if (!token) {
       token = await getToken({

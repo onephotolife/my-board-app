@@ -26,7 +26,6 @@ import {
   Fade,
   Grow,
   Zoom,
-  Paper,
   Tooltip,
   alpha,
   CircularProgress,
@@ -39,10 +38,7 @@ import {
   Logout as LogoutIcon,
   Notifications as NotificationsIcon,
   Settings as SettingsIcon,
-  Home as HomeIcon,
   Menu as MenuIcon,
-  Close as CloseIcon,
-  AccountCircle as AccountCircleIcon,
   PrivacyTip as PrivacyTipIcon,
   Article as ArticleIcon,
   ContactMail as ContactMailIcon,
@@ -65,12 +61,13 @@ export default function EnhancedAppLayout({ children, title, subtitle }: Enhance
   const pathname = usePathname();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
-  
+  // const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
+  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
+
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
-  const [notifications, setNotifications] = useState(3);
+  const [notifications] = useState(3);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -94,33 +91,33 @@ export default function EnhancedAppLayout({ children, title, subtitle }: Enhance
   };
 
   const menuItems = [
-    { 
-      text: 'ダッシュボード', 
-      icon: <DashboardIcon />, 
+    {
+      text: 'ダッシュボード',
+      icon: <DashboardIcon />,
       path: '/dashboard',
       color: theme.palette.primary.main,
     },
-    { 
-      text: '掲示板', 
-      icon: <ForumIcon />, 
+    {
+      text: '掲示板',
+      icon: <ForumIcon />,
       path: '/board',
       color: theme.palette.info.main,
     },
-    { 
-      text: '新規投稿', 
-      icon: <PostAddIcon />, 
+    {
+      text: '新規投稿',
+      icon: <PostAddIcon />,
       path: '/posts/new',
       color: theme.palette.success.main,
     },
-    { 
-      text: 'マイ投稿', 
-      icon: <ArticleIcon />, 
+    {
+      text: 'マイ投稿',
+      icon: <ArticleIcon />,
       path: '/my-posts',
       color: theme.palette.warning.main,
     },
-    { 
-      text: 'プロフィール', 
-      icon: <PersonIcon />, 
+    {
+      text: 'プロフィール',
+      icon: <PersonIcon />,
       path: '/profile',
       color: theme.palette.secondary.main,
     },
@@ -138,18 +135,20 @@ export default function EnhancedAppLayout({ children, title, subtitle }: Enhance
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        background: theme.palette.mode === 'dark' 
-          ? 'linear-gradient(180deg, #1a1a2e 0%, #16213e 100%)'
-          : 'linear-gradient(180deg, #ffffff 0%, #f5f7fa 100%)',
+        background:
+          theme.palette.mode === 'dark'
+            ? 'linear-gradient(180deg, #1a1a2e 0%, #16213e 100%)'
+            : 'linear-gradient(180deg, #ffffff 0%, #f5f7fa 100%)',
       }}
     >
       {/* ユーザー情報セクション */}
       <Box
         sx={{
           p: 3,
-          background: theme.palette.mode === 'dark'
-            ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-            : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          background:
+            theme.palette.mode === 'dark'
+              ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+              : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
           color: '#fff',
           position: 'relative',
           overflow: 'hidden',
@@ -229,10 +228,8 @@ export default function EnhancedAppLayout({ children, title, subtitle }: Enhance
                   },
                 }}
               >
-                <ListItemIcon sx={{ color: item.color, minWidth: 40 }}>
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText 
+                <ListItemIcon sx={{ color: item.color, minWidth: 40 }}>{item.icon}</ListItemIcon>
+                <ListItemText
                   primary={item.text}
                   primaryTypographyProps={{
                     fontWeight: pathname === item.path ? 600 : 400,
@@ -263,10 +260,8 @@ export default function EnhancedAppLayout({ children, title, subtitle }: Enhance
                 },
               }}
             >
-              <ListItemIcon sx={{ minWidth: 36, opacity: 0.7 }}>
-                {item.icon}
-              </ListItemIcon>
-              <ListItemText 
+              <ListItemIcon sx={{ minWidth: 36, opacity: 0.7 }}>{item.icon}</ListItemIcon>
+              <ListItemText
                 primary={item.text}
                 primaryTypographyProps={{
                   fontSize: '0.875rem',
@@ -308,12 +303,14 @@ export default function EnhancedAppLayout({ children, title, subtitle }: Enhance
         position="fixed"
         elevation={0}
         sx={{
+          zIndex: (theme) => theme.zIndex.drawer + 1,
           width: { md: `calc(100% - ${drawerWidth}px)` },
           ml: { md: `${drawerWidth}px` },
           backdropFilter: 'blur(20px)',
           backgroundColor: alpha(theme.palette.background.paper, 0.9),
           borderBottom: `1px solid ${theme.palette.divider}`,
         }}
+        data-testid="app-header"
       >
         <Toolbar sx={{ justifyContent: 'space-between' }}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -325,11 +322,11 @@ export default function EnhancedAppLayout({ children, title, subtitle }: Enhance
             >
               <MenuIcon />
             </IconButton>
-            
+
             <Box>
-              <Typography 
-                variant="h6" 
-                noWrap 
+              <Typography
+                variant="h6"
+                noWrap
                 component="div"
                 sx={{
                   fontWeight: 700,
@@ -360,7 +357,7 @@ export default function EnhancedAppLayout({ children, title, subtitle }: Enhance
 
             {/* ダークモード切り替え */}
             <Tooltip title="テーマ切り替え">
-              <IconButton 
+              <IconButton
                 onClick={() => setDarkMode(!darkMode)}
                 sx={{ color: theme.palette.text.primary }}
               >
@@ -379,44 +376,27 @@ export default function EnhancedAppLayout({ children, title, subtitle }: Enhance
       </AppBar>
 
       {/* サイドバー */}
-      <Box
-        component="nav"
-        sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}
-      >
+      <Box component="nav" sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}>
         <Drawer
-          variant="temporary"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
+          variant={isDesktop ? 'permanent' : 'temporary'}
+          open={isDesktop ? true : mobileOpen}
+          onClose={isDesktop ? undefined : handleDrawerToggle}
           ModalProps={{ keepMounted: true }}
           sx={{
-            display: { xs: 'block', md: 'none' },
+            display: 'block',
             '& .MuiDrawer-paper': {
               boxSizing: 'border-box',
               width: drawerWidth,
               borderRight: 'none',
-              boxShadow: '4px 0 24px rgba(0,0,0,0.12)',
+              boxShadow: isDesktop ? '2px 0 12px rgba(0,0,0,0.08)' : '4px 0 24px rgba(0,0,0,0.12)',
+              position: isDesktop ? 'fixed' : 'relative',
+              left: isDesktop ? 0 : 'auto',
+              top: isDesktop ? 0 : 'auto',
+              height: isDesktop ? '100vh' : 'auto',
+              zIndex: isDesktop ? 1100 : undefined,
             },
           }}
-        >
-          {drawerContent}
-        </Drawer>
-        <Drawer
-          variant="permanent"
-          sx={{
-            display: { xs: 'none', md: 'block' },
-            '& .MuiDrawer-paper': {
-              boxSizing: 'border-box',
-              width: drawerWidth,
-              borderRight: 'none',
-              boxShadow: '2px 0 12px rgba(0,0,0,0.08)',
-              position: 'fixed',
-              left: 0,
-              top: 0,
-              height: '100vh',
-              zIndex: 1100,
-            },
-          }}
-          open
+          data-testid="app-sidebar"
         >
           {drawerContent}
         </Drawer>

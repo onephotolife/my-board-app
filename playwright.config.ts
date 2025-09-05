@@ -1,5 +1,6 @@
-import { defineConfig, devices } from '@playwright/test';
 import * as path from 'path';
+
+import { defineConfig, devices } from '@playwright/test';
 
 /**
  * Playwright E2Eテスト設定
@@ -15,7 +16,7 @@ export default defineConfig({
     ['line'],
     ['html', { outputFolder: 'playwright-report' }],
     ['json', { outputFile: 'test-results/results.json' }],
-    ['junit', { outputFile: 'test-results/junit.xml' }]
+    ['junit', { outputFile: 'test-results/junit.xml' }],
   ],
   use: {
     baseURL: 'http://localhost:3000',
@@ -38,11 +39,25 @@ export default defineConfig({
     // Main test projects - use saved auth state
     {
       name: 'chromium',
-      use: { 
+      use: {
         ...devices['Desktop Chrome'],
         storageState: path.join(__dirname, 'tests/e2e/storageState.json'),
       },
       // dependencies: ['setup'], // Temporarily disabled for mock storageState testing
+    },
+    {
+      name: 'webkit',
+      use: {
+        ...devices['Desktop Safari'],
+        storageState: path.join(__dirname, 'tests/e2e/storageState.json'),
+      },
+    },
+    {
+      name: 'firefox',
+      use: {
+        ...devices['Desktop Firefox'],
+        storageState: path.join(__dirname, 'tests/e2e/storageState.json'),
+      },
     },
   ],
 

@@ -9,27 +9,26 @@ const nextConfig = {
     // ビルド時のTypeScriptエラーを無視（本番デプロイのため一時的に）
     ignoreBuildErrors: true,
   },
-  
+
   // セキュリティ強化設定
   poweredByHeader: false, // X-Powered-Byヘッダーを無効化
-  compress: true,         // gzip圧縮有効化
-  
+  compress: true, // gzip圧縮有効化
+
   // 本番環境設定
   productionBrowserSourceMaps: false, // 本番環境でソースマップを無効化
-  
-  // Turbopackの最適化設定
+
+  // Turbopackの最適化設定（MUI + Popper の vendor-chunks 生成不具合回避のため無効化）
   experimental: {
-    // MUIとの互換性向上
-    optimizePackageImports: ['@mui/material', '@mui/icons-material'],
+    // optimizePackageImports: ['@mui/material', '@mui/icons-material'],
   },
-  
+
   // セキュリティヘッダー設定
   async headers() {
     const isDevelopment = process.env.NODE_ENV === 'development';
-    
+
     // CORS許可オリジン設定
     const allowedOrigins = process.env.ALLOWED_ORIGINS || 'https://board.blankbrainai.com';
-    
+
     return [
       {
         // すべてのルートに適用
@@ -37,35 +36,37 @@ const nextConfig = {
         headers: [
           {
             key: 'X-DNS-Prefetch-Control',
-            value: 'on'
+            value: 'on',
           },
-          ...(isDevelopment ? [] : [
-            {
-              key: 'Strict-Transport-Security',
-              value: 'max-age=63072000; includeSubDomains; preload'
-            }
-          ]),
+          ...(isDevelopment
+            ? []
+            : [
+                {
+                  key: 'Strict-Transport-Security',
+                  value: 'max-age=63072000; includeSubDomains; preload',
+                },
+              ]),
           {
             key: 'X-Frame-Options',
-            value: 'DENY'
+            value: 'DENY',
           },
           {
             key: 'X-Content-Type-Options',
-            value: 'nosniff'
+            value: 'nosniff',
           },
           {
             key: 'X-XSS-Protection',
-            value: '1; mode=block'
+            value: '1; mode=block',
           },
           {
             key: 'Referrer-Policy',
-            value: 'strict-origin-when-cross-origin'
+            value: 'strict-origin-when-cross-origin',
           },
           {
             key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()'
-          }
-        ]
+            value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
+          },
+        ],
       },
       {
         // APIルートに追加のセキュリティヘッダーとCORS設定
@@ -73,29 +74,29 @@ const nextConfig = {
         headers: [
           {
             key: 'Cache-Control',
-            value: 'no-store, max-age=0, must-revalidate'
+            value: 'no-store, max-age=0, must-revalidate',
           },
           {
             key: 'Access-Control-Allow-Origin',
-            value: allowedOrigins
+            value: allowedOrigins,
           },
           {
             key: 'Access-Control-Allow-Methods',
-            value: 'GET, POST, PUT, DELETE, OPTIONS'
+            value: 'GET, POST, PUT, DELETE, OPTIONS',
           },
           {
             key: 'Access-Control-Allow-Headers',
-            value: 'Content-Type, Authorization, X-Requested-With'
+            value: 'Content-Type, Authorization, X-Requested-With',
           },
           {
             key: 'Access-Control-Max-Age',
-            value: '86400'
+            value: '86400',
           },
           {
             key: 'Access-Control-Allow-Credentials',
-            value: 'true'
-          }
-        ]
+            value: 'true',
+          },
+        ],
       },
       {
         // ヘルスチェックAPIのキャッシュ設定
@@ -103,13 +104,13 @@ const nextConfig = {
         headers: [
           {
             key: 'Cache-Control',
-            value: 'public, s-maxage=10, stale-while-revalidate=60'
-          }
-        ]
-      }
+            value: 'public, s-maxage=10, stale-while-revalidate=60',
+          },
+        ],
+      },
     ];
   },
-  
+
   // Webpackの設定（Turbopackが使用されない場合のフォールバック）
   webpack: (config, { isServer }) => {
     if (!isServer) {
@@ -124,13 +125,13 @@ const nextConfig = {
     }
     return config;
   },
-  
+
   // HMRの最適化
   onDemandEntries: {
     maxInactiveAge: 25 * 1000,
     pagesBufferLength: 2,
   },
-  
+
   // 環境変数の公開設定
   env: {
     NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME || '会員制掲示板',
@@ -140,15 +141,9 @@ const nextConfig = {
 
 // 環境変数の検証（ビルド時）
 if (process.env.NODE_ENV === 'production') {
-  const requiredEnvVars = [
-    'NEXTAUTH_URL',
-    'NEXTAUTH_SECRET',
-    'MONGODB_URI',
-  ];
+  const requiredEnvVars = ['NEXTAUTH_URL', 'NEXTAUTH_SECRET', 'MONGODB_URI'];
 
-  const missingEnvVars = requiredEnvVars.filter(
-    (envVar) => !process.env[envVar]
-  );
+  const missingEnvVars = requiredEnvVars.filter((envVar) => !process.env[envVar]);
 
   if (missingEnvVars.length > 0) {
     console.warn('⚠️  必須の環境変数が設定されていません:');

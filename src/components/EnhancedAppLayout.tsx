@@ -415,9 +415,13 @@ export default function EnhancedAppLayout({ children, title, subtitle }: Enhance
         }}
       >
         <Container maxWidth="xl" sx={{ height: '100%' }}>
-          <Fade in timeout={500}>
+          {pathname?.startsWith('/tags') ? (
             <Box>{children}</Box>
-          </Fade>
+          ) : (
+            <Fade in timeout={500}>
+              <Box>{children}</Box>
+            </Fade>
+          )}
         </Container>
       </Box>
 

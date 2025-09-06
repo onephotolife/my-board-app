@@ -1,7 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { getToken } from 'next-auth/jwt';
+import type { PipelineStage } from 'mongoose';
 
 import { connectDB } from '@/lib/db/mongodb-local';
 import Post from '@/lib/models/Post';
@@ -23,6 +23,39 @@ import { extractHashtags, normalizeTag } from '@/app/utils/hashtag';
 // ページネーションのデフォルト値
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 10;
+
+// next-auth/jwt の型定義互換問題に対処する安全ラッパ
+async function getTokenFromRequest(req: NextRequest) {
+  try {
+    // 動的インポートでランタイムの実装に依存し、型不整合によるビルドエラーを回避
+    const mod: unknown = await import('next-auth/jwt');
+    const getToken = (
+      mod as {
+        getToken?: (opts: {
+          req: NextRequest;
+          secret?: string;
+          secureCookie?: boolean;
+          cookieName?: string;
+        }) => Promise<Record<string, unknown> | null>;
+      }
+    ).getToken;
+    if (typeof getToken === 'function') {
+      return await getToken({
+        req,
+        secret:
+          process.env.NEXTAUTH_SECRET ||
+          process.env.AUTH_SECRET ||
+          'blankinai-member-board-secret-key-2024-production',
+        secureCookie: process.env.NODE_ENV === 'production',
+        cookieName:
+          process.env.NODE_ENV === 'production'
+            ? '__Secure-next-auth.session-token'
+            : 'next-auth.session-token',
+      });
+    }
+  } catch {}
+  return null;
+}
 
 // GET: 投稿一覧取得（認証必須）
 export async function GET(req: NextRequest) {
@@ -60,31 +93,22 @@ export async function GET(req: NextRequest) {
 
     // 通常の認証チェック（NextAuth v4対応）
     if (!token) {
-      token = await getToken({
-        req,
-        secret:
-          process.env.NEXTAUTH_SECRET ||
-          process.env.AUTH_SECRET ||
-          'blankinai-member-board-secret-key-2024-production',
-        secureCookie: process.env.NODE_ENV === 'production',
-        cookieName:
-          process.env.NODE_ENV === 'production'
-            ? '__Secure-next-auth.session-token'
-            : 'next-auth.session-token',
-      });
+      token = await getTokenFromRequest(req);
     }
 
-    console.warn('🔍 [API] 認証トークン確認:', {
-      hasToken: !!token,
-      userId: token?.id || token?.sub,
-      email: token?.email,
-      emailVerified: token?.emailVerified,
-      tokenKeys: token ? Object.keys(token) : [],
-      environment: process.env.NODE_ENV,
-      hasAuthSecret: !!process.env.AUTH_SECRET,
-      hasNextAuthSecret: !!process.env.NEXTAUTH_SECRET,
-      cookies: cookieDebug,
-    });
+    if (process.env.DEBUG_TAGS === 'true') {
+      console.warn('🔍 [API] 認証トークン確認:', {
+        hasToken: !!token,
+        userId: token?.id || token?.sub,
+        email: token?.email,
+        emailVerified: token?.emailVerified,
+        tokenKeys: token ? Object.keys(token) : [],
+        environment: process.env.NODE_ENV,
+        hasAuthSecret: !!process.env.AUTH_SECRET,
+        hasNextAuthSecret: !!process.env.NEXTAUTH_SECRET,
+        cookies: cookieDebug,
+      });
+    }
 
     if (!token) {
       return createErrorResponse('認証が必要です', 401, 'UNAUTHORIZED');
@@ -119,27 +143,37 @@ export async function GET(req: NextRequest) {
 
     await connectDB();
 
-    // クエリ構築
-    const query: Record<string, unknown> = { status: 'published' };
+    // クエリ構築（最小差分で既存のAND条件にORを組み込めるよう拡張）
+    const baseQuery: Record<string, unknown> = { status: 'published' };
+    const andConditions: Record<string, unknown>[] = [];
 
     if (category && category !== 'all') {
-      query.category = category;
+      baseQuery.category = category;
     }
 
     if (tag) {
-      query.tags = { $in: [tag] };
+      // 既存データ互換: 過去投稿で tags フィールド未設定でも本文に #<tag> があればヒットさせる
+      const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const tagEscaped = escape(tag);
+      // 先頭/空白の後の #<tag> で末尾は空白/行末/句読点類で終了（日本語対応のため緩めに）
+      const tagPattern = new RegExp(`(^|\\s)#${tagEscaped}(?=\\s|$|[\\p{P}])`, 'u');
+      andConditions.push({
+        $or: [{ tags: { $in: [tag] } }, { content: { $regex: tagPattern } }],
+      });
     }
 
     if (search) {
       const searchRegex = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      query.$or = [
-        { title: { $regex: searchRegex, $options: 'i' } },
-        { content: { $regex: searchRegex, $options: 'i' } },
-      ];
+      andConditions.push({
+        $or: [
+          { title: { $regex: searchRegex, $options: 'i' } },
+          { content: { $regex: searchRegex, $options: 'i' } },
+        ],
+      });
     }
 
     if (author) {
-      query['author._id'] = author;
+      baseQuery['author._id'] = author;
     }
 
     // ソート順の決定
@@ -161,13 +195,17 @@ export async function GET(req: NextRequest) {
     // ページネーション計算
     const skip = (page - 1) * limit;
 
+    // 最終クエリ組み立て
+    const finalQuery: Record<string, unknown> =
+      andConditions.length > 0 ? { ...baseQuery, $and: andConditions } : { ...baseQuery };
+
     let posts: unknown[] = [];
-    const totalPromise = Post.countDocuments(query);
+    const totalPromise = Post.countDocuments(finalQuery);
 
     if (useAggregateForLikes) {
       // likes配列の要素数でソート
-      const pipeline: Record<string, unknown>[] = [
-        { $match: query },
+      const pipeline: PipelineStage[] = [
+        { $match: finalQuery },
         { $addFields: { likesCount: { $size: { $ifNull: ['$likes', []] } } } },
         { $sort: { likesCount: likesOrder, _id: -1 } },
         { $skip: skip },
@@ -175,10 +213,25 @@ export async function GET(req: NextRequest) {
       ];
       posts = await Post.aggregate(pipeline);
     } else {
-      posts = await Post.find(query).sort(sortOrder).skip(skip).limit(limit).lean();
+      posts = await Post.find(finalQuery).sort(sortOrder).skip(skip).limit(limit).lean();
     }
 
     const total = await totalPromise;
+
+    // 開発限定の観測ログ（PIIなし）
+    if (process.env.DEBUG_TAGS === 'true') {
+      try {
+        console.warn('[TAG-API]', {
+          tag,
+          page,
+          limit,
+          total,
+          finalQuery,
+          sampleId:
+            (Array.isArray(posts) && (posts as Array<{ _id?: unknown }>)[0]?.['_id']) || null,
+        });
+      } catch {}
+    }
 
     // 正規化と権限情報追加（UnifiedPost形式に変換）
     const normalizedPosts = normalizePostDocuments(posts, user.id);
@@ -272,18 +325,7 @@ export async function POST(req: NextRequest) {
 
     // 通常の認証チェック（NextAuth v4対応）
     if (!token) {
-      token = await getToken({
-        req,
-        secret:
-          process.env.NEXTAUTH_SECRET ||
-          process.env.AUTH_SECRET ||
-          'blankinai-member-board-secret-key-2024-production',
-        secureCookie: process.env.NODE_ENV === 'production',
-        cookieName:
-          process.env.NODE_ENV === 'production'
-            ? '__Secure-next-auth.session-token'
-            : 'next-auth.session-token',
-      });
+      token = await getTokenFromRequest(req);
     }
 
     console.warn('🔍 [API] 認証トークン確認:', {

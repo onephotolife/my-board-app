@@ -18,7 +18,10 @@ import {
   Paper,
   Alert,
   Chip,
+  IconButton,
+  Badge,
 } from '@mui/material';
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -507,7 +510,7 @@ export default function TagDetailClient({ tagKey, initial }: TagDetailClientProp
 
   return (
     <Container
-      maxWidth="md"
+      maxWidth="lg"
       sx={{
         py: 4,
         position: 'relative',
@@ -518,6 +521,23 @@ export default function TagDetailClient({ tagKey, initial }: TagDetailClientProp
         overflow: 'visible',
       }}
     >
+      {/* ページ内ローカルヘッダー（トップ以外のページに合わせる） */}
+      <Box sx={{ mb: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Box>
+            <Typography variant="h4" gutterBottom>
+              会員制掲示板
+            </Typography>
+          </Box>
+          <Box>
+            <IconButton aria-label="通知">
+              <Badge color="error" badgeContent={0}>
+                <NotificationsNoneIcon />
+              </Badge>
+            </IconButton>
+          </Box>
+        </Box>
+      </Box>
       {process.env.NEXT_PUBLIC_TAG_DEBUG === 'true' && (
         <Alert severity="info" sx={{ mb: 2 }} data-testid="tag-debug-info">
           Debug: tag={tagKey} posts={posts.length} loading={String(loading)} error={error || 'none'}{' '}

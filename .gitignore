@@ -164,3 +164,10 @@ playwright/
 *-csrf-test.js
 clear-cookies-and-test.js
 scripts/mongodb-optimization/mongodb-atlas-optimization.js
+
+# Local auth/cookies and CI artifacts
+# Do not commit local cookie jars or auth storage
+jar.txt
+tests/e2e/.auth/
+# Do not commit CI test summary
+junit.xml

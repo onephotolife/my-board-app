@@ -162,7 +162,7 @@ jobs:
 
       - name: Comment PR with audit results
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const fs = require('fs');
@@ -206,7 +206,7 @@ jobs:
           fetch-depth: 0
 
       - name: Analyze PR
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const { data: pr } = await github.rest.pulls.get({
@@ -302,7 +302,7 @@ jobs:
 
       - name: Add success comment
         if: success() && github.event_name == 'pull_request'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const comment = `## ✅ すべてのチェックが成功しました！

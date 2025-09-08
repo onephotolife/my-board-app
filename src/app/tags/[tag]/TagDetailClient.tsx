@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { createPortal } from 'react-dom';
+// import { createPortal } from 'react-dom';
 // import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -18,10 +18,7 @@ import {
   Paper,
   Alert,
   Chip,
-  IconButton,
-  Badge,
 } from '@mui/material';
-import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -30,10 +27,12 @@ import PersonIcon from '@mui/icons-material/Person';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import TagIcon from '@mui/icons-material/Tag';
 
+import type { TrendingItem } from '@/components/TrendingTagsBar';
+import TrendingTagsBar from '@/components/TrendingTagsBar';
 import { linkifyHashtags } from '@/app/utils/hashtag';
 // Portalは撤去。通常DOMで描画する
 
-interface Post {
+export interface Post {
   _id: string;
   title?: string;
   content?: string;
@@ -62,9 +61,14 @@ interface TagDetailClientProps {
     posts: Post[];
     hasNext: boolean;
   };
+  trendingInitial?: TrendingItem[];
 }
 
-export default function TagDetailClient({ tagKey, initial }: TagDetailClientProps) {
+export default function TagDetailClient({
+  tagKey,
+  initial,
+  trendingInitial,
+}: TagDetailClientProps) {
   // const router = useRouter();
   const [posts, setPosts] = useState<Post[]>(initial?.posts ?? []);
   const [loading, setLoading] = useState(false);
@@ -73,47 +77,7 @@ export default function TagDetailClient({ tagKey, initial }: TagDetailClientProp
   const [page, setPage] = useState(1);
   const [hasNext, setHasNext] = useState(initial?.hasNext ?? false);
   const limit = 20;
-  // Portal撤去後の保守用メモ: 以前は環境変数で切り替え
-  const [usePortalFallback, setUsePortalFallback] = useState(false);
-  const [portalRoot, setPortalRoot] = useState<HTMLElement | null>(null);
-  const forcePortal = process.env.NEXT_PUBLIC_TAG_FORCE_PORTAL === 'true';
-
-  const ensurePortalRoot = useCallback((): HTMLElement => {
-    let el = document.getElementById('tag-portal-fallback') as HTMLElement | null;
-    if (!el) {
-      el = document.createElement('div');
-      el.id = 'tag-portal-fallback';
-      Object.assign(el.style, {
-        position: 'fixed',
-        top: '96px',
-        left: '312px',
-        right: '24px',
-        bottom: '24px',
-        overflow: 'auto',
-        zIndex: '2147483638',
-        background: 'transparent',
-        pointerEvents: 'auto',
-      } as CSSStyleDeclaration);
-      document.body.appendChild(el);
-    }
-    setPortalRoot(el);
-    return el;
-  }, []);
-
-  // postsが取得できた直後はまずPortalで確実に可視化し、のちに診断で通常DOMへ戻す
-  useEffect(() => {
-    if (process.env.NEXT_PUBLIC_DISABLE_TAG_PORTAL_FALLBACK === 'true') return;
-    if (posts.length > 0) {
-      if (forcePortal) {
-        ensurePortalRoot();
-        setUsePortalFallback(true);
-      } else {
-        // 一旦フォールバックONにして確実に見せる
-        ensurePortalRoot();
-        setUsePortalFallback(true);
-      }
-    }
-  }, [posts.length, forcePortal, ensurePortalRoot]);
+  // Portal機構は撤去済み
 
   // 最終手段の可視デバッグ: フラグがONのときだけ固定バーを出す
   useEffect(() => {
@@ -197,107 +161,9 @@ export default function TagDetailClient({ tagKey, initial }: TagDetailClientProp
     }
   }, [posts]);
 
-  // 可視性の自己診断: カードが高さ0/不可視ならフォールバックPortalへ切替
-  useEffect(() => {
-    if (process.env.NEXT_PUBLIC_DISABLE_TAG_PORTAL_FALLBACK === 'true') return;
-    // 強制Portalが有効なら即座にポータルルートを用意して終了
-    if (forcePortal) {
-      let el = document.getElementById('tag-portal-fallback') as HTMLElement | null;
-      if (!el) {
-        el = document.createElement('div');
-        el.id = 'tag-portal-fallback';
-        Object.assign(el.style, {
-          position: 'fixed',
-          top: '96px',
-          left: '312px',
-          right: '24px',
-          bottom: '24px',
-          overflow: 'auto',
-          zIndex: '2147483638',
-          background: 'transparent',
-        } as CSSStyleDeclaration);
-        document.body.appendChild(el);
-      }
-      setPortalRoot(el);
-      setUsePortalFallback(true);
-      return;
-    }
-    let attempts = 0;
-    const getRoot = () => ensurePortalRoot();
+  // Portal自己診断は撤去
 
-    const tick = () => {
-      attempts += 1;
-      try {
-        const card = document.querySelector(
-          '[data-testid^="tag-post-card-"]'
-        ) as HTMLElement | null;
-        if (!card) {
-          // まだDOMに現れていない → 一定回数待機、超えたらフォールバック
-          if (attempts >= 8 && posts.length > 0) {
-            getRoot();
-            setUsePortalFallback(true);
-            return;
-          }
-          return;
-        }
-        const style = window.getComputedStyle(card);
-        const rect = card.getBoundingClientRect();
-        const invisible =
-          style.display === 'none' ||
-          style.visibility === 'hidden' ||
-          Number(style.opacity) === 0 ||
-          rect.height <= 1 ||
-          rect.width <= 1;
-        if (invisible) {
-          getRoot();
-          setUsePortalFallback(true);
-        } else {
-          // 可視でも一時的にPortalを維持（再度の不可視化で瞬断しないため）
-          setUsePortalFallback(true);
-        }
-      } catch {}
-    };
-
-    const id = window.setInterval(tick, 300);
-    return () => {
-      window.clearInterval(id);
-    };
-  }, [posts.length]);
-
-  // ポータル状態が有効なときは右上にステータスを常時表示
-  useEffect(() => {
-    if (process.env.NEXT_PUBLIC_TAG_DEBUG !== 'true') {
-      const node = document.getElementById('tag-portal-status');
-      if (node) node.remove();
-      return;
-    }
-    try {
-      const id = 'tag-portal-status';
-      let el = document.getElementById(id);
-      if (!el) {
-        el = document.createElement('div');
-        el.id = id;
-        Object.assign(el.style, {
-          position: 'fixed',
-          top: '8px',
-          right: '8px',
-          zIndex: '2147483646',
-          background: '#fff3cd',
-          color: '#7a5d00',
-          fontSize: '12px',
-          padding: '6px 8px',
-          border: '1px solid #ffeeba',
-          borderRadius: '6px',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-        } as CSSStyleDeclaration);
-        document.body.appendChild(el);
-      }
-      el!.textContent = usePortalFallback
-        ? 'Tags: Portal fallback ACTIVE'
-        : 'Tags: Portal fallback OFF';
-      el!.style.display = usePortalFallback ? 'block' : 'none';
-    } catch {}
-  }, [usePortalFallback]);
+  // Portal状態表示は撤去
 
   const fetchPosts = useCallback(async () => {
     setLoading(true);
@@ -509,35 +375,16 @@ export default function TagDetailClient({ tagKey, initial }: TagDetailClientProp
   );
 
   return (
-    <Container
-      maxWidth="lg"
-      sx={{
-        py: 4,
-        position: 'relative',
-        zIndex: 2147483639,
-        minHeight: 'auto',
-        height: 'auto',
-        display: 'block',
-        overflow: 'visible',
-      }}
-    >
-      {/* ページ内ローカルヘッダー（トップ以外のページに合わせる） */}
-      <Box sx={{ mb: 2 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Box>
-            <Typography variant="h4" gutterBottom>
-              会員制掲示板
-            </Typography>
-          </Box>
-          <Box>
-            <IconButton aria-label="通知">
-              <Badge color="error" badgeContent={0}>
-                <NotificationsNoneIcon />
-              </Badge>
-            </IconButton>
-          </Box>
-        </Box>
+    <Container maxWidth="lg" sx={{ py: 2, position: 'relative' }}>
+      {/* ページ内ローカルヘッダー（他ページの雰囲気に合わせた簡易版） */}
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+        <Typography variant="h4" component="h2" sx={{ fontWeight: 700 }}>
+          タグ
+        </Typography>
       </Box>
+      <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+        ハッシュタグの一覧と詳細
+      </Typography>
       {process.env.NEXT_PUBLIC_TAG_DEBUG === 'true' && (
         <Alert severity="info" sx={{ mb: 2 }} data-testid="tag-debug-info">
           Debug: tag={tagKey} posts={posts.length} loading={String(loading)} error={error || 'none'}{' '}
@@ -574,7 +421,7 @@ export default function TagDetailClient({ tagKey, initial }: TagDetailClientProp
           </ul>
         </Box>
       )}
-      <Box sx={{ mb: 4 }}>
+      <Box sx={{ mb: 3 }}>
         <Typography variant="h4" component="h1" gutterBottom data-testid="tag-page-title">
           <TagIcon sx={{ mr: 1, verticalAlign: 'middle', color: 'primary.main' }} />#{tagKey}
         </Typography>
@@ -583,7 +430,20 @@ export default function TagDetailClient({ tagKey, initial }: TagDetailClientProp
         </Typography>
       </Box>
 
-      <Paper sx={{ p: 2, mb: 3, position: 'relative', zIndex: 2147483638 }}>
+      {/* 並び替えは下部のセクション（sort-anchor）に一箇所のみ配置 */}
+
+      {/* タグ人気ランキング（使用頻度） */}
+      <Box id="trending-anchor" sx={{ py: 1, mb: 2 }}>
+        <TrendingTagsBar
+          initial={trendingInitial}
+          days={30}
+          limit={20}
+          title="人気タグ（よく使われるタグ）"
+          dense
+        />
+      </Box>
+
+      <Paper id="sort-anchor" sx={{ p: 2, mb: 3 }}>
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
           <ToggleButtonGroup
             value={sortBy}
@@ -598,10 +458,12 @@ export default function TagDetailClient({ tagKey, initial }: TagDetailClientProp
             </ToggleButton>
             <ToggleButton value="popular" aria-label="popular posts">
               <TrendingUpIcon sx={{ mr: 1 }} />
-              人気順
+              人気順（高評価順）
             </ToggleButton>
           </ToggleButtonGroup>
         </Box>
+
+        {/* 予備のフォールバックUIは削除（重複防止） */}
       </Paper>
 
       {error && (
@@ -630,55 +492,11 @@ export default function TagDetailClient({ tagKey, initial }: TagDetailClientProp
         </Paper>
       )}
 
-      {process.env.NEXT_PUBLIC_TAG_DEBUG === 'true' && usePortalFallback && (
-        <Alert severity="warning" sx={{ mb: 2 }}>
-          Portalフォールバックモードで表示中
-        </Alert>
+      {posts.length > 0 && (
+        <Box id="tag-inline-cards" sx={{ position: 'relative', overflow: 'visible' }}>
+          {cardList}
+        </Box>
       )}
-
-      {posts.length > 0 &&
-        (usePortalFallback && portalRoot ? (
-          createPortal(
-            <div id="tag-portal-content" style={{ position: 'relative', padding: 8 }}>
-              <div style={{ position: 'sticky', top: 0, zIndex: 2147483639 }}>
-                {process.env.NEXT_PUBLIC_TAG_DEBUG === 'true' && (
-                  <Alert severity="warning" sx={{ mb: 1 }}>
-                    Portalフォールバック表示中（カード＋簡易リスト）
-                  </Alert>
-                )}
-              </div>
-              <div id="tag-portal-cards" style={{ position: 'relative', zIndex: 2147483638 }}>
-                {cardList}
-              </div>
-              <div
-                id="tag-portal-plain"
-                style={{ position: 'relative', zIndex: 2147483639, marginTop: 12 }}
-              >
-                <Typography variant="subtitle2" sx={{ mb: 1 }}>
-                  簡易表示（ポータル）: 先頭5件
-                </Typography>
-                <ul style={{ margin: 0, paddingLeft: 16 }}>
-                  {posts.slice(0, 5).map((p) => (
-                    <li key={p._id} style={{ lineHeight: '1.6' }}>
-                      {p.title ||
-                        (p.content
-                          ? p.content.slice(0, 20) + (p.content.length > 20 ? '…' : '')
-                          : '(no title)')}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>,
-            portalRoot
-          )
-        ) : (
-          <Box
-            id="tag-inline-cards"
-            sx={{ position: 'relative', zIndex: 2147483638, overflow: 'visible' }}
-          >
-            {cardList}
-          </Box>
-        ))}
 
       {!loading && hasNext && (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>

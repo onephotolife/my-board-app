@@ -46,6 +46,7 @@
     "test:e2e:integrated": "playwright test tests/e2e/improvements/integrated-features.spec.ts",
     "test:e2e:improvements:headed": "playwright test tests/e2e/improvements/ --headed",
     "test:e2e:ci": "npm run build && playwright test",
+    "test:e2e:tags:toggles": "playwright test tests/e2e/tags.toggles.all-variants.spec.ts",
     "kill-port": "lsof -ti:3000 | xargs kill -9 2>/dev/null || echo 'Port 3000 is free'",
     "predev": "npm run kill-port",
     "clean": "rm -rf .next node_modules/.cache .turbo",

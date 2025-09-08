@@ -309,6 +309,7 @@ export default function EnhancedAppLayout({ children, title, subtitle }: Enhance
           backdropFilter: 'blur(20px)',
           backgroundColor: alpha(theme.palette.background.paper, 0.9),
           borderBottom: `1px solid ${theme.palette.divider}`,
+          display: pathname?.startsWith('/tags') ? 'none' : 'block',
         }}
         data-testid="app-header"
       >

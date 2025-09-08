@@ -24,6 +24,8 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import TagIcon from '@mui/icons-material/Tag';
 
+import TrendingTagsBar from '@/components/TrendingTagsBar';
+
 interface Tag {
   key: string;
   display: string;
@@ -136,6 +138,9 @@ export default function TagsPage() {
           人気のタグや最近使用されたタグを探索
         </Typography>
       </Box>
+
+      {/* 使用頻度ベースの人気タグ（期間トグル付き） */}
+      <TrendingTagsBar days={30} limit={20} title="人気タグ（よく使われるタグ）" />
 
       <Paper sx={{ p: 3, mb: 3 }}>
         <form onSubmit={handleSearch} style={{ marginBottom: 24 }}>

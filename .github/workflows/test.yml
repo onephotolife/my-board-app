@@ -67,6 +67,16 @@ jobs:
             --output=./test-results
         env:
           CI: true
+      - name: Run tags toggles regression
+        run: |
+          E2E_MOCK_AUTH=1 NEXT_PUBLIC_TAG_DEBUG=true npx playwright test \
+            -c playwright-e2e.config.ts \
+            --project=authenticated \
+            tests/e2e/tags.toggles.all-variants.spec.ts \
+            --reporter=line,html,junit \
+            --output=./test-results-tags
+        env:
+          CI: true
 
       - name: Upload test results
         if: always()
@@ -76,6 +86,7 @@ jobs:
           path: |
             playwright-report/
             test-results/
+            test-results-tags/
 
       - name: Upload test videos
         if: failure()

@@ -3,6 +3,6 @@ on:
   Workflow_dispatch:
 jobs:
   Hello:
-    runs_on:  ubuntu-latest
+    runs-on:  ubuntu-latest
     steps:
       -  run:  echo  OK

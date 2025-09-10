@@ -2,8 +2,12 @@ name: Codex: Command Dispatch
 on:
   issue_comment:
     types: [created]
-  issues:
-    types: [opened, edited]
+  workflow_dispatch:
+    inputs:
+      cmd:
+        description: "例: @codex run all branch=feat/search-phase2-ui"
+        required: true
+        default: "@codex run all branch=feat/search-phase2-ui"
 
 permissions:
   contents: read
@@ -12,34 +16,33 @@ permissions:
 jobs:
   dispatch:
     runs-on: ubuntu-latest
-    if: |
-      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@codex run')) ||
-      (github.event_name == 'issues' && contains(github.event.issue.body, '@codex run'))
     steps:
-      - name: Parse command
-        id: parse
+      - name: Get body
+        id: body
         run: |
-          if [ "${{ github.event_name }}" = "issue_comment" ]; then
-            BODY="${{ github.event.comment.body }}"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "body=${{ github.event.inputs.cmd }}" >> $GITHUB_OUTPUT
           else
-            BODY="${{ github.event.issue.body }}"
+            echo "body=${{ github.event.comment.body }}" >> $GITHUB_OUTPUT
           fi
 
+      - name: Decide mode+branch
+        id: decide
+        run: |
+          BODY="${{ steps.body.outputs.body }}"
           if echo "$BODY" | grep -qi "run bench"; then MODE=bench;
           elif echo "$BODY" | grep -qi "run e2e"; then MODE=e2e;
           else MODE=all; fi
-
           BRANCH=$(echo "$BODY" | sed -nE 's/.*branch=([^ ]+).*/\1/p')
           if [ -z "$BRANCH" ]; then BRANCH="main"; fi
-
           echo "mode=$MODE" >> $GITHUB_OUTPUT
           echo "branch=$BRANCH" >> $GITHUB_OUTPUT
 
-      - name: Trigger Bench & E2E
+      - name: Dispatch Bench & E2E
         uses: benc-uk/workflow-dispatch@v1
         with:
           workflow: .github/workflows/codex-bench-e2e.yml
           ref: ${{ github.ref }}
           inputs: |
-            mode=${{ steps.parse.outputs.mode }}
-            target_ref=${{ steps.parse.outputs.branch }}
+            mode=${{ steps.decide.outputs.mode }}
+            target_ref=${{ steps.decide.outputs.branch }}

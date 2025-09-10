@@ -1,0 +1,32 @@
+name: Codex: Command Dispatch
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    if: contains(github.event.comment.body, '@codex run')
+    steps:
+      - name: Decide mode
+        id: decide
+        run: |
+          body="${{ github.event.comment.body }}"
+          if echo "$body" | grep -qi "@codex run bench"; then
+            echo "mode=bench" >> $GITHUB_OUTPUT
+          elif echo "$body" | grep -qi "@codex run e2e"; then
+            echo "mode=e2e" >> $GITHUB_OUTPUT
+          else
+            echo "mode=all" >> $GITHUB_OUTPUT
+          fi
+      - name: Trigger workflow
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: Codex: Bench & E2E
+          ref: ${{ github.ref }}
+          inputs: |
+            mode=${{ steps.decide.outputs.mode }}

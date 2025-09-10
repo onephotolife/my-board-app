@@ -2,6 +2,8 @@ name: Codex: Command Dispatch
 on:
   issue_comment:
     types: [created]
+  issues:
+    types: [opened, edited]
 
 permissions:
   contents: read
@@ -10,23 +12,34 @@ permissions:
 jobs:
   dispatch:
     runs-on: ubuntu-latest
-    if: contains(github.event.comment.body, '@codex run')
+    if: |
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@codex run')) ||
+      (github.event_name == 'issues' && contains(github.event.issue.body, '@codex run'))
     steps:
-      - name: Decide mode
-        id: decide
+      - name: Parse command
+        id: parse
         run: |
-          body="${{ github.event.comment.body }}"
-          if echo "$body" | grep -qi "@codex run bench"; then
-            echo "mode=bench" >> $GITHUB_OUTPUT
-          elif echo "$body" | grep -qi "@codex run e2e"; then
-            echo "mode=e2e" >> $GITHUB_OUTPUT
+          if [ "${{ github.event_name }}" = "issue_comment" ]; then
+            BODY="${{ github.event.comment.body }}"
           else
-            echo "mode=all" >> $GITHUB_OUTPUT
+            BODY="${{ github.event.issue.body }}"
           fi
-      - name: Trigger workflow
+
+          if echo "$BODY" | grep -qi "run bench"; then MODE=bench;
+          elif echo "$BODY" | grep -qi "run e2e"; then MODE=e2e;
+          else MODE=all; fi
+
+          BRANCH=$(echo "$BODY" | sed -nE 's/.*branch=([^ ]+).*/\1/p')
+          if [ -z "$BRANCH" ]; then BRANCH="main"; fi
+
+          echo "mode=$MODE" >> $GITHUB_OUTPUT
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+
+      - name: Trigger Bench & E2E
         uses: benc-uk/workflow-dispatch@v1
         with:
-          workflow: Codex: Bench & E2E
+          workflow: .github/workflows/codex-bench-e2e.yml
           ref: ${{ github.ref }}
           inputs: |
-            mode=${{ steps.decide.outputs.mode }}
+            mode=${{ steps.parse.outputs.mode }}
+            target_ref=${{ steps.parse.outputs.branch }}

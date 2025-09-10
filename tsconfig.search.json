@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "skipLibCheck": true,
+    "noEmit": true,
+    "strict": true
+  },
+  "include": [
+    "src/app/api/suggest/route.ts",
+    "src/app/api/search/route.ts",
+    "src/lib/text/normalizeJa.ts",
+    "src/lib/auth/getUserFromRequest.ts",
+    "src/lib/net/rateLimit.ts",
+    "src/lib/obs/logger.ts"
+  ]
+}

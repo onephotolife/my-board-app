@@ -119,6 +119,11 @@ tests/solutions/*.log
 tests/solutions/*.json
 tests/solutions/screenshots/
 
+# local runtime/backup artifacts
+dev.pid
+node_modules_stale_*/
+tsconfig.json.bak.*
+
 # 開発中の一時ファイル
 middleware-priority1-patch.ts
 src/app/(main)/

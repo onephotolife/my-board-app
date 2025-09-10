@@ -4,7 +4,6 @@
  */
 
 import * as Sentry from '@sentry/nextjs';
-import { ProfilingIntegration } from '@sentry/profiling-node';
 
 const SENTRY_DSN = process.env.SENTRY_DSN;
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
@@ -12,18 +11,18 @@ const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
 
 Sentry.init({
   dsn: SENTRY_DSN,
-  
+
   // 環境設定
   environment: process.env.NODE_ENV,
   enabled: IS_PRODUCTION && !!SENTRY_DSN,
-  
+
   // パフォーマンスモニタリング
   tracesSampleRate: IS_PRODUCTION ? 0.1 : 1.0,
   profilesSampleRate: IS_PRODUCTION ? 0.1 : 1.0, // プロファイリング
-  
+
   // デバッグ設定
   debug: IS_DEVELOPMENT,
-  
+
   // 無視するエラー
   ignoreErrors: [
     // システムエラー
@@ -32,17 +31,17 @@ Sentry.init({
     'ETIMEDOUT',
     'EPIPE',
     'ENOTFOUND',
-    
+
     // MongoDB関連
     'MongoNetworkError',
     'MongoServerError',
-    
+
     // 認証関連
     'UnauthorizedError',
     'JsonWebTokenError',
     'TokenExpiredError',
   ],
-  
+
   // 無視するトランザクション
   ignoreTransactions: [
     '/api/health',
@@ -51,63 +50,62 @@ Sentry.init({
     '/_next/static/*',
     '/_next/image/*',
   ],
-  
+
   // データスクラビング
   beforeSend(event, hint) {
     if (!IS_PRODUCTION) {
       return event;
     }
-    
+
     // エラーの種類によるフィルタリング
     const error = hint.originalException;
-    
+
     // 404エラーは送信しない
     if (error && 'statusCode' in error && error.statusCode === 404) {
       return null;
     }
-    
+
     // レート制限エラーは送信しない
     if (error && 'statusCode' in error && error.statusCode === 429) {
       return null;
     }
-    
+
     // 環境変数を除去
     if (event.extra) {
-      Object.keys(event.extra).forEach(key => {
-        if (key.toUpperCase().includes('SECRET') || 
-            key.toUpperCase().includes('PASSWORD') ||
-            key.toUpperCase().includes('KEY') ||
-            key.toUpperCase().includes('TOKEN')) {
+      Object.keys(event.extra).forEach((key) => {
+        if (
+          key.toUpperCase().includes('SECRET') ||
+          key.toUpperCase().includes('PASSWORD') ||
+          key.toUpperCase().includes('KEY') ||
+          key.toUpperCase().includes('TOKEN')
+        ) {
           delete event.extra![key];
         }
       });
     }
-    
+
     // スタックトレースから機密情報を除去
     if (event.exception?.values) {
-      event.exception.values.forEach(exception => {
+      event.exception.values.forEach((exception) => {
         if (exception.stacktrace?.frames) {
-          exception.stacktrace.frames.forEach(frame => {
+          exception.stacktrace.frames.forEach((frame) => {
             // ローカルパスを除去
             if (frame.filename) {
-              frame.filename = frame.filename.replace(
-                /\/Users\/[^/]+/g,
-                '/[USER]'
-              );
+              frame.filename = frame.filename.replace(/\/Users\/[^/]+/g, '/[USER]');
             }
           });
         }
       });
     }
-    
+
     // データベース接続文字列を除去
     if (event.contexts?.database) {
       delete event.contexts.database;
     }
-    
+
     return event;
   },
-  
+
   // インテグレーション
   integrations: [
     // HTTPインテグレーション
@@ -115,16 +113,15 @@ Sentry.init({
       tracing: true,
       breadcrumbs: true,
     }),
-    
+
     // Prisma/Mongooseインテグレーション
     Sentry.mongoIntegration(),
-    
+
     // Node.jsインテグレーション
     Sentry.nodeContextIntegration(),
-    
-    // プロファイリング（本番環境のみ）
-    ...(IS_PRODUCTION ? [new ProfilingIntegration()] : []),
-    
+
+    // プロファイリング統合は一時的に無効化（vendor-chunks/@opentelemetry.js 参照回避）
+
     // リクエストデータ
     Sentry.requestDataIntegration({
       include: {
@@ -141,29 +138,29 @@ Sentry.init({
       },
     }),
   ],
-  
+
   // トランスポート設定
   transportOptions: {
     maxQueueSize: 100,
     flushTimeout: 2000,
   },
-  
+
   // リリース情報
   release: process.env.VERCEL_GIT_COMMIT_SHA,
-  
+
   // その他の設定
   serverName: process.env.VERCEL_URL || 'unknown',
   maxBreadcrumbs: 50,
   attachStacktrace: true,
   sampleRate: 1.0,
-  
+
   // 環境コンテキスト
   initialScope: {
     tags: {
       'node.version': process.version,
-      'runtime': 'node',
-      'server': 'vercel',
-      'region': process.env.VERCEL_REGION || 'unknown',
+      runtime: 'node',
+      server: 'vercel',
+      region: process.env.VERCEL_REGION || 'unknown',
     },
     user: {
       segment: 'server',

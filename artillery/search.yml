@@ -1,0 +1,16 @@
+config:
+  target: 'http://localhost:3000'
+  phases:
+    - duration: 60
+      arrivalRate: 20
+  plugins:
+    ensure: {}
+scenarios:
+  - name: suggest-burst
+    flow:
+      - get:
+          url: '/api/suggest?q=た&limit=5'
+  - name: search-users
+    flow:
+      - get:
+          url: '/api/search?q=たなか&type=users&limit=10'

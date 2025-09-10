@@ -519,6 +519,7 @@ export const config = {
      * - public folder
      * - api routes that don't need protection
      */
-    '/((?!_next/static|_next/image|favicon.ico|public/).*)',
+    // API ルートを除外して Edge Middleware の影響を受けないようにする
+    '/((?!_next/static|_next/image|favicon.ico|public/|api/).*)',
   ],
 };

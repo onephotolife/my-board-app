@@ -1,0 +1,8 @@
+1: name: Manual Trigger Test
+2: on:
+3:   workflow_dispatch:
+4: jobs:
+5:   hello:
+6:     runs-on: ubuntu-latest
+7:     steps:
+8:       - run: echo OK

@@ -60,7 +60,7 @@ jobs:
         run: |
           nohup npm run start >/dev/null 2>&1 &
           echo $! > server.pid
-          # 起動待ち（/api/ready を叩く）
+          # 起動待ち（/api/ready を叩く）— DBに依存しない軽量チェック
           for i in $(seq 1 30); do
             curl -fsS "${{ env.BASE_URL }}/api/ready" >/dev/null && break || sleep 1
           done

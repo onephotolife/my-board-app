@@ -33,7 +33,7 @@ jobs:
           if echo "$BODY" | grep -qi "run bench"; then MODE=bench;
           elif echo "$BODY" | grep -qi "run e2e"; then MODE=e2e;
           else MODE=all; fi
-          BRANCH=$(echo "$BODY" | sed -nE 's/.*branch=([^ ]+).*/\1/p')
+          BRANCH=$(echo "$BODY" | sed -nE 's/.*branch=([^ ]+).*//p')
           if [ -z "$BRANCH" ]; then BRANCH="main"; fi
           echo "mode=$MODE" >> $GITHUB_OUTPUT
           echo "branch=$BRANCH" >> $GITHUB_OUTPUT

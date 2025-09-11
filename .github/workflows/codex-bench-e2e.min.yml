@@ -1,0 +1,17 @@
+name: Codex: Bench & E2E (smoke)
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: mode
+        required: true
+        default: "all"
+      target_ref:
+        description: target branch
+        required: true
+        default: "main"
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "bench ready ${{ github.event.inputs.mode }} ${{ github.event.inputs.target_ref }}"

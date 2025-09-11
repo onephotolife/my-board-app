@@ -1,8 +1,8 @@
-name:  Manual  Trigger  Test
+name: Manual Trigger Test
 on:
-  Workflow_dispatch:
+  workflow_dispatch:
 jobs:
-  Hello:
-      runs-on:  ubuntu-latest
-      steps:
-        -  run:  echo  OK
+  hello:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "OK"

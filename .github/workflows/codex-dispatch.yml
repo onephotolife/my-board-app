@@ -39,6 +39,6 @@ jobs:
         with:
           workflow: .github/workflows/codex-bench-e2e.yml
           ref: ${{ github.ref }}
-          inputs: |
-            mode=${{ steps.decide.outputs.mode }}
-            target_ref=${{ steps.decide.outputs.branch }}
+          inputs: >-
+            {"mode":"${{ steps.decide.outputs.mode }}",
+             "target_ref":"${{ steps.decide.outputs.branch }}"}

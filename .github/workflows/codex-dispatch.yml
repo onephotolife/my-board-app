@@ -1,16 +1,19 @@
 name: "Codex: Command Dispatch"
+
 on:
-  issue_comment:
-    types: [created]
   workflow_dispatch:
     inputs:
       cmd:
         description: "例: @codex run all branch=feat/search-phase2-ui"
         required: true
         default: "@codex run all branch=feat/search-phase2-ui"
+  issue_comment:
+    types: [created]
+
 permissions:
   contents: read
   actions: write
+
 jobs:
   dispatch:
     runs-on: ubuntu-latest
@@ -19,26 +22,28 @@ jobs:
         id: body
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "body=${{ github.event.inputs.cmd }}" >> $GITHUB_OUTPUT
+            echo "body=${{ github.event.inputs.cmd }}" >> "$GITHUB_OUTPUT"
           else
-            echo "body=${{ github.event.comment.body }}" >> $GITHUB_OUTPUT
+            echo "body=${{ github.event.comment.body }}" >> "$GITHUB_OUTPUT"
           fi
-      - name: Decide mode+branch
+
+      - name: Decide mode and branch
         id: decide
         run: |
           BODY="${{ steps.body.outputs.body }}"
-          if echo "$BODY" | grep -qi "run bench"; then MODE=bench;
-          elif echo "$BODY" | grep -qi "run e2e"; then MODE=e2e;
-          else MODE=all; fi
+          MODE="all"
+          if echo "$BODY" | grep -qi "run bench"; then MODE="bench"; fi
+          if echo "$BODY" | grep -qi "run e2e"; then MODE="e2e"; fi
           BRANCH=$(echo "$BODY" | sed -nE 's/.*branch=([^ ]+).*/\1/p')
-          if [ -z "$BRANCH" ]; then BRANCH="main"; fi
-          echo "mode=$MODE" >> $GITHUB_OUTPUT
-          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+          if [ -z "$BRANCH" ]; then BRANCH="feat/search-phase2-ui"; fi
+          echo "mode=$MODE" >> "$GITHUB_OUTPUT"
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+
       - name: Dispatch Bench & E2E
-        uses: benc-uk/workflow-dispatch@v1
+        uses: peter-evans/workflow-dispatch@v3
         with:
           workflow: .github/workflows/codex-bench-e2e.yml
           ref: ${{ github.ref }}
-          inputs: >-
-            {"mode":"${{ steps.decide.outputs.mode }}",
-             "target_ref":"${{ steps.decide.outputs.branch }}"}
+          inputs:
+            mode: ${{ steps.decide.outputs.mode }}
+            target_ref: ${{ steps.decide.outputs.branch }}

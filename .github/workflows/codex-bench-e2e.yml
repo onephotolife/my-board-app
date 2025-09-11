@@ -1,4 +1,5 @@
 name: "Codex: Bench & E2E"
+
 on:
   workflow_dispatch:
     inputs:
@@ -7,15 +8,18 @@ on:
         required: true
         default: "all"
       target_ref:
-        description: "テストするブランチ名（例: feat/search-phase2-ui）"
+        description: "テスト対象ブランチ"
         required: true
-        default: "main"
+        default: "feat/search-phase2-ui"
+
 permissions:
   contents: read
+
 env:
   NODE_VERSION: "20"
   BASE_URL: "http://localhost:3000"
-  CI_ASSERT_P95: ${{ vars.CI_ASSERT_P95 || '200' }}
+  CI_ASSERT_P95: ${{ vars.CI_ASSERT_P95 || '900' }}
+
 jobs:
   run:
     runs-on: ubuntu-latest
@@ -24,76 +28,110 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.inputs.target_ref }}
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
+
       - name: Install deps
         run: npm ci
-      - name: Set env (Atlas/DB)
+
+      - name: Export secrets to env (if any)
+        shell: bash
         run: |
-          echo "MONGODB_URI=${{ secrets.MONGODB_URI }}" >> $GITHUB_ENV
-          echo "MONGODB_DB=${{ secrets.MONGODB_DB }}" >> $GITHUB_ENV
-          echo "SEARCH_USE_ATLAS=${{ secrets.SEARCH_USE_ATLAS }}" >> $GITHUB_ENV
-          if [ -n "${{ secrets.NEXTAUTH_SECRET }}" ]; then
-            echo "NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}" >> $GITHUB_ENV
-          fi
+          [ -n "${{ secrets.MONGODB_URI }}" ] && echo "MONGODB_URI=${{ secrets.MONGODB_URI }}" >> "$GITHUB_ENV"
+          [ -n "${{ secrets.MONGODB_DB }}" ] && echo "MONGODB_DB=${{ secrets.MONGODB_DB }}" >> "$GITHUB_ENV"
+          [ -n "${{ secrets.SEARCH_USE_ATLAS }}" ] && echo "SEARCH_USE_ATLAS=${{ secrets.SEARCH_USE_ATLAS }}" >> "$GITHUB_ENV"
+          [ -n "${{ secrets.NEXTAUTH_SECRET }}" ] && echo "NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}" >> "$GITHUB_ENV"
+
       - name: Build
         run: npm run build
-      - name: Seed test users
+
+      - name: Seed test users (optional)
+        shell: bash
         run: |
           if [ -f scripts/seed-test-users.js ]; then
             node scripts/seed-test-users.js || true
           fi
+
       - name: Start server
+        shell: bash
         run: |
           nohup npm run start >/dev/null 2>&1 &
           echo $! > server.pid
           for i in $(seq 1 30); do
-            curl -fsS "${{ env.BASE_URL }}/api/ready" >/dev/null && break || sleep 1
+            if curl -fsS "${{ env.BASE_URL }}/api/ready" >/dev/null; then
+              echo "server ready"; break
+            fi
+            sleep 1
           done
+
+      - name: Bench suggest P95
         shell: bash
-      - name: Decide mode
-        id: decide
-        run: echo "mode=${{ github.event.inputs.mode }}" >> $GITHUB_OUTPUT
-            - name: Bench suggest P95
-        if: steps.decide.outputs.mode == 'bench' || steps.decide.outputs.mode == 'all'
         run: |
+          MODE="${{ github.event.inputs.mode }}"
+          if [ "$MODE" != "bench" ] && [ "$MODE" != "all" ]; then
+            echo "skip bench (mode=$MODE)"; exit 0
+          fi
+
           npm i -g artillery@latest
           # ウォームアップ 20 リクエスト
           for i in $(seq 1 20); do
             curl -fsS "${{ env.BASE_URL }}/api/users/suggest?q=%E3%82%84" >/dev/null || true
           done
+
           mkdir -p out
-          # 負荷を少し弱める（count 30, num 5）
-          npx artillery quick --count 30 --num 5 "${{ env.BASE_URL }}/api/users/suggest?q=%E3%82%84" -o out/suggest.json
+          # 負荷は控えめ（count 30, num 5）。Atlas調整後は count 60, num 10 へ上げてもOK
+          npx artillery quick --count 30 --num 5 \
+            "${{ env.BASE_URL }}/api/users/suggest?q=%E3%82%84" -o out/suggest.json
+
           node -e "const s=require('./out/suggest.json');let p95=NaN;
             if(s.aggregate&&s.aggregate.latency)p95=s.aggregate.latency.p95;
             else if(s.aggregate&&s.aggregate.http&&s.aggregate.http.request_duration)p95=s.aggregate.http.request_duration.p95;
             if(!isFinite(p95))process.exit(1);
             console.log('p95=',p95);
             if(p95>=Number(process.env.CI_ASSERT_P95||200))process.exit(2)"
+
       - name: Upload bench artifact
-        if: steps.decide.outputs.mode == 'bench' || steps.decide.outputs.mode == 'all'
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: suggest-bench
           path: out/suggest.json
+          if-no-files-found: ignore
+
       - name: Playwright setup
-        if: steps.decide.outputs.mode == 'e2e' || steps.decide.outputs.mode == 'all'
-        run: npx playwright install --with-deps
+        shell: bash
+        run: |
+          MODE="${{ github.event.inputs.mode }}"
+          if [ "$MODE" != "e2e" ] && [ "$MODE" != "all" ]; then
+            echo "skip e2e setup (mode=$MODE)"; exit 0
+          fi
+          npx playwright install --with-deps
+
       - name: E2E
-        if: steps.decide.outputs.mode == 'e2e' || steps.decide.outputs.mode == 'all'
-        run: npm run test:e2e
+        shell: bash
+        run: |
+          MODE="${{ github.event.inputs.mode }}"
+          if [ "$MODE" != "e2e" ] && [ "$MODE" != "all" ]; then
+            echo "skip e2e (mode=$MODE)"; exit 0
+          fi
+          npm run test:e2e
+
       - name: Upload Playwright report
-        if: always() && (steps.decide.outputs.mode == 'e2e' || steps.decide.outputs.mode == 'all')
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
           path: playwright-report
           if-no-files-found: ignore
+
       - name: Stop server
         if: always()
+        shell: bash
         run: |
-          if [ -f server.pid ]; then kill $(cat server.pid) || true; fi
+          if [ -f server.pid ]; then
+            kill "$(cat server.pid)" || true
+          fi

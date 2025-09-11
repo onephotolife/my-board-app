@@ -1,0 +1,13 @@
+name: Codex: Command Dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      cmd:
+        description: cmd
+        required: true
+        default: "@codex run all branch=feat/search-phase2-ui"
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "${{ github.event.inputs.cmd }}"

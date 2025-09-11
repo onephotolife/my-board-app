@@ -1,0 +1,90 @@
+name: "Codex: Bench & E2E"
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "bench | e2e | all"
+        required: true
+        default: "all"
+      target_ref:
+        description: "テストするブランチ名（例: feat/search-phase2-ui）"
+        required: true
+        default: "main"
+permissions:
+  contents: read
+env:
+  NODE_VERSION: "20"
+  BASE_URL: "http://localhost:3000"
+  CI_ASSERT_P95: "200"
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout target branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_ref }}
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Install deps
+        run: npm ci
+      - name: Set env (Atlas/DB)
+        run: |
+          echo "MONGODB_URI=${{ secrets.MONGODB_URI }}" >> $GITHUB_ENV
+          echo "MONGODB_DB=${{ secrets.MONGODB_DB }}" >> $GITHUB_ENV
+          echo "SEARCH_USE_ATLAS=${{ secrets.SEARCH_USE_ATLAS }}" >> $GITHUB_ENV
+          if [ -n "${{ secrets.NEXTAUTH_SECRET }}" ]; then
+            echo "NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}" >> $GITHUB_ENV
+          fi
+      - name: Build
+        run: npm run build
+      - name: Seed test users
+        run: |
+          if [ -f scripts/seed-test-users.js ]; then
+            node scripts/seed-test-users.js || true
+          fi
+      - name: Start server
+        run: |
+          nohup npm run start >/dev/null 2>&1 &
+          echo $! > server.pid
+          for i in $(seq 1 30); do
+            curl -fsS "${{ env.BASE_URL }}/api/ready" >/dev/null && break || sleep 1
+          done
+        shell: bash
+      - name: Decide mode
+        id: decide
+        run: echo "mode=${{ github.event.inputs.mode }}" >> $GITHUB_OUTPUT
+      - name: Bench suggest P95
+        if: steps.decide.outputs.mode == 'bench' || steps.decide.outputs.mode == 'all'
+        run: |
+          npm i -g artillery@latest
+          mkdir -p out
+          npx artillery quick --count 60 --num 10 "${{ env.BASE_URL }}/api/users/suggest?q=%E3%82%84" -o out/suggest.json
+          node -e "const s=require('./out/suggest.json');let p95=NaN; if(s.aggregate&&s.aggregate.latency)p95=s.aggregate.latency.p95; else if(s.aggregate&&s.aggregate.http&&s.aggregate.http.request_duration)p95=s.aggregate.http.request_duration.p95; if(!isFinite(p95))process.exit(1); console.log('p95=',p95); if(p95>=${{ env.CI_ASSERT_P95 }})process.exit(2)"
+        shell: bash
+      - name: Upload bench artifact
+        if: steps.decide.outputs.mode == 'bench' || steps.decide.outputs.mode == 'all'
+        uses: actions/upload-artifact@v4
+        with:
+          name: suggest-bench
+          path: out/suggest.json
+      - name: Playwright setup
+        if: steps.decide.outputs.mode == 'e2e' || steps.decide.outputs.mode == 'all'
+        run: npx playwright install --with-deps
+      - name: E2E
+        if: steps.decide.outputs.mode == 'e2e' || steps.decide.outputs.mode == 'all'
+        run: npm run test:e2e
+      - name: Upload Playwright report
+        if: always() && (steps.decide.outputs.mode == 'e2e' || steps.decide.outputs.mode == 'all')
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report
+          if-no-files-found: ignore
+      - name: Stop server
+        if: always()
+        run: |
+          if [ -f server.pid ]; then kill $(cat server.pid) || true; fi

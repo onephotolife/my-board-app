@@ -117,7 +117,7 @@
     "axe-playwright": "^2.1.0",
     "dotenv": "^17.2.1",
     "eslint": "^9",
-    "eslint-config-next": "15.4.5",
+    "eslint-config-next": "15.5.3",
     "express-rate-limit": "^8.0.1",
     "helmet": "^8.1.0",
     "ioredis": "^5.7.0",

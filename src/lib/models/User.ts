@@ -242,14 +242,10 @@ const UserSchema = new Schema<IUser>(
 // テキストインデックス（簡易関連度）
 UserSchema.index({ name: 'text', bio: 'text' }, { weights: { name: 5, bio: 2 } });
 try {
-  // @ts-expect-error -- dynamic index may be registered already
-  UserSchema.index({ 'search.namePrefixes': 1 });
-  // @ts-expect-error -- dynamic index may be registered already
-  UserSchema.index({ 'search.nameYomiPrefixes': 1 });
-  // @ts-expect-error -- dynamic index may be registered already
-  UserSchema.index({ 'search.bioNgrams': 1 });
-  // @ts-expect-error -- dynamic index may be registered already
-  UserSchema.index({ 'stats.followerCount': -1, updatedAt: -1 });
+  (UserSchema as any).index({ 'search.namePrefixes': 1 });
+  (UserSchema as any).index({ 'search.nameYomiPrefixes': 1 });
+  (UserSchema as any).index({ 'search.bioNgrams': 1 });
+  (UserSchema as any).index({ 'stats.followerCount': -1, updatedAt: -1 });
 } catch {}
 
 // Hash password before saving & 検索用フィールド更新

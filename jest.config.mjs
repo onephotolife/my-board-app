@@ -8,28 +8,8 @@ const customConfig = {
   testEnvironment: 'jest-environment-jsdom',
   setupFilesAfterEnv: ['<rootDir>/tests/setup/jest.setup.ts'],
   moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/src/$1',
-    '^@babel/core$': '<rootDir>/node_modules/@babel/core/lib/index.js',
-    '^@babel/core/package.json$': '<rootDir>/node_modules/@babel/core/package.json'
+    '^@/(.*)$': '<rootDir>/src/$1'
   },
-  roots: ['<rootDir>/src', '<rootDir>/tests'],
-  moduleDirectories: ['node_modules'],
-  modulePaths: ['<rootDir>/node_modules'],
-  haste: {
-    throwOnModuleCollision: false,
-    hasteImplModulePath: '<rootDir>/tests/setup/jest.haste.js'
-  },
-  testPathIgnorePatterns: [
-    'node_modules_old',
-    'node_modules_backup_.*',
-    'node_modules_stale_.*',
-    'security-fix-backup-.*'
-  ],
-  modulePathIgnorePatterns: [
-    'node_modules_old',
-    'node_modules_backup_.*',
-    'node_modules_stale_.*'
-  ],
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
     '!src/**/_*.{ts,tsx}',
@@ -42,13 +22,55 @@ const customConfig = {
   projects: [
     {
       displayName: 'unit',
-      testMatch: ['<rootDir>/tests/unit/**/*.spec.ts?(x)']
+      testMatch: ['<rootDir>/tests/unit/**/*.spec.ts?(x)'],
+      testEnvironment: 'jest-environment-jsdom',
+      moduleNameMapper: {
+        '^@/(.*)$': '<rootDir>/src/$1'
+      },
+      transform: {
+        '^.+\\.(ts|tsx)$': [
+          'ts-jest',
+          {
+            tsconfig: 'tsconfig.jest.json'
+          }
+        ]
+      }
     },
     {
       displayName: 'a11y',
-      testMatch: ['<rootDir>/tests/a11y/**/*.spec.ts?(x)']
+      testMatch: ['<rootDir>/tests/a11y/**/*.spec.ts?(x)'],
+      testEnvironment: 'jest-environment-jsdom',
+      moduleNameMapper: {
+        '^@/(.*)$': '<rootDir>/src/$1'
+      },
+      transform: {
+        '^.+\\.(ts|tsx)$': [
+          'ts-jest',
+          {
+            tsconfig: 'tsconfig.jest.json'
+          }
+        ]
+      }
     }
   ]
 };
 
-export default createJestConfig(customConfig);
+const ignoreBackup = ['node_modules_.*', '.*node_modules_backup.*', 'security-fix-backup-.*'];
+
+const enhancedConfig = {
+  ...customConfig,
+  testPathIgnorePatterns: [
+    ...(customConfig.testPathIgnorePatterns || []),
+    ...ignoreBackup
+  ],
+  modulePathIgnorePatterns: [
+    ...(customConfig.modulePathIgnorePatterns || []),
+    ...ignoreBackup
+  ],
+  haste: {
+    ...(customConfig.haste || {}),
+    hasteImplModulePath: '<rootDir>/tests/setup/jest.haste.js'
+  }
+};
+
+export default createJestConfig(enhancedConfig);

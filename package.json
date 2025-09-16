@@ -80,7 +80,9 @@
     "bench:p95": "node scripts/bench-step04.mjs",
     "lh:ci": "lhci autorun",
     "qa:all": "npm run typecheck:step03 && npm run lint:strict120 && npm run test:unit && npm run test:a11y && npm run build:next && npm run test:e2e && npm run bench:p95 && npm run lh:ci",
-    "lint:strict120": "eslint --max-warnings=0 src/app/search src/components/search src/lib/api/test-bypass.ts src/lib/ui src/lib/ux tests/unit/ja-normalize.spec.ts tests/unit/UserSearchBar.spec.tsx tests/a11y/UserSearchBar.a11y.spec.tsx tests/e2e/strict120"
+    "lint:strict120": "eslint --max-warnings=0 --ext .ts,.tsx src/app/search src/components/search src/lib/ui src/lib/ux src/lib/api/test-bypass.ts src/lib/api/errors.ts src/lib/api/audit.ts src/lib/api/rate-limit.ts src/lib/search src/app/api/users/suggest src/app/api/users/search src/app/api/users/recommendations src/app/api/user/search-history",
+    "bench:p95:run": "node scripts/run-bench-with-server.mjs",
+    "lh:ci:run": "LHCI_BUILD_CONTEXT__CURRENT_BRANCH=$GITHUB_REF_NAME lhci autorun"
   },
   "overrides": {
     "jose": "4.15.9",

@@ -1,17 +1,17 @@
 import { render } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
 
-import { UserSearchBar } from '@/components/search/UserSearchBar';
+import { UserSearchBar } from '../../src/components/search/UserSearchBar';
 
 expect.extend(toHaveNoViolations);
 
-jest.mock('@/lib/api/client/users', () => ({
+jest.mock('../../src/lib/api/client/users', () => ({
   UsersApi: {
     suggest: jest.fn().mockResolvedValue({ ok: true, items: [] }),
   },
 }));
 
-jest.mock('@/lib/ux/metrics', () => ({
+jest.mock('../../src/lib/ux/metrics', () => ({
   mark: jest.fn(),
   measure: jest.fn().mockReturnValue(0),
   report: jest.fn(),

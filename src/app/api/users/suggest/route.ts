@@ -27,7 +27,7 @@ const schema = z.object({
 });
 
 export async function GET(req: NextRequest) {
-  if (isTestBypass(req)) {
+  if (isTestBypass(req.headers)) {
     const searchParams = req.nextUrl.searchParams;
     const q = searchParams.get('q') || '';
     const limitRaw = searchParams.get('limit');

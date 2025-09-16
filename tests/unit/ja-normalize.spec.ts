@@ -1,4 +1,4 @@
-import { buildNgrams, buildPrefixes, normalizeJa, toYomi } from '@/lib/search/ja-normalize';
+import { buildNgrams, buildPrefixes, normalizeJa, toYomi } from '../../src/lib/search/ja-normalize';
 
 describe('ja-normalize utilities', () => {
   test('normalizeJa performs NFKC, spacing, long sound, trimming, lowercase', () => {

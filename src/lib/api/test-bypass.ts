@@ -1,32 +1,30 @@
-import type { NextRequest } from 'next/server';
-
 import { normalizeJa } from '@/lib/search/ja-normalize';
 import type { HistoryItem, RecoItem, SearchItem, SuggestItem } from '@/types/api/users';
 
-const sampleUsers: Array<SearchItem & { score: number }> = [
+const demoUsers: Array<SearchItem> = [
   {
-    id: 'demo-1',
-    displayName: '山岸 良孝',
+    id: 'u1',
+    displayName: 'テスト 太郎',
     avatarUrl: null,
-    bio: 'フルスタックエンジニア',
-    score: 4.8,
-    followerCount: 128,
+    bio: '検索API検証ユーザー',
+    score: 4.9,
+    followerCount: 120,
   },
   {
-    id: 'demo-2',
+    id: 'u2',
     displayName: 'ヤマギシ ヨシタカ',
     avatarUrl: null,
-    bio: 'バックエンド開発',
-    score: 4.2,
+    bio: 'バックエンド開発者',
+    score: 4.5,
     followerCount: 64,
   },
   {
-    id: 'demo-3',
+    id: 'u3',
     displayName: 'やまぎし よしたか',
     avatarUrl: null,
     bio: 'フロントエンド好き',
     score: 4.1,
-    followerCount: 45,
+    followerCount: 32,
   },
 ];
 
@@ -39,36 +37,32 @@ let historyStore: HistoryItem[] = [
   },
 ];
 
-export function isTestBypass(req: NextRequest): boolean {
-  return process.env.AUTH_BYPASS_FOR_TESTS === '1' || req.headers.get('x-test-auth') === '1';
+export function isTestBypass(headers: Headers): boolean {
+  const envFlag = String(process.env.AUTH_BYPASS_FOR_TESTS || '0') === '1';
+  const headerFlag = (headers.get('x-test-auth') || '').trim() === '1';
+  if (process.env.NODE_ENV === 'production') {
+    return false;
+  }
+  return envFlag || headerFlag;
 }
 
-export function testSuggest(q: string, limit: number): SuggestItem[] {
-  const normalized = normalizeJa(q);
-  return sampleUsers
+export function testSuggest(query: string, limit: number): SuggestItem[] {
+  const normalized = normalizeJa(query);
+  return demoUsers
     .filter((user) => normalizeJa(user.displayName).includes(normalized))
     .slice(0, limit)
     .map(({ id, displayName, avatarUrl }) => ({ id, displayName, avatarUrl }));
 }
 
-export function testSearch(q: string, page: number, limit: number): SearchItem[] {
-  const normalized = normalizeJa(q);
-  const matched = sampleUsers.filter((user) => normalizeJa(user.displayName).includes(normalized));
-  const start = (page - 1) * limit;
-  return matched
-    .slice(start, start + limit)
-    .map(({ id, displayName, avatarUrl, bio, score, followerCount }) => ({
-      id,
-      displayName,
-      avatarUrl,
-      bio,
-      score,
-      followerCount,
-    }));
+export function testSearch(query: string, page: number, limit: number): SearchItem[] {
+  const normalized = normalizeJa(query);
+  const matched = demoUsers.filter((user) => normalizeJa(user.displayName).includes(normalized));
+  const start = (Math.max(1, page) - 1) * limit;
+  return matched.slice(start, start + limit);
 }
 
 export function testRecommendations(limit: number): RecoItem[] {
-  return sampleUsers.slice(0, limit).map(({ id, displayName, avatarUrl, followerCount }) => ({
+  return demoUsers.slice(0, limit).map(({ id, displayName, avatarUrl, followerCount }) => ({
     id,
     displayName,
     avatarUrl,

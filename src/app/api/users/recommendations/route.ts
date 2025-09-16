@@ -23,7 +23,7 @@ const schema = z.object({
 });
 
 export async function GET(req: NextRequest) {
-  if (isTestBypass(req)) {
+  if (isTestBypass(req.headers)) {
     const searchParams = req.nextUrl.searchParams;
     const limit = Number(searchParams.get('limit') || process.env.SEARCH_RECO_LIMIT || '6');
     const items = testRecommendations(limit || 6);

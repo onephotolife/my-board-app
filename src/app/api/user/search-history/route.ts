@@ -54,7 +54,7 @@ const History =
   mongoose.models.UserSearchHistory || mongoose.model('UserSearchHistory', HistorySchema);
 
 export async function GET(req: NextRequest) {
-  if (isTestBypass(req)) {
+  if (isTestBypass(req.headers)) {
     return okJson({ items: getTestHistory() });
   }
 
@@ -116,7 +116,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  if (isTestBypass(req)) {
+  if (isTestBypass(req.headers)) {
     const body = await req.json().catch(() => null);
     const q = typeof body?.q === 'string' ? body.q : '';
     if (!q) {
@@ -213,7 +213,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  if (isTestBypass(req)) {
+  if (isTestBypass(req.headers)) {
     const searchParams = req.nextUrl.searchParams;
     const q = searchParams.get('q') || undefined;
     deleteTestHistory(q || undefined);

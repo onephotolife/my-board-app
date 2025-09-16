@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "noEmit": false,
+    "types": ["jest", "@testing-library/jest-dom", "node"]
+  },
+  "include": ["next-env.d.ts", "src/**/*", "tests/**/*"]
+}

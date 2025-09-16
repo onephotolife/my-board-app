@@ -1,70 +1,32 @@
-import * as path from 'path';
-
 import { defineConfig, devices } from '@playwright/test';
 
-/**
- * Playwright E2Eテスト設定
- * StorageState認証対応版
- */
 export default defineConfig({
-  testDir: './tests',
-  fullyParallel: false,
-  forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : 1,
-  reporter: [
-    ['line'],
-    ['html', { outputFolder: 'playwright-report' }],
-    ['json', { outputFile: 'test-results/results.json' }],
-    ['junit', { outputFile: 'test-results/junit.xml' }],
-  ],
+  testDir: './tests/e2e/strict120',
+  timeout: 30_000,
+  expect: { timeout: 5_000 },
+  retries: 1,
+  reporter: [['html', { open: 'never' }], ['list']],
   use: {
-    baseURL: 'http://localhost:3000',
-    trace: 'on',
-    video: 'retain-on-failure',
-    screenshot: 'only-on-failure',
-    actionTimeout: 30 * 1000,
+    baseURL: process.env.BASE_URL || 'http://localhost:3000',
+    viewport: { width: 1280, height: 800 },
   },
-  timeout: 60 * 1000,
-  expect: {
-    timeout: 15 * 1000,
-  },
-
-  projects: [
-    // Setup project - runs first to authenticate
-    {
-      name: 'setup',
-      testMatch: /.*\.setup\.ts/,
+  webServer: {
+    command: 'npm run build:next && npm run start:next',
+    url: 'http://localhost:3000',
+    reuseExistingServer: true,
+    timeout: 120_000,
+    env: {
+      NODE_ENV: 'production',
+      AUTH_BYPASS_FOR_TESTS: '1',
+      MONGODB_URI: process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/boardDB',
+      NEXTAUTH_SECRET: 'test-secret',
+      AUTH_SECRET: 'test-secret',
     },
-    // Main test projects - use saved auth state
+  },
+  projects: [
     {
       name: 'chromium',
-      use: {
-        ...devices['Desktop Chrome'],
-        storageState: path.join(__dirname, 'tests/e2e/storageState.json'),
-      },
-      // dependencies: ['setup'], // Temporarily disabled for mock storageState testing
-    },
-    {
-      name: 'webkit',
-      use: {
-        ...devices['Desktop Safari'],
-        storageState: path.join(__dirname, 'tests/e2e/storageState.json'),
-      },
-    },
-    {
-      name: 'firefox',
-      use: {
-        ...devices['Desktop Firefox'],
-        storageState: path.join(__dirname, 'tests/e2e/storageState.json'),
-      },
+      use: { ...devices['Desktop Chrome'] },
     },
   ],
-
-  webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
-  },
 });

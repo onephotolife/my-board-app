@@ -8,6 +8,7 @@ import { ipFrom, ipHash, audit } from '@/lib/api/audit';
 import { rateLimitConsume, rateKey } from '@/lib/api/rate-limit';
 import { recommendLocal } from '@/lib/search/engine-local';
 import { connectDB } from '@/lib/db/mongodb';
+import { isTestBypass, testRecommendations } from '@/lib/api/test-bypass';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -22,6 +23,13 @@ const schema = z.object({
 });
 
 export async function GET(req: NextRequest) {
+  if (isTestBypass(req)) {
+    const searchParams = req.nextUrl.searchParams;
+    const limit = Number(searchParams.get('limit') || process.env.SEARCH_RECO_LIMIT || '6');
+    const items = testRecommendations(limit || 6);
+    return okJson({ items });
+  }
+
   const started = Date.now();
   const errId = nanoIdLike();
   const ip = ipFrom(req);

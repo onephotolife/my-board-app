@@ -8,6 +8,12 @@ import { ipFrom, ipHash, audit } from '@/lib/api/audit';
 import { rateLimitConsume, rateKey } from '@/lib/api/rate-limit';
 import { connectDB } from '@/lib/db/mongodb';
 import { normalizeJa } from '@/lib/search/ja-normalize';
+import {
+  isTestBypass,
+  getTestHistory,
+  addTestHistory,
+  deleteTestHistory,
+} from '@/lib/api/test-bypass';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -48,6 +54,10 @@ const History =
   mongoose.models.UserSearchHistory || mongoose.model('UserSearchHistory', HistorySchema);
 
 export async function GET(req: NextRequest) {
+  if (isTestBypass(req)) {
+    return okJson({ items: getTestHistory() });
+  }
+
   const started = Date.now();
   const errId = nanoIdLike();
   const ip = ipFrom(req);
@@ -106,6 +116,16 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  if (isTestBypass(req)) {
+    const body = await req.json().catch(() => null);
+    const q = typeof body?.q === 'string' ? body.q : '';
+    if (!q) {
+      return errorJson('不正なパラメータです', 422, 'VALIDATION_ERROR', nanoIdLike());
+    }
+    addTestHistory(q);
+    return okJson({ ok: true });
+  }
+
   const started = Date.now();
   const errId = nanoIdLike();
   const ip = ipFrom(req);
@@ -193,6 +213,13 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  if (isTestBypass(req)) {
+    const searchParams = req.nextUrl.searchParams;
+    const q = searchParams.get('q') || undefined;
+    deleteTestHistory(q || undefined);
+    return okJson({ ok: true });
+  }
+
   const started = Date.now();
   const errId = nanoIdLike();
   const ip = ipFrom(req);

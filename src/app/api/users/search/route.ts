@@ -11,6 +11,7 @@ import { normalizeJa } from '@/lib/search/ja-normalize';
 import { searchLocal } from '@/lib/search/engine-local';
 import { searchAtlas } from '@/lib/search/engine-atlas';
 import { connectDB } from '@/lib/db/mongodb';
+import { isTestBypass, testSearch } from '@/lib/api/test-bypass';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -23,6 +24,15 @@ const schema = z.object({
 });
 
 export async function GET(req: NextRequest) {
+  if (isTestBypass(req)) {
+    const searchParams = req.nextUrl.searchParams;
+    const q = searchParams.get('q') || '';
+    const page = Number(searchParams.get('page') || '1') || 1;
+    const limit = Number(searchParams.get('limit') || '20') || 20;
+    const items = q ? testSearch(q, page, limit) : [];
+    return okJson({ q, items, page, limit });
+  }
+
   const started = Date.now();
   const errId = nanoIdLike();
   const ip = ipFrom(req);

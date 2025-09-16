@@ -1,6 +1,7 @@
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 import { FlatCompat } from "@eslint/eslintrc";
+import testingLibrary from "eslint-plugin-testing-library";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -12,6 +13,9 @@ const compat = new FlatCompat({
 const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
+    plugins: {
+      'testing-library': testingLibrary
+    },
     rules: {
       // JSX構造の検証ルール
       "react/jsx-closing-bracket-location": ["error", "line-aligned"],
@@ -78,7 +82,9 @@ const eslintConfig = [
       "@typescript-eslint/consistent-type-imports": ["error", {
         "prefer": "type-imports",
         "fixStyle": "separate-type-imports"
-      }]
+      }],
+      "testing-library/no-debugging-utils": "warn",
+      "testing-library/no-wait-for-side-effects": "error"
     }
   }
 ];

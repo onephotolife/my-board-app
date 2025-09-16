@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "include": [
+    "src/lib/search/ja-normalize.ts",
+    "src/lib/models/User.ts",
+    "scripts/backfill-user-search-fields.ts"
+  ]
+}

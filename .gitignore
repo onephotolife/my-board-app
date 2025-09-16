@@ -147,6 +147,7 @@ dev-server.log
 
 # 一時的なスクリプトファイル
 scripts/*.js
+!scripts/backfill-user-search-fields.js
 tests/*.js
 tests/*.sh
 tests/comprehensive/*.js

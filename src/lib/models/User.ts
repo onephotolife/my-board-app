@@ -1,11 +1,35 @@
-import type { Document} from 'mongoose';
-import mongoose, { Schema, Types } from 'mongoose';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-require-imports */
+import type { Document } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import bcrypt from 'bcryptjs';
+
+import { normalizeJa, toYomi, buildPrefixes, buildNgrams } from '@/lib/search/ja-normalize';
+
+export interface IUserSearch {
+  nameNormalized?: string;
+  nameYomi?: string;
+  namePrefixes?: string[];
+  nameYomiPrefixes?: string[];
+  bioNormalized?: string;
+  bioNgrams?: string[];
+}
+
+export interface IUserStats {
+  followerCount?: number;
+  postCount?: number;
+  lastActiveAt?: Date | null;
+}
 
 export interface IUser extends Document {
   email: string;
   password: string;
   name: string;
+  nameYomi?: string; // ふりがな（ひらがな想定、手入力/辞書で補完）
+  searchNameNormalized?: string;
+  searchNameYomi?: string;
+  search?: IUserSearch;
+  stats?: IUserStats;
   role: 'admin' | 'moderator' | 'user';
   emailVerified: boolean;
   emailVerificationToken?: string;
@@ -20,18 +44,18 @@ export interface IUser extends Document {
   lastPasswordChange?: Date;
   passwordResetCount?: number;
   // プロフィール関連フィールド（新規追加）
-  bio?: string;           // 自己紹介（最大200文字）
-  avatar?: string;        // アバター画像URL
-  location?: string;      // 居住地
-  occupation?: string;    // 職業
-  education?: string;     // 学歴
-  website?: string;       // ウェブサイト
+  bio?: string; // 自己紹介（最大200文字）
+  avatar?: string; // アバター画像URL
+  location?: string; // 居住地
+  occupation?: string; // 職業
+  education?: string; // 学歴
+  website?: string; // ウェブサイト
   lastProfileUpdate?: Date;
   // フォロー関連フィールド（新規追加）
-  followingCount: number;  // フォロー中の数（キャッシュ用）
-  followersCount: number;  // フォロワー数（キャッシュ用）
+  followingCount: number; // フォロー中の数（キャッシュ用）
+  followersCount: number; // フォロワー数（キャッシュ用）
   mutualFollowsCount: number; // 相互フォロー数（キャッシュ用）
-  isPrivate?: boolean;     // プライベートアカウント設定
+  isPrivate?: boolean; // プライベートアカウント設定
   createdAt: Date;
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
@@ -43,6 +67,27 @@ export interface IUser extends Document {
   getFollowing(page?: number, limit?: number): Promise<any[]>;
   updateFollowCounts(): Promise<void>;
 }
+
+const SearchSchema = new Schema<IUserSearch>(
+  {
+    nameNormalized: { type: String, index: true },
+    nameYomi: { type: String, index: true },
+    namePrefixes: { type: [String], index: true },
+    nameYomiPrefixes: { type: [String], index: true },
+    bioNormalized: { type: String },
+    bioNgrams: { type: [String], index: true },
+  },
+  { _id: false }
+);
+
+const StatsSchema = new Schema<IUserStats>(
+  {
+    followerCount: { type: Number, default: 0, index: -1 },
+    postCount: { type: Number, default: 0 },
+    lastActiveAt: { type: Date, default: null, index: -1 },
+  },
+  { _id: false }
+);
 
 const UserSchema = new Schema<IUser>(
   {
@@ -61,6 +106,22 @@ const UserSchema = new Schema<IUser>(
       type: String,
       required: true,
       trim: true,
+    },
+    nameYomi: {
+      type: String,
+      default: '',
+      index: true,
+    },
+    // Legacy search fields (Step02 で段階移行予定)
+    searchNameNormalized: { type: String, index: true },
+    searchNameYomi: { type: String, index: true },
+    search: {
+      type: SearchSchema,
+      default: {},
+    },
+    stats: {
+      type: StatsSchema,
+      default: {},
     },
     role: {
       type: String,
@@ -87,16 +148,18 @@ const UserSchema = new Schema<IUser>(
     passwordResetExpires: {
       type: Date,
     },
-    passwordHistory: [{
-      hash: {
-        type: String,
-        required: true,
+    passwordHistory: [
+      {
+        hash: {
+          type: String,
+          required: true,
+        },
+        changedAt: {
+          type: Date,
+          required: true,
+        },
       },
-      changedAt: {
-        type: Date,
-        required: true,
-      },
-    }],
+    ],
     lastPasswordChange: {
       type: Date,
       default: Date.now,
@@ -116,7 +179,7 @@ const UserSchema = new Schema<IUser>(
       type: String,
       default: '',
       validate: {
-        validator: function(v: string) {
+        validator: function (v: string) {
           return !v || /^https?:\/\/.+/.test(v);
         },
         message: '有効なURLを入力してください',
@@ -140,7 +203,7 @@ const UserSchema = new Schema<IUser>(
     website: {
       type: String,
       validate: {
-        validator: function(v: string) {
+        validator: function (v: string) {
           return !v || /^https?:\/\/.+/.test(v);
         },
         message: '有効なURLを入力してください',
@@ -176,13 +239,110 @@ const UserSchema = new Schema<IUser>(
   }
 );
 
-// Hash password before saving
-UserSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
+// テキストインデックス（簡易関連度）
+UserSchema.index({ name: 'text', bio: 'text' }, { weights: { name: 5, bio: 2 } });
+try {
+  // @ts-expect-error -- dynamic index may be registered already
+  UserSchema.index({ 'search.namePrefixes': 1 });
+  // @ts-expect-error -- dynamic index may be registered already
+  UserSchema.index({ 'search.nameYomiPrefixes': 1 });
+  // @ts-expect-error -- dynamic index may be registered already
+  UserSchema.index({ 'search.bioNgrams': 1 });
+  // @ts-expect-error -- dynamic index may be registered already
+  UserSchema.index({ 'stats.followerCount': -1, updatedAt: -1 });
+} catch {}
 
+// Hash password before saving & 検索用フィールド更新
+UserSchema.pre('save', async function (next) {
   try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
+    if (this.isModified('password')) {
+      const salt = await bcrypt.genSalt(10);
+      this.password = await bcrypt.hash(this.password, salt);
+    }
+
+    computeSearchFields(this);
+
+    if ((this.isModified('name') || !this.nameYomi) && this.name) {
+      this.nameYomi = toYomi(this.name);
+    }
+
+    next();
+  } catch (error) {
+    next(error as Error);
+  }
+});
+
+function computeSearchFields(doc: any) {
+  const name: string = doc.name || '';
+  const bio: string = doc.bio || '';
+
+  const nameNormalized = normalizeJa(name);
+  const nameYomi = toYomi(name);
+  const bioNormalized = normalizeJa(bio);
+
+  doc.search = {
+    ...(doc.search || {}),
+    nameNormalized,
+    nameYomi,
+    namePrefixes: buildPrefixes(nameNormalized, 10),
+    nameYomiPrefixes: buildPrefixes(nameYomi, 20),
+    bioNormalized,
+    bioNgrams: buildNgrams(bioNormalized),
+  };
+
+  // レガシー補完（当面の共存）
+  if (!doc.searchNameNormalized && nameNormalized) doc.searchNameNormalized = nameNormalized;
+  if (!doc.searchNameYomi && nameYomi) doc.searchNameYomi = nameYomi;
+}
+
+UserSchema.pre('findOneAndUpdate', async function (next) {
+  try {
+    const update: any = this.getUpdate() || {};
+    const $set = update.$set || update;
+    const hasName = Object.prototype.hasOwnProperty.call($set, 'name');
+    const hasBio = Object.prototype.hasOwnProperty.call($set, 'bio');
+
+    if (!hasName && !hasBio) {
+      return next();
+    }
+
+    let current: any = null;
+    if (!hasName || !hasBio) {
+      current = await (this.model as mongoose.Model<IUser>).findOne(this.getQuery()).lean();
+      if (!current) {
+        return next();
+      }
+    }
+
+    const nameValue = hasName ? $set.name : current?.name;
+    const bioValue = hasBio ? $set.bio : current?.bio;
+
+    const tmp: any = {
+      name: typeof nameValue === 'string' ? nameValue : '',
+      bio: typeof bioValue === 'string' ? bioValue : '',
+      search: $set.search || {},
+      searchNameNormalized: $set.searchNameNormalized,
+      searchNameYomi: $set.searchNameYomi,
+    };
+
+    computeSearchFields(tmp);
+
+    update.$set = {
+      ...(update.$set || {}),
+      search: tmp.search,
+    };
+
+    if (tmp.searchNameNormalized && !$set.searchNameNormalized) {
+      update.$set.searchNameNormalized = tmp.searchNameNormalized;
+    }
+    if (tmp.searchNameYomi && !$set.searchNameYomi) {
+      update.$set.searchNameYomi = tmp.searchNameYomi;
+    }
+    if (hasName && $set.nameYomi === undefined) {
+      update.$set.nameYomi = toYomi(tmp.name);
+    }
+
+    this.setUpdate(update);
     next();
   } catch (error) {
     next(error as Error);
@@ -195,14 +355,15 @@ UserSchema.methods.comparePassword = async function (candidatePassword: string):
 };
 
 // フォロー関連メソッドの実装
-UserSchema.methods.follow = async function(targetUserId: string): Promise<void> {
+UserSchema.methods.follow = async function (targetUserId: string): Promise<void> {
   // TEMP-FIX: 開発環境ではトランザクションを使用しない（レプリカセット未使用）
-  const useTransaction = process.env.NODE_ENV === 'production' && process.env.USE_TRANSACTIONS === 'true';
-  
+  const useTransaction =
+    process.env.NODE_ENV === 'production' && process.env.USE_TRANSACTIONS === 'true';
+
   if (useTransaction) {
     // 本番環境（レプリカセット使用時）
     const session = await mongoose.startSession();
-    
+
     try {
       await session.withTransaction(async () => {
         await this._followInternal(targetUserId, session);
@@ -225,59 +386,69 @@ UserSchema.methods.follow = async function(targetUserId: string): Promise<void> 
 };
 
 // 内部フォロー処理（共通ロジック）
-UserSchema.methods._followInternal = async function(targetUserId: string, session: any): Promise<void> {
+UserSchema.methods._followInternal = async function (
+  targetUserId: string,
+  session: any
+): Promise<void> {
   const Follow = mongoose.model('Follow');
-  
+
   // ObjectId変換とバリデーション
   if (!mongoose.Types.ObjectId.isValid(targetUserId)) {
     throw new Error('無効なユーザーIDです');
   }
   const targetId = new mongoose.Types.ObjectId(targetUserId);
-  
+
   // 自分自身はフォローできない
   if (this._id.equals(targetId)) {
     throw new Error('自分自身をフォローすることはできません');
   }
-  
+
   // ターゲットユーザーの存在確認
   const findOptions = session ? { session } : {};
   const targetUser = await mongoose.model('User').findById(targetId, null, findOptions);
   if (!targetUser) {
     throw new Error('フォロー対象のユーザーが存在しません');
   }
-  
+
   // 既存のフォロー関係をチェック（重複防止）
-  const existingFollow = await Follow.findOne({
-    follower: this._id,
-    following: targetId,
-  }, null, findOptions);
-  
+  const existingFollow = await Follow.findOne(
+    {
+      follower: this._id,
+      following: targetId,
+    },
+    null,
+    findOptions
+  );
+
   if (existingFollow) {
     throw new Error('既にフォローしています');
   }
-  
+
   // フォロー関係を作成
   const createOptions = session ? { session } : {};
-  await Follow.create([{
-    follower: this._id,
-    following: targetId,
-  }], createOptions);
-  
+  await Follow.create(
+    [
+      {
+        follower: this._id,
+        following: targetId,
+      },
+    ],
+    createOptions
+  );
+
   // 両者のカウントを並列更新
-  await Promise.all([
-    this.updateFollowCounts(),
-    targetUser.updateFollowCounts(),
-  ]);
+  await Promise.all([this.updateFollowCounts(), targetUser.updateFollowCounts()]);
 };
 
-UserSchema.methods.unfollow = async function(targetUserId: string): Promise<void> {
+UserSchema.methods.unfollow = async function (targetUserId: string): Promise<void> {
   // TEMP-FIX: 開発環境ではトランザクションを使用しない（レプリカセット未使用）
-  const useTransaction = process.env.NODE_ENV === 'production' && process.env.USE_TRANSACTIONS === 'true';
-  
+  const useTransaction =
+    process.env.NODE_ENV === 'production' && process.env.USE_TRANSACTIONS === 'true';
+
   if (useTransaction) {
     // 本番環境（レプリカセット使用時）
     const session = await mongoose.startSession();
-    
+
     try {
       await session.withTransaction(async () => {
         await this._unfollowInternal(targetUserId, session);
@@ -300,26 +471,32 @@ UserSchema.methods.unfollow = async function(targetUserId: string): Promise<void
 };
 
 // 内部アンフォロー処理（共通ロジック）
-UserSchema.methods._unfollowInternal = async function(targetUserId: string, session: any): Promise<void> {
+UserSchema.methods._unfollowInternal = async function (
+  targetUserId: string,
+  session: any
+): Promise<void> {
   const Follow = mongoose.model('Follow');
-  
+
   // ObjectId変換とバリデーション
   if (!mongoose.Types.ObjectId.isValid(targetUserId)) {
     throw new Error('無効なユーザーIDです');
   }
   const targetId = new mongoose.Types.ObjectId(targetUserId);
-  
+
   // フォロー関係を削除
   const deleteOptions = session ? { session } : {};
-  const result = await Follow.findOneAndDelete({
-    follower: this._id,
-    following: targetId,
-  }, deleteOptions);
-  
+  const result = await Follow.findOneAndDelete(
+    {
+      follower: this._id,
+      following: targetId,
+    },
+    deleteOptions
+  );
+
   if (!result) {
     throw new Error('フォローしていません');
   }
-  
+
   // ターゲットユーザーの取得
   const findOptions = session ? { session } : {};
   const targetUser = await mongoose.model('User').findById(targetId, null, findOptions);
@@ -327,7 +504,7 @@ UserSchema.methods._unfollowInternal = async function(targetUserId: string, sess
     // ユーザーが削除されている場合でもアンフォローは成功扱い
     console.warn(`Target user ${targetId} not found during unfollow`);
   }
-  
+
   // 両者のカウントを並列更新
   const updatePromises = [this.updateFollowCounts()];
   if (targetUser) {
@@ -336,26 +513,26 @@ UserSchema.methods._unfollowInternal = async function(targetUserId: string, sess
   await Promise.all(updatePromises);
 };
 
-UserSchema.methods.isFollowing = async function(targetUserId: string): Promise<boolean> {
+UserSchema.methods.isFollowing = async function (targetUserId: string): Promise<boolean> {
   try {
     // ObjectId変換とバリデーション
     if (!mongoose.Types.ObjectId.isValid(targetUserId)) {
       return false; // 無効なIDの場合はfalseを返す
     }
-    
+
     const Follow = mongoose.model('Follow');
     const targetId = new mongoose.Types.ObjectId(targetUserId);
-    
+
     // 自分自身の場合は常にfalse
     if (this._id.equals(targetId)) {
       return false;
     }
-    
+
     const count = await Follow.countDocuments({
       follower: this._id,
       following: targetId,
     });
-    
+
     return count > 0;
   } catch (error) {
     console.error(`isFollowing check failed: userId=${this._id}, targetId=${targetUserId}`, error);
@@ -363,9 +540,12 @@ UserSchema.methods.isFollowing = async function(targetUserId: string): Promise<b
   }
 };
 
-UserSchema.methods.getFollowers = async function(page: number = 1, limit: number = 20): Promise<any[]> {
+UserSchema.methods.getFollowers = async function (
+  page: number = 1,
+  limit: number = 20
+): Promise<any[]> {
   const Follow = mongoose.model('Follow');
-  
+
   return Follow.find({ following: this._id })
     .populate('follower', 'name email avatar bio followingCount followersCount')
     .sort({ createdAt: -1 })
@@ -374,9 +554,12 @@ UserSchema.methods.getFollowers = async function(page: number = 1, limit: number
     .lean();
 };
 
-UserSchema.methods.getFollowing = async function(page: number = 1, limit: number = 20): Promise<any[]> {
+UserSchema.methods.getFollowing = async function (
+  page: number = 1,
+  limit: number = 20
+): Promise<any[]> {
   const Follow = mongoose.model('Follow');
-  
+
   return Follow.find({ follower: this._id })
     .populate('following', 'name email avatar bio followingCount followersCount')
     .sort({ createdAt: -1 })
@@ -385,9 +568,9 @@ UserSchema.methods.getFollowing = async function(page: number = 1, limit: number
     .lean();
 };
 
-UserSchema.methods.updateFollowCounts = async function(): Promise<void> {
+UserSchema.methods.updateFollowCounts = async function (): Promise<void> {
   const Follow = mongoose.model('Follow');
-  
+
   try {
     // 並列でカウント取得（パフォーマンス最適化）
     const [followingCount, followersCount, mutualFollows] = await Promise.all([
@@ -396,17 +579,17 @@ UserSchema.methods.updateFollowCounts = async function(): Promise<void> {
       // フォロワー数
       Follow.countDocuments({ following: this._id }),
       // 相互フォロー数（自分がフォローしている相手のみカウントで重複防止）
-      Follow.countDocuments({ 
-        follower: this._id, 
-        isReciprocal: true 
+      Follow.countDocuments({
+        follower: this._id,
+        isReciprocal: true,
       }),
     ]);
-    
+
     // 更新を保存（validateBeforeSave: falseで無限ループ防止）
     this.followingCount = followingCount;
     this.followersCount = followersCount;
     this.mutualFollowsCount = mutualFollows;
-    
+
     await this.save({ validateBeforeSave: false });
   } catch (error) {
     console.error(`Failed to update follow counts for user ${this._id}:`, error);
@@ -416,8 +599,11 @@ UserSchema.methods.updateFollowCounts = async function(): Promise<void> {
 
 // 開発環境でスキーマキャッシュをクリア
 if (process.env.NODE_ENV === 'development') {
-  delete mongoose.models.User;
-  delete mongoose.connection.models.User;
+  delete (mongoose.models as Record<string, unknown>).User;
+  const conn = mongoose.connection as unknown as { models?: Record<string, unknown> };
+  if (conn.models) {
+    delete conn.models.User;
+  }
 }
 
 // Followモデルを確実にロードする（循環依存を避けるため動的require）
